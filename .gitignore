@@ -1,0 +1,21 @@
+# Gradle
+.gradle/
+**/.gradle/
+build/
+**/build/
+
+# Kotlin/Java
+*.class
+out/
+
+# IntelliJ IDEA
+.idea/
+*.iml
+
+# Environment
+local.properties
+.env
+
+# OS files
+.DS_Store
+Thumbs.db
