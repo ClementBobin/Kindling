@@ -40,10 +40,10 @@ mavenPublishing {
     publishToMavenCentral()
     signAllPublications()
 
-    coordinates(Versions.group, "kindling-core", Versions.libraryVersion)
+    coordinates(Versions.group, "core", Versions.libraryVersion)
 
     pom {
-        name.set("kindling-core")
+        name.set("core")
         description.set("Core module for kindling")
         inceptionYear.set("2024")
         url.set("https://github.com/ClementBobin/Kindling")

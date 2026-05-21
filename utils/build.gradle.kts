@@ -31,12 +31,12 @@ mavenPublishing {
     publishToMavenCentral()
     signAllPublications()
 
-    coordinates(Versions.group, "kindling-utils", Versions.libraryVersion)
+    coordinates(Versions.group, "utils", Versions.libraryVersion)
 
     pom {
-        name.set("kindling-utils")
+        name.set("utils")
         description.set("Utils module for kindling")
-        inceptionYear.set("2024")
+        inceptionYear.set("2026")
         url.set("https://github.com/ClementBobin/Kindling")
         licenses {
             license {

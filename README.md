@@ -17,8 +17,8 @@ repositories {
 }
 
 dependencies {
-    implementation("io.github.clementbobin:kindling-core:0.1.0")
-    implementation("io.github.clementbobin:kindling-utils:0.1.0")
+    implementation("io.github.clementbobin.kindling:core:0.1.0")
+    implementation("io.github.clementbobin.kindling:utils:0.1.0")
 }
 ```
 
