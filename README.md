@@ -17,7 +17,8 @@ repositories {
 }
 
 dependencies {
-    implementation("dev.kindling:my-kotlin-library-core:0.1.0-SNAPSHOT") // TODO: replace with your actual value
+    implementation("io.github.clementbobin:kindling-core:0.1.0")
+    implementation("io.github.clementbobin:kindling-utils:0.1.0")
 }
 ```
 

@@ -49,15 +49,15 @@ val javadocJar by tasks.registering(Jar::class) {
 publishing {
     publications {
         create<MavenPublication>("mavenJava") {
-            artifactId = "my-kotlin-library-core" // TODO: replace with your actual value
+            artifactId = "kindling-core"
             from(components["java"])
             artifact(sourcesJar)
             artifact(javadocJar)
 
             pom {
-                name.set("my-kotlin-library-core") // TODO: replace with your actual value
-                description.set("Core module for my-kotlin-library")
-                url.set("https://github.com/dev/kindling") // TODO: replace with your actual value
+                name.set("kindling-core")
+                description.set("Core module for kindling-core")
+                url.set("https://github.com/clementbobin/kindling")
 
                 licenses {
                     license {
@@ -67,15 +67,14 @@ publishing {
                 }
                 developers {
                     developer {
-                        id.set("example") // TODO: replace with your actual value
-                        name.set("Example Developer") // TODO: replace with your actual value
-                        email.set("developer@example.com") // TODO: replace with your actual value
+                        id.set("clementbobin")
+                        name.set("Clement Bobin")
                     }
                 }
                 scm {
-                    connection.set("scm:git:git://github.com/dev/kindling.git") // TODO: replace with your actual value
-                    developerConnection.set("scm:git:ssh://github.com:dev/kindling.git") // TODO: replace with your actual value
-                    url.set("https://github.com/dev/kindling") // TODO: replace with your actual value
+                    connection.set("scm:git:git://github.com/ClementBobin/Kindling.git")
+                    developerConnection.set("scm:git:ssh://github.com:ClementBobin/Kindling.git")
+                    url.set("https://github.com/ClementBobin/Kindling")
                 }
             }
         }
