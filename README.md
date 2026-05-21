@@ -1,6 +1,6 @@
 # my-kotlin-library
 
-[![CI](https://github.com/com/example/actions/workflows/ci.yml/badge.svg)](https://github.com/com/example/actions/workflows/ci.yml) ![Maven Central Version](https://img.shields.io/maven-central/v/com.example/my-kotlin-library-core) ![JitPack Version](https://img.shields.io/jitpack/v/github/com/example) ![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg) <!-- TODO: replace with your actual value -->
+[![CI](https://github.com/dev/kindling/actions/workflows/ci.yml/badge.svg)](https://github.com/dev/kindling/actions/workflows/ci.yml) ![Maven Central Version](https://img.shields.io/maven-central/v/dev.kindling/my-kotlin-library-core) ![JitPack Version](https://img.shields.io/jitpack/v/github/dev/kindling) ![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg) <!-- TODO: replace with your actual value -->
 
 ## Overview
 
@@ -17,7 +17,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.example:my-kotlin-library-core:0.1.0-SNAPSHOT") // TODO: replace with your actual value
+    implementation("dev.kindling:my-kotlin-library-core:0.1.0-SNAPSHOT") // TODO: replace with your actual value
 }
 ```
 
@@ -30,7 +30,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.example:my-kotlin-library-core:0.1.0-SNAPSHOT' // TODO: replace with your actual value
+    implementation 'dev.kindling:my-kotlin-library-core:0.1.0-SNAPSHOT' // TODO: replace with your actual value
 }
 ```
 
@@ -47,8 +47,8 @@ fun main() {
 
 | Module | Artifact ID | Description |
 | --- | --- | --- |
-| `core` | `com.example:my-kotlin-library-core` | Core library functionality. |
-| `utils` | `com.example:my-kotlin-library-utils` | Optional utility helpers. |
+| `core` | `dev.kindling:my-kotlin-library-core` | Core library functionality. |
+| `utils` | `dev.kindling:my-kotlin-library-utils` | Optional utility helpers. |
 
 <!-- TODO: replace with your actual value -->
 
