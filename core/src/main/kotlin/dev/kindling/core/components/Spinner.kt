@@ -17,8 +17,9 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
-enum class KSpinnerSize { Sm, Default, Lg, Xl }
+import androidx.compose.ui.tooling.preview.Preview
+import dev.kindling.core.components.internal.KindlingPreviewSurface
+import dev.kindling.core.components.internal.PreviewLabel
 
 private fun KSpinnerSize.toDp(): Dp = when (this) {
     KSpinnerSize.Sm      -> 16.dp
@@ -35,12 +36,18 @@ private fun KSpinnerSize.strokeWidth(): Dp = when (this) {
 }
 
 /**
- * Shadcn/ui-style Spinner — smooth rotating arc.
+ * Render a shadcn/ui-style spinner with a smooth rotating arc.
  *
  * ```kotlin
  * KSpinner()
  * KSpinner(size = KSpinnerSize.Lg, label = "Loading…")
  * ```
+ *
+ * @param modifier Applied to the outermost layout element.
+ * @param size Size preset for the spinner.
+ * @param color Foreground arc colour.
+ * @param trackColor Background arc colour.
+ * @param label Optional label shown beneath the spinner.
  */
 @Composable
 fun KSpinner(
@@ -97,20 +104,28 @@ fun KSpinner(
     }
 }
 
-/**
- * Centred spinner that fills its parent — useful as a screen-level loading state.
- *
- * ```kotlin
- * if (isLoading) KSpinnerOverlay()
- * ```
- */
+@Preview(name = "KSpinner — light", showBackground = true, widthDp = 360)
+@Preview(
+    name = "KSpinner — dark",
+    showBackground = true,
+    widthDp = 360,
+    uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES
+)
 @Composable
-fun KSpinnerOverlay(
-    modifier: Modifier = Modifier.fillMaxSize(),
-    size: KSpinnerSize = KSpinnerSize.Lg,
-    label: String? = null,
-) {
-    Box(modifier = modifier, contentAlignment = Alignment.Center) {
-        KSpinner(size = size, label = label)
+private fun PreviewKSpinner() {
+    KindlingPreviewSurface {
+        PreviewLabel("Sizes")
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            KSpinner(size = KSpinnerSize.Sm)
+            KSpinner(size = KSpinnerSize.Default)
+            KSpinner(size = KSpinnerSize.Lg)
+            KSpinner(size = KSpinnerSize.Xl)
+        }
+
+        PreviewLabel("With label")
+        KSpinner(label = "Loading…")
+
+        PreviewLabel("Custom error colour")
+        KSpinner(color = MaterialTheme.colorScheme.error)
     }
 }

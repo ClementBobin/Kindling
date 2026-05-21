@@ -13,14 +13,24 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.tooling.preview.Preview
+import dev.kindling.core.components.internal.KindlingPreviewSurface
+import dev.kindling.core.components.internal.PreviewLabel
 
 /**
- * Shadcn/ui-style Pagination.
+ * Render a shadcn/ui-style pagination control.
  *
  * ```kotlin
  * var page by remember { mutableStateOf(1) }
  * KPagination(currentPage = page, totalPages = 20, onPageChange = { page = it })
  * ```
+ *
+ * @param currentPage Current page index, starting at 1.
+ * @param totalPages Total number of pages available.
+ * @param onPageChange Callback invoked when a new page is selected.
+ * @param modifier Applied to the outermost layout element.
+ * @param siblingCount Number of adjacent pages shown around the current page.
+ * @param showEdges When `true`, shows first/last page shortcuts.
  */
 @Composable
 fun KPagination(
@@ -135,4 +145,27 @@ private fun buildPageList(current: Int, total: Int, siblings: Int, showEdges: Bo
         if (total > 1) result += PageItem.Number(total)
     }
     return result
+}
+
+@Preview(name = "KPagination — light", showBackground = true, widthDp = 360)
+@Preview(
+    name = "KPagination — dark",
+    showBackground = true,
+    widthDp = 360,
+    uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES
+)
+@Composable
+private fun PreviewKPagination() {
+    KindlingPreviewSurface {
+        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            PreviewLabel("Page 1 of 5")
+            KPagination(currentPage = 1, totalPages = 5, onPageChange = { })
+
+            PreviewLabel("Page 5 of 20")
+            KPagination(currentPage = 5, totalPages = 20, onPageChange = { })
+
+            PreviewLabel("Last page")
+            KPagination(currentPage = 8, totalPages = 8, onPageChange = { })
+        }
+    }
 }

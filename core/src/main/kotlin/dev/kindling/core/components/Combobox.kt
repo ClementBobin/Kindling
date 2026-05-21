@@ -24,23 +24,34 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
-
-data class KComboboxItem(val value: String, val label: String)
+import dev.kindling.core.components.internal.KindlingPreviewSurface
+import dev.kindling.core.components.internal.PreviewLabel
 
 /**
- * Shadcn/ui-style searchable Combobox.
+ * Render a shadcn/ui-style searchable combobox.
  *
  * ```kotlin
  * var selected by remember { mutableStateOf<KComboboxItem?>(null) }
  * KCombobox(
- *     items       = frameworks,
- *     selected    = selected,
- *     onSelect    = { selected = it },
+ *     items = frameworks,
+ *     selected = selected,
+ *     onSelect = { selected = it },
  *     placeholder = "Select framework…"
  * )
  * ```
+ *
+ * @param items List of selectable items.
+ * @param selected Currently selected item, or `null` for no selection.
+ * @param onSelect Callback invoked when the user selects an item.
+ * @param modifier Applied to the outermost layout element.
+ * @param placeholder Text shown when no item is selected.
+ * @param searchPlaceholder Placeholder text for the search input.
+ * @param enabled When `false`, the combobox is non-interactive and dimmed.
+ * @param maxDropdownHeight Maximum height for the dropdown list.
+ * @param emptyLabel Text shown when the search returns no results.
  */
 @Composable
 fun KCombobox(
@@ -159,6 +170,48 @@ fun KCombobox(
                     }
                 }
             }
+        }
+    }
+}
+
+@Preview(name = "KCombobox — light", showBackground = true, widthDp = 360)
+@Preview(
+    name = "KCombobox — dark",
+    showBackground = true,
+    widthDp = 360,
+    uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES
+)
+@Composable
+private fun PreviewKCombobox() {
+    val items = listOf(
+        KComboboxItem("kotlin", "Kotlin"),
+        KComboboxItem("swift", "Swift"),
+        KComboboxItem("rust", "Rust")
+    )
+
+    KindlingPreviewSurface {
+        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            PreviewLabel("Nothing selected")
+            KCombobox(
+                items = items,
+                selected = null,
+                onSelect = { }
+            )
+
+            PreviewLabel("With selection")
+            KCombobox(
+                items = items,
+                selected = items.first(),
+                onSelect = { }
+            )
+
+            PreviewLabel("Disabled")
+            KCombobox(
+                items = items,
+                selected = items.last(),
+                onSelect = { },
+                enabled = false
+            )
         }
     }
 }

@@ -19,8 +19,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
+import dev.kindling.core.components.internal.KindlingPreviewSurface
+import dev.kindling.core.components.internal.PreviewLabel
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
@@ -29,12 +32,23 @@ import java.time.format.TextStyle as JTextStyle
 import java.util.Locale
 
 /**
- * Shadcn/ui-style DatePicker. Requires API 26+ (java.time).
+ * Render a shadcn/ui-style date picker.
+ *
+ * Requires API 26+ because it relies on java.time APIs.
  *
  * ```kotlin
  * var date by remember { mutableStateOf<LocalDate?>(null) }
  * KDatePicker(selected = date, onSelect = { date = it }, placeholder = "Pick a date")
  * ```
+ *
+ * @param selected Currently selected date, or `null` when empty.
+ * @param onSelect Callback invoked when a date is selected.
+ * @param modifier Applied to the outermost layout element.
+ * @param placeholder Text shown when no date is selected.
+ * @param enabled When `false`, the picker is non-interactive and dimmed.
+ * @param minDate Minimum selectable date, inclusive.
+ * @param maxDate Maximum selectable date, inclusive.
+ * @param locale Locale used to format month and weekday labels.
  */
 @Composable
 fun KDatePicker(
@@ -82,6 +96,31 @@ fun KDatePicker(
             ) {
                 CalendarView(selected, minDate, maxDate, locale) { onSelect(it); expanded = false }
             }
+        }
+    }
+}
+
+@Preview(name = "KDatePicker — light", showBackground = true, widthDp = 360)
+@Preview(
+    name = "KDatePicker — dark",
+    showBackground = true,
+    widthDp = 360,
+    uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES
+)
+@Composable
+private fun PreviewKDatePicker() {
+    val selectedDate = LocalDate.of(2026, 5, 12)
+
+    KindlingPreviewSurface {
+        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            PreviewLabel("Empty")
+            KDatePicker(selected = null, onSelect = { })
+
+            PreviewLabel("With date selected")
+            KDatePicker(selected = selectedDate, onSelect = { })
+
+            PreviewLabel("Disabled")
+            KDatePicker(selected = selectedDate, onSelect = { }, enabled = false)
         }
     }
 }

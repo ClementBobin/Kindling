@@ -18,15 +18,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.tooling.preview.Preview
+import dev.kindling.core.components.internal.KindlingPreviewSurface
+import dev.kindling.core.components.internal.PreviewLabel
 
 /**
- * Describes one column in a [KDataTable].
+ * Describe a column in a data table.
  *
- * @param key      Unique key used for sorting.
- * @param header   Column header label.
- * @param weight   Flex weight.
- * @param sortable Whether the header shows a sort toggle.
- * @param cell     Composable that renders a single cell.
+ * @property key Unique key used for sorting.
+ * @property header Column header label.
+ * @property weight Flex weight for the column width.
+ * @property sortable Whether the header shows a sort toggle.
+ * @property cell Composable that renders a single cell.
  */
 data class KTableColumn<T>(
     val key: String,
@@ -36,10 +39,8 @@ data class KTableColumn<T>(
     val cell: @Composable RowScope.(row: T) -> Unit
 )
 
-enum class KSortDirection { Asc, Desc, None }
-
 /**
- * Shadcn/ui-style DataTable with optional sorting, striped rows, and pagination.
+ * Render a shadcn/ui-style data table with optional sorting and pagination.
  *
  * ```kotlin
  * val columns = listOf(
@@ -48,6 +49,14 @@ enum class KSortDirection { Asc, Desc, None }
  * )
  * KDataTable(columns = columns, data = payments, onSort = { key, dir -> /* re-sort */ })
  * ```
+ *
+ * @param columns Column descriptors for the table.
+ * @param data Row data displayed in the table.
+ * @param modifier Applied to the outermost layout element.
+ * @param pageSize Number of rows per page, or [Int.MAX_VALUE] to disable pagination.
+ * @param striped When `true`, alternates row background colours.
+ * @param onSort Optional callback invoked when a column sort is toggled.
+ * @param emptyContent Composable shown when [data] is empty.
  */
 @Composable
 fun <T> KDataTable(
@@ -148,6 +157,43 @@ fun <T> KDataTable(
                 Text("Page $page of $totalPages", fontSize = 13.sp, color = cs.onSurfaceVariant)
                 KPagination(currentPage = page, totalPages = totalPages, onPageChange = { page = it }, siblingCount = 1)
             }
+        }
+    }
+}
+
+private data class PreviewPayment(
+    val email: String,
+    val amount: String
+)
+
+@Preview(name = "KDataTable — light", showBackground = true, widthDp = 360)
+@Preview(
+    name = "KDataTable — dark",
+    showBackground = true,
+    widthDp = 360,
+    uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES
+)
+@Composable
+private fun PreviewKDataTable() {
+    val columns = listOf(
+        KTableColumn<PreviewPayment>("email", "Email", sortable = true) { Text(it.email) },
+        KTableColumn<PreviewPayment>("amount", "Amount") { Text(it.amount) }
+    )
+    val data = listOf(
+        PreviewPayment("arya@kindling.dev", "$120.00"),
+        PreviewPayment("jon@kindling.dev", "$75.50")
+    )
+
+    KindlingPreviewSurface {
+        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            PreviewLabel("Default")
+            KDataTable(columns = columns, data = data, onSort = { _, _ -> })
+
+            PreviewLabel("Striped")
+            KDataTable(columns = columns, data = data, striped = true, onSort = { _, _ -> })
+
+            PreviewLabel("Empty state")
+            KDataTable(columns = columns, data = emptyList(), onSort = { _, _ -> })
         }
     }
 }

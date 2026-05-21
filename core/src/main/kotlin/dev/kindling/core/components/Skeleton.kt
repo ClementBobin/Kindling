@@ -16,10 +16,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.tooling.preview.Preview
+import dev.kindling.core.components.internal.KindlingPreviewSurface
 
 /**
- * Returns a moving shimmer [Brush] from the current Material3 colour scheme.
- * Drop it as a [Modifier.background] to get the skeleton animation on any shape.
+ * Create a moving shimmer [Brush] from the current Material3 colour scheme.
+ *
+ * @param baseColor Base colour for the shimmer gradient.
+ * @param highlightColor Highlight colour for the shimmer gradient.
+ * @param durationMillis Duration of a single shimmer cycle in milliseconds.
+ * @return A [Brush] that animates across the component surface.
  */
 @Composable
 fun kindlingShimmerBrush(
@@ -45,12 +51,15 @@ fun kindlingShimmerBrush(
 }
 
 /**
- * Shadcn/ui-style Skeleton — shimmering loading placeholder.
+ * Render a shadcn/ui-style skeleton placeholder.
  *
  * ```kotlin
  * KSkeleton(modifier = Modifier.fillMaxWidth().height(20.dp))
  * KSkeleton(modifier = Modifier.size(40.dp), shape = CircleShape)
  * ```
+ *
+ * @param modifier Applied to the outermost layout element.
+ * @param shape Shape of the skeleton placeholder.
  */
 @Composable
 fun KSkeleton(
@@ -60,32 +69,20 @@ fun KSkeleton(
     Box(modifier = modifier.clip(shape).background(kindlingShimmerBrush()))
 }
 
-/** Skeleton list-item: circular avatar placeholder + two text lines. */
+@Preview(name = "KSkeleton — light", showBackground = true, widthDp = 360)
+@Preview(
+    name = "KSkeleton — dark",
+    showBackground = true,
+    widthDp = 360,
+    uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES
+)
 @Composable
-fun KSkeletonListItem(modifier: Modifier = Modifier, avatarSize: Dp = 40.dp) {
-    Row(modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-        KSkeleton(modifier = Modifier.size(avatarSize), shape = CircleShape)
-        Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            KSkeleton(modifier = Modifier.fillMaxWidth(0.6f).height(14.dp))
+private fun PreviewKSkeleton() {
+    KindlingPreviewSurface {
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             KSkeleton(modifier = Modifier.fillMaxWidth(0.9f).height(12.dp))
+            KSkeleton(modifier = Modifier.fillMaxWidth(0.6f).height(12.dp))
+            KSkeleton(modifier = Modifier.fillMaxWidth(0.8f).height(12.dp))
         }
-    }
-}
-
-/** Skeleton card: image area + title + two text lines. */
-@Composable
-fun KSkeletonCard(modifier: Modifier = Modifier, imageHeight: Dp = 180.dp) {
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .background(MaterialTheme.colorScheme.surface)
-            .padding(12.dp),
-        verticalArrangement = Arrangement.spacedBy(10.dp)
-    ) {
-        KSkeleton(modifier = Modifier.fillMaxWidth().height(imageHeight), shape = RoundedCornerShape(8.dp))
-        KSkeleton(modifier = Modifier.fillMaxWidth(0.7f).height(16.dp))
-        KSkeleton(modifier = Modifier.fillMaxWidth().height(12.dp))
-        KSkeleton(modifier = Modifier.fillMaxWidth(0.85f).height(12.dp))
     }
 }

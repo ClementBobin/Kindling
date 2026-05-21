@@ -1,5 +1,6 @@
 package dev.kindling.core.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.*
 import androidx.compose.foundation.shape.CircleShape
@@ -14,13 +15,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.tooling.preview.Preview
+import dev.kindling.core.components.internal.KindlingPreviewSurface
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-enum class KCarouselOrientation { Horizontal, Vertical }
-
 /**
- * Shadcn/ui-style Carousel backed by Compose Foundation's [HorizontalPager] / [VerticalPager].
+ * Render a shadcn/ui-style carousel backed by Foundation pagers.
  *
  * ```kotlin
  * KCarousel(pageCount = items.size) { page ->
@@ -29,6 +30,17 @@ enum class KCarouselOrientation { Horizontal, Vertical }
  * // Auto-play
  * KCarousel(pageCount = items.size, autoPlayMs = 3_000L) { page -> Image(…) }
  * ```
+ *
+ * @param pageCount Number of pages in the carousel.
+ * @param modifier Applied to the outermost layout element.
+ * @param orientation Layout orientation for the pager.
+ * @param showArrows When `true`, shows navigation arrows for horizontal carousels.
+ * @param showDots When `true`, shows pagination dots.
+ * @param autoPlayMs Interval in milliseconds between auto-advancing pages.
+ * @param contentPadding Padding applied to the pager content.
+ * @param pageSpacing Spacing between pages.
+ * @param state Pager state controlling the current page.
+ * @param content Composable content for each page.
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -112,6 +124,33 @@ private fun CarouselArrow(left: Boolean, enabled: Boolean, modifier: Modifier, o
                 imageVector  = if (left) Icons.AutoMirrored.Filled.KeyboardArrowLeft else Icons.AutoMirrored.Filled.KeyboardArrowRight,
                 contentDescription = null,
                 modifier     = Modifier.size(20.dp)
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Preview(name = "KCarousel — light", showBackground = true, widthDp = 360)
+@Preview(
+    name = "KCarousel — dark",
+    showBackground = true,
+    widthDp = 360,
+    uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES
+)
+@Composable
+private fun PreviewKCarousel() {
+    KindlingPreviewSurface {
+        KCarousel(pageCount = 3) { page ->
+            val color = when (page) {
+                0 -> MaterialTheme.colorScheme.primaryContainer
+                1 -> MaterialTheme.colorScheme.secondaryContainer
+                else -> MaterialTheme.colorScheme.tertiaryContainer
+            }
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(160.dp)
+                    .background(color, RoundedCornerShape(12.dp))
             )
         }
     }

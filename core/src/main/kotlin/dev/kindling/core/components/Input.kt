@@ -1,10 +1,15 @@
 package dev.kindling.core.components
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Email
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -17,19 +22,38 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.tooling.preview.Preview
+import dev.kindling.core.components.internal.KindlingPreviewSurface
+import dev.kindling.core.components.internal.PreviewLabel
 
 /**
- * Shadcn/ui-style Input field.
+ * Render a shadcn/ui-style input field.
  *
- * Fully theme-agnostic — colours are resolved from [MaterialTheme.colorScheme].
+ * Colours are resolved from [MaterialTheme.colorScheme], making the input automatically adapt
+ * to light and dark themes.
  *
  * ```kotlin
  * var value by remember { mutableStateOf("") }
  * KInput(value = value, onValueChange = { value = it }, placeholder = "m@example.com")
  *
- * // Password
  * KInput(value = pwd, onValueChange = { pwd = it }, isPassword = true)
  * ```
+ *
+ * @param value Current text value.
+ * @param onValueChange Callback invoked when the text changes.
+ * @param modifier Applied to the outermost layout element.
+ * @param placeholder Placeholder text shown when the input is empty.
+ * @param enabled When `false`, the field is non-interactive and dimmed.
+ * @param isPassword When `true`, masks the input using a password transformation.
+ * @param isError When `true`, highlights the field as invalid.
+ * @param singleLine When `true`, restricts input to a single line.
+ * @param maxLines Maximum number of lines when `singleLine` is `false`.
+ * @param minLines Minimum number of visible lines.
+ * @param leadingIcon Optional leading icon slot.
+ * @param trailingIcon Optional trailing icon slot.
+ * @param keyboardOptions Keyboard configuration for the input.
+ * @param keyboardActions IME action callbacks.
+ * @param interactionSource Interaction source used for focus and pressed state.
  */
 @Composable
 fun KInput(
@@ -108,68 +132,35 @@ fun KInput(
     )
 }
 
-/**
- * Convenience wrapper: [KLabel] + [KInput] + optional helper / error text.
- *
- * ```kotlin
- * KFormField(
- *     label        = "Email",
- *     value        = email,
- *     onValueChange = { email = it },
- *     placeholder  = "m@example.com",
- *     helperText   = "We'll never share your email.",
- *     isError      = email.isNotEmpty() && !email.contains("@"),
- *     errorMessage = "Please enter a valid email address."
- * )
- * ```
- */
+@Preview(name = "KInput — light", showBackground = true, widthDp = 360)
+@Preview(
+    name = "KInput — dark",
+    showBackground = true,
+    widthDp = 360,
+    uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES
+)
 @Composable
-fun KFormField(
-    label: String,
-    value: String,
-    onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
-    placeholder: String = "",
-    helperText: String? = null,
-    errorMessage: String? = null,
-    isError: Boolean = false,
-    enabled: Boolean = true,
-    isPassword: Boolean = false,
-    leadingIcon: (@Composable () -> Unit)? = null,
-    trailingIcon: (@Composable () -> Unit)? = null,
-    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
-    keyboardActions: KeyboardActions = KeyboardActions.Default,
-) {
-    val cs      = MaterialTheme.colorScheme
-    val showErr = isError && errorMessage != null
+private fun PreviewKInput() {
+    KindlingPreviewSurface {
+        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            PreviewLabel("Default")
+            KInput(value = "m@example.com", onValueChange = { }, placeholder = "m@example.com")
 
-    Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        KLabel(text = label, disabled = !enabled)
-
-        KInput(
-            value           = value,
-            onValueChange   = onValueChange,
-            placeholder     = placeholder,
-            enabled         = enabled,
-            isError         = isError,
-            isPassword      = isPassword,
-            leadingIcon     = leadingIcon,
-            trailingIcon    = trailingIcon,
-            keyboardOptions = keyboardOptions,
-            keyboardActions = keyboardActions,
-        )
-
-        val helpMsg = when {
-            showErr            -> errorMessage
-            helperText != null -> helperText
-            else               -> null
-        }
-        if (helpMsg != null) {
-            Text(
-                text  = helpMsg,
-                style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
-                color = if (showErr) cs.error else cs.onSurfaceVariant
+            PreviewLabel("Leading icon")
+            KInput(
+                value = "hello@kindling.dev",
+                onValueChange = { },
+                leadingIcon = { Icon(Icons.Filled.Email, contentDescription = null) }
             )
+
+            PreviewLabel("Password")
+            KInput(value = "secret", onValueChange = { }, isPassword = true)
+
+            PreviewLabel("Error")
+            KInput(value = "bad value", onValueChange = { }, isError = true)
+
+            PreviewLabel("Disabled")
+            KInput(value = "disabled", onValueChange = { }, enabled = false)
         }
     }
 }

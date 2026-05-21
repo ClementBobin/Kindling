@@ -1,92 +1,23 @@
 package dev.kindling.core.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import dev.kindling.core.components.internal.KindlingPreviewSurface
 
 /**
- * Shadcn/ui-style AlertDialog — designed for confirmation / destructive actions.
- *
- * ```kotlin
- * var open by remember { mutableStateOf(false) }
- * KAlertDialog(
- *     open          = open,
- *     onDismiss     = { open = false },
- *     title         = "Are you absolutely sure?",
- *     description   = "This action cannot be undone.",
- *     confirmLabel  = "Continue",
- *     onConfirm     = { open = false },
- *     isDestructive = true
- * )
- * ```
- */
-@Composable
-fun KAlertDialog(
-    open: Boolean,
-    onDismiss: () -> Unit,
-    title: String,
-    description: String? = null,
-    confirmLabel: String = "Continue",
-    cancelLabel: String = "Cancel",
-    isDestructive: Boolean = false,
-    onConfirm: () -> Unit,
-    properties: DialogProperties = DialogProperties()
-) {
-    if (!open) return
-
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        shape            = RoundedCornerShape(12.dp),
-        containerColor   = MaterialTheme.colorScheme.surface,
-        title = {
-            Text(
-                text  = title,
-                style = MaterialTheme.typography.titleLarge.copy(
-                    fontSize   = 18.sp,
-                    fontWeight = FontWeight.SemiBold
-                ),
-                color = MaterialTheme.colorScheme.onSurface
-            )
-        },
-        text = if (description != null) {
-            {
-                Text(
-                    text  = description,
-                    style = MaterialTheme.typography.bodyMedium.copy(fontSize = 14.sp),
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        } else null,
-        confirmButton = {
-            KButton(
-                onClick = onConfirm,
-                variant = if (isDestructive) KButtonVariant.Destructive else KButtonVariant.Default,
-                size    = KButtonSize.Sm
-            ) { Text(confirmLabel) }
-        },
-        dismissButton = {
-            KButton(
-                onClick = onDismiss,
-                variant = KButtonVariant.Outline,
-                size    = KButtonSize.Sm
-            ) { Text(cancelLabel) }
-        },
-        properties = properties
-    )
-}
-
-/**
- * Shadcn/ui-style full Dialog with a free-form content slot.
+ * Render a shadcn/ui-style dialog with a free-form content slot.
  *
  * ```kotlin
  * KDialog(open = open, onDismiss = { open = false }) {
@@ -98,6 +29,11 @@ fun KAlertDialog(
  *     }
  * }
  * ```
+ *
+ * @param open When `true`, the dialog is shown.
+ * @param onDismiss Callback invoked when the dialog should be dismissed.
+ * @param properties Dialog properties for platform configuration.
+ * @param content Content shown inside the dialog body.
  */
 @Composable
 fun KDialog(
@@ -120,44 +56,21 @@ fun KDialog(
     }
 }
 
-/** Standard dialog header: title + optional description. */
+@Preview(name = "KDialog — light", showBackground = true, widthDp = 360)
+@Preview(
+    name = "KDialog — dark",
+    showBackground = true,
+    widthDp = 360,
+    uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES
+)
 @Composable
-fun KDialogHeader(
-    title: String,
-    description: String? = null,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier            = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(4.dp)
-    ) {
-        Text(
-            text  = title,
-            style = MaterialTheme.typography.titleLarge.copy(
-                fontSize   = 18.sp,
-                fontWeight = FontWeight.SemiBold
-            ),
-            color = MaterialTheme.colorScheme.onSurface
-        )
-        if (description != null) {
-            Text(
-                text  = description,
-                style = MaterialTheme.typography.bodyMedium.copy(fontSize = 14.sp),
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+private fun PreviewKDialog() {
+    KindlingPreviewSurface {
+        KDialog(open = true, onDismiss = { }) {
+            KDialogHeader(title = "Dialog title", description = "This is a simple dialog.")
+            KDialogFooter {
+                KButton(text = "Close", onClick = { })
+            }
         }
     }
-}
-
-/** Standard dialog footer — right-aligns its action buttons. */
-@Composable
-fun KDialogFooter(
-    modifier: Modifier = Modifier,
-    content: @Composable RowScope.() -> Unit
-) {
-    Row(
-        modifier              = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
-        content               = content
-    )
 }

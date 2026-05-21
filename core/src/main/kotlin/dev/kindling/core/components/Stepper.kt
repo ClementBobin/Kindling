@@ -18,10 +18,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.tooling.preview.Preview
+import dev.kindling.core.components.internal.KindlingPreviewSurface
+import dev.kindling.core.components.internal.PreviewLabel
 
-enum class KStepState { Upcoming, Current, Completed, Error }
-enum class KStepperOrientation { Horizontal, Vertical }
-
+/**
+ * Describe a step displayed in a stepper.
+ *
+ * @property label Short label shown under the step bubble.
+ * @property description Optional description shown under the label.
+ * @property state Visual state of the step.
+ */
 data class KStep(
     val label: String,
     val description: String? = null,
@@ -29,13 +36,19 @@ data class KStep(
 )
 
 /**
- * Shadcn/ui-style multi-step progress indicator.
+ * Render a shadcn/ui-style multi-step progress indicator.
  *
  * ```kotlin
  * var step by remember { mutableStateOf(0) }
  * KStepper(steps = steps, currentStep = step)
  * KButton("Next", onClick = { step++ })
  * ```
+ *
+ * @param steps Ordered list of steps to display.
+ * @param currentStep Current step index, starting at 0.
+ * @param modifier Applied to the outermost layout element.
+ * @param orientation Layout orientation for the stepper.
+ * @param onStepClick Optional callback invoked when a step is tapped.
  */
 @Composable
 fun KStepper(
@@ -167,5 +180,42 @@ private fun stepLabelColor(state: KStepState): Color {
         KStepState.Current, KStepState.Completed -> cs.onBackground
         KStepState.Error                          -> cs.error
         KStepState.Upcoming                       -> cs.onSurfaceVariant
+    }
+}
+
+@Preview(name = "KStepper — light", showBackground = true, widthDp = 360)
+@Preview(
+    name = "KStepper — dark",
+    showBackground = true,
+    widthDp = 360,
+    uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES
+)
+@Composable
+private fun PreviewKStepper() {
+    val steps = listOf(
+        KStep("Account"),
+        KStep("Billing"),
+        KStep("Confirm")
+    )
+    val errorSteps = listOf(
+        KStep("Account", state = KStepState.Completed),
+        KStep("Billing", state = KStepState.Error),
+        KStep("Confirm")
+    )
+
+    KindlingPreviewSurface {
+        Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            PreviewLabel("Horizontal step 0")
+            KStepper(steps = steps, currentStep = 0)
+
+            PreviewLabel("Horizontal step 1")
+            KStepper(steps = steps, currentStep = 1)
+
+            PreviewLabel("Vertical")
+            KStepper(steps = steps, currentStep = 1, orientation = KStepperOrientation.Vertical)
+
+            PreviewLabel("Error state")
+            KStepper(steps = errorSteps, currentStep = 1)
+        }
     }
 }

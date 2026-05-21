@@ -2,8 +2,17 @@ package dev.kindling.core.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -14,18 +23,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
-// ─────────────────────────────────────────────
-//  Variants & Sizes  (mirrors shadcn/ui)
-// ─────────────────────────────────────────────
-
-enum class KButtonVariant {
-    Default, Destructive, Outline, Secondary, Ghost, Link
-}
-
-enum class KButtonSize {
-    Default, Sm, Lg, Icon
-}
+import androidx.compose.ui.tooling.preview.Preview
+import dev.kindling.core.components.internal.KindlingPreviewSurface
+import dev.kindling.core.components.internal.PreviewLabel
 
 // ─────────────────────────────────────────────
 //  Internal helpers
@@ -103,10 +103,10 @@ private fun resolveDimensions(size: KButtonSize) = when (size) {
 // ─────────────────────────────────────────────
 
 /**
- * Shadcn/ui-style Button for Jetpack Compose.
+ * Render a shadcn/ui-style button.
  *
- * Colours are resolved entirely from [MaterialTheme.colorScheme], so this
- * component works with any light or dark colour scheme out of the box.
+ * Colours are resolved from [MaterialTheme.colorScheme], so the component adapts to light
+ * and dark palettes automatically.
  *
  * ```kotlin
  * KButton(onClick = { }) { Text("Click me") }
@@ -114,6 +114,15 @@ private fun resolveDimensions(size: KButtonSize) = when (size) {
  * KButton(onClick = { }, variant = KButtonVariant.Destructive) { Text("Delete") }
  * KButton(onClick = { }, size = KButtonSize.Icon) { Icon(Icons.Default.Add, null) }
  * ```
+ *
+ * @param onClick Called when the button is tapped and not disabled or loading.
+ * @param modifier Applied to the outermost layout element.
+ * @param variant Visual style — see [KButtonVariant].
+ * @param size Controls height, padding, and font size — see [KButtonSize].
+ * @param enabled When `false`, the button is non-interactive and visually dimmed.
+ * @param isLoading When `true`, replaces content with a [CircularProgressIndicator].
+ * @param interactionSource Interaction source used for ripple and pressed state.
+ * @param content Slot for the button label or icon.
  */
 @Composable
 fun KButton(
@@ -175,7 +184,21 @@ fun KButton(
     }
 }
 
-/** Convenience overload that accepts a plain text label. */
+/**
+ * Render a button with a plain text label.
+ *
+ * ```kotlin
+ * KButton(text = "Save", onClick = { viewModel.save() })
+ * ```
+ *
+ * @param text Label shown inside the button.
+ * @param onClick Called when the button is tapped and not disabled or loading.
+ * @param modifier Applied to the outermost layout element.
+ * @param variant Visual style — see [KButtonVariant].
+ * @param size Controls height, padding, and font size — see [KButtonSize].
+ * @param enabled When `false`, the button is non-interactive and visually dimmed.
+ * @param isLoading When `true`, replaces content with a [CircularProgressIndicator].
+ */
 @Composable
 fun KButton(
     text: String,
@@ -194,4 +217,64 @@ fun KButton(
         enabled   = enabled,
         isLoading = isLoading
     ) { Text(text) }
+}
+
+@Preview(name = "KButton — light", showBackground = true, widthDp = 360)
+@Preview(
+    name = "KButton — dark",
+    showBackground = true,
+    widthDp = 360,
+    uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES
+)
+@Composable
+private fun PreviewKButton() {
+    KindlingPreviewSurface {
+        PreviewLabel("Variants")
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                KButton("Default", onClick = { }, modifier = Modifier.weight(1f))
+                KButton(
+                    "Destructive",
+                    onClick = { },
+                    variant = KButtonVariant.Destructive,
+                    modifier = Modifier.weight(1f)
+                )
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                KButton("Outline", onClick = { }, variant = KButtonVariant.Outline, modifier = Modifier.weight(1f))
+                KButton("Secondary", onClick = { }, variant = KButtonVariant.Secondary, modifier = Modifier.weight(1f))
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                KButton("Ghost", onClick = { }, variant = KButtonVariant.Ghost, modifier = Modifier.weight(1f))
+                KButton("Link", onClick = { }, variant = KButtonVariant.Link, modifier = Modifier.weight(1f))
+            }
+        }
+
+        PreviewLabel("Sizes")
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            KButton("Default", onClick = { }, size = KButtonSize.Default)
+            KButton("Small", onClick = { }, size = KButtonSize.Sm)
+            KButton("Large", onClick = { }, size = KButtonSize.Lg)
+        }
+
+        PreviewLabel("States")
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            KButton("Loading", onClick = { }, isLoading = true)
+            KButton("Disabled", onClick = { }, enabled = false)
+        }
+
+        PreviewLabel("Icon")
+        KButton(onClick = { }, size = KButtonSize.Icon) {
+            Icon(Icons.Filled.Add, contentDescription = null)
+        }
+    }
 }
