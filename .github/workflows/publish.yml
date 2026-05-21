@@ -32,17 +32,17 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-    - name: Validate GPG key
-      run: |
-        echo "$GPG_KEY" > private.key
+      - name: Validate GPG key
+        run: |
+          echo "$GPG_KEY" > private.key
 
-        echo "----- FILE START -----"
-        head -n 5 private.key
-        echo "----- FILE END -----"
+          echo "----- FILE START -----"
+          head -n 5 private.key
+          echo "----- FILE END -----"
 
-        gpg --batch --import private.key
-      env:
-        GPG_KEY: ${{ secrets.GPG_KEY }}
+          gpg --batch --import private.key
+        env:
+          GPG_KEY: ${{ secrets.GPG_KEY }}
 
       - name: Publish
         env:
