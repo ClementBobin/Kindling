@@ -57,7 +57,7 @@ publishing {
             pom {
                 name.set("my-kotlin-library-utils") // TODO: replace with your actual value
                 description.set("Utils module for my-kotlin-library")
-                url.set("https://github.com/com/example") // TODO: replace with your actual value
+                url.set("https://github.com/dev/kindling") // TODO: replace with your actual value
 
                 licenses {
                     license {
@@ -73,9 +73,9 @@ publishing {
                     }
                 }
                 scm {
-                    connection.set("scm:git:git://github.com/com/example.git") // TODO: replace with your actual value
-                    developerConnection.set("scm:git:ssh://github.com:com/example.git") // TODO: replace with your actual value
-                    url.set("https://github.com/com/example") // TODO: replace with your actual value
+                    connection.set("scm:git:git://github.com/dev/kindling.git") // TODO: replace with your actual value
+                    developerConnection.set("scm:git:ssh://github.com:dev/kindling.git") // TODO: replace with your actual value
+                    url.set("https://github.com/dev/kindling") // TODO: replace with your actual value
                 }
             }
         }
