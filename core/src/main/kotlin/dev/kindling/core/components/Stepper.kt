@@ -19,9 +19,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-enum class KStepState { Upcoming, Current, Completed, Error }
-enum class KStepperOrientation { Horizontal, Vertical }
-
 data class KStep(
     val label: String,
     val description: String? = null,
