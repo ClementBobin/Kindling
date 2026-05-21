@@ -5,12 +5,11 @@ plugins {
     kotlin("plugin.compose") version Versions.kotlin apply false
     id("org.jetbrains.compose") version Versions.compose apply false
     id("org.jetbrains.dokka") version Versions.dokka apply false
-    `maven-publish`
+    id("com.vanniktech.maven.publish") version Versions.mavenPublish apply false
 }
 
 subprojects {
     apply(plugin = "org.jetbrains.kotlin.jvm")
-    apply(plugin = "maven-publish")
     apply(plugin = "org.jetbrains.dokka")
 
     group = Versions.group

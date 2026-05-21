@@ -19,8 +19,9 @@ jobs:
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
-          distribution: temurin
+          distribution: 'zulu'
           java-version: '17'
+          cache: 'maven'
 
       - name: Cache Gradle dependencies
         uses: actions/cache@v4
@@ -32,23 +33,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: Validate GPG key
-        run: |
-          echo "$GPG_KEY" > private.key
-
-          echo "----- FILE START -----"
-          head -n 5 private.key
-          echo "----- FILE END -----"
-
-          gpg --batch --import private.key
+      - name: Publish to MavenCentral
+        run: ./gradlew publishAllPublicationsToMavenCentralRepository --no-configuration-cache --no-daemon
         env:
-          GPG_KEY: ${{ secrets.GPG_KEY }}
-
-      - name: Publish
-        env:
-          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-          OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
-          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
-          GPG_KEY: ${{ secrets.GPG_KEY }}
-          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-        run: ./gradlew publish --no-daemon
+          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.OSSRH_USERNAME }}
+          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.OSSRH_PASSWORD }}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyId: ${{ secrets.GPG_KEY_ID }}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.GPG_PASSPHRASE }}
+          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.GPG_KEY }}
