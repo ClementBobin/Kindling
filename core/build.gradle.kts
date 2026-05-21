@@ -1,10 +1,9 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm")
     kotlin("plugin.compose")
     id("org.jetbrains.compose")
-    id("org.jetbrains.dokka")
+    id("dokka-convention")
     id("com.vanniktech.maven.publish")
 }
 
