@@ -12,6 +12,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -70,11 +72,14 @@ fun KSpinner(
         Canvas(modifier = Modifier.size(dp)) {
             val stroke = Stroke(width = strokeDp.toPx(), cap = StrokeCap.Round)
             val inset  = strokeDp.toPx() / 2f
-            val arcSize = androidx.compose.ui.geometry.Size(
-                size.width  - strokeDp.toPx(),
-                size.height - strokeDp.toPx()
+            
+            // 'this.size' is DrawScope.size (pixels), renamed to avoid clash with KSpinnerSize param
+            val canvasSize = this.size
+            val arcSize = Size(
+                width  = canvasSize.width  - strokeDp.toPx(),
+                height = canvasSize.height - strokeDp.toPx()
             )
-            val topLeft = androidx.compose.ui.geometry.Offset(inset, inset)
+            val topLeft = Offset(inset, inset)
 
             drawArc(trackColor, 0f, 360f, false, style = stroke, topLeft = topLeft, size = arcSize)
             drawArc(color, angle, 80f, false, style = stroke, topLeft = topLeft, size = arcSize)

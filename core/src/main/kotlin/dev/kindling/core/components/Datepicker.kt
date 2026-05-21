@@ -6,8 +6,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.KeyboardArrowLeft
-import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -111,11 +111,11 @@ private fun CalendarView(
     ) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
             IconButton(onClick = { currentMonth = currentMonth.minusMonths(1) }) {
-                Icon(Icons.Default.KeyboardArrowLeft, null, Modifier.size(18.dp))
+                Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, null, Modifier.size(18.dp))
             }
             Text("$monthLabel ${currentMonth.year}", fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
             IconButton(onClick = { currentMonth = currentMonth.plusMonths(1) }) {
-                Icon(Icons.Default.KeyboardArrowRight, null, Modifier.size(18.dp))
+                Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null, Modifier.size(18.dp))
             }
         }
 

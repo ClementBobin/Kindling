@@ -2,21 +2,30 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm")
+    kotlin("plugin.compose")
+    id("org.jetbrains.compose")
     `maven-publish`
     signing
     id("org.jetbrains.dokka")
 }
 
-group = Versions.group // TODO: replace with your actual value
+group = Versions.group
 version = Versions.libraryVersion
 
-repositories {
-    mavenCentral()
-    maven(url = "https://jitpack.io")
-}
-
 dependencies {
+    // Compose Multiplatform — resolved from JetBrains space repo
+    implementation(compose.runtime)
+    implementation(compose.foundation)
+    implementation(compose.material3)
+    implementation(compose.materialIconsExtended)
+    implementation(compose.ui)
+    implementation(compose.animation)
+
+    // Coroutines
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.coroutines}")
+
     implementation(kotlin("stdlib"))
+
     testImplementation(kotlin("test"))
     testImplementation("org.junit.jupiter:junit-jupiter:${Versions.junit5}")
 }
@@ -102,6 +111,10 @@ signing {
     val signingKeyId = System.getenv("GPG_KEY_ID")
     val signingKey = System.getenv("GPG_KEY")
     val signingPassphrase = System.getenv("GPG_PASSPHRASE")
-    useInMemoryPgpKeys(signingKeyId, signingKey, signingPassphrase)
-    sign(publishing.publications)
+
+    // Only sign when all GPG env vars are present (i.e. in CI, not local)
+    if (signingKeyId != null && signingKey != null && signingPassphrase != null) {
+        useInMemoryPgpKeys(signingKeyId, signingKey, signingPassphrase)
+        sign(publishing.publications)
+    }
 }

@@ -1,0 +1,9 @@
+{
+  "image": "mcr.microsoft.com/devcontainers/java:17",
+  "features": {
+    "ghcr.io/devcontainers/features/java:1": {
+      "version": "17",
+      "jdkDistribution": "ms"
+    }
+  }
+}

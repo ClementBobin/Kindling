@@ -4,9 +4,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowLeft
-import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -29,6 +30,7 @@ enum class KCarouselOrientation { Horizontal, Vertical }
  * KCarousel(pageCount = items.size, autoPlayMs = 3_000L) { page -> Image(…) }
  * ```
  */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun KCarousel(
     pageCount: Int,
@@ -92,6 +94,7 @@ fun KCarousel(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun CarouselArrow(left: Boolean, enabled: Boolean, modifier: Modifier, onClick: () -> Unit) {
     val cs = MaterialTheme.colorScheme
@@ -106,7 +109,7 @@ private fun CarouselArrow(left: Boolean, enabled: Boolean, modifier: Modifier, o
     ) {
         Box(contentAlignment = Alignment.Center) {
             Icon(
-                imageVector  = if (left) Icons.Default.KeyboardArrowLeft else Icons.Default.KeyboardArrowRight,
+                imageVector  = if (left) Icons.AutoMirrored.Filled.KeyboardArrowLeft else Icons.AutoMirrored.Filled.KeyboardArrowRight,
                 contentDescription = null,
                 modifier     = Modifier.size(20.dp)
             )

@@ -1,9 +1,22 @@
-rootProject.name = "my-kotlin-library"
+rootProject.name = "kindling"
 
-include(":core", ":utils")
-
-dependencyResolutionManagement {
-    versionCatalogs {
-        create("libs")
+pluginManagement {
+    repositories {
+        google()
+        gradlePluginPortal()
+        mavenCentral()
+        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
     }
 }
+
+dependencyResolutionManagement {
+    repositories {
+        google()
+        mavenCentral()
+        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
+        maven(url = "https://jitpack.io")
+    }
+    versionCatalogs { create("libs") }
+}
+
+include(":core", ":utils")

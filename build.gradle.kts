@@ -2,6 +2,8 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm") version Versions.kotlin apply false
+    kotlin("plugin.compose") version Versions.kotlin apply false
+    id("org.jetbrains.compose") version Versions.compose apply false
     id("org.jetbrains.dokka") version Versions.dokka apply false
     `maven-publish`
 }
@@ -11,13 +13,8 @@ subprojects {
     apply(plugin = "maven-publish")
     apply(plugin = "org.jetbrains.dokka")
 
-    group = Versions.group // TODO: replace with your actual value
+    group = Versions.group
     version = Versions.libraryVersion
-
-    repositories {
-        mavenCentral()
-        maven(url = "https://jitpack.io")
-    }
 
     tasks.withType<KotlinCompile>().configureEach {
         compilerOptions {

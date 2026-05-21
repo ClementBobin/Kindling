@@ -3,8 +3,8 @@ package dev.kindling.core.components
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowLeft
-import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -42,7 +42,7 @@ fun KPagination(
     ) {
         PaginationArrow(
             label   = "Previous",
-            icon    = { Icon(Icons.Default.KeyboardArrowLeft, "Previous", Modifier.size(16.dp)) },
+            icon    = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, "Previous", Modifier.size(16.dp)) },
             enabled = currentPage > 1,
             onClick = { onPageChange(currentPage - 1) }
         )
@@ -56,7 +56,7 @@ fun KPagination(
 
         PaginationArrow(
             label   = "Next",
-            icon    = { Icon(Icons.Default.KeyboardArrowRight, "Next", Modifier.size(16.dp)) },
+            icon    = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, "Next", Modifier.size(16.dp)) },
             enabled = currentPage < totalPages,
             onClick = { onPageChange(currentPage + 1) }
         )

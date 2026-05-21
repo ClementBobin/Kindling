@@ -7,18 +7,15 @@ plugins {
     id("org.jetbrains.dokka")
 }
 
-group = Versions.group // TODO: replace with your actual value
+group = Versions.group
 version = Versions.libraryVersion
-
-repositories {
-    mavenCentral()
-    maven(url = "https://jitpack.io")
-}
 
 dependencies {
     implementation(kotlin("stdlib"))
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.coroutines}")
     testImplementation(kotlin("test"))
     testImplementation("org.junit.jupiter:junit-jupiter:${Versions.junit5}")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:${Versions.coroutines}")
 }
 
 sourceSets {
@@ -102,6 +99,10 @@ signing {
     val signingKeyId = System.getenv("GPG_KEY_ID")
     val signingKey = System.getenv("GPG_KEY")
     val signingPassphrase = System.getenv("GPG_PASSPHRASE")
-    useInMemoryPgpKeys(signingKeyId, signingKey, signingPassphrase)
-    sign(publishing.publications)
+
+    // Only sign when all GPG env vars are present (i.e. in CI, not local)
+    if (signingKeyId != null && signingKey != null && signingPassphrase != null) {
+        useInMemoryPgpKeys(signingKeyId, signingKey, signingPassphrase)
+        sign(publishing.publications)
+    }
 }
