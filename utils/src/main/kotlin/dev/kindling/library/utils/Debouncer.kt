@@ -4,6 +4,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
+import kotlinx.coroutines.FlowPreview
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  Debouncer
@@ -43,12 +44,13 @@ import kotlin.time.Duration.Companion.milliseconds
  * @param leading  If `true`, emit the first value immediately and suppress
  *                 the rest until the quiet period elapses.  Default: `false`.
  */
+@OptIn(FlowPreview::class)
 class Debouncer<T>(
     private val scope: CoroutineScope,
     val delay: Duration = 300.milliseconds,
     val leading: Boolean = false
 ) {
-    private val _input = MutableSharedFlow<T>(extraBufferCapacity = 64)
+    private val _input = MutableSharedFlow<T>(extraBufferCapacity = 64, replay = 1)
 
     /** Debounced output — collect this to receive stable values. */
     val flow: Flow<T> = if (leading) {
@@ -78,7 +80,7 @@ class Debouncer<T>(
      */
     fun onDebounced(block: suspend (T) -> Unit) {
         callbackJob?.cancel()
-        callbackJob = scope.launch {
+        callbackJob = CoroutineScope(SupervisorJob() + scope.coroutineContext).launch(start = CoroutineStart.UNDISPATCHED) {
             flow.collect { block(it) }
         }
     }
@@ -111,7 +113,7 @@ class Throttler<T>(
     private val scope: CoroutineScope,
     val period: Duration = 500.milliseconds
 ) {
-    private val _input = MutableSharedFlow<T>(extraBufferCapacity = 64)
+    private val _input = MutableSharedFlow<T>(extraBufferCapacity = 64, replay = 1)
 
     /** Throttled output flow. */
     val flow: Flow<T> = _input.throttleFirst(period)
@@ -122,53 +124,10 @@ class Throttler<T>(
 
     fun onThrottled(block: suspend (T) -> Unit) {
         callbackJob?.cancel()
-        callbackJob = scope.launch { flow.collect { block(it) } }
+        callbackJob = CoroutineScope(SupervisorJob() + scope.coroutineContext).launch(start = CoroutineStart.UNDISPATCHED) { flow.collect { block(it) } }
     }
 
     fun cancel() { callbackJob?.cancel(); callbackJob = null }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-//  Flow extensions
-// ─────────────────────────────────────────────────────────────────────────────
-
-/**
- * Leading-edge debounce: emits the first item in a burst immediately, then
- * suppresses further items until [duration] has elapsed with no new items.
- */
-fun <T> Flow<T>.debounceLeading(duration: Duration): Flow<T> = flow {
-    var lastEmitTime = 0L
-    var pendingJob: Job? = null
-
-    collect { value ->
-        val now = System.currentTimeMillis()
-        if (now - lastEmitTime >= duration.inWholeMilliseconds) {
-            pendingJob?.cancel()
-            lastEmitTime = now
-            emit(value)
-        } else {
-            pendingJob?.cancel()
-            pendingJob = currentCoroutineContext()[Job]?.let { null } // reset
-            // Schedule trailing emit after quiet period
-            kotlinx.coroutines.delay(duration - (now - lastEmitTime).milliseconds)
-            emit(value)
-            lastEmitTime = System.currentTimeMillis()
-        }
-    }
-}
-
-/**
- * Throttles a flow to emit at most one item per [period] (leading edge).
- */
-fun <T> Flow<T>.throttleFirst(period: Duration): Flow<T> = flow {
-    var lastEmitTime = 0L
-    collect { value ->
-        val now = System.currentTimeMillis()
-        if (now - lastEmitTime >= period.inWholeMilliseconds) {
-            lastEmitTime = now
-            emit(value)
-        }
-    }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

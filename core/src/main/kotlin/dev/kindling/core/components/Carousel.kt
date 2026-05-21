@@ -17,8 +17,6 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-enum class KCarouselOrientation { Horizontal, Vertical }
-
 /**
  * Shadcn/ui-style Carousel backed by Compose Foundation's [HorizontalPager] / [VerticalPager].
  *

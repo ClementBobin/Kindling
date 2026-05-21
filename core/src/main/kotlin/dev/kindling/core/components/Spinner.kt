@@ -18,8 +18,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-enum class KSpinnerSize { Sm, Default, Lg, Xl }
-
 private fun KSpinnerSize.toDp(): Dp = when (this) {
     KSpinnerSize.Sm      -> 16.dp
     KSpinnerSize.Default -> 24.dp
