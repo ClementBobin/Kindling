@@ -108,11 +108,10 @@ publishing {
 }
 
 signing {
-    val signingKeyId = System.getenv("GPG_KEY_ID")
-    val signingKey = System.getenv("GPG_KEY")
-    val signingPassphrase = System.getenv("GPG_PASSPHRASE")
+    val signingKeyId = System.getenv("GPG_KEY_ID")?.takeIf { it.isNotBlank() }
+    val signingKey = System.getenv("GPG_KEY")?.takeIf { it.isNotBlank() }
+    val signingPassphrase = System.getenv("GPG_PASSPHRASE")?.takeIf { it.isNotBlank() }
 
-    // Only sign when all GPG env vars are present (i.e. in CI, not local)
     if (signingKeyId != null && signingKey != null && signingPassphrase != null) {
         useInMemoryPgpKeys(signingKeyId, signingKey, signingPassphrase)
         sign(publishing.publications)
