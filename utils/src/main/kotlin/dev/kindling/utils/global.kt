@@ -1,8 +1,12 @@
 package dev.kindling.utils
 
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.currentCoroutineContext
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * Leading-edge debounce for [Flow] values.
@@ -12,11 +16,21 @@ import kotlin.time.Duration
  */
 fun <T> Flow<T>.debounceLeading(duration: Duration): Flow<T> = flow {
     var lastEmitTime = 0L
+    var pendingJob: Job? = null
+
     collect { value ->
         val now = System.currentTimeMillis()
         if (now - lastEmitTime >= duration.inWholeMilliseconds) {
+            pendingJob?.cancel()
             lastEmitTime = now
             emit(value)
+        } else {
+            pendingJob?.cancel()
+            pendingJob = currentCoroutineContext()[Job]?.let { null } // reset
+            // Schedule trailing emit after quiet period
+            delay(duration - (now - lastEmitTime).milliseconds)
+            emit(value)
+            lastEmitTime = System.currentTimeMillis()
         }
     }
 }

@@ -10,8 +10,6 @@ plugins {
 group = Versions.group
 version = Versions.libraryVersion
 
-configurations.create("debugImplementation")
-
 dependencies {
     implementation(compose.runtime)
     implementation(compose.foundation)
@@ -19,8 +17,6 @@ dependencies {
     implementation(compose.materialIconsExtended)
     implementation(compose.ui)
     implementation(compose.animation)
-    add("debugImplementation", "androidx.compose.ui:ui-tooling:${Versions.compose}")
-    implementation("androidx.compose.ui:ui-tooling-preview:${Versions.compose}")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.coroutines}")
     implementation(kotlin("stdlib"))

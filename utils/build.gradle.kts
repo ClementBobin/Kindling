@@ -1,8 +1,6 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("plugin.compose")
-    id("org.jetbrains.compose")
     id("dokka-convention")
     id("com.vanniktech.maven.publish")
 }
@@ -10,15 +8,7 @@ plugins {
 group = Versions.group
 version = Versions.libraryVersion
 
-configurations.create("debugImplementation")
-
 dependencies {
-    implementation(compose.runtime)
-    implementation(compose.foundation)
-    implementation(compose.material3)
-    implementation(compose.ui)
-    implementation("androidx.compose.ui:ui-tooling-preview:${Versions.compose}")
-    add("debugImplementation", "androidx.compose.ui:ui-tooling:${Versions.compose}")
     implementation(kotlin("stdlib"))
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.coroutines}")
     testImplementation(kotlin("test"))
