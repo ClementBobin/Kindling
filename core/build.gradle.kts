@@ -112,8 +112,14 @@ signing {
     val signingKey = System.getenv("GPG_KEY")?.takeIf { it.isNotBlank() }
     val signingPassphrase = System.getenv("GPG_PASSPHRASE")?.takeIf { it.isNotBlank() }
 
+    println("GPG_KEY_ID present: ${signingKeyId != null}")
+    println("GPG_KEY present: ${signingKey != null}")
+    println("GPG_PASSPHRASE present: ${signingPassphrase != null}")
+
     if (signingKeyId != null && signingKey != null && signingPassphrase != null) {
         useInMemoryPgpKeys(signingKeyId, signingKey, signingPassphrase)
         sign(publishing.publications)
+    } else {
+        println("WARNING: Skipping signing — one or more GPG secrets are missing")
     }
 }

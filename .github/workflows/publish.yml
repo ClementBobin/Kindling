@@ -32,6 +32,18 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
+      - name: Debug secrets presence
+        run: |
+          echo "GPG_KEY_ID is set: ${{ secrets.GPG_KEY_ID != '' }}"
+          echo "GPG_KEY is set: ${{ secrets.GPG_KEY != '' }}"
+          echo "GPG_PASSPHRASE is set: ${{ secrets.GPG_PASSPHRASE != '' }}"
+          echo "OSSRH_USERNAME is set: ${{ secrets.OSSRH_USERNAME != '' }}"
+          echo "OSSRH_PASSWORD is set: ${{ secrets.OSSRH_PASSWORD != '' }}"
+          # Print first 4 chars of KEY_ID to verify it's the right one (safe to show)
+          echo "GPG_KEY_ID starts with: ${GPG_KEY_ID:0:4}"
+        env:
+          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
+
       - name: Publish
         env:
           OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
