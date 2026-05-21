@@ -45,7 +45,7 @@ mavenPublishing {
     pom {
         name.set("core")
         description.set("Core module for kindling")
-        inceptionYear.set("2024")
+        inceptionYear.set("2026")
         url.set("https://github.com/ClementBobin/Kindling")
         licenses {
             license {

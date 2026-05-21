@@ -20,4 +20,8 @@ subprojects {
             jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.fromTarget(Versions.jvmTarget))
         }
     }
+
+    tasks.withType<com.vanniktech.maven.publish.tasks.PublishToMavenCentral>().configureEach {
+        deploymentName = Versions.group
+    }
 }
