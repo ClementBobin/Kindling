@@ -10,6 +10,8 @@ plugins {
 group = Versions.group
 version = Versions.libraryVersion
 
+val debugImplementation by configurations.creating
+
 dependencies {
     implementation(compose.runtime)
     implementation(compose.foundation)
@@ -17,6 +19,8 @@ dependencies {
     implementation(compose.materialIconsExtended)
     implementation(compose.ui)
     implementation(compose.animation)
+    debugImplementation(compose.uiTooling)
+    implementation(compose.preview)
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.coroutines}")
     implementation(kotlin("stdlib"))
