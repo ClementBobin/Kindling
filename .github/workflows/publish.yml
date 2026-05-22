@@ -2,6 +2,7 @@ name: Publish
 on:
   release:
     types: [released, prereleased]
+
 jobs:
   publish:
     name: Release build and publish
@@ -9,18 +10,22 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v4
+
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: 17
+
       - name: Publish to MavenCentral
-        # :sample is a local Android app — skip it explicitly.
-        # publishToMavenCentral only affects modules that apply
-        # com.vanniktech.maven.publish, but we list the tasks
-        # directly to make the intent unambiguous.
+        # RELEASE_VERSION is read by Versions.kt to set the artifact version.
+        # github.event.release.tag_name is the Git tag that triggered this
+        # workflow (e.g. "v0.2.0" or "0.2.0") — the leading "v" is stripped
+        # inside Versions.kt.
+        # :sample is a local Android app — excluded explicitly.
         run: ./gradlew :core:publishToMavenCentral :utils:publishToMavenCentral --no-configuration-cache
         env:
+          RELEASE_VERSION: ${{ github.event.release.tag_name }}
           ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
           ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
           ORG_GRADLE_PROJECT_signingInMemoryKeyId: ${{ secrets.SIGNING_KEY_ID }}
