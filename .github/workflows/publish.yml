@@ -15,7 +15,11 @@ jobs:
           distribution: 'zulu'
           java-version: 17
       - name: Publish to MavenCentral
-        run: ./gradlew publishToMavenCentral --no-configuration-cache
+        # :sample is a local Android app — skip it explicitly.
+        # publishToMavenCentral only affects modules that apply
+        # com.vanniktech.maven.publish, but we list the tasks
+        # directly to make the intent unambiguous.
+        run: ./gradlew :core:publishToMavenCentral :utils:publishToMavenCentral --no-configuration-cache
         env:
           ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
           ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
