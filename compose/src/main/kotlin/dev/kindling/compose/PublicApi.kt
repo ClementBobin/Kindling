@@ -5,14 +5,6 @@ import dev.kindling.compose.experimental.Intent
 import dev.kindling.compose.experimental.KMviViewModel
 import dev.kindling.compose.experimental.MviViewModel
 
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavHostController
-import androidx.navigation.NavOptions
-import androidx.navigation.Navigator
-
 /**
  * Public API entrypoint for the Kindling Compose module.
  *
@@ -21,85 +13,39 @@ import androidx.navigation.Navigator
  * It intentionally contains no logic.
  * It only exists to group and expose public-facing primitives.
  *
- * Prefer importing from this API instead of internal packages
+ * Prefer importing from this file instead of internal packages
  * like `experimental`.
+ *
+ * The primary public surface — [Destination], [NavigationEvent],
+ * [KNavHost], [KViewModel], [KScreen] and their NavController
+ * extensions — is declared directly in this package and does not
+ * need re-exporting here.
  */
 object KindlingComposeApi
 
-// ─────────────────────────────────────────────────────────────
-// MVI CORE API
-// ─────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────
+// MVI EXPERIMENTAL API
+// ─────────────────────────────────────────────
 
 /**
- * Base ViewModel type used in Kindling MVI architecture.
+ * Base MVI ViewModel from the experimental package.
  *
- * Preferred public alias for [KMviViewModel].
+ * Use this when you want the strict Intent/Effect/State split.
+ * For simpler State/Event ViewModels use [KViewModel] directly.
  */
-typealias KViewModel<State, I, E> = KMviViewModel<State, I, E>
+typealias KMvi<State, I, E> = KMviViewModel<State, I, E>
 
 /**
- * Base MVI contract for ViewModels.
+ * Base MVI contract interface from the experimental package.
  */
 typealias Mvi<State, I, E> = MviViewModel<State, I, E>
 
 /**
- * Marker type for user actions (intents).
+ * Marker type for user actions (intents) in the experimental MVI pattern.
  */
-typealias Intent = dev.kindling.compose.experimental.Intent
+typealias KIntent = Intent
 
 /**
- * Marker type for one-time side effects.
+ * Marker type for one-time side effects in the experimental MVI pattern.
  */
-typealias Effect = dev.kindling.compose.experimental.Effect
-
-// ─────────────────────────────────────────────────────────────
-// NAVIGATION API
-// ─────────────────────────────────────────────────────────────
-
-/**
- * Navigation destination abstraction.
- */
-typealias Destination = dev.kindling.compose.Destination
-
-/**
- * Navigation event contract.
- */
-typealias NavigationEvent = dev.kindling.compose.NavigationEvent
-
-/**
- * Typed navigation host wrapper.
- */
-typealias KNavHost = dev.kindling.compose.KNavHost
-
-/**
- * Navigate using a typed destination.
- */
-fun NavController.navigate(
-    destination: Destination,
-    navOptions: NavOptions? = null,
-    navigatorExtras: Navigator.Extras? = null
-) = this.navigate(
-    route = destination.route,
-    navOptions = navOptions,
-    navigatorExtras = navigatorExtras
-)
-
-/**
- * Pops back stack to a typed destination.
- */
-fun NavController.popBackTo(
-    destination: Destination,
-    inclusive: Boolean = false
-): Boolean = popBackStack(
-    route = destination.route,
-    inclusive = inclusive
-)
-
-// ─────────────────────────────────────────────────────────────
-// COMPOSE UI API
-// ─────────────────────────────────────────────────────────────
-
-/**
- * Generic screen wrapper for Kindling applications.
- */
-typealias KScreen = dev.kindling.compose.KScreen
+typealias KEffect = Effect
