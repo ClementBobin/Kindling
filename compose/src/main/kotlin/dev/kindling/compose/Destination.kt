@@ -1,5 +1,6 @@
 package dev.kindling.compose
 
+import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NamedNavArgument
@@ -71,7 +72,7 @@ abstract class Destination(
 fun NavGraphBuilder.composable(
     destination: Destination,
     deepLinks: List<NavDeepLink> = emptyList(),
-    content: @Composable (NavBackStackEntry) -> Unit
+    content: @Composable AnimatedContentScope.(NavBackStackEntry) -> Unit
 ) = composable(
     route     = destination.route,
     arguments = destination.arguments,
