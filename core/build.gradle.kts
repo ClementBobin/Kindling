@@ -10,6 +10,10 @@ plugins {
 group = Versions.group
 version = Versions.libraryVersion
 
+kotlin {
+    jvmToolchain(17)
+}
+
 dependencies {
     implementation(compose.runtime)
     implementation(compose.foundation)
@@ -23,12 +27,6 @@ dependencies {
 
     testImplementation(kotlin("test"))
     testImplementation("org.junit.jupiter:junit-jupiter:${Versions.junit5}")
-}
-
-tasks.withType<KotlinCompile>().configureEach {
-    compilerOptions {
-        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.fromTarget(Versions.jvmTarget))
-    }
 }
 
 tasks.test {
