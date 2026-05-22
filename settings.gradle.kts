@@ -19,4 +19,4 @@ dependencyResolutionManagement {
     versionCatalogs { create("libs") }
 }
 
-include(":core", ":utils")
+include(":core", ":utils", ":sample")
