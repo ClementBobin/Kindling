@@ -1,4 +1,7 @@
 package dev.kindling.compose
+
+import androidx.activity.compose.BackHandler
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
@@ -6,9 +9,6 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 
-/**
- * Generic screen wrapper for Kindling applications.
- */
 /**
  * Generic screen wrapper for ViewModel-driven Compose screens.
  *
@@ -61,7 +61,6 @@ fun <State, Event, VM : KViewModel<State, Event>> KScreen(
     onEvent: suspend (state: State, viewModel: VM, event: Event) -> Unit = { _, _, _ -> },
     content: @Composable (state: State, viewModel: VM) -> Unit
 ) {
-
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     val currentState by rememberUpdatedState(state)
