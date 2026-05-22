@@ -4,7 +4,7 @@ plugins {
     id("com.android.library")
     kotlin("android")
     kotlin("plugin.compose")
-    id("dokka-convention")
+    id("dokka-android-convention")
     id("com.vanniktech.maven.publish")
 }
 
@@ -24,8 +24,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = Versions.jvmTarget
-        targetCompatibility = Versions.jvmTarget
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 }
 
