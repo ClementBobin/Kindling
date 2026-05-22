@@ -24,8 +24,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = Versions.jvmTarget
-        targetCompatibility = Versions.jvmTarget
+        sourceCompatibility = "17"
+        targetCompatibility = "17"
     }
 }
 
