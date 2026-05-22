@@ -7,7 +7,7 @@ object Versions {
     const val coroutines        = "1.10.2"
     const val compose           = "1.7.3"
     const val mavenPublish      = "0.36.0"
-    const val agp               = "8.10.1"
+    const val agp               = "8.13.0"
     const val navigationCompose = "2.9.0"
     const val lifecycle         = "2.9.0"
 
