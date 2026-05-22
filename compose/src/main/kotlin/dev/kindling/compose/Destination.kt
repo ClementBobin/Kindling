@@ -19,136 +19,177 @@ import androidx.navigation.compose.composable
 // ─────────────────────────────────────────────────────────────────────────────
 
 /**
- * Base class for all navigation destinations in a Kindling app.
- *
- * Subclass this (typically as a sealed class) to define every route in your
- * navigation graph.  Each destination carries its own typed route string and
- * an optional list of [NamedNavArgument]s so arguments are declared once and
- * reused everywhere.
- *
- * ### Defining destinations
- * ```kotlin
- * sealed class Screen(route: String, arguments: List<NamedNavArgument> = emptyList())
- *     : Destination(route, arguments) {
- *
- *     object Splash : Screen("splash")
- *     object Home   : Screen("home")
- *     object Login  : Screen("login")
- *
- *     // With a typed argument
- *     object Profile : Screen(
- *         route     = "profile/{userId}",
- *         arguments = listOf(navArgument("userId") { type = NavType.StringType })
- *     )
- * }
- * ```
- *
- * @property route     The unique route string for this destination.
- * @property arguments [NamedNavArgument]s declared for this destination.
+ * Base contract for all navigation destinations.
  */
-abstract class Destination(
-    val route: String,
-    val arguments: List<NamedNavArgument> = emptyList()
-)
-
-// ─────────────────────────────────────────────────────────────────────────────
-//  NavGraphBuilder extensions
-// ─────────────────────────────────────────────────────────────────────────────
-
 /**
- * Adds a [Destination] to the navigation graph as a composable screen.
+ * Base contract for all navigation destinations in a Kindling application.
+ *
+ * A destination represents a unique route inside a Compose navigation graph.
+ *
+ * Implement this interface (typically through a sealed class or sealed interface)
+ * to centralize route definitions and optional navigation arguments.
+ *
+ * ## Example
  *
  * ```kotlin
- * NavHost(navController, startDestination = Screen.Splash) {
- *     composable(Screen.Splash) { SplashScreen(navController) }
- *     composable(Screen.Home)  { HomeScreen(navController)  }
- *     composable(Screen.Profile) { backStack ->
- *         val userId = backStack.arguments?.getString("userId") ?: ""
- *         ProfileScreen(userId, navController)
+ * sealed class Screen(
+ *     override val route: String
+ * ) : Destination {
+ *
+ *     data object Splash : Screen("splash")
+ *     data object Home : Screen("home")
+ *
+ *     data object Profile : Screen("profile/{userId}") {
+ *         override val arguments = listOf(
+ *             navArgument("userId") {
+ *                 type = NavType.StringType
+ *             }
+ *         )
  *     }
  * }
  * ```
+ *
+ * @property route The unique navigation route.
+ * @property arguments Optional typed navigation arguments.
  */
-fun NavGraphBuilder.composable(
-    destination: Destination,
-    deepLinks: List<NavDeepLink> = emptyList(),
-    content: @Composable AnimatedContentScope.(NavBackStackEntry) -> Unit
-) = composable(
-    route     = destination.route,
-    arguments = destination.arguments,
-    deepLinks = deepLinks,
-    content   = content
-)
+interface Destination {
+    val route: String
+    val arguments: List<NamedNavArgument>
+        get() = emptyList()
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
-//  NavController extensions
+//  Navigation events
 // ─────────────────────────────────────────────────────────────────────────────
 
 /**
- * Navigates to a [Destination] without needing to reference its raw route string.
+ * Explicit navigation event contract.
+ *
+ * This avoids implicit magic behaviour based on runtime type checks.
+ */
+/**
+ * Explicit contract for navigation-related events.
+ *
+ * This interface allows ViewModels to emit navigation requests without
+ * introducing implicit runtime behaviour.
+ *
+ * Instead of checking arbitrary event types at runtime, Kindling only performs
+ * navigation for events explicitly implementing [NavigationEvent].
+ *
+ * ## Example
+ *
+ * ```kotlin
+ * sealed interface HomeEvent {
+ *
+ *     data class Navigate(
+ *         override val destination: Destination
+ *     ) : HomeEvent, NavigationEvent
+ * }
+ * ```
+ *
+ * @property destination The destination to navigate to.
+ * @property navOptions Optional navigation configuration.
+ * @property navigatorExtras Optional navigator-specific extras.
+ */
+interface NavigationEvent {
+    val destination: Destination
+    val navOptions: NavOptions?
+        get() = null
+
+    val navigatorExtras: Navigator.Extras?
+        get() = null
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+ *
+ * ## Example
  *
  * ```kotlin
  * navController.navigate(Screen.Home)
- *
- * // With pop-up behaviour
- * navController.navigate(
- *     destination = Screen.Home,
- *     navOptions  = navOptions {
- *         popUpTo(Screen.Splash.route) { inclusive = true }
- *     }
- * )
  * ```
+ *
+ * @param destination The destination to navigate to.
+ * @param navOptions Optional navigation options.
+ * @param navigatorExtras Optional navigator-specific extras.
  */
 fun NavController.navigate(
     destination: Destination,
     navOptions: NavOptions? = null,
     navigatorExtras: Navigator.Extras? = null
 ) = navigate(
-    route            = destination.route,
-    navOptions       = navOptions,
-    navigatorExtras  = navigatorExtras
+    route = destination.route,
+    navOptions = navOptions,
+    navigatorExtras = navigatorExtras
 )
 
 /**
- * Pops back to a [Destination] inclusively or exclusively.
+ * Pops the back stack to a [Destination].
+ */
+/**
+ * Pops the navigation back stack to the specified [Destination].
+ *
+ * ## Example
  *
  * ```kotlin
- * navController.popUpTo(Screen.Login, inclusive = true)
+ * navController.popBackTo(Screen.Login)
+ *
+ * navController.popBackTo(
+ *     destination = Screen.Splash,
+ *     inclusive = true
+ * )
  * ```
+ *
+ * @param destination The destination to pop back to.
+ * @param inclusive Whether the destination itself should also be removed.
+ *
+ * @return `true` if the back stack was popped successfully.
  */
-fun NavController.popUpTo(destination: Destination, inclusive: Boolean = false) {
-    popBackStack(route = destination.route, inclusive = inclusive)
-}
+fun NavController.popBackTo(
+    destination: Destination,
+    inclusive: Boolean = false
+): Boolean = popBackStack(
+    route = destination.route,
+    inclusive = inclusive
+)
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  KNavHost
 // ─────────────────────────────────────────────────────────────────────────────
 
 /**
- * A thin wrapper around [NavHost] that accepts a [Destination] as the start
- * destination, keeping your call-sites free of raw route strings.
+ * Typed wrapper around [NavHost].
+ */
+/**
+ * Typed wrapper around Compose [NavHost].
+ *
+ * This variant accepts a typed [Destination] as the start destination,
+ * avoiding raw route strings at call sites.
+ *
+ * ## Example
  *
  * ```kotlin
- * sealed class Screen(route: String) : Destination(route) {
- *     object Splash : Screen("splash")
- *     object Home   : Screen("home")
- *     object Login  : Screen("login")
- * }
- *
  * @Composable
- * fun AppNavHost(navController: NavHostController) {
- *     KNavHost(navController, startDestination = Screen.Splash) {
- *         composable(Screen.Splash) { SplashScreen(navController) }
- *         composable(Screen.Home)  { HomeScreen(navController)  }
- *         composable(Screen.Login) { LoginScreen(navController) }
+ * fun AppNavigation(navController: NavHostController) {
+ *     KNavHost(
+ *         navController = navController,
+ *         startDestination = Screen.Splash
+ *     ) {
+ *
+ *         composable(Screen.Splash) {
+ *             SplashScreen(navController)
+ *         }
+ *
+ *         composable(Screen.Home) {
+ *             HomeScreen(navController)
+ *         }
  *     }
  * }
  * ```
  *
- * @param navController    The controller that manages navigation state.
- * @param startDestination The initial [Destination] shown when the host first renders.
- * @param modifier         Optional [Modifier] applied to the [NavHost].
- * @param builder          NavGraphBuilder lambda where all composable destinations are declared.
+ * @param navController Controller managing the navigation state.
+ * @param startDestination Initial destination shown when the graph starts.
+ * @param modifier Optional host modifier.
+ * @param builder Navigation graph builder.
  */
 @Composable
 fun KNavHost(
@@ -158,9 +199,9 @@ fun KNavHost(
     builder: NavGraphBuilder.() -> Unit
 ) {
     NavHost(
-        navController    = navController,
+        navController = navController,
         startDestination = startDestination.route,
-        modifier         = modifier,
-        builder          = builder
+        modifier = modifier,
+        builder = builder
     )
 }
