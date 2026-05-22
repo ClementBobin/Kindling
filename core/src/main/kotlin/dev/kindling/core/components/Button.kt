@@ -16,18 +16,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 // ─────────────────────────────────────────────
-//  Variants & Sizes  (mirrors shadcn/ui)
-// ─────────────────────────────────────────────
-
-enum class KButtonVariant {
-    Default, Destructive, Outline, Secondary, Ghost, Link
-}
-
-enum class KButtonSize {
-    Default, Sm, Lg, Icon
-}
-
-// ─────────────────────────────────────────────
 //  Internal helpers
 // ─────────────────────────────────────────────
 

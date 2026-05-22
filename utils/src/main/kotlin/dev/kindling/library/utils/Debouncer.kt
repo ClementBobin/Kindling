@@ -4,6 +4,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
+import kotlinx.coroutines.FlowPreview
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  Debouncer
@@ -43,12 +44,13 @@ import kotlin.time.Duration.Companion.milliseconds
  * @param leading  If `true`, emit the first value immediately and suppress
  *                 the rest until the quiet period elapses.  Default: `false`.
  */
+@OptIn(FlowPreview::class)
 class Debouncer<T>(
     private val scope: CoroutineScope,
     val delay: Duration = 300.milliseconds,
     val leading: Boolean = false
 ) {
-    private val _input = MutableSharedFlow<T>(extraBufferCapacity = 64)
+    private val _input = MutableSharedFlow<T>(extraBufferCapacity = 64, replay = 1)
 
     /** Debounced output — collect this to receive stable values. */
     val flow: Flow<T> = if (leading) {
@@ -78,7 +80,7 @@ class Debouncer<T>(
      */
     fun onDebounced(block: suspend (T) -> Unit) {
         callbackJob?.cancel()
-        callbackJob = scope.launch {
+        callbackJob = CoroutineScope(SupervisorJob() + scope.coroutineContext).launch(start = CoroutineStart.UNDISPATCHED) {
             flow.collect { block(it) }
         }
     }
@@ -111,7 +113,7 @@ class Throttler<T>(
     private val scope: CoroutineScope,
     val period: Duration = 500.milliseconds
 ) {
-    private val _input = MutableSharedFlow<T>(extraBufferCapacity = 64)
+    private val _input = MutableSharedFlow<T>(extraBufferCapacity = 64, replay = 1)
 
     /** Throttled output flow. */
     val flow: Flow<T> = _input.throttleFirst(period)
@@ -122,7 +124,7 @@ class Throttler<T>(
 
     fun onThrottled(block: suspend (T) -> Unit) {
         callbackJob?.cancel()
-        callbackJob = scope.launch { flow.collect { block(it) } }
+        callbackJob = CoroutineScope(SupervisorJob() + scope.coroutineContext).launch(start = CoroutineStart.UNDISPATCHED) { flow.collect { block(it) } }
     }
 
     fun cancel() { callbackJob?.cancel(); callbackJob = null }

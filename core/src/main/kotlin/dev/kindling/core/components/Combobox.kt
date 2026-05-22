@@ -27,8 +27,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
 
-data class KComboboxItem(val value: String, val label: String)
-
 /**
  * Shadcn/ui-style searchable Combobox.
  *

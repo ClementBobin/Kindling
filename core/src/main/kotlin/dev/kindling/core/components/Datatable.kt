@@ -36,8 +36,6 @@ data class KTableColumn<T>(
     val cell: @Composable RowScope.(row: T) -> Unit
 )
 
-enum class KSortDirection { Asc, Desc, None }
-
 /**
  * Shadcn/ui-style DataTable with optional sorting, striped rows, and pagination.
  *

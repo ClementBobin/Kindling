@@ -22,22 +22,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 
 // ─────────────────────────────────────────────
-//  Data model
-// ─────────────────────────────────────────────
-
-enum class KToastType { Default, Success, Error, Warning, Info }
-
-data class KToastData(
-    val id: Long = System.currentTimeMillis(),
-    val message: String,
-    val description: String? = null,
-    val type: KToastType = KToastType.Default,
-    val actionLabel: String? = null,
-    val onAction: (() -> Unit)? = null,
-    val durationMs: Long = 4_000L
-)
-
-// ─────────────────────────────────────────────
 //  Toaster singleton
 // ─────────────────────────────────────────────
 
