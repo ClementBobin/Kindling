@@ -4,7 +4,7 @@ plugins {
     id("com.android.library")
     kotlin("android")
     kotlin("plugin.compose")
-    id("dokka-convention")
+    id("dokka-android-convention")
     id("com.vanniktech.maven.publish")
 }
 
