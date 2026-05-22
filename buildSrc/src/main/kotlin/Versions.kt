@@ -22,5 +22,5 @@ object Versions {
         get() = System.getenv("RELEASE_VERSION")
             ?.removePrefix("v")
             ?.takeIf { it.isNotBlank() }
-            ?: "0.1.0-SNAPSHOT"
+            ?: "SNAPSHOT"
 }
