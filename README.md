@@ -1,6 +1,6 @@
 # my-kotlin-library
 
-[![CI](https://github.com/ClementBobin/Kindling/actions/workflows/ci.yml/badge.svg)](https://github.com/ClementBobin/Kindling/actions/workflows/ci.yml) ![Maven Central Version](https://img.shields.io/maven-central/v/io.github.clementbobin.kindling/utils) ![JitPack Version](https://img.shields.io/jitpack/v/github/dev/kindling) ![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg) <!-- TODO: replace with your actual value -->
+[![CI](https://github.com/ClementBobin/Kindling/actions/workflows/ci.yml/badge.svg)](https://github.com/ClementBobin/Kindling/actions/workflows/ci.yml) ![Maven Central Version](https://img.shields.io/maven-central/v/io.github.clementbobin.kindling/utils) ![JitPack Version](https://img.shields.io/jitpack/v/github/dev/kindling) ![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)
 
 ## Overview
 
