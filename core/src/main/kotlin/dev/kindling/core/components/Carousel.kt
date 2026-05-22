@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import dev.kindling.core.components.KCarouselOrientation
 
 /**
  * Shadcn/ui-style Carousel backed by Compose Foundation's [HorizontalPager] / [VerticalPager].

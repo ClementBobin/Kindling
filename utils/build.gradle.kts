@@ -8,18 +8,16 @@ plugins {
 group = Versions.group
 version = Versions.libraryVersion
 
+kotlin {
+    jvmToolchain(17)
+}
+
 dependencies {
     implementation(kotlin("stdlib"))
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.coroutines}")
     testImplementation(kotlin("test"))
     testImplementation("org.junit.jupiter:junit-jupiter:${Versions.junit5}")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:${Versions.coroutines}")
-}
-
-tasks.withType<KotlinCompile>().configureEach {
-    compilerOptions {
-        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.fromTarget(Versions.jvmTarget))
-    }
 }
 
 tasks.test {
