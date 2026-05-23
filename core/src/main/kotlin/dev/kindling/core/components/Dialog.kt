@@ -15,10 +15,9 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 
 /**
- * Shadcn/ui-style AlertDialog — designed for confirmation / destructive actions.
+ * Shadcn/ui-style AlertDialog — confirmation / destructive actions.
  *
  * ```kotlin
- * var open by remember { mutableStateOf(false) }
  * KAlertDialog(
  *     open          = open,
  *     onDismiss     = { open = false },
@@ -40,7 +39,10 @@ fun KAlertDialog(
     cancelLabel: String = "Cancel",
     isDestructive: Boolean = false,
     onConfirm: () -> Unit,
-    properties: DialogProperties = DialogProperties()
+    // Keep usePlatformDefaultWidth = true (the default) to avoid measurement
+    // crashes on devices that don't support custom-width dialogs in all
+    // configurations. Callers can override if they need it.
+    properties: DialogProperties = DialogProperties(usePlatformDefaultWidth = true)
 ) {
     if (!open) return
 
@@ -48,7 +50,8 @@ fun KAlertDialog(
         onDismissRequest = onDismiss,
         shape            = RoundedCornerShape(12.dp),
         containerColor   = MaterialTheme.colorScheme.surface,
-        title = {
+        properties       = properties,
+        title            = {
             Text(
                 text  = title,
                 style = MaterialTheme.typography.titleLarge.copy(
@@ -58,7 +61,7 @@ fun KAlertDialog(
                 color = MaterialTheme.colorScheme.onSurface
             )
         },
-        text = if (description != null) {
+        text             = if (description != null) {
             {
                 Text(
                     text  = description,
@@ -67,34 +70,39 @@ fun KAlertDialog(
                 )
             }
         } else null,
-        confirmButton = {
+        confirmButton    = {
             KButton(
                 onClick = onConfirm,
                 variant = if (isDestructive) KButtonVariant.Destructive else KButtonVariant.Default,
                 size    = KButtonSize.Sm
             ) { Text(confirmLabel) }
         },
-        dismissButton = {
+        dismissButton    = {
             KButton(
                 onClick = onDismiss,
                 variant = KButtonVariant.Outline,
                 size    = KButtonSize.Sm
             ) { Text(cancelLabel) }
-        },
-        properties = properties
+        }
     )
 }
 
 /**
- * Shadcn/ui-style full Dialog with a free-form content slot.
+ * Shadcn/ui-style full-screen Dialog with a free-form content slot.
+ *
+ * `usePlatformDefaultWidth = false` is intentional here — we draw our own
+ * 92 %-wide card.  To avoid the blank-dialog crash that can happen when the
+ * first composition has zero size, the inner Column carries an explicit
+ * `fillMaxWidth(0.92f)` and `wrapContentHeight()`.
  *
  * ```kotlin
  * KDialog(open = open, onDismiss = { open = false }) {
  *     KDialogHeader(title = "Edit Profile", description = "Make changes here.")
  *     Spacer(Modifier.height(16.dp))
- *     // … form fields …
+ *     KFormField(…)
  *     KDialogFooter {
- *         KButton(text = "Save changes", onClick = { open = false })
+ *         KButton(text = "Cancel", onClick = { open = false }, variant = KButtonVariant.Outline)
+ *         KButton(text = "Save",   onClick = { open = false })
  *     }
  * }
  * ```
@@ -108,10 +116,14 @@ fun KDialog(
 ) {
     if (!open) return
 
-    Dialog(onDismissRequest = onDismiss, properties = properties) {
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties       = properties
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth(0.92f)
+                .wrapContentHeight()          // ← prevents zero-height crash
                 .clip(RoundedCornerShape(12.dp))
                 .background(MaterialTheme.colorScheme.surface)
                 .padding(24.dp),
@@ -119,6 +131,10 @@ fun KDialog(
         )
     }
 }
+
+// ─────────────────────────────────────────────
+//  Header / Footer helpers
+// ─────────────────────────────────────────────
 
 /** Standard dialog header: title + optional description. */
 @Composable
@@ -149,7 +165,7 @@ fun KDialogHeader(
     }
 }
 
-/** Standard dialog footer — right-aligns its action buttons. */
+/** Standard dialog footer — right-aligns action buttons. */
 @Composable
 fun KDialogFooter(
     modifier: Modifier = Modifier,
