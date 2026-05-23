@@ -46,6 +46,22 @@ enum class KEmptyMediaVariant { Icon, Image, Avatar }
 enum class KToastType { Default, Success, Error, Warning, Info }
 
 /**
+ * Card size preset — matches the `size` data attribute on the shadcn/ui Card.
+ */
+enum class KCardSize { Default, Sm }
+
+/**
+ * Select / combobox trigger size — matches the `size` prop on SelectTrigger.
+ */
+enum class KSelectSize { Default, Sm }
+
+/**
+ * Avatar size presets — `sm` = 24 dp, `default` = 32 dp, `lg` = 40 dp.
+ * Declared here for public API symmetry; impl lives in Avatar.kt.
+ */
+// KAvatarSize is declared in Avatar.kt
+
+/**
  * Toast payload.
  *
  * @property id Unique identifier.
