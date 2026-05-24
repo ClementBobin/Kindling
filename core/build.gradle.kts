@@ -1,7 +1,9 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
+    kotlin("multiplatform")
     kotlin("plugin.compose")
+    id("com.android.library")
     id("org.jetbrains.compose")
     id("dokka-convention")
     id("com.vanniktech.maven.publish")
@@ -11,26 +13,74 @@ group = Versions.group
 version = Versions.libraryVersion
 
 kotlin {
+    // jvmToolchain belongs at the top-level kotlin {} scope — it applies to ALL
+    // JVM targets (Android + Desktop). Putting it inside a target is now an error.
     jvmToolchain(17)
+
+    // ── Targets ───────────────────────────────────────────────────────────
+    androidTarget {
+        compilations.all {
+            // kotlinOptions {} is removed — use the compilerOptions DSL instead
+            compileTaskProvider.configure {
+                compilerOptions {
+                    jvmTarget.set(JvmTarget.JVM_17)
+                }
+            }
+        }
+    }
+
+    jvm("desktop")
+
+    // ── Source sets ───────────────────────────────────────────────────────
+    sourceSets {
+        val commonMain by getting {
+            dependencies {
+                implementation(compose.runtime)
+                implementation(compose.foundation)
+                implementation(compose.material3)
+                implementation(compose.materialIconsExtended)
+                implementation(compose.ui)
+                implementation(compose.animation)
+
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.coroutines}")
+                implementation(kotlin("stdlib"))
+            }
+        }
+
+        val commonTest by getting {
+            dependencies {
+                implementation(kotlin("test"))
+                implementation("org.junit.jupiter:junit-jupiter:${Versions.junit5}")
+            }
+        }
+
+        val androidMain by getting {
+            dependencies {
+                // Android-only deps (Activity, ViewModel, etc.) go here if needed
+            }
+        }
+
+        val desktopMain by getting {
+            dependencies {
+                implementation(compose.desktop.currentOs)
+            }
+        }
+    }
 }
 
-dependencies {
-    implementation(compose.runtime)
-    implementation(compose.foundation)
-    implementation(compose.material3)
-    implementation(compose.materialIconsExtended)
-    implementation(compose.ui)
-    implementation(compose.animation)
+// ── Android library config ────────────────────────────────────────────────
+android {
+    namespace = "${Versions.group}.core"
+    compileSdk = 35
 
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.coroutines}")
-    implementation(kotlin("stdlib"))
+    defaultConfig {
+        minSdk = 24
+    }
 
-    testImplementation(kotlin("test"))
-    testImplementation("org.junit.jupiter:junit-jupiter:${Versions.junit5}")
-}
-
-tasks.test {
-    useJUnitPlatform()
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
 }
 
 mavenPublishing {

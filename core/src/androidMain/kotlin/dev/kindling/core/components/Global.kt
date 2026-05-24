@@ -26,11 +26,6 @@ enum class KStepState { Upcoming, Current, Completed, Error }
 enum class KStepperOrientation { Horizontal, Vertical }
 
 /**
- * Carousel orientation.
- */
-enum class KCarouselOrientation { Horizontal, Vertical }
-
-/**
  * Sort direction used by table headers.
  */
 enum class KSortDirection { Asc, Desc, None }
@@ -44,11 +39,6 @@ enum class KEmptyMediaVariant { Icon, Image, Avatar }
  * Toast type.
  */
 enum class KToastType { Default, Success, Error, Warning, Info }
-
-/**
- * Card size preset — matches the `size` data attribute on the shadcn/ui Card.
- */
-enum class KCardSize { Default, Sm }
 
 /**
  * Select / combobox trigger size — matches the `size` prop on SelectTrigger.
@@ -81,11 +71,3 @@ data class KToastData(
     val onAction: (() -> Unit)? = null,
     val durationMs: Long = 4_000L
 )
-
-/**
- * Combobox item model.
- *
- * @property value Stable item value.
- * @property label Human-readable label.
- */
-data class KComboboxItem(val value: String, val label: String)

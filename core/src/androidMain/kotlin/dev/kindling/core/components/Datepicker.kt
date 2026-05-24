@@ -1,5 +1,11 @@
 package dev.kindling.core.components
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -15,29 +21,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.layout.positionInWindow
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Popup
-import androidx.compose.ui.window.PopupProperties
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle as JTextStyle
 import java.util.Locale
-import kotlin.math.roundToInt
 
 /**
  * Shadcn/ui-style DatePicker. Requires API 26+ (java.time).
  *
- * Uses [Popup] with [PopupProperties] — compatible with both JetBrains Compose
- * (core module) and Android Compose (sample module).
+ * Uses [AnimatedVisibility] to show/hide an inline calendar card directly
+ * below the trigger — no Popup or Skiko dependency.
  *
  * ```kotlin
  * var date by remember { mutableStateOf<LocalDate?>(null) }
@@ -55,11 +54,8 @@ fun KDatePicker(
     maxDate: LocalDate? = null,
     locale: Locale = Locale.getDefault()
 ) {
-    val cs      = MaterialTheme.colorScheme
-    val density = LocalDensity.current
-    var expanded    by remember { mutableStateOf(false) }
-    var triggerH    by remember { mutableStateOf(0f) }
-
+    val cs  = MaterialTheme.colorScheme
+    var expanded by remember { mutableStateOf(false) }
     val fmt = DateTimeFormatter.ofPattern("MMM dd, yyyy", locale)
 
     Column(modifier = modifier) {
@@ -74,9 +70,6 @@ fun KDatePicker(
             modifier     = Modifier
                 .fillMaxWidth()
                 .height(36.dp)
-                .onGloballyPositioned { coords ->
-                    triggerH = coords.size.height.toFloat()
-                }
         ) {
             Row(
                 modifier              = Modifier.fillMaxSize().padding(horizontal = 12.dp),
@@ -98,30 +91,22 @@ fun KDatePicker(
             }
         }
 
-        // ── Calendar popup ────────────────────────────────────────────────
-        if (expanded) {
-            val offsetY = with(density) { triggerH.roundToInt() }
-
-            Popup(
-                offset           = IntOffset(0, 0),
-                onDismissRequest = { expanded = false },
-                properties       = PopupProperties(
-                    focusable             = true,
-                    dismissOnBackPress    = true,
-                    dismissOnClickOutside = true
-                )
-            ) {
-                CalendarGrid(
-                    selected = selected,
-                    minDate  = minDate,
-                    maxDate  = maxDate,
-                    locale   = locale,
-                    onSelect = { date ->
-                        onSelect(date)
-                        expanded = false
-                    }
-                )
-            }
+        // ── Inline calendar (no Popup) ────────────────────────────────────
+        AnimatedVisibility(
+            visible = expanded,
+            enter   = expandVertically(tween(150)) + fadeIn(tween(150)),
+            exit    = shrinkVertically(tween(150)) + fadeOut(tween(150))
+        ) {
+            CalendarGrid(
+                selected = selected,
+                minDate  = minDate,
+                maxDate  = maxDate,
+                locale   = locale,
+                onSelect = { date ->
+                    onSelect(date)
+                    expanded = false
+                }
+            )
         }
     }
 }
@@ -155,7 +140,7 @@ private fun CalendarGrid(
             .background(cs.surface)
             .border(1.dp, cs.outline, RoundedCornerShape(12.dp))
             .padding(16.dp)
-            .width(280.dp)
+            .fillMaxWidth()
     ) {
         // Month navigation
         Row(
