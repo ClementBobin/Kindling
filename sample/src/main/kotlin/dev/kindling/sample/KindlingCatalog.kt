@@ -924,17 +924,6 @@ private fun SkeletonSection() {
         KSkeleton(modifier = Modifier.fillMaxWidth().height(20.dp))
         KSkeleton(modifier = Modifier.fillMaxWidth(0.7f).height(14.dp))
         KSkeleton(modifier = Modifier.size(48.dp), shape = CircleShape)
-
-        SubLabel("List items — 3 rows")
-        repeat(3) {
-            KSkeletonListItem()
-        }
-
-        SubLabel("Card")
-        KSkeletonCard()
-
-        SubLabel("Card — custom image height")
-        KSkeletonCard(imageHeight = 80.dp)
     }
 }
 

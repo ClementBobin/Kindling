@@ -16,7 +16,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MaterialTheme(colorScheme = lightColorScheme()) {
-                // KToasterHost must wrap (or sit alongside) the main content
+                // KToasterHost must wrap (or sit alongside) the androidMain content
                 // so it can receive and display toasts from anywhere in the tree.
                 Surface(modifier = Modifier.fillMaxSize()) {
                     Box(modifier = Modifier.fillMaxSize()) {

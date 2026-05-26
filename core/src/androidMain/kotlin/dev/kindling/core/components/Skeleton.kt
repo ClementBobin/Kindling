@@ -59,33 +59,3 @@ fun KSkeleton(
 ) {
     Box(modifier = modifier.clip(shape).background(kindlingShimmerBrush()))
 }
-
-/** Skeleton list-item: circular avatar placeholder + two text lines. */
-@Composable
-fun KSkeletonListItem(modifier: Modifier = Modifier, avatarSize: Dp = 40.dp) {
-    Row(modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-        KSkeleton(modifier = Modifier.size(avatarSize), shape = CircleShape)
-        Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            KSkeleton(modifier = Modifier.fillMaxWidth(0.6f).height(14.dp))
-            KSkeleton(modifier = Modifier.fillMaxWidth(0.9f).height(12.dp))
-        }
-    }
-}
-
-/** Skeleton card: image area + title + two text lines. */
-@Composable
-fun KSkeletonCard(modifier: Modifier = Modifier, imageHeight: Dp = 180.dp) {
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .background(MaterialTheme.colorScheme.surface)
-            .padding(12.dp),
-        verticalArrangement = Arrangement.spacedBy(10.dp)
-    ) {
-        KSkeleton(modifier = Modifier.fillMaxWidth().height(imageHeight), shape = RoundedCornerShape(8.dp))
-        KSkeleton(modifier = Modifier.fillMaxWidth(0.7f).height(16.dp))
-        KSkeleton(modifier = Modifier.fillMaxWidth().height(12.dp))
-        KSkeleton(modifier = Modifier.fillMaxWidth(0.85f).height(12.dp))
-    }
-}
