@@ -131,49 +131,6 @@ class Throttler<T>(
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-//  Flow extensions
-// ─────────────────────────────────────────────────────────────────────────────
-
-/**
- * Leading-edge debounce: emits the first item in a burst immediately, then
- * suppresses further items until [duration] has elapsed with no new items.
- */
-fun <T> Flow<T>.debounceLeading(duration: Duration): Flow<T> = flow {
-    var lastEmitTime = 0L
-    var pendingJob: Job? = null
-
-    collect { value ->
-        val now = System.currentTimeMillis()
-        if (now - lastEmitTime >= duration.inWholeMilliseconds) {
-            pendingJob?.cancel()
-            lastEmitTime = now
-            emit(value)
-        } else {
-            pendingJob?.cancel()
-            pendingJob = currentCoroutineContext()[Job]?.let { null } // reset
-            // Schedule trailing emit after quiet period
-            kotlinx.coroutines.delay(duration - (now - lastEmitTime).milliseconds)
-            emit(value)
-            lastEmitTime = System.currentTimeMillis()
-        }
-    }
-}
-
-/**
- * Throttles a flow to emit at most one item per [period] (leading edge).
- */
-fun <T> Flow<T>.throttleFirst(period: Duration): Flow<T> = flow {
-    var lastEmitTime = 0L
-    collect { value ->
-        val now = System.currentTimeMillis()
-        if (now - lastEmitTime >= period.inWholeMilliseconds) {
-            lastEmitTime = now
-            emit(value)
-        }
-    }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
 //  Convenience top-level factories
 // ─────────────────────────────────────────────────────────────────────────────
 

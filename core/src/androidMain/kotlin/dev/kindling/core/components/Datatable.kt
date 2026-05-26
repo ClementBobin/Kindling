@@ -28,6 +28,15 @@ import androidx.compose.ui.unit.sp
  * @param sortable Whether the header shows a sort toggle.
  * @param cell     Composable that renders a single cell.
  */
+/**
+ * Describes one column in a [KDataTable].
+ *
+ * @param key Unique key used for sorting.
+ * @param header Column header label.
+ * @param weight Flex weight.
+ * @param sortable Whether the header shows a sort toggle.
+ * @param cell Composable that renders a single cell.
+ */
 data class KTableColumn<T>(
     val key: String,
     val header: String,
