@@ -5,15 +5,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
 /**
- * Shadcn/ui-style Label.
+ * Shadcn/ui-style Label — mirrors `label.tsx`.
  *
- * A small, medium-weight text element typically placed above form fields.
  * Automatically grays out when [disabled] is `true`.
+ * Respects [LocalLayoutDirection] for RTL text alignment.
  *
  * ```kotlin
  * KLabel("Email address")
@@ -36,5 +37,10 @@ fun KLabel(
     else
         MaterialTheme.colorScheme.onBackground
 ) {
-    Text(text = text, style = style, color = color, modifier = modifier)
+    Text(
+        text     = text,
+        style    = style,
+        color    = color,
+        modifier = modifier
+    )
 }

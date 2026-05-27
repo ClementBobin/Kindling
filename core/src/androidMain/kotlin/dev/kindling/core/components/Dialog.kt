@@ -1,116 +1,147 @@
 package dev.kindling.core.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 
+// ─────────────────────────────────────────────
+//  Internal state holder
+// ─────────────────────────────────────────────
+
+/** Slot structure passed as receiver to [Dialog] content. */
+class DialogScope internal constructor(val onDismiss: () -> Unit)
+
+// ─────────────────────────────────────────────
+//  Dialog (root)
+// ─────────────────────────────────────────────
+
 /**
- * Shadcn/ui-style AlertDialog — confirmation / destructive actions.
+ * Shadcn/ui-style Dialog root — mirrors `Dialog` + controlled open state.
  *
  * ```kotlin
- * KAlertDialog(
- *     open          = open,
- *     onDismiss     = { open = false },
- *     title         = "Are you absolutely sure?",
- *     description   = "This action cannot be undone.",
- *     confirmLabel  = "Continue",
- *     onConfirm     = { open = false },
- *     isDestructive = true
- * )
+ * var open by remember { mutableStateOf(false) }
+ * Dialog(open = open, onOpenChange = { open = it }) {
+ *     DialogTrigger { KButton("Open", onClick = { open = true }) }
+ *     DialogContent {
+ *         DialogHeader {
+ *             DialogTitle("Edit profile")
+ *             DialogDescription("Make changes here.")
+ *         }
+ *     }
+ * }
  * ```
+ *
+ * In Compose, the trigger is simply any composable that calls `onOpenChange(true)`.
  */
 @Composable
-fun KAlertDialog(
+fun Dialog(
     open: Boolean,
-    onDismiss: () -> Unit,
-    title: String,
-    description: String? = null,
-    confirmLabel: String = "Continue",
-    cancelLabel: String = "Cancel",
-    isDestructive: Boolean = false,
-    onConfirm: () -> Unit,
-    // Keep usePlatformDefaultWidth = true (the default) to avoid measurement
-    // crashes on devices that don't support custom-width dialogs in all
-    // configurations. Callers can override if they need it.
-    properties: DialogProperties = DialogProperties(usePlatformDefaultWidth = true)
+    onOpenChange: (Boolean) -> Unit,
+    content: @Composable DialogScope.() -> Unit
 ) {
+    val scope = remember(onOpenChange) { DialogScope { onOpenChange(false) } }
+    scope.content()
+    // The actual overlay is rendered by DialogContent below
     if (!open) return
+}
 
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        shape            = RoundedCornerShape(12.dp),
-        containerColor   = MaterialTheme.colorScheme.surface,
-        properties       = properties,
-        title            = {
-            Text(
-                text  = title,
-                style = MaterialTheme.typography.titleLarge.copy(
-                    fontSize   = 18.sp,
-                    fontWeight = FontWeight.SemiBold
-                ),
-                color = MaterialTheme.colorScheme.onSurface
+// ─────────────────────────────────────────────
+//  DialogTrigger
+// ─────────────────────────────────────────────
+
+/**
+ * Wraps any composable that should open the dialog.
+ * Pass the setter directly if managing state externally.
+ */
+@Composable
+fun DialogTrigger(content: @Composable () -> Unit) { content() }
+
+// ─────────────────────────────────────────────
+//  DialogPortal / DialogOverlay
+// ─────────────────────────────────────────────
+
+/** Semi-transparent scrim behind the dialog panel. */
+@Composable
+fun DialogOverlay(
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .background(Color.Black.copy(alpha = .1f))
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication        = null,
+                onClick           = onDismiss
             )
-        },
-        text             = if (description != null) {
-            {
-                Text(
-                    text  = description,
-                    style = MaterialTheme.typography.bodyMedium.copy(fontSize = 14.sp),
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        } else null,
-        confirmButton    = {
-            KButton(
-                onClick = onConfirm,
-                variant = if (isDestructive) KButtonVariant.Destructive else KButtonVariant.Default,
-                size    = KButtonSize.Sm
-            ) { Text(confirmLabel) }
-        },
-        dismissButton    = {
-            KButton(
-                onClick = onDismiss,
-                variant = KButtonVariant.Outline,
-                size    = KButtonSize.Sm
-            ) { Text(cancelLabel) }
-        }
     )
 }
 
+/** No-op wrapper to mirror the web `DialogPortal` slot. */
+@Composable
+fun DialogPortal(content: @Composable () -> Unit) { content() }
+
+// ─────────────────────────────────────────────
+//  DialogClose
+// ─────────────────────────────────────────────
+
 /**
- * Shadcn/ui-style full-screen Dialog with a free-form content slot.
- *
- * `usePlatformDefaultWidth = false` is intentional here — we draw our own
- * 92 %-wide card.  To avoid the blank-dialog crash that can happen when the
- * first composition has zero size, the inner Column carries an explicit
- * `fillMaxWidth(0.92f)` and `wrapContentHeight()`.
+ * Any composable that dismisses the dialog when tapped.
  *
  * ```kotlin
- * KDialog(open = open, onDismiss = { open = false }) {
- *     KDialogHeader(title = "Edit Profile", description = "Make changes here.")
- *     Spacer(Modifier.height(16.dp))
- *     KFormField(…)
- *     KDialogFooter {
- *         KButton(text = "Cancel", onClick = { open = false }, variant = KButtonVariant.Outline)
- *         KButton(text = "Save",   onClick = { open = false })
- *     }
+ * DialogClose(onDismiss = { open = false }) {
+ *     Text("Cancel")
  * }
  * ```
  */
 @Composable
-fun KDialog(
+fun DialogClose(
+    onDismiss: () -> Unit,
+    content: @Composable () -> Unit
+) {
+    Box(modifier = Modifier.clickable(onClick = onDismiss)) { content() }
+}
+
+// ─────────────────────────────────────────────
+//  DialogContent
+// ─────────────────────────────────────────────
+
+/**
+ * The dialog panel — mirrors `DialogContent` from `dialog.tsx`.
+ *
+ * Renders a full-screen scrim + centred card.
+ * Includes a close × button when [showCloseButton] = true (default).
+ * Uses [KButton] for the close action.
+ *
+ * ```kotlin
+ * DialogContent(open = open, onDismiss = { open = false }) {
+ *     DialogHeader { DialogTitle("Hello") }
+ * }
+ * ```
+ */
+@Composable
+fun DialogContent(
     open: Boolean,
     onDismiss: () -> Unit,
+    modifier: Modifier = Modifier,
+    showCloseButton: Boolean = true,
     properties: DialogProperties = DialogProperties(usePlatformDefaultWidth = false),
     content: @Composable ColumnScope.() -> Unit
 ) {
@@ -120,60 +151,120 @@ fun KDialog(
         onDismissRequest = onDismiss,
         properties       = properties
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth(0.92f)
-                .wrapContentHeight()          // ← prevents zero-height crash
-                .clip(RoundedCornerShape(12.dp))
-                .background(MaterialTheme.colorScheme.surface)
-                .padding(24.dp),
-            content = content
-        )
-    }
-}
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            // Scrim
+            DialogOverlay(onDismiss = onDismiss, modifier = Modifier.matchParentSize())
 
-// ─────────────────────────────────────────────
-//  Header / Footer helpers
-// ─────────────────────────────────────────────
-
-/** Standard dialog header: title + optional description. */
-@Composable
-fun KDialogHeader(
-    title: String,
-    description: String? = null,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier            = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(4.dp)
-    ) {
-        Text(
-            text  = title,
-            style = MaterialTheme.typography.titleLarge.copy(
-                fontSize   = 18.sp,
-                fontWeight = FontWeight.SemiBold
-            ),
-            color = MaterialTheme.colorScheme.onSurface
-        )
-        if (description != null) {
-            Text(
-                text  = description,
-                style = MaterialTheme.typography.bodyMedium.copy(fontSize = 14.sp),
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+            // Panel
+            Column(
+                modifier = modifier
+                    .fillMaxWidth(0.92f)
+                    .wrapContentHeight()
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(MaterialTheme.colorScheme.surface)
+                    .padding(16.dp)
+            ) {
+                // Close button (top-right) — uses KButton
+                if (showCloseButton) {
+                    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.TopEnd) {
+                        KButton(
+                            onClick = onDismiss,
+                            variant = KButtonVariant.Ghost,
+                            size    = KButtonSize.IconSm
+                        ) {
+                            Icon(Icons.Default.Close, contentDescription = "Close", modifier = Modifier.size(16.dp))
+                        }
+                    }
+                }
+                content()
+            }
         }
     }
 }
 
-/** Standard dialog footer — right-aligns action buttons. */
+// ─────────────────────────────────────────────
+//  DialogHeader
+// ─────────────────────────────────────────────
+
 @Composable
-fun KDialogFooter(
+fun DialogHeader(
     modifier: Modifier = Modifier,
+    content: @Composable ColumnScope.() -> Unit
+) {
+    Column(
+        modifier            = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+        content             = content
+    )
+}
+
+// ─────────────────────────────────────────────
+//  DialogTitle
+// ─────────────────────────────────────────────
+
+@Composable
+fun DialogTitle(
+    text: String,
+    modifier: Modifier = Modifier
+) {
+    Text(
+        text     = text,
+        style    = MaterialTheme.typography.titleLarge.copy(fontSize = 16.sp, fontWeight = FontWeight.SemiBold),
+        color    = MaterialTheme.colorScheme.onSurface,
+        modifier = modifier
+    )
+}
+
+// ─────────────────────────────────────────────
+//  DialogDescription
+// ─────────────────────────────────────────────
+
+@Composable
+fun DialogDescription(
+    text: String,
+    modifier: Modifier = Modifier
+) {
+    Text(
+        text     = text,
+        style    = MaterialTheme.typography.bodyMedium.copy(fontSize = 14.sp),
+        color    = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = modifier
+    )
+}
+
+// ─────────────────────────────────────────────
+//  DialogFooter
+// ─────────────────────────────────────────────
+
+/**
+ * Footer row with optional built-in close button.
+ * Uses [KButton] for [showCloseButton].
+ */
+@Composable
+fun DialogFooter(
+    modifier: Modifier = Modifier,
+    showCloseButton: Boolean = false,
+    onDismiss: (() -> Unit)? = null,
     content: @Composable RowScope.() -> Unit
 ) {
-    Row(
-        modifier              = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
-        content               = content
-    )
+    val cs = MaterialTheme.colorScheme
+    Column(modifier = modifier.fillMaxWidth()) {
+        HorizontalDivider(color = cs.outlineVariant, thickness = 0.5.dp)
+        Row(
+            modifier              = Modifier
+                .fillMaxWidth()
+                .background(cs.surfaceVariant.copy(.5f))
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
+            verticalAlignment     = Alignment.CenterVertically
+        ) {
+            content()
+            if (showCloseButton && onDismiss != null) {
+                KButton(
+                    onClick = onDismiss,
+                    variant = KButtonVariant.Outline
+                ) { Text("Close") }
+            }
+        }
+    }
 }

@@ -8,18 +8,108 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 
 // ─────────────────────────────────────────────
-//  Mask pattern keys
+//  Public mask helpers  (mirror mask-input.tsx exports)
 // ─────────────────────────────────────────────
 
 /**
- * Named mask patterns — mirrors `MaskPatternKey` from `mask-input.tsx`.
+ * Applies a `#`-placeholder [pattern] to [value].
+ *
+ * Mirrors `applyMask` from `mask-input.tsx`.
  */
+fun applyMask(value: String, pattern: String, allowLetters: Boolean = false): String {
+    val clean = if (allowLetters)
+        value.filter { it.isLetterOrDigit() }.uppercase()
+    else
+        value.filter { it.isDigit() }
+
+    val sb = StringBuilder()
+    var ci = 0
+    for (ch in pattern) {
+        if (ci >= clean.length) break
+        if (ch == '#') sb.append(clean[ci++]) else sb.append(ch)
+    }
+    return sb.toString()
+}
+
+/**
+ * Mirrors `applyCurrencyMask` from `mask-input.tsx`.
+ *
+ * Formats a raw numeric string as a locale-aware currency display value.
+ */
+fun applyCurrencyMask(
+    value: String,
+    currencyCode: String = "USD",
+    locale: java.util.Locale = java.util.Locale.getDefault()
+): String {
+    if (value.isEmpty()) return ""
+    val num = value.toDoubleOrNull() ?: return value
+    return try {
+        val fmt = java.text.NumberFormat.getCurrencyInstance(locale).apply {
+            currency = java.util.Currency.getInstance(currencyCode)
+        }
+        fmt.format(num)
+    } catch (_: Exception) {
+        value
+    }
+}
+
+/**
+ * Mirrors `applyPercentageMask` from `mask-input.tsx`.
+ */
+fun applyPercentageMask(value: String): String {
+    if (value.isEmpty()) return ""
+    val clean = value.filter { it.isDigit() || it == '.' }
+    val parts = clean.split(".")
+    val integer = parts[0]
+    val decimal = parts.getOrNull(1)?.take(2) ?: ""
+    return if (decimal.isNotEmpty()) "$integer.$decimal%" else "$integer%"
+}
+
+/**
+ * Strips all non-digit (or non-alphanumeric) chars from [value].
+ *
+ * Mirrors `getUnmaskedValue` from `mask-input.tsx`.
+ */
+fun getUnmaskedValue(value: String, allowLetters: Boolean = false): String =
+    if (allowLetters) value.filter { it.isLetterOrDigit() }
+    else              value.filter { it.isDigit() }
+
+/**
+ * Converts a caret position in the masked string to an index in the raw string.
+ *
+ * Mirrors `toUnmaskedIndex` from `mask-input.tsx`.
+ */
+fun toUnmaskedIndex(masked: String, pattern: String, caret: Int): Int {
+    var idx = 0
+    for (i in 0 until minOf(caret, masked.length, pattern.length)) {
+        if (pattern[i] == '#') idx++
+    }
+    return idx
+}
+
+/**
+ * Converts a raw-string index back to a caret position in the masked string.
+ *
+ * Mirrors `fromUnmaskedIndex` from `mask-input.tsx`.
+ */
+fun fromUnmaskedIndex(masked: String, pattern: String, unmaskedIndex: Int): Int {
+    var seen = 0
+    for (i in masked.indices.take(pattern.length)) {
+        if (pattern[i] == '#') {
+            seen++
+            if (seen == unmaskedIndex) return i + 1
+        }
+    }
+    return masked.length
+}
+
+// ─────────────────────────────────────────────
+//  Named mask patterns
+// ─────────────────────────────────────────────
+
 enum class KMaskPattern(
-    /** The `#`-placeholder pattern string. */
     val pattern: String,
-    /** Optional display hint shown as placeholder. */
     val placeholder: String = "",
-    /** Keyboard type suited for this mask. */
     val keyboardType: KeyboardType = KeyboardType.Number
 ) {
     Phone("(###) ###-####",           "(555) 000-0000"),
@@ -33,126 +123,85 @@ enum class KMaskPattern(
     Ein("##-#######",                 "00-0000000"),
     Isbn("###-#-###-#####-#",         "000-0-000-00000-0"),
     LicensePlate("###-###",           "AAA-000", KeyboardType.Text),
-    MacAddress("##:##:##:##:##:##",   "00:00:00:00:00:00", KeyboardType.Text);
+    MacAddress("##:##:##:##:##:##",   "00:00:00:00:00:00", KeyboardType.Text)
 }
 
 // ─────────────────────────────────────────────
-//  Mask transform helpers
+//  MaskInput
 // ─────────────────────────────────────────────
 
 /**
- * Strips non-digit (or non-alphanumeric for text-pattern masks) characters
- * from [raw], then applies the `#`-based [pattern].
+ * Shadcn/ui-style masked input field — mirrors `MaskInput` from `mask-input.tsx`.
  *
- * Returns the formatted display string.
- */
-fun applyKMask(raw: String, pattern: String, allowLetters: Boolean = false): String {
-    val clean = if (allowLetters)
-        raw.filter { it.isLetterOrDigit() }.uppercase()
-    else
-        raw.filter { it.isDigit() }
-
-    val result = StringBuilder()
-    var cleanIdx = 0
-
-    for (ch in pattern) {
-        if (cleanIdx >= clean.length) break
-        if (ch == '#') {
-            result.append(clean[cleanIdx++])
-        } else {
-            result.append(ch)
-        }
-    }
-    return result.toString()
-}
-
-/**
- * Returns the raw (un-masked) digits / characters from a masked [value].
- */
-fun stripKMask(value: String, allowLetters: Boolean = false): String =
-    if (allowLetters) value.filter { it.isLetterOrDigit() }
-    else              value.filter { it.isDigit() }
-
-// ─────────────────────────────────────────────
-//  KMaskInput
-// ─────────────────────────────────────────────
-
-/**
- * Shadcn/ui-style masked input field.
- *
- * Applies a `#`-placeholder [mask] pattern on every keystroke, keeping the
- * underlying value as raw digits/characters.  Mirrors the behaviour of
- * `mask-input.tsx` (MaskInput component).
- *
- * For currency and percentage use [KCurrencyInput] and [KPercentageInput]
- * helpers below — they handle the decimal formatting separately.
+ * Applies a `#`-placeholder [mask] or [customPattern] on every keystroke.
+ * [onValueChange] receives the **masked** display value; use [getUnmaskedValue]
+ * to strip formatting before storing.
  *
  * ```kotlin
  * var phone by remember { mutableStateOf("") }
- *
- * KMaskInput(
+ * MaskInput(
  *     value         = phone,
- *     onValueChange = { phone = it },        // raw digits
- *     mask          = KMaskPattern.Phone,
- *     placeholder   = "(555) 000-0000"
+ *     onValueChange = { phone = it },
+ *     mask          = KMaskPattern.Phone
  * )
  *
  * // Custom pattern
- * KMaskInput(
+ * MaskInput(
  *     value         = value,
  *     onValueChange = { value = it },
  *     customPattern = "##-##-####"
  * )
  * ```
  *
- * @param value           Raw (unmasked) value — digits for numeric masks.
- * @param onValueChange   Called with the new raw value on each keystroke.
+ * @param value           Current value (masked or raw — will be re-masked on first render).
+ * @param onValueChange   Called with the new masked display value on each keystroke.
  * @param mask            Named mask preset; ignored when [customPattern] is set.
  * @param customPattern   Custom `#`-placeholder pattern (overrides [mask]).
- * @param allowLetters    Set `true` for alphanumeric masks (e.g. license plate).
- * @param placeholder     Hint text shown when empty.
+ * @param allowLetters    `true` for alphanumeric masks (e.g. license plate, MAC address).
+ * @param withoutMask     `true` disables masking entirely (plain text field).
+ * @param placeholder     Hint text shown when empty. Defaults to mask placeholder.
  * @param enabled         Whether the field is editable.
  * @param isError         Applies error styling.
  * @param modifier        Applied to the underlying [KInput].
  */
 @Composable
-fun KMaskInput(
+fun MaskInput(
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
     mask: KMaskPattern? = null,
     customPattern: String? = null,
     allowLetters: Boolean = mask?.keyboardType == KeyboardType.Text,
-    placeholder: String = mask?.placeholder ?: customPattern?.replace('#', '0') ?: "",
+    withoutMask: Boolean = false,
+    placeholder: String = mask?.placeholder
+        ?: customPattern?.replace('#', '0')
+        ?: "",
     enabled: Boolean = true,
     isError: Boolean = false,
     keyboardActions: KeyboardActions = KeyboardActions.Default
 ) {
     val pattern = customPattern ?: mask?.pattern ?: ""
 
-    // Strip non-digit/non-alpha characters coming in from external state
-    val cleanValue = remember(value) { stripKMask(value, allowLetters) }
-
-    // The visible, masked display value
-    val displayValue = remember(cleanValue, pattern) {
-        if (pattern.isEmpty()) cleanValue
-        else applyKMask(cleanValue, pattern, allowLetters)
+    val displayValue = remember(value, pattern, withoutMask) {
+        if (withoutMask || pattern.isEmpty()) value
+        else applyMask(getUnmaskedValue(value, allowLetters), pattern, allowLetters)
     }
 
     KInput(
         value         = displayValue,
         onValueChange = { typed ->
-            // Extract raw chars from whatever the user typed (handles
-            // paste / autocomplete as well as single-key edits).
-            val raw = stripKMask(typed, allowLetters)
-            onValueChange(raw)
+            val raw    = getUnmaskedValue(typed, allowLetters)
+            val masked = if (withoutMask || pattern.isEmpty()) raw
+                         else applyMask(raw, pattern, allowLetters)
+            onValueChange(masked)
         },
-        modifier      = modifier,
-        placeholder   = placeholder,
-        enabled       = enabled,
-        isError       = isError,
+        modifier        = modifier,
+        placeholder     = placeholder,
+        enabled         = enabled,
+        isError         = isError,
         keyboardOptions = KeyboardOptions(
-            keyboardType = mask?.keyboardType ?: if (allowLetters) KeyboardType.Text else KeyboardType.Number,
+            keyboardType = mask?.keyboardType
+                ?: if (allowLetters) KeyboardType.Text else KeyboardType.Number,
             imeAction    = ImeAction.Done
         ),
         keyboardActions = keyboardActions
@@ -160,135 +209,25 @@ fun KMaskInput(
 }
 
 // ─────────────────────────────────────────────
-//  Convenience wrappers for common masks
+//  Convenience wrappers
 // ─────────────────────────────────────────────
 
-/** Phone number input — formats as `(###) ###-####`. */
-@Composable
-fun KPhoneInput(
-    value: String,
-    onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
-    placeholder: String = "(555) 000-0000",
-    enabled: Boolean = true,
-    isError: Boolean = false
-) = KMaskInput(value, onValueChange, modifier, KMaskPattern.Phone, placeholder = placeholder, enabled = enabled, isError = isError)
+@Composable fun PhoneInput(value: String, onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier, enabled: Boolean = true, isError: Boolean = false) =
+    MaskInput(value, onValueChange, modifier, KMaskPattern.Phone, enabled = enabled, isError = isError)
 
-/** US SSN input — formats as `###-##-####`. */
-@Composable
-fun KSsnInput(
-    value: String,
-    onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
-    enabled: Boolean = true,
-    isError: Boolean = false
-) = KMaskInput(value, onValueChange, modifier, KMaskPattern.Ssn, enabled = enabled, isError = isError)
+@Composable fun SsnInput(value: String, onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier, enabled: Boolean = true, isError: Boolean = false) =
+    MaskInput(value, onValueChange, modifier, KMaskPattern.Ssn, enabled = enabled, isError = isError)
 
-/** Date input — formats as `MM/DD/YYYY`. */
-@Composable
-fun KDateMaskInput(
-    value: String,
-    onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
-    enabled: Boolean = true,
-    isError: Boolean = false
-) = KMaskInput(value, onValueChange, modifier, KMaskPattern.Date, enabled = enabled, isError = isError)
+@Composable fun DateMaskInput(value: String, onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier, enabled: Boolean = true, isError: Boolean = false) =
+    MaskInput(value, onValueChange, modifier, KMaskPattern.Date, enabled = enabled, isError = isError)
 
-/** Credit-card input — formats as `#### #### #### ####`. */
-@Composable
-fun KCreditCardInput(
-    value: String,
-    onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
-    enabled: Boolean = true,
-    isError: Boolean = false
-) = KMaskInput(value, onValueChange, modifier, KMaskPattern.CreditCard, enabled = enabled, isError = isError)
+@Composable fun CreditCardInput(value: String, onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier, enabled: Boolean = true, isError: Boolean = false) =
+    MaskInput(value, onValueChange, modifier, KMaskPattern.CreditCard, enabled = enabled, isError = isError)
 
-/** EIN input — formats as `##-#######`. */
-@Composable
-fun KEinInput(
-    value: String,
-    onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
-    enabled: Boolean = true,
-    isError: Boolean = false
-) = KMaskInput(value, onValueChange, modifier, KMaskPattern.Ein, enabled = enabled, isError = isError)
-
-// ─────────────────────────────────────────────
-//  Currency / percentage helpers
-// ─────────────────────────────────────────────
-
-/**
- * Currency input field.
- *
- * Formats the raw numeric string with thousand separators and two decimal
- * places using [java.text.NumberFormat] for the given [locale].
- *
- * The [onValueChange] callback receives the raw numeric string (digits + optional decimal point).
- */
-@Composable
-fun KCurrencyInput(
-    value: String,
-    onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
-    currencySymbol: String = "$",
-    locale: java.util.Locale = java.util.Locale.getDefault(),
-    enabled: Boolean = true,
-    isError: Boolean = false,
-    placeholder: String = "${currencySymbol}0.00"
-) {
-    val display = remember(value, locale) {
-        formatCurrency(value, currencySymbol, locale)
-    }
-
-    KInput(
-        value         = display,
-        onValueChange = { typed ->
-            val raw = typed.filter { it.isDigit() || it == '.' }
-            onValueChange(raw)
-        },
-        modifier      = modifier,
-        placeholder   = placeholder,
-        enabled       = enabled,
-        isError       = isError,
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
-    )
-}
-
-private fun formatCurrency(raw: String, symbol: String, locale: java.util.Locale): String {
-    if (raw.isEmpty()) return ""
-    val num = raw.toDoubleOrNull() ?: return raw
-    return try {
-        val fmt = java.text.NumberFormat.getCurrencyInstance(locale)
-        fmt.currency = java.util.Currency.getInstance(locale)
-        fmt.format(num)
-    } catch (_: Exception) {
-        "$symbol$raw"
-    }
-}
-
-/**
- * Percentage input — appends `%` to the display value.
- */
-@Composable
-fun KPercentageInput(
-    value: String,
-    onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
-    enabled: Boolean = true,
-    isError: Boolean = false
-) {
-    val display = if (value.isEmpty()) "" else "$value%"
-    KInput(
-        value         = display,
-        onValueChange = { typed ->
-            val raw = typed.filter { it.isDigit() || it == '.' }.trimEnd('%')
-            onValueChange(raw)
-        },
-        modifier      = modifier,
-        placeholder   = "0.00%",
-        enabled       = enabled,
-        isError       = isError,
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
-    )
-}
+@Composable fun EinInput(value: String, onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier, enabled: Boolean = true, isError: Boolean = false) =
+    MaskInput(value, onValueChange, modifier, KMaskPattern.Ein, enabled = enabled, isError = isError)

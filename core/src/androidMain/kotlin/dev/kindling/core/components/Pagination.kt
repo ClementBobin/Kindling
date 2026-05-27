@@ -1,138 +1,177 @@
 package dev.kindling.core.components
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material3.*
+import androidx.compose.material.icons.filled.MoreHoriz
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+
+// ─────────────────────────────────────────────
+//  Pagination (nav wrapper)
+// ─────────────────────────────────────────────
 
 /**
- * Shadcn/ui-style Pagination.
- *
- * ```kotlin
- * var page by remember { mutableStateOf(1) }
- * KPagination(currentPage = page, totalPages = 20, onPageChange = { page = it })
- * ```
+ * Root pagination navigation wrapper — mirrors `Pagination` from `pagination.tsx`.
+ * Respects [LocalLayoutDirection] for RTL via Compose.
  */
 @Composable
-fun KPagination(
-    currentPage: Int,
-    totalPages: Int,
-    onPageChange: (Int) -> Unit,
+fun Pagination(
     modifier: Modifier = Modifier,
-    siblingCount: Int = 1,
-    showEdges: Boolean = true
+    content: @Composable RowScope.() -> Unit
 ) {
-    if (totalPages <= 1) return
+    Row(
+        modifier              = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment     = Alignment.CenterVertically,
+        content               = content
+    )
+}
 
-    val pages = buildPageList(currentPage, totalPages, siblingCount, showEdges)
+// ─────────────────────────────────────────────
+//  PaginationContent
+// ─────────────────────────────────────────────
 
+@Composable
+fun PaginationContent(
+    modifier: Modifier = Modifier,
+    content: @Composable RowScope.() -> Unit
+) {
     Row(
         modifier              = modifier,
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
-        verticalAlignment     = Alignment.CenterVertically
+        horizontalArrangement = Arrangement.spacedBy(2.dp),
+        verticalAlignment     = Alignment.CenterVertically,
+        content               = content
+    )
+}
+
+// ─────────────────────────────────────────────
+//  PaginationItem
+// ─────────────────────────────────────────────
+
+@Composable
+fun PaginationItem(
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit
+) {
+    Box(modifier = modifier) { content() }
+}
+
+// ─────────────────────────────────────────────
+//  PaginationLink — uses KButton
+// ─────────────────────────────────────────────
+
+/**
+ * A single page link — active page uses [KButtonVariant.Outline].
+ */
+@Composable
+fun PaginationLink(
+    page: Int,
+    isActive: Boolean = false,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    KButton(
+        onClick  = onClick,
+        modifier = modifier,
+        variant  = if (isActive) KButtonVariant.Outline else KButtonVariant.Ghost,
+        size     = KButtonSize.Icon
     ) {
-        PaginationArrow(
-            label   = "Previous",
-            icon    = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, "Previous", Modifier.size(16.dp)) },
-            enabled = currentPage > 1,
-            onClick = { onPageChange(currentPage - 1) }
+        Text(page.toString())
+    }
+}
+
+// ─────────────────────────────────────────────
+//  PaginationPrevious — uses KButton
+// ─────────────────────────────────────────────
+
+/**
+ * Previous-page button.
+ * Arrow direction is automatically mirrored in RTL via [LocalLayoutDirection].
+ */
+@Composable
+fun PaginationPrevious(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    text: String = "Previous"
+) {
+    val rtl = LocalLayoutDirection.current == LayoutDirection.Rtl
+    KButton(
+        onClick  = onClick,
+        modifier = modifier,
+        variant  = KButtonVariant.Ghost,
+        size     = KButtonSize.Default,
+        enabled  = enabled
+    ) {
+        Icon(
+            imageVector        = if (rtl) Icons.AutoMirrored.Filled.KeyboardArrowRight
+            else     Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+            contentDescription = "Previous",
+            modifier           = Modifier.size(16.dp)
         )
+        Spacer(Modifier.width(4.dp))
+        Text(text)
+    }
+}
 
-        pages.forEach { item ->
-            when (item) {
-                is PageItem.Number  -> PaginationItem(item.page, item.page == currentPage) { onPageChange(item.page) }
-                is PageItem.Ellipsis -> PaginationEllipsis()
-            }
-        }
+// ─────────────────────────────────────────────
+//  PaginationNext — uses KButton
+// ─────────────────────────────────────────────
 
-        PaginationArrow(
-            label   = "Next",
-            icon    = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, "Next", Modifier.size(16.dp)) },
-            enabled = currentPage < totalPages,
-            onClick = { onPageChange(currentPage + 1) }
+/**
+ * Next-page button.
+ * Arrow direction is automatically mirrored in RTL.
+ */
+@Composable
+fun PaginationNext(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    text: String = "Next"
+) {
+    val rtl = LocalLayoutDirection.current == LayoutDirection.Rtl
+    KButton(
+        onClick  = onClick,
+        modifier = modifier,
+        variant  = KButtonVariant.Ghost,
+        size     = KButtonSize.Default,
+        enabled  = enabled
+    ) {
+        Text(text)
+        Spacer(Modifier.width(4.dp))
+        Icon(
+            imageVector        = if (rtl) Icons.AutoMirrored.Filled.KeyboardArrowLeft
+            else     Icons.AutoMirrored.Filled.KeyboardArrowRight,
+            contentDescription = "Next",
+            modifier           = Modifier.size(16.dp)
         )
     }
 }
 
+// ─────────────────────────────────────────────
+//  PaginationEllipsis
+// ─────────────────────────────────────────────
+
 @Composable
-private fun PaginationItem(page: Int, isActive: Boolean, onClick: () -> Unit) {
-    val cs = MaterialTheme.colorScheme
-    Surface(
-        onClick      = onClick,
-        shape        = RoundedCornerShape(6.dp),
-        color        = if (isActive) cs.primary else Color.Transparent,
-        contentColor = if (isActive) cs.onPrimary else cs.onBackground,
-        modifier     = Modifier.size(36.dp)
+fun PaginationEllipsis(modifier: Modifier = Modifier) {
+    Box(
+        modifier         = modifier.size(32.dp),
+        contentAlignment = Alignment.Center
     ) {
-        Box(contentAlignment = Alignment.Center) {
-            Text(page.toString(), fontSize = 14.sp, fontWeight = if (isActive) FontWeight.Medium else FontWeight.Normal)
-        }
+        Icon(
+            imageVector        = Icons.Default.MoreHoriz,
+            contentDescription = "More pages",
+            tint               = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier           = Modifier.size(16.dp)
+        )
     }
-}
-
-@Composable
-private fun PaginationArrow(label: String, icon: @Composable () -> Unit, enabled: Boolean, onClick: () -> Unit) {
-    val cs = MaterialTheme.colorScheme
-    Surface(
-        onClick      = onClick,
-        enabled      = enabled,
-        shape        = RoundedCornerShape(6.dp),
-        color        = Color.Transparent,
-        contentColor = if (enabled) cs.onBackground else cs.onSurface.copy(alpha = 0.38f),
-        modifier     = Modifier.height(36.dp).padding(horizontal = 2.dp)
-    ) {
-        Row(
-            modifier              = Modifier.padding(horizontal = 10.dp),
-            verticalAlignment     = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            if (label == "Previous") { icon(); Text(label, fontSize = 14.sp) }
-            else                     { Text(label, fontSize = 14.sp); icon() }
-        }
-    }
-}
-
-@Composable
-private fun PaginationEllipsis() {
-    Box(Modifier.size(36.dp), contentAlignment = Alignment.Center) {
-        Text("…", fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
-    }
-}
-
-// ─── page list builder ───────────────────────
-
-private sealed interface PageItem {
-    data class Number(val page: Int) : PageItem
-    object Ellipsis : PageItem
-}
-
-private fun buildPageList(current: Int, total: Int, siblings: Int, showEdges: Boolean): List<PageItem> {
-    val result       = mutableListOf<PageItem>()
-    val leftSibling  = maxOf(1, current - siblings)
-    val rightSibling = minOf(total, current + siblings)
-    val showLeft     = showEdges && leftSibling > 2
-    val showRight    = showEdges && rightSibling < total - 1
-
-    if (showEdges) {
-        result += PageItem.Number(1)
-        if (showLeft) result += PageItem.Ellipsis
-    }
-    for (p in leftSibling..rightSibling) {
-        if (showEdges && (p == 1 || p == total)) continue
-        result += PageItem.Number(p)
-    }
-    if (showEdges) {
-        if (showRight) result += PageItem.Ellipsis
-        if (total > 1) result += PageItem.Number(total)
-    }
-    return result
 }

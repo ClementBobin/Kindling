@@ -9,23 +9,27 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-private fun KSpinnerSize.toDp(): Dp = when (this) {
+// ─────────────────────────────────────────────
+//  Spinner
+// ─────────────────────────────────────────────
+
+private val KSpinnerSize.sizeDp: Dp get() = when (this) {
     KSpinnerSize.Sm      -> 16.dp
     KSpinnerSize.Default -> 24.dp
     KSpinnerSize.Lg      -> 32.dp
     KSpinnerSize.Xl      -> 48.dp
 }
 
-private fun KSpinnerSize.strokeWidth(): Dp = when (this) {
+private val KSpinnerSize.strokeDp: Dp get() = when (this) {
     KSpinnerSize.Sm      -> 2.dp
     KSpinnerSize.Default -> 2.5.dp
     KSpinnerSize.Lg      -> 3.dp
@@ -33,24 +37,20 @@ private fun KSpinnerSize.strokeWidth(): Dp = when (this) {
 }
 
 /**
- * Shadcn/ui-style Spinner — smooth rotating arc.
+ * Shadcn/ui-style Spinner — mirrors `spinner.tsx`.
  *
  * ```kotlin
- * KSpinner()
- * KSpinner(size = KSpinnerSize.Lg, label = "Loading…")
+ * Spinner()
+ * Spinner(size = KSpinnerSize.Lg)
  * ```
  */
 @Composable
-fun KSpinner(
+fun Spinner(
     modifier: Modifier = Modifier,
     size: KSpinnerSize = KSpinnerSize.Default,
     color: Color = MaterialTheme.colorScheme.primary,
-    trackColor: Color = color.copy(alpha = 0.15f),
-    label: String? = null,
+    trackColor: Color = color.copy(alpha = 0.15f)
 ) {
-    val dp       = size.toDp()
-    val strokeDp = size.strokeWidth()
-
     val infinite = rememberInfiniteTransition(label = "spinner")
     val angle by infinite.animateFloat(
         initialValue  = 0f,
@@ -62,53 +62,13 @@ fun KSpinner(
         label = "angle"
     )
 
-    Column(
-        modifier            = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        Canvas(modifier = Modifier.size(dp)) {
-            val stroke = Stroke(width = strokeDp.toPx(), cap = StrokeCap.Round)
-            val inset  = strokeDp.toPx() / 2f
-            
-            // 'this.size' is DrawScope.size (pixels), renamed to avoid clash with KSpinnerSize param
-            val canvasSize = this.size
-            val arcSize = Size(
-                width  = canvasSize.width  - strokeDp.toPx(),
-                height = canvasSize.height - strokeDp.toPx()
-            )
-            val topLeft = Offset(inset, inset)
+    Canvas(modifier = modifier.size(size.sizeDp)) {
+        val stroke = Stroke(width = size.strokeDp.toPx(), cap = StrokeCap.Round)
+        val inset  = size.strokeDp.toPx() / 2f
+        val arcSize = Size(this.size.width - size.strokeDp.toPx(), this.size.height - size.strokeDp.toPx())
+        val topLeft = Offset(inset, inset)
 
-            drawArc(trackColor, 0f, 360f, false, style = stroke, topLeft = topLeft, size = arcSize)
-            drawArc(color, angle, 80f, false, style = stroke, topLeft = topLeft, size = arcSize)
-        }
-
-        if (label != null) {
-            Text(
-                text  = label,
-                style = MaterialTheme.typography.bodySmall.copy(
-                    fontSize = 12.sp,
-                    color    = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            )
-        }
-    }
-}
-
-/**
- * Centred spinner that fills its parent — useful as a screen-level loading state.
- *
- * ```kotlin
- * if (isLoading) KSpinnerOverlay()
- * ```
- */
-@Composable
-fun KSpinnerOverlay(
-    modifier: Modifier = Modifier.fillMaxSize(),
-    size: KSpinnerSize = KSpinnerSize.Lg,
-    label: String? = null,
-) {
-    Box(modifier = modifier, contentAlignment = Alignment.Center) {
-        KSpinner(size = size, label = label)
+        drawArc(trackColor, 0f, 360f, false, style = stroke, topLeft = topLeft, size = arcSize)
+        drawArc(color, angle, 80f, false, style = stroke, topLeft = topLeft, size = arcSize)
     }
 }

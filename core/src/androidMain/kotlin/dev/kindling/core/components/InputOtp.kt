@@ -27,155 +27,232 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 // ─────────────────────────────────────────────
-//  KInputOtp
+//  InputOTP state
 // ─────────────────────────────────────────────
 
 /**
- * Shadcn/ui-style OTP / PIN input.
+ * State holder for the OTP input — created by [rememberInputOTPState].
  *
- * Renders [length] individual digit cells backed by a single hidden
- * [BasicTextField].  The active cell shows an animated blinking caret.
+ * Matches the slot-based API of the web `InputOTP` component backed by
+ * the `input-otp` library.
+ */
+@Stable
+class InputOTPState internal constructor(
+    initialValue: String,
+    val length: Int,
+    val onValueChange: (String) -> Unit
+) {
+    var value   by mutableStateOf(initialValue.filter { it.isDigit() }.take(length))
+    var focused by mutableStateOf(false)
+
+    val slots: List<InputOTPSlotState> get() = List(length) { i ->
+        InputOTPSlotState(
+            char        = value.getOrNull(i),
+            isActive    = focused && i == value.length.coerceAtMost(length - 1),
+            hasFakeCaret = focused && i == value.length.coerceAtMost(length - 1) && value.getOrNull(i) == null
+        )
+    }
+}
+
+@Stable
+data class InputOTPSlotState(
+    val char: Char?,
+    val isActive: Boolean,
+    val hasFakeCaret: Boolean
+)
+
+@Composable
+fun rememberInputOTPState(
+    value: String = "",
+    length: Int = 6,
+    onValueChange: (String) -> Unit = {}
+): InputOTPState = remember(length) { InputOTPState(value, length, onValueChange) }
+    .also { LaunchedEffect(value) { it.value = value.filter { c -> c.isDigit() }.take(length) } }
+
+// ─────────────────────────────────────────────
+//  InputOTP (root)
+// ─────────────────────────────────────────────
+
+/**
+ * Shadcn/ui-style OTP / PIN input root — mirrors `InputOTP` from `input-otp.tsx`.
  *
- * Mirrors `input-otp.tsx` (input-otp library), replicating the visual of
- * `InputOTPGroup` + `InputOTPSlot` + `InputOTPSeparator`.
+ * Place [InputOTPGroup]s (with [InputOTPSlot]s) and [InputOTPSeparator]s inside.
  *
  * ```kotlin
- * var pin by remember { mutableStateOf("") }
+ * val otpState = rememberInputOTPState(value = pin, length = 6) { pin = it }
  *
- * KInputOtp(
- *     value        = pin,
- *     onValueChange = { pin = it },
- *     length       = 6
- * )
- *
- * // With separator after position 3 (0-indexed)
- * KInputOtp(
- *     value         = pin,
- *     onValueChange = { pin = it },
- *     length        = 6,
- *     separatorAt   = setOf(2)
- * )
+ * InputOTP(state = otpState) {
+ *     InputOTPGroup {
+ *         repeat(3) { i -> InputOTPSlot(state = otpState, index = i) }
+ *     }
+ *     InputOTPSeparator()
+ *     InputOTPGroup {
+ *         repeat(3) { i -> InputOTPSlot(state = otpState, index = i + 3) }
+ *     }
+ * }
  * ```
- *
- * @param value         Current OTP string (digits only, length ≤ [length]).
- * @param onValueChange Callback with the new value on each keystroke.
- * @param length        Total number of digit slots.
- * @param separatorAt   0-based slot indices *after* which a separator dash is drawn.
- * @param isError       Highlights slots with error styling.
- * @param enabled       Whether the input is interactive.
- * @param modifier      Applied to the outer container row.
  */
 @Composable
-fun KInputOtp(
-    value: String,
-    onValueChange: (String) -> Unit,
-    length: Int = 6,
-    separatorAt: Set<Int> = emptySet(),
-    isError: Boolean = false,
+fun InputOTP(
+    state: InputOTPState,
+    modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    modifier: Modifier = Modifier
+    isError: Boolean = false,
+    content: @Composable RowScope.() -> Unit
 ) {
-    val cs = MaterialTheme.colorScheme
     val focusRequester = remember { FocusRequester() }
-    var isFocused by remember { mutableStateOf(false) }
 
-    // Hidden backing field
+    // Hidden backing text field
     BasicTextField(
-        value         = value.filter { it.isDigit() }.take(length),
+        value         = state.value,
         onValueChange = { raw ->
-            val digits = raw.filter { it.isDigit() }.take(length)
-            onValueChange(digits)
+            val digits = raw.filter { it.isDigit() }.take(state.length)
+            state.value = digits
+            state.onValueChange(digits)
         },
         enabled       = enabled,
+        singleLine    = true,
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.NumberPassword,
             imeAction    = ImeAction.Done
         ),
-        cursorBrush = SolidColor(Color.Transparent), // caret handled in slot
+        cursorBrush = SolidColor(Color.Transparent),
         textStyle   = TextStyle(color = Color.Transparent, fontSize = 1.sp),
         modifier    = Modifier
-            .size(1.dp)  // keep it out of visual layout
+            .size(1.dp)
             .focusRequester(focusRequester)
-            .onFocusChanged { isFocused = it.isFocused },
-        decorationBox = { /* invisible */ }
+            .onFocusChanged { state.focused = it.isFocused }
     )
 
-    // Visual slots row
+    // Visual row
     Row(
-        modifier          = modifier,
+        modifier              = modifier,
         horizontalArrangement = Arrangement.spacedBy(0.dp),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment     = Alignment.CenterVertically
     ) {
-        repeat(length) { index ->
-            val char    = value.getOrNull(index)
-            val isActive = isFocused && index == value.length.coerceAtMost(length - 1)
+        // Pass click-to-focus down via custom local
+        CompositionLocalProvider(LocalOTPFocusRequester provides focusRequester) {
+            content()
+        }
+    }
+}
 
-            OtpSlot(
-                char     = char,
-                isActive = isActive,
-                isError  = isError,
-                isFirst  = index == 0,
-                isLast   = index == length - 1,
-                onClick  = { if (enabled) focusRequester.requestFocus() }
-            )
+// Internal composition local so slots can request focus
+private val LocalOTPFocusRequester = compositionLocalOf<FocusRequester?> { null }
 
-            if (index in separatorAt) {
-                OtpSeparator()
-            }
+// ─────────────────────────────────────────────
+//  InputOTPGroup
+// ─────────────────────────────────────────────
+
+/**
+ * Groups consecutive [InputOTPSlot]s into a visually joined block.
+ * Mirrors `InputOTPGroup`.
+ *
+ * ```kotlin
+ * InputOTPGroup {
+ *     InputOTPSlot(state, 0)
+ *     InputOTPSlot(state, 1)
+ *     InputOTPSlot(state, 2)
+ * }
+ * ```
+ */
+@Composable
+fun RowScope.InputOTPGroup(
+    modifier: Modifier = Modifier,
+    content: @Composable RowScope.() -> Unit
+) {
+    Row(
+        modifier              = modifier,
+        verticalAlignment     = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(0.dp),
+        content               = content
+    )
+}
+
+// ─────────────────────────────────────────────
+//  InputOTPSlot
+// ─────────────────────────────────────────────
+
+/**
+ * Individual digit slot — mirrors `InputOTPSlot`.
+ *
+ * The active slot shows a blinking caret when empty.
+ * Borders are joined (rounded only on outermost edges of the group).
+ *
+ * @param state  The shared [InputOTPState].
+ * @param index  Zero-based slot index (0 … length - 1).
+ * @param isFirst Whether this is the leftmost slot in its group.
+ * @param isLast  Whether this is the rightmost slot in its group.
+ */
+@Composable
+fun RowScope.InputOTPSlot(
+    state: InputOTPState,
+    index: Int,
+    modifier: Modifier = Modifier,
+    isFirst: Boolean = false,
+    isLast: Boolean = false
+) {
+    val cs           = MaterialTheme.colorScheme
+    val slotState    = state.slots.getOrNull(index) ?: return
+    val focusRequest = LocalOTPFocusRequester.current
+
+    val borderColor = when {
+        slotState.isActive -> cs.primary
+        else               -> cs.outline
+    }
+    val borderWidth = if (slotState.isActive) 2.dp else 1.dp
+
+    val shape = RoundedCornerShape(
+        topStart    = if (isFirst) 6.dp else 0.dp,
+        bottomStart = if (isFirst) 6.dp else 0.dp,
+        topEnd      = if (isLast)  6.dp else 0.dp,
+        bottomEnd   = if (isLast)  6.dp else 0.dp
+    )
+
+    Box(
+        modifier = modifier
+            .size(width = 32.dp, height = 40.dp)
+            .clip(shape)
+            .background(cs.surface)
+            .border(borderWidth, borderColor, shape)
+            .clickable { focusRequest?.requestFocus() },
+        contentAlignment = Alignment.Center
+    ) {
+        when {
+            slotState.char != null ->
+                Text(
+                    text      = slotState.char.toString(),
+                    fontSize  = 14.sp,
+                    color     = cs.onSurface,
+                    textAlign = TextAlign.Center
+                )
+            slotState.hasFakeCaret -> BlinkingOTPCaret(color = cs.onSurface)
         }
     }
 }
 
 // ─────────────────────────────────────────────
-//  Internal — single slot cell
+//  InputOTPSeparator
 // ─────────────────────────────────────────────
 
+/**
+ * Separator dash between [InputOTPGroup]s — mirrors `InputOTPSeparator`.
+ *
+ * ```kotlin
+ * InputOTPSeparator()
+ * ```
+ */
 @Composable
-private fun OtpSlot(
-    char: Char?,
-    isActive: Boolean,
-    isError: Boolean,
-    isFirst: Boolean,
-    isLast: Boolean,
-    onClick: () -> Unit
-) {
-    val cs = MaterialTheme.colorScheme
-
-    val borderColor = when {
-        isError  -> cs.error
-        isActive -> cs.primary
-        else     -> cs.outline
-    }
-
-    val borderWidth = if (isActive) 2.dp else 1.dp
-
-    // Shape: rounded only on the outside edges to create a joined-slot look
-    val shape = RoundedCornerShape(
-        topStart     = if (isFirst) 4.dp else 0.dp,
-        bottomStart  = if (isFirst) 4.dp else 0.dp,
-        topEnd       = if (isLast)  4.dp else 0.dp,
-        bottomEnd    = if (isLast)  4.dp else 0.dp
-    )
-
+fun RowScope.InputOTPSeparator(modifier: Modifier = Modifier) {
     Box(
-        modifier = Modifier
-            .size(width = 32.dp, height = 40.dp)
-            .clip(shape)
-            .background(cs.surface)
-            .border(borderWidth, borderColor, shape)
-            .clickable { onClick() },
+        modifier         = modifier.padding(horizontal = 6.dp),
         contentAlignment = Alignment.Center
     ) {
-        if (char != null) {
-            Text(
-                text      = char.toString(),
-                fontSize  = 14.sp,
-                color     = cs.onSurface,
-                textAlign = TextAlign.Center
-            )
-        } else if (isActive) {
-            BlinkingCaret(color = cs.onSurface)
-        }
+        Text(
+            text     = "–",
+            fontSize = 16.sp,
+            color    = MaterialTheme.colorScheme.onSurfaceVariant
+        )
     }
 }
 
@@ -184,13 +261,13 @@ private fun OtpSlot(
 // ─────────────────────────────────────────────
 
 @Composable
-private fun BlinkingCaret(color: Color) {
-    val infinite = rememberInfiniteTransition(label = "caret")
+private fun BlinkingOTPCaret(color: Color) {
+    val infinite = rememberInfiniteTransition(label = "otp-caret")
     val alpha by infinite.animateFloat(
         initialValue  = 1f,
         targetValue   = 0f,
         animationSpec = infiniteRepeatable(
-            animation  = tween(durationMillis = 1_000, easing = LinearEasing),
+            animation  = tween(1_000, easing = LinearEasing),
             repeatMode = RepeatMode.Reverse
         ),
         label = "caretAlpha"
@@ -200,53 +277,5 @@ private fun BlinkingCaret(color: Color) {
             .width(1.5.dp)
             .height(18.dp)
             .background(color.copy(alpha = alpha))
-    )
-}
-
-// ─────────────────────────────────────────────
-//  Internal — separator
-// ─────────────────────────────────────────────
-
-@Composable
-private fun OtpSeparator() {
-    Box(
-        modifier         = Modifier
-            .padding(horizontal = 6.dp)
-            .width(12.dp)
-            .height(1.dp)
-            .background(MaterialTheme.colorScheme.onSurfaceVariant),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text      = "-",
-            fontSize  = 14.sp,
-            color     = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center
-        )
-    }
-}
-
-// ─────────────────────────────────────────────
-//  Group / slot convenience wrappers
-//  (mirrors InputOTPGroup / InputOTPSlot as
-//   standalone composables for custom layouts)
-// ─────────────────────────────────────────────
-
-/**
- * Groups a set of [KInputOtp] slots visually — adds a shared border radius
- * to a horizontally arranged block of slots.
- *
- * For most use-cases prefer [KInputOtp] directly.
- */
-@Composable
-fun KInputOtpGroup(
-    modifier: Modifier = Modifier,
-    content: @Composable RowScope.() -> Unit
-) {
-    Row(
-        modifier              = modifier,
-        verticalAlignment     = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(0.dp),
-        content               = content
     )
 }

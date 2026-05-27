@@ -22,21 +22,160 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 
 // ─────────────────────────────────────────────
-//  Toaster singleton
+//  Toast  (single toast item)
 // ─────────────────────────────────────────────
 
 /**
- * Global toast dispatcher.
+ * Renders a single toast notification.
  *
- * Call from anywhere; [KToasterHost] must be present once in the composable tree.
+ * Mirrors the individual toast card from shadcn/ui `sonner.tsx`.
+ * Typically not used directly — prefer [Toaster] + [KToastManager].
  *
  * ```kotlin
- * KToaster.success("Saved!")
- * KToaster.error("Upload failed", "Please try again.")
- * KToaster.show("Event created", actionLabel = "Undo") { /* undo */ }
+ * Toast(
+ *     data     = KToastData(message = "Saved!", type = KToastType.Success),
+ *     onClose  = { }
+ * )
  * ```
  */
-object KToaster {
+@Composable
+fun Toast(
+    data: KToastData,
+    onClose: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val cs = MaterialTheme.colorScheme
+
+    data class ToastStyle(val bg: Color, val icon: Color, val text: Color)
+
+    val style = when (data.type) {
+        KToastType.Success -> ToastStyle(Color(0xFF166534), Color(0xFF4ADE80), Color(0xFFDCFCE7))
+        KToastType.Error   -> ToastStyle(cs.errorContainer, cs.error, cs.onErrorContainer)
+        KToastType.Warning -> ToastStyle(Color(0xFF78350F), Color(0xFFFBBF24), Color(0xFFFEF3C7))
+        KToastType.Info    -> ToastStyle(cs.primaryContainer, cs.primary, cs.onPrimaryContainer)
+        KToastType.Default -> ToastStyle(cs.surface, cs.onSurface, cs.onSurface)
+    }
+
+    val icon = when (data.type) {
+        KToastType.Success -> Icons.Default.Check
+        KToastType.Error   -> Icons.Default.Close
+        KToastType.Warning -> Icons.Default.Warning
+        KToastType.Info    -> Icons.Default.Info
+        KToastType.Default -> null
+    }
+
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .shadow(6.dp, RoundedCornerShape(10.dp))
+            .clip(RoundedCornerShape(10.dp))
+            .background(style.bg)
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalAlignment     = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        if (icon != null) {
+            Icon(icon, contentDescription = null, tint = style.icon, modifier = Modifier.size(18.dp))
+        }
+
+        Column(modifier = Modifier.weight(1f)) {
+            Text(data.message, fontSize = 14.sp, fontWeight = FontWeight.Medium, color = style.text)
+            if (data.description != null) {
+                Text(data.description, fontSize = 12.sp, color = style.text.copy(alpha = .8f))
+            }
+        }
+
+        if (data.actionLabel != null && data.onAction != null) {
+            TextButton(onClick = { data.onAction.invoke(); onClose() }) {
+                Text(data.actionLabel, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = style.icon)
+            }
+        }
+
+        // Close button — uses KButton
+        KButton(
+            onClick  = onClose,
+            variant  = KButtonVariant.Ghost,
+            size     = KButtonSize.IconXs,
+            modifier = Modifier.size(20.dp)
+        ) {
+            Icon(
+                Icons.Default.Close,
+                contentDescription = "Dismiss",
+                tint     = style.text.copy(alpha = .7f),
+                modifier = Modifier.size(14.dp)
+            )
+        }
+    }
+}
+
+// ─────────────────────────────────────────────
+//  Toaster  (host — place once at root)
+// ─────────────────────────────────────────────
+
+/**
+ * Places the toast stack in your composable tree.
+ *
+ * Place **once** at the root, typically overlaid on your Scaffold / NavHost.
+ * Call [KToastManager.show] / [KToastManager.success] etc. from anywhere.
+ *
+ * Mirrors shadcn/ui `Toaster` backed by Sonner.
+ *
+ * ```kotlin
+ * Box(Modifier.fillMaxSize()) {
+ *     NavHost(…)
+ *     Toaster()
+ * }
+ * ```
+ */
+@Composable
+fun Toaster(
+    modifier: Modifier = Modifier,
+    maxVisible: Int = 3,
+    alignment: Alignment = Alignment.BottomCenter
+) {
+    val toasts = remember { mutableStateListOf<KToastData>() }
+
+    LaunchedEffect(Unit) {
+        KToastManager.flow.collect { toast ->
+            toasts.add(0, toast)
+            if (toasts.size > maxVisible) toasts.removeLastOrNull()
+        }
+    }
+
+    Box(
+        modifier         = modifier.fillMaxSize(),
+        contentAlignment = alignment
+    ) {
+        Column(
+            modifier            = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 24.dp, start = 16.dp, end = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            toasts.forEach { toast ->
+                key(toast.id) {
+                    ToastAnimatedItem(toast = toast, onClose = { toasts.remove(toast) })
+                }
+            }
+        }
+    }
+}
+
+// ─────────────────────────────────────────────
+//  KToastManager  (global dispatcher)
+// ─────────────────────────────────────────────
+
+/**
+ * Global toast dispatcher — call from anywhere in your app.
+ *
+ * ```kotlin
+ * KToastManager.success("Saved!")
+ * KToastManager.error("Upload failed", "Please try again.")
+ * KToastManager.show("Event created", actionLabel = "Undo") { /* undo */ }
+ * ```
+ */
+object KToastManager {
     private val _flow = MutableSharedFlow<KToastData>(extraBufferCapacity = 8)
     val flow = _flow.asSharedFlow()
 
@@ -60,63 +199,22 @@ object KToaster {
         )
     }
 
-    fun success(message: String, description: String? = null) = show(message, description, KToastType.Success)
-    fun error(message: String, description: String? = null)   = show(message, description, KToastType.Error)
-    fun warning(message: String, description: String? = null) = show(message, description, KToastType.Warning)
-    fun info(message: String, description: String? = null)    = show(message, description, KToastType.Info)
+    fun success(message: String, description: String? = null) =
+        show(message, description, KToastType.Success)
+    fun error(message: String, description: String? = null) =
+        show(message, description, KToastType.Error)
+    fun warning(message: String, description: String? = null) =
+        show(message, description, KToastType.Warning)
+    fun info(message: String, description: String? = null) =
+        show(message, description, KToastType.Info)
 }
 
 // ─────────────────────────────────────────────
-//  Host — place once at root
-// ─────────────────────────────────────────────
-
-/**
- * Place **once** at the root of your composable tree.
- *
- * ```kotlin
- * Box(Modifier.fillMaxSize()) {
- *     // … your NavHost / Scaffold …
- *     KToasterHost()
- * }
- * ```
- */
-@Composable
-fun KToasterHost(
-    modifier: Modifier = Modifier,
-    maxVisible: Int = 3
-) {
-    val toasts = remember { mutableStateListOf<KToastData>() }
-
-    LaunchedEffect(Unit) {
-        KToaster.flow.collect { toast ->
-            toasts.add(0, toast)
-            if (toasts.size > maxVisible) toasts.removeLastOrNull()
-        }
-    }
-
-    Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
-        Column(
-            modifier            = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 24.dp, start = 16.dp, end = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            toasts.forEach { toast ->
-                key(toast.id) {
-                    ToastItem(toast = toast, onClose = { toasts.remove(toast) })
-                }
-            }
-        }
-    }
-}
-
-// ─────────────────────────────────────────────
-//  Internal items
+//  Internal animated wrapper
 // ─────────────────────────────────────────────
 
 @Composable
-private fun ToastItem(toast: KToastData, onClose: () -> Unit) {
+private fun ToastAnimatedItem(toast: KToastData, onClose: () -> Unit) {
     var visible by remember { mutableStateOf(true) }
 
     LaunchedEffect(toast.id) {
@@ -131,80 +229,9 @@ private fun ToastItem(toast: KToastData, onClose: () -> Unit) {
         enter   = slideInVertically(tween(300)) { it } + fadeIn(tween(300)),
         exit    = slideOutVertically(tween(300)) { it } + fadeOut(tween(300))
     ) {
-        ToastCard(toast = toast, onClose = {
-            visible = false
-            onClose()
-        })
-    }
-}
-
-@Composable
-private fun ToastCard(toast: KToastData, onClose: () -> Unit) {
-    val cs = MaterialTheme.colorScheme
-
-    // Resolve semantic colours — fall back to Material3 roles for full theme compat.
-    // Success and Warning intentionally use hard-coded green/amber as M3 doesn't
-    // expose those roles; callers can override via a custom KToastData extension if needed.
-    data class ToastStyle(val bg: Color, val icon: Color, val text: Color)
-
-    val style = when (toast.type) {
-        KToastType.Success -> ToastStyle(
-            bg   = Color(0xFF166534),
-            icon = Color(0xFF4ADE80),
-            text = Color(0xFFDCFCE7)
+        Toast(
+            data    = toast,
+            onClose = { visible = false; onClose() }
         )
-        KToastType.Error   -> ToastStyle(cs.errorContainer, cs.error, cs.onErrorContainer)
-        KToastType.Warning -> ToastStyle(
-            bg   = Color(0xFF78350F),
-            icon = Color(0xFFFBBF24),
-            text = Color(0xFFFEF3C7)
-        )
-        KToastType.Info    -> ToastStyle(cs.primaryContainer, cs.primary, cs.onPrimaryContainer)
-        KToastType.Default -> ToastStyle(cs.surface, cs.onSurface, cs.onSurface)
-    }
-
-    val icon = when (toast.type) {
-        KToastType.Success -> Icons.Default.Check
-        KToastType.Error   -> Icons.Default.Close
-        KToastType.Warning -> Icons.Default.Warning
-        KToastType.Info    -> Icons.Default.Info
-        KToastType.Default -> null
-    }
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .shadow(6.dp, RoundedCornerShape(10.dp))
-            .clip(RoundedCornerShape(10.dp))
-            .background(style.bg)
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-        verticalAlignment     = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        if (icon != null) {
-            Icon(icon, contentDescription = null, tint = style.icon, modifier = Modifier.size(18.dp))
-        }
-
-        Column(modifier = Modifier.weight(1f)) {
-            Text(toast.message, fontSize = 14.sp, fontWeight = FontWeight.Medium, color = style.text)
-            if (toast.description != null) {
-                Text(toast.description, fontSize = 12.sp, color = style.text.copy(alpha = 0.8f))
-            }
-        }
-
-        if (toast.actionLabel != null && toast.onAction != null) {
-            TextButton(onClick = { toast.onAction.invoke(); onClose() }) {
-                Text(toast.actionLabel, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = style.icon)
-            }
-        }
-
-        IconButton(onClick = onClose, modifier = Modifier.size(20.dp)) {
-            Icon(
-                Icons.Default.Close,
-                contentDescription = "Dismiss",
-                tint     = style.text.copy(alpha = 0.7f),
-                modifier = Modifier.size(14.dp)
-            )
-        }
     }
 }

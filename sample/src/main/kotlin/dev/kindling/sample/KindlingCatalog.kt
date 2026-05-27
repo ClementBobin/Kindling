@@ -41,8 +41,10 @@ fun KindlingCatalog() {
         CardSection()
         CarouselSection()
         ComboboxSection()
+        DataTableSection()
         DatePickerSection()
         DialogSection()
+        DirectionSection()
         EmptySection()
         InputSection()
         InputGroupSection()
@@ -74,7 +76,7 @@ private fun SectionHeader(title: String) {
 @Composable
 private fun SubLabel(text: String) {
     Text(
-        text = text,
+        text  = text,
         style = MaterialTheme.typography.labelSmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant
     )
@@ -91,31 +93,22 @@ private fun AspectRatioSection() {
         SubLabel("16 / 9")
         KAspectRatio(ratio = 16f / 9f) {
             Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.primaryContainer)) {
-                Text(
-                    "16 : 9",
-                    modifier = Modifier.align(Alignment.Center),
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
-                )
+                Text("16 : 9", modifier = Modifier.align(Alignment.Center),
+                    color = MaterialTheme.colorScheme.onPrimaryContainer)
             }
         }
         SubLabel("1 / 1 (square)")
         KAspectRatio(ratio = 1f, modifier = Modifier.width(120.dp)) {
             Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.secondaryContainer)) {
-                Text(
-                    "1 : 1",
-                    modifier = Modifier.align(Alignment.Center),
-                    color = MaterialTheme.colorScheme.onSecondaryContainer
-                )
+                Text("1 : 1", modifier = Modifier.align(Alignment.Center),
+                    color = MaterialTheme.colorScheme.onSecondaryContainer)
             }
         }
         SubLabel("4 / 3")
         KAspectRatio(ratio = 4f / 3f) {
             Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.tertiaryContainer)) {
-                Text(
-                    "4 : 3",
-                    modifier = Modifier.align(Alignment.Center),
-                    color = MaterialTheme.colorScheme.onTertiaryContainer
-                )
+                Text("4 : 3", modifier = Modifier.align(Alignment.Center),
+                    color = MaterialTheme.colorScheme.onTertiaryContainer)
             }
         }
     }
@@ -129,7 +122,6 @@ private fun AspectRatioSection() {
 private fun AvatarSection() {
     SectionHeader("Avatar")
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-
         SubLabel("Sizes — Sm / Default / Lg")
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
             KAvatar(fallbackText = "CN", size = KAvatarSize.Sm)
@@ -192,7 +184,6 @@ private fun AvatarSection() {
 private fun ButtonSection() {
     SectionHeader("Button")
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-
         SubLabel("Variants")
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
             KButton(text = "Default",     onClick = {})
@@ -206,13 +197,10 @@ private fun ButtonSection() {
         }
 
         SubLabel("Sizes")
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            KButton(text = "xs-like Sm", onClick = {}, size = KButtonSize.Sm)
-            KButton(text = "Default",    onClick = {})
-            KButton(text = "Lg",         onClick = {}, size = KButtonSize.Lg)
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+            KButton(text = "Sm",      onClick = {}, size = KButtonSize.Sm)
+            KButton(text = "Default", onClick = {})
+            KButton(text = "Lg",      onClick = {}, size = KButtonSize.Lg)
             KButton(onClick = {}, size = KButtonSize.Icon) {
                 Icon(Icons.Default.Star, contentDescription = null)
             }
@@ -242,7 +230,6 @@ private fun ButtonSection() {
 private fun CalendarSection() {
     SectionHeader("Calendar")
     Column(verticalArrangement = Arrangement.spacedBy(24.dp)) {
-
         SubLabel("Single selection")
         var singleDate by remember { mutableStateOf<LocalDate?>(null) }
         KCalendar(
@@ -250,11 +237,8 @@ private fun CalendarSection() {
             selected       = singleDate,
             onSelectSingle = { singleDate = it }
         )
-        Text(
-            text  = "Selected: ${singleDate ?: "none"}",
-            fontSize = 12.sp,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
+        Text("Selected: ${singleDate ?: "none"}", fontSize = 12.sp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant)
 
         SubLabel("Range selection")
         var range by remember { mutableStateOf(KDateRange()) }
@@ -263,27 +247,36 @@ private fun CalendarSection() {
             selectedRange = range,
             onSelectRange = { range = it }
         )
-        Text(
-            text  = "From: ${range.from ?: "—"}  To: ${range.to ?: "—"}",
-            fontSize = 12.sp,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+        Text("From: ${range.from ?: "—"}  To: ${range.to ?: "—"}", fontSize = 12.sp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant)
+
+        SubLabel("Dropdown caption")
+        var dropDate by remember { mutableStateOf<LocalDate?>(null) }
+        KCalendar(
+            captionLayout  = KCalendarCaptionLayout.Dropdown,
+            selected       = dropDate,
+            onSelectSingle = { dropDate = it }
         )
 
         SubLabel("Two months side-by-side")
         var twoDate by remember { mutableStateOf<LocalDate?>(null) }
-        KCalendar(
-            numberOfMonths = 2,
-            selected       = twoDate,
-            onSelectSingle = { twoDate = it }
-        )
+        KCalendar(numberOfMonths = 2, selected = twoDate, onSelectSingle = { twoDate = it })
 
         SubLabel("Show outside days = false, show week numbers")
         var noOutside by remember { mutableStateOf<LocalDate?>(null) }
+        KCalendar(showOutsideDays = false, showWeekNumber = true,
+            selected = noOutside, onSelectSingle = { noOutside = it })
+
+        SubLabel("With presets")
+        var presetDate by remember { mutableStateOf<LocalDate?>(null) }
         KCalendar(
-            showOutsideDays = false,
-            showWeekNumber  = true,
-            selected        = noOutside,
-            onSelectSingle  = { noOutside = it }
+            selected       = presetDate,
+            onSelectSingle = { presetDate = it },
+            presets        = listOf(
+                KCalendarPreset("Today",    LocalDate.now()),
+                KCalendarPreset("Tomorrow", LocalDate.now().plusDays(1)),
+                KCalendarPreset("In a week", LocalDate.now().plusDays(7)),
+            )
         )
     }
 }
@@ -296,7 +289,6 @@ private fun CalendarSection() {
 private fun CardSection() {
     SectionHeader("Card")
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-
         SubLabel("Default size — header + content + footer")
         KCard {
             KCardHeader(
@@ -305,11 +297,9 @@ private fun CardSection() {
                 KCardTitle("Card Title")
                 KCardDescription("This is a short description of the card content.")
             }
-            KCardContent {
-                Text("Main body content goes here.", fontSize = 12.sp)
-            }
+            KCardContent { Text("Main body content goes here.", fontSize = 12.sp) }
             KCardFooter {
-                KButton(text = "Cancel", onClick = {}, variant = KButtonVariant.Outline)
+                KButton(text = "Cancel",  onClick = {}, variant = KButtonVariant.Outline)
                 KButton(text = "Confirm", onClick = {})
             }
         }
@@ -320,19 +310,13 @@ private fun CardSection() {
                 KCardTitle("Compact Card")
                 KCardDescription("Reduced padding for dense UIs.")
             }
-            KCardContent {
-                Text("Compact content.", fontSize = 12.sp)
-            }
+            KCardContent { Text("Compact content.", fontSize = 12.sp) }
         }
 
         SubLabel("Header only (no description)")
         KCard {
-            KCardHeader {
-                KCardTitle("Notifications")
-            }
-            KCardContent {
-                Text("You have 3 unread messages.", fontSize = 12.sp)
-            }
+            KCardHeader { KCardTitle("Notifications") }
+            KCardContent { Text("You have 3 unread messages.", fontSize = 12.sp) }
         }
     }
 }
@@ -346,12 +330,9 @@ private fun CarouselSection() {
     SectionHeader("Carousel")
     val items = listOf("Slide 1", "Slide 2", "Slide 3", "Slide 4")
     Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
-
         SubLabel("Horizontal — arrows + dots")
         KCarousel(pageCount = items.size) { page ->
-            Card(
-                modifier = Modifier.fillMaxWidth().height(120.dp)
-            ) {
+            Card(modifier = Modifier.fillMaxWidth().height(120.dp)) {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text(items[page], style = MaterialTheme.typography.titleMedium)
                 }
@@ -367,7 +348,7 @@ private fun CarouselSection() {
             }
         }
 
-        SubLabel("Vertical — arrows hidden (not applicable), dots visible")
+        SubLabel("Vertical (arrows disabled, dots visible)")
         KCarousel(
             pageCount   = items.size,
             orientation = KCarouselOrientation.Vertical,
@@ -391,32 +372,79 @@ private fun CarouselSection() {
 private fun ComboboxSection() {
     SectionHeader("Combobox")
     val frameworks = listOf(
-        KComboboxItem("next",    "Next.js"),
-        KComboboxItem("svelte",  "SvelteKit"),
-        KComboboxItem("nuxt",    "Nuxt.js"),
-        KComboboxItem("astro",   "Astro"),
-        KComboboxItem("remix",   "Remix"),
+        KComboboxItem("next",   "Next.js"),
+        KComboboxItem("svelte", "SvelteKit"),
+        KComboboxItem("nuxt",   "Nuxt.js"),
+        KComboboxItem("astro",  "Astro"),
+        KComboboxItem("remix",  "Remix"),
     )
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-
         SubLabel("Default — nothing selected")
         var sel1 by remember { mutableStateOf<KComboboxItem?>(null) }
-        KCombobox(items = frameworks, selected = sel1, onSelect = { sel1 = it }, placeholder = "Select framework…")
+        KCombobox(items = frameworks, selected = sel1, onSelect = { sel1 = it },
+            placeholder = "Select framework…")
 
         SubLabel("Pre-selected")
         var sel2 by remember { mutableStateOf<KComboboxItem?>(frameworks[1]) }
         KCombobox(items = frameworks, selected = sel2, onSelect = { sel2 = it })
 
+        SubLabel("Multiple selection")
+        var selM by remember { mutableStateOf(listOf(frameworks[0], frameworks[2])) }
+        KCombobox(
+            items            = frameworks,
+            multiple         = true,
+            selectedMultiple = selM,
+            onSelectMultiple = { selM = it }
+        )
+
         SubLabel("Disabled")
-        KCombobox(items = frameworks, selected = null, onSelect = {}, enabled = false, placeholder = "Disabled")
+        KCombobox(items = frameworks, selected = null, onSelect = {}, enabled = false,
+            placeholder = "Disabled")
 
         SubLabel("Custom empty label")
-        KCombobox(
-            items      = emptyList(),
-            selected   = null,
-            onSelect   = {},
-            emptyLabel = "No frameworks found."
+        KCombobox(items = emptyList(), selected = null, onSelect = {},
+            emptyLabel = "No frameworks found.")
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+//  DataTable
+// ─────────────────────────────────────────────────────────────────────────────
+
+private data class Payment(val id: String, val status: String, val method: String, val amount: Int)
+
+@Composable
+private fun DataTableSection() {
+    SectionHeader("DataTable")
+    val payments = listOf(
+        Payment("INV001", "Paid",    "Credit Card",   250),
+        Payment("INV002", "Pending", "PayPal",         150),
+        Payment("INV003", "Unpaid",  "Bank Transfer",  350),
+        Payment("INV004", "Paid",    "Credit Card",    450),
+        Payment("INV005", "Paid",    "PayPal",          50),
+    )
+    val columns = listOf(
+        KTableColumn<Payment>("id",     "Invoice", sortable = true) { Text(it.id,            fontSize = 13.sp) },
+        KTableColumn<Payment>("status", "Status",  sortable = true) { Text(it.status,         fontSize = 13.sp) },
+        KTableColumn<Payment>("method", "Method")                   { Text(it.method,         fontSize = 13.sp) },
+        KTableColumn<Payment>("amount", "Amount",  sortable = true) { Text("$${it.amount}",   fontSize = 13.sp) },
+    )
+    Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
+        SubLabel("Basic table with sortable columns")
+        KDataTable(
+            columns = columns,
+            data    = payments,
+            onSort  = { _, _ -> /* re-sort in real usage */ }
         )
+
+        SubLabel("Striped rows")
+        KDataTable(columns = columns, data = payments.take(3), striped = true)
+
+        SubLabel("Paginated (page size = 2)")
+        KDataTable(columns = columns, data = payments, pageSize = 2)
+
+        SubLabel("Empty state")
+        KDataTable(columns = columns, data = emptyList())
     }
 }
 
@@ -428,7 +456,6 @@ private fun ComboboxSection() {
 private fun DatePickerSection() {
     SectionHeader("DatePicker")
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-
         SubLabel("Basic")
         var date1 by remember { mutableStateOf<LocalDate?>(null) }
         KDatePicker(selected = date1, onSelect = { date1 = it }, placeholder = "Pick a date")
@@ -458,22 +485,23 @@ private fun DatePickerSection() {
 private fun DialogSection() {
     SectionHeader("Dialog")
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-
         SubLabel("AlertDialog — confirm")
         var alertOpen by remember { mutableStateOf(false) }
-        KButton(text = "Open Alert Dialog", onClick = { alertOpen = true }, variant = KButtonVariant.Outline)
+        KButton(text = "Open Alert Dialog", onClick = { alertOpen = true },
+            variant = KButtonVariant.Outline)
         KAlertDialog(
             open         = alertOpen,
             onDismiss    = { alertOpen = false },
             title        = "Are you absolutely sure?",
-            description  = "This action cannot be undone. This will permanently delete your account.",
+            description  = "This action cannot be undone.",
             confirmLabel = "Continue",
             onConfirm    = { alertOpen = false }
         )
 
         SubLabel("AlertDialog — destructive")
         var destructiveOpen by remember { mutableStateOf(false) }
-        KButton(text = "Open Destructive Dialog", onClick = { destructiveOpen = true }, variant = KButtonVariant.Destructive)
+        KButton(text = "Open Destructive Dialog", onClick = { destructiveOpen = true },
+            variant = KButtonVariant.Destructive)
         KAlertDialog(
             open          = destructiveOpen,
             onDismiss     = { destructiveOpen = false },
@@ -484,16 +512,6 @@ private fun DialogSection() {
             onConfirm     = { destructiveOpen = false }
         )
 
-        SubLabel("AlertDialog — no description")
-        var noDescOpen by remember { mutableStateOf(false) }
-        KButton(text = "Open (no description)", onClick = { noDescOpen = true }, variant = KButtonVariant.Outline)
-        KAlertDialog(
-            open         = noDescOpen,
-            onDismiss    = { noDescOpen = false },
-            title        = "Confirm action",
-            onConfirm    = { noDescOpen = false }
-        )
-
         SubLabel("Free-form Dialog")
         var freeOpen by remember { mutableStateOf(false) }
         var editName by remember { mutableStateOf("") }
@@ -501,15 +519,47 @@ private fun DialogSection() {
         KDialog(open = freeOpen, onDismiss = { freeOpen = false }) {
             KDialogHeader(
                 title       = "Edit Profile",
-                description = "Make changes to your profile here. Click save when you're done."
+                description = "Make changes to your profile here."
             )
             Spacer(Modifier.height(12.dp))
-            KFormField(label = "Name", value = editName, onValueChange = { editName = it }, placeholder = "Your name")
+            KFormField(label = "Name", value = editName, onValueChange = { editName = it },
+                placeholder = "Your name")
             Spacer(Modifier.height(8.dp))
             KDialogFooter {
-                KButton(text = "Cancel", onClick = { freeOpen = false }, variant = KButtonVariant.Outline)
+                KButton(text = "Cancel",       onClick = { freeOpen = false },
+                    variant = KButtonVariant.Outline)
                 KButton(text = "Save changes", onClick = { freeOpen = false })
             }
+        }
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+//  Direction
+// ─────────────────────────────────────────────────────────────────────────────
+
+@Composable
+private fun DirectionSection() {
+    SectionHeader("Direction (LTR / RTL)")
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        SubLabel("LTR")
+        KDirectionProvider(direction = androidx.compose.ui.unit.LayoutDirection.Ltr) {
+            KButton(text = "Left-to-right button", onClick = {})
+        }
+
+        SubLabel("RTL")
+        KDirectionProvider(direction = androidx.compose.ui.unit.LayoutDirection.Rtl) {
+            KButton(text = "زر من اليمين إلى اليسار", onClick = {})
+        }
+
+        SubLabel("Toggle via KDirectionManager")
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            KButton(text = "Set LTR", onClick = { KDirectionManager.set(androidx.compose.ui.unit.LayoutDirection.Ltr) },
+                variant = KButtonVariant.Outline, size = KButtonSize.Sm)
+            KButton(text = "Set RTL", onClick = { KDirectionManager.set(androidx.compose.ui.unit.LayoutDirection.Rtl) },
+                variant = KButtonVariant.Outline, size = KButtonSize.Sm)
+            KButton(text = "Toggle",  onClick = { KDirectionManager.toggle() },
+                size = KButtonSize.Sm)
         }
     }
 }
@@ -522,7 +572,6 @@ private fun DialogSection() {
 private fun EmptySection() {
     SectionHeader("Empty / EmptyState")
     Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
-
         SubLabel("Preset — icon + title + description + action")
         KEmptyState(
             icon        = Icons.Outlined.Info,
@@ -534,13 +583,13 @@ private fun EmptySection() {
 
         SubLabel("Preset — two actions")
         KEmptyState(
-            icon                = Icons.Outlined.Email,
-            title               = "Your inbox is empty",
-            description         = "Messages from your team will appear here.",
-            actionLabel         = "Invite teammates",
+            icon                 = Icons.Outlined.Email,
+            title                = "Your inbox is empty",
+            description          = "Messages from your team will appear here.",
+            actionLabel          = "Invite teammates",
             secondaryActionLabel = "Learn more",
-            onAction            = {},
-            onSecondaryAction   = {}
+            onAction             = {},
+            onSecondaryAction    = {}
         )
 
         SubLabel("Outlined")
@@ -565,18 +614,15 @@ private fun EmptySection() {
         KEmpty(outlined = true) {
             KEmptyHeader {
                 KEmptyMedia(variant = KEmptyMediaVariant.Icon) {
-                    Icon(
-                        Icons.Outlined.Info,
-                        contentDescription = null,
-                        tint               = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier           = Modifier.fillMaxSize()
-                    )
+                    Icon(Icons.Outlined.Info, null,
+                        tint     = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.fillMaxSize())
                 }
                 KEmptyTitle("Custom builder")
                 KEmptyDescription("Use KEmpty + KEmptyHeader + KEmptyContent for full control.")
             }
             KEmptyContent {
-                KButton(text = "Primary", onClick = {})
+                KButton(text = "Primary",   onClick = {})
                 KButton(text = "Secondary", onClick = {}, variant = KButtonVariant.Outline)
             }
         }
@@ -591,7 +637,6 @@ private fun EmptySection() {
 private fun InputSection() {
     SectionHeader("Input")
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-
         SubLabel("Default")
         var t1 by remember { mutableStateOf("") }
         KInput(value = t1, onValueChange = { t1 = it }, placeholder = "Placeholder text")
@@ -622,12 +667,8 @@ private fun InputSection() {
         )
 
         SubLabel("KFormField — disabled")
-        KFormField(
-            label         = "Read-only field",
-            value         = "Cannot edit this",
-            onValueChange = {},
-            enabled       = false
-        )
+        KFormField(label = "Read-only field", value = "Cannot edit this",
+            onValueChange = {}, enabled = false)
     }
 }
 
@@ -639,13 +680,10 @@ private fun InputSection() {
 private fun InputGroupSection() {
     SectionHeader("InputGroup")
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-
         SubLabel("Leading icon text addon")
         var ig1 by remember { mutableStateOf("") }
         KInputGroup {
-            KInputGroupAddon(align = KInputGroupAlign.InlineStart) {
-                KInputGroupText("@")
-            }
+            KInputGroupAddon(align = KInputGroupAlign.InlineStart) { KInputGroupText("@") }
             KInputGroupInput(value = ig1, onValueChange = { ig1 = it }, placeholder = "username")
         }
 
@@ -655,7 +693,8 @@ private fun InputGroupSection() {
             KInputGroupInput(value = ig2, onValueChange = { ig2 = it }, placeholder = "Search…")
             KInputGroupAddon(align = KInputGroupAlign.InlineEnd) {
                 KInputGroupButton(onClick = { ig2 = "" }) {
-                    Icon(Icons.Default.Star, contentDescription = "Clear", modifier = Modifier.size(14.dp))
+                    Icon(Icons.Default.Star, contentDescription = "Clear",
+                        modifier = Modifier.size(14.dp))
                 }
             }
         }
@@ -666,31 +705,29 @@ private fun InputGroupSection() {
             KInputGroupAddon(align = KInputGroupAlign.BlockStart) {
                 KInputGroupText("Website URL")
             }
-            KInputGroupInput(value = ig3, onValueChange = { ig3 = it }, placeholder = "https://example.com")
+            KInputGroupInput(value = ig3, onValueChange = { ig3 = it },
+                placeholder = "https://example.com")
         }
 
         SubLabel("Block-end hint")
         var ig4 by remember { mutableStateOf("") }
         KInputGroup {
             KInputGroupInput(value = ig4, onValueChange = { ig4 = it }, placeholder = "Amount")
-            KInputGroupAddon(align = KInputGroupAlign.BlockEnd) {
-                KInputGroupText("USD")
-            }
+            KInputGroupAddon(align = KInputGroupAlign.BlockEnd) { KInputGroupText("USD") }
         }
 
         SubLabel("Error state")
         var ig5 by remember { mutableStateOf("bad") }
         KInputGroup(isError = true) {
-            KInputGroupAddon(align = KInputGroupAlign.InlineStart) {
-                KInputGroupText("$")
-            }
+            KInputGroupAddon(align = KInputGroupAlign.InlineStart) { KInputGroupText("$") }
             KInputGroupInput(value = ig5, onValueChange = { ig5 = it }, isError = true)
         }
 
         SubLabel("Textarea variant")
         var ig6 by remember { mutableStateOf("") }
         KInputGroup {
-            KInputGroupTextarea(value = ig6, onValueChange = { ig6 = it }, placeholder = "Multi-line input…")
+            KInputGroupTextarea(value = ig6, onValueChange = { ig6 = it },
+                placeholder = "Multi-line input…")
         }
     }
 }
@@ -703,7 +740,6 @@ private fun InputGroupSection() {
 private fun InputOtpSection() {
     SectionHeader("InputOTP")
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-
         SubLabel("6-digit OTP")
         var otp1 by remember { mutableStateOf("") }
         KInputOtp(value = otp1, onValueChange = { otp1 = it }, length = 6)
@@ -741,7 +777,8 @@ private fun LabelSection() {
         KLabel("Disabled label", disabled = true)
 
         SubLabel("Paired with checkbox")
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             var checked by remember { mutableStateOf(false) }
             Checkbox(checked = checked, onCheckedChange = { checked = it })
             KLabel("Accept terms and conditions")
@@ -757,7 +794,6 @@ private fun LabelSection() {
 private fun MaskInputSection() {
     SectionHeader("MaskInput")
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-
         SubLabel("Phone — (###) ###-####")
         var phone by remember { mutableStateOf("") }
         KPhoneInput(value = phone, onValueChange = { phone = it })
@@ -780,7 +816,8 @@ private fun MaskInputSection() {
 
         SubLabel("Custom pattern — ##:##:##")
         var custom by remember { mutableStateOf("") }
-        KMaskInput(value = custom, onValueChange = { custom = it }, customPattern = "##:##:##", placeholder = "HH:MM:SS")
+        KMaskInput(value = custom, onValueChange = { custom = it },
+            customPattern = "##:##:##", placeholder = "HH:MM:SS")
 
         SubLabel("Currency")
         var currency by remember { mutableStateOf("") }
@@ -792,12 +829,8 @@ private fun MaskInputSection() {
 
         SubLabel("License plate (alphanumeric)")
         var plate by remember { mutableStateOf("") }
-        KMaskInput(
-            value         = plate,
-            onValueChange = { plate = it },
-            mask          = KMaskPattern.LicensePlate,
-            allowLetters  = true
-        )
+        KMaskInput(value = plate, onValueChange = { plate = it },
+            mask = KMaskPattern.LicensePlate, allowLetters = true)
 
         SubLabel("Error state")
         var errMask by remember { mutableStateOf("123") }
@@ -816,7 +849,6 @@ private fun MaskInputSection() {
 private fun PaginationSection() {
     SectionHeader("Pagination")
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-
         SubLabel("5 pages")
         var page5 by remember { mutableStateOf(1) }
         KPagination(currentPage = page5, totalPages = 5, onPageChange = { page5 = it })
@@ -827,25 +859,18 @@ private fun PaginationSection() {
 
         SubLabel("Large page (middle) — sibling count = 2")
         var pageMid by remember { mutableStateOf(10) }
-        KPagination(
-            currentPage  = pageMid,
-            totalPages   = 20,
-            siblingCount = 2,
-            onPageChange = { pageMid = it }
-        )
+        KPagination(currentPage = pageMid, totalPages = 20, siblingCount = 2,
+            onPageChange = { pageMid = it })
 
         SubLabel("No edge buttons")
         var pageNoEdge by remember { mutableStateOf(3) }
-        KPagination(
-            currentPage  = pageNoEdge,
-            totalPages   = 10,
-            showEdges    = false,
-            onPageChange = { pageNoEdge = it }
-        )
+        KPagination(currentPage = pageNoEdge, totalPages = 10, showEdges = false,
+            onPageChange = { pageNoEdge = it })
 
-        SubLabel("Single page — hidden (nothing rendered)")
+        SubLabel("Single page — hidden")
         KPagination(currentPage = 1, totalPages = 1, onPageChange = {})
-        Text("(nothing shown above — total pages = 1)", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text("(nothing shown above — total pages = 1)", fontSize = 12.sp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
 
@@ -857,7 +882,6 @@ private fun PaginationSection() {
 private fun PopoverSection() {
     SectionHeader("Popover")
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-
         SubLabel("Bottom / Center (default)")
         var open1 by remember { mutableStateOf(false) }
         KPopover(
@@ -881,11 +905,8 @@ private fun PopoverSection() {
             side      = KPopoverSide.Top,
             align     = KPopoverAlign.Start,
             trigger   = {
-                KButton(
-                    text    = "Top-Start Popover",
-                    onClick = { open2 = !open2 },
-                    variant = KButtonVariant.Outline
-                )
+                KButton(text = "Top-Start Popover", onClick = { open2 = !open2 },
+                    variant = KButtonVariant.Outline)
             }
         ) {
             KPopoverTitle("Top popover")
@@ -899,11 +920,8 @@ private fun PopoverSection() {
             onDismiss = { open3 = false },
             side      = KPopoverSide.Right,
             trigger   = {
-                KButton(
-                    text    = "Right Popover",
-                    onClick = { open3 = !open3 },
-                    variant = KButtonVariant.Secondary
-                )
+                KButton(text = "Right Popover", onClick = { open3 = !open3 },
+                    variant = KButtonVariant.Secondary)
             }
         ) {
             KPopoverDescription("Appears to the right of the button.")
@@ -918,12 +936,23 @@ private fun PopoverSection() {
 @Composable
 private fun SkeletonSection() {
     SectionHeader("Skeleton")
-    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-
-        SubLabel("Raw blocks — different shapes")
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        SubLabel("Text lines")
         KSkeleton(modifier = Modifier.fillMaxWidth().height(20.dp))
         KSkeleton(modifier = Modifier.fillMaxWidth(0.7f).height(14.dp))
-        KSkeleton(modifier = Modifier.size(48.dp), shape = CircleShape)
+        KSkeleton(modifier = Modifier.fillMaxWidth(0.5f).height(14.dp))
+
+        SubLabel("Avatar + text rows")
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
+            KSkeleton(modifier = Modifier.size(48.dp), shape = CircleShape)
+            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                KSkeleton(modifier = Modifier.width(120.dp).height(14.dp))
+                KSkeleton(modifier = Modifier.width(80.dp).height(12.dp))
+            }
+        }
+
+        SubLabel("Card placeholder")
+        KSkeleton(modifier = Modifier.fillMaxWidth().height(80.dp))
     }
 }
 
@@ -935,12 +964,8 @@ private fun SkeletonSection() {
 private fun SpinnerSection() {
     SectionHeader("Spinner")
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-
         SubLabel("Sizes — Sm / Default / Lg / Xl")
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(24.dp),
-            verticalAlignment     = Alignment.CenterVertically
-        ) {
+        Row(horizontalArrangement = Arrangement.spacedBy(24.dp), verticalAlignment = Alignment.CenterVertically) {
             KSpinner(size = KSpinnerSize.Sm)
             KSpinner(size = KSpinnerSize.Default)
             KSpinner(size = KSpinnerSize.Lg)
@@ -948,8 +973,10 @@ private fun SpinnerSection() {
         }
 
         SubLabel("With label")
-        KSpinner(size = KSpinnerSize.Default, label = "Loading…")
-        KSpinner(size = KSpinnerSize.Lg,      label = "Please wait…")
+        Row(horizontalArrangement = Arrangement.spacedBy(24.dp), verticalAlignment = Alignment.Top) {
+            KSpinner(size = KSpinnerSize.Default, label = "Loading…")
+            KSpinner(size = KSpinnerSize.Lg,      label = "Please wait…")
+        }
 
         SubLabel("Custom colour")
         Row(horizontalArrangement = Arrangement.spacedBy(16.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -978,13 +1005,12 @@ private fun SpinnerSection() {
 private fun StepperSection() {
     SectionHeader("Stepper")
     val steps = listOf(
-        KStep("Account",  "Create your account"),
-        KStep("Profile",  "Set up your profile"),
-        KStep("Review",   "Review your details"),
-        KStep("Done",     "All set!")
+        KStep("Account", "Create your account"),
+        KStep("Profile", "Set up your profile"),
+        KStep("Review",  "Review your details"),
+        KStep("Done",    "All set!")
     )
     Column(verticalArrangement = Arrangement.spacedBy(24.dp)) {
-
         SubLabel("Horizontal — step 0 (first)")
         KStepper(steps = steps, currentStep = 0)
 
@@ -998,19 +1024,10 @@ private fun StepperSection() {
         var clickStep by remember { mutableStateOf(1) }
         KStepper(steps = steps, currentStep = clickStep, onStepClick = { clickStep = it })
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            KButton(
-                text    = "Back",
-                onClick = { if (clickStep > 0) clickStep-- },
-                variant = KButtonVariant.Outline,
-                size    = KButtonSize.Sm,
-                enabled = clickStep > 0
-            )
-            KButton(
-                text    = "Next",
-                onClick = { if (clickStep < steps.lastIndex) clickStep++ },
-                size    = KButtonSize.Sm,
-                enabled = clickStep < steps.lastIndex
-            )
+            KButton(text = "Back", onClick = { if (clickStep > 0) clickStep-- },
+                variant = KButtonVariant.Outline, size = KButtonSize.Sm, enabled = clickStep > 0)
+            KButton(text = "Next", onClick = { if (clickStep < steps.lastIndex) clickStep++ },
+                size = KButtonSize.Sm, enabled = clickStep < steps.lastIndex)
         }
 
         SubLabel("Vertical")
@@ -1041,14 +1058,13 @@ private fun StepperSection() {
 private fun TextareaSection() {
     SectionHeader("Textarea")
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-
         SubLabel("Default (auto-grow)")
         var ta1 by remember { mutableStateOf("") }
         KTextarea(value = ta1, onValueChange = { ta1 = it }, placeholder = "Type your message here.")
 
         SubLabel("With value")
         KTextarea(
-            value         = "This is some pre-filled content that spans multiple lines to show the auto-sizing behaviour.",
+            value         = "Pre-filled content that spans multiple lines to show the auto-sizing behaviour.",
             onValueChange = {}
         )
 
@@ -1060,11 +1076,13 @@ private fun TextareaSection() {
 
         SubLabel("Custom minLines = 4")
         var ta2 by remember { mutableStateOf("") }
-        KTextarea(value = ta2, onValueChange = { ta2 = it }, placeholder = "Starts at 4 lines tall.", minLines = 4)
+        KTextarea(value = ta2, onValueChange = { ta2 = it },
+            placeholder = "Starts at 4 lines tall.", minLines = 4)
 
         SubLabel("maxLines = 3 (scrolls after 3 lines)")
         var ta3 by remember { mutableStateOf("") }
-        KTextarea(value = ta3, onValueChange = { ta3 = it }, placeholder = "Capped at 3 visible lines.", maxLines = 3)
+        KTextarea(value = ta3, onValueChange = { ta3 = it },
+            placeholder = "Capped at 3 visible lines.", maxLines = 3)
     }
 }
 
@@ -1078,15 +1096,23 @@ private fun ToasterSection() {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         SubLabel("Trigger toasts — KToasterHost must be in the root composition")
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            KButton(text = "Default", onClick = { KToaster.show("Event created.") }, variant = KButtonVariant.Outline)
-            KButton(text = "Success", onClick = { KToaster.success("Saved!", "Your changes have been saved.") })
+            KButton(text = "Default", onClick = { KToaster.show("Event created.") },
+                variant = KButtonVariant.Outline)
+            KButton(text = "Success",
+                onClick = { KToaster.success("Saved!", "Your changes have been saved.") })
         }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            KButton(text = "Error",   onClick = { KToaster.error("Uh oh!", "Something went wrong.") }, variant = KButtonVariant.Destructive)
-            KButton(text = "Warning", onClick = { KToaster.warning("Low disk space.") }, variant = KButtonVariant.Secondary)
+            KButton(text = "Error",
+                onClick = { KToaster.error("Uh oh!", "Something went wrong.") },
+                variant = KButtonVariant.Destructive)
+            KButton(text = "Warning",
+                onClick = { KToaster.warning("Low disk space.") },
+                variant = KButtonVariant.Secondary)
         }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            KButton(text = "Info",    onClick = { KToaster.info("New version available.") }, variant = KButtonVariant.Outline)
+            KButton(text = "Info",
+                onClick = { KToaster.info("New version available.") },
+                variant = KButtonVariant.Outline)
             KButton(
                 text    = "With action",
                 onClick = { KToaster.show("Event deleted.", actionLabel = "Undo") },
