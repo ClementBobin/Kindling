@@ -1,0 +1,2489 @@
+{
+  "module": "core",
+  "title": "Core",
+  "artifact": "io.github.clementbobin.kindling:core",
+  "description": "Shadcn/ui-style Jetpack Compose UI components, fully theme-aware via Material3.",
+  "pages": [
+    {
+      "id": "KAlertDialog",
+      "title": "KAlertDialog",
+      "primary": "KAlertDialog",
+      "tags": [
+        "overlay"
+      ],
+      "sourcePath": "core/src/androidMain/kotlin/dev/kindling/core/components/Dialog.kt",
+      "api": [
+        {
+          "name": "KAlertDialog",
+          "signature": "fun KAlertDialog(open: Boolean, onDismiss: () -> Unit, title: String, description: String? = null, confirmLabel: String = \"Continue\", cancelLabel: String = \"Cancel\", isDestructive: Boolean = false, onConfirm: () -> Unit, // Keep usePlatformDefaultWidth = true (the default) to avoid measurement // crashes on devices that don't support custom-width dialogs in all // configurations. Callers can override if they need it. properties: DialogProperties = DialogProperties(usePlatformDefaultWidth = true))",
+          "params": [
+            {
+              "name": "open",
+              "type": "Boolean"
+            },
+            {
+              "name": "onDismiss",
+              "type": "() -> Unit"
+            },
+            {
+              "name": "title",
+              "type": "String"
+            },
+            {
+              "name": "description",
+              "type": "String?",
+              "default": "null"
+            },
+            {
+              "name": "confirmLabel",
+              "type": "String",
+              "default": "\"Continue\""
+            },
+            {
+              "name": "cancelLabel",
+              "type": "String",
+              "default": "\"Cancel\""
+            },
+            {
+              "name": "isDestructive",
+              "type": "Boolean",
+              "default": "false"
+            },
+            {
+              "name": "onConfirm",
+              "type": "() -> Unit"
+            },
+            {
+              "name": "// Keep usePlatformDefaultWidth = true (the default) to avoid measurement\n    // crashes on devices that don't support custom-width dialogs in all\n    // configurations. Callers can override if they need it.\n    properties",
+              "type": "DialogProperties",
+              "default": "DialogProperties(usePlatformDefaultWidth = true)"
+            }
+          ],
+          "examples": []
+        },
+        {
+          "name": "KDialog",
+          "signature": "fun KDialog(open: Boolean, onDismiss: () -> Unit, properties: DialogProperties = DialogProperties(usePlatformDefaultWidth = false), content: @Composable ColumnScope.() -> Unit)",
+          "params": [
+            {
+              "name": "open",
+              "type": "Boolean"
+            },
+            {
+              "name": "onDismiss",
+              "type": "() -> Unit"
+            },
+            {
+              "name": "properties",
+              "type": "DialogProperties",
+              "default": "DialogProperties(usePlatformDefaultWidth = false)"
+            },
+            {
+              "name": "content",
+              "type": "@Composable ColumnScope.() -> Unit"
+            }
+          ],
+          "examples": []
+        },
+        {
+          "name": "KDialogHeader",
+          "signature": "fun KDialogHeader(title: String, description: String? = null, modifier: Modifier = Modifier)",
+          "params": [
+            {
+              "name": "title",
+              "type": "String"
+            },
+            {
+              "name": "description",
+              "type": "String?",
+              "default": "null"
+            },
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            }
+          ],
+          "examples": []
+        },
+        {
+          "name": "KDialogFooter",
+          "signature": "fun KDialogFooter(modifier: Modifier = Modifier, content: @Composable RowScope.() -> Unit)",
+          "params": [
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            },
+            {
+              "name": "content",
+              "type": "@Composable RowScope.() -> Unit"
+            }
+          ],
+          "examples": []
+        }
+      ]
+    },
+    {
+      "id": "KAspectRatio",
+      "title": "KAspectRatio",
+      "primary": "KAspectRatio",
+      "tags": [
+        "layout"
+      ],
+      "sourcePath": "core/src/androidMain/kotlin/dev/kindling/core/components/AspectRatio.kt",
+      "api": [
+        {
+          "name": "KAspectRatio",
+          "signature": "fun KAspectRatio(ratio: Float = 1f, modifier: Modifier = Modifier, content: @Composable () -> Unit)",
+          "params": [
+            {
+              "name": "ratio",
+              "type": "Float",
+              "default": "1f"
+            },
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            },
+            {
+              "name": "content",
+              "type": "@Composable () -> Unit"
+            }
+          ],
+          "examples": []
+        }
+      ]
+    },
+    {
+      "id": "KAvatar",
+      "title": "KAvatar",
+      "primary": "KAvatar",
+      "tags": [
+        "identity"
+      ],
+      "sourcePath": "core/src/androidMain/kotlin/dev/kindling/core/components/Avatar.kt",
+      "api": [
+        {
+          "name": "KAvatar",
+          "signature": "fun KAvatar(painter: Painter? = null, contentDescription: String? = null, fallbackText: String? = null, size: KAvatarSize = KAvatarSize.Default, modifier: Modifier = Modifier, badge: (@Composable () -> Unit)? = null)",
+          "params": [
+            {
+              "name": "painter",
+              "type": "Painter?",
+              "default": "null"
+            },
+            {
+              "name": "contentDescription",
+              "type": "String?",
+              "default": "null"
+            },
+            {
+              "name": "fallbackText",
+              "type": "String?",
+              "default": "null"
+            },
+            {
+              "name": "size",
+              "type": "KAvatarSize",
+              "default": "KAvatarSize.Default"
+            },
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            },
+            {
+              "name": "badge",
+              "type": "(@Composable () -> Unit)?",
+              "default": "null"
+            }
+          ],
+          "examples": []
+        },
+        {
+          "name": "KAvatarGroup",
+          "signature": "fun KAvatarGroup(avatars: List<KAvatarData>, modifier: Modifier = Modifier, maxVisible: Int = 4, size: KAvatarSize = KAvatarSize.Default, overlap: Dp = 8.dp)",
+          "params": [
+            {
+              "name": "avatars",
+              "type": "List<KAvatarData>"
+            },
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            },
+            {
+              "name": "maxVisible",
+              "type": "Int",
+              "default": "4"
+            },
+            {
+              "name": "size",
+              "type": "KAvatarSize",
+              "default": "KAvatarSize.Default"
+            },
+            {
+              "name": "overlap",
+              "type": "Dp",
+              "default": "8.dp"
+            }
+          ],
+          "examples": []
+        }
+      ]
+    },
+    {
+      "id": "KButton",
+      "title": "KButton",
+      "primary": "KButton",
+      "tags": [
+        "actions"
+      ],
+      "sourcePath": "core/src/androidMain/kotlin/dev/kindling/core/components/Button.kt",
+      "api": [
+        {
+          "name": "KButton",
+          "signature": "fun KButton(onClick: () -> Unit, modifier: Modifier = Modifier, variant: KButtonVariant = KButtonVariant.Default, size: KButtonSize = KButtonSize.Default, enabled: Boolean = true, isLoading: Boolean = false, interactionSource: MutableInteractionSource = remember { MutableInteractionSource() }, content: @Composable RowScope.() -> Unit)",
+          "params": [
+            {
+              "name": "onClick",
+              "type": "() -> Unit"
+            },
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            },
+            {
+              "name": "variant",
+              "type": "KButtonVariant",
+              "default": "KButtonVariant.Default"
+            },
+            {
+              "name": "size",
+              "type": "KButtonSize",
+              "default": "KButtonSize.Default"
+            },
+            {
+              "name": "enabled",
+              "type": "Boolean",
+              "default": "true"
+            },
+            {
+              "name": "isLoading",
+              "type": "Boolean",
+              "default": "false"
+            },
+            {
+              "name": "interactionSource",
+              "type": "MutableInteractionSource",
+              "default": "remember { MutableInteractionSource() }"
+            },
+            {
+              "name": "content",
+              "type": "@Composable RowScope.() -> Unit"
+            }
+          ],
+          "examples": []
+        },
+        {
+          "name": "KButton",
+          "signature": "fun KButton(text: String, onClick: () -> Unit, modifier: Modifier = Modifier, variant: KButtonVariant = KButtonVariant.Default, size: KButtonSize = KButtonSize.Default, enabled: Boolean = true, isLoading: Boolean = false)",
+          "params": [
+            {
+              "name": "text",
+              "type": "String"
+            },
+            {
+              "name": "onClick",
+              "type": "() -> Unit"
+            },
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            },
+            {
+              "name": "variant",
+              "type": "KButtonVariant",
+              "default": "KButtonVariant.Default"
+            },
+            {
+              "name": "size",
+              "type": "KButtonSize",
+              "default": "KButtonSize.Default"
+            },
+            {
+              "name": "enabled",
+              "type": "Boolean",
+              "default": "true"
+            },
+            {
+              "name": "isLoading",
+              "type": "Boolean",
+              "default": "false"
+            }
+          ],
+          "examples": []
+        }
+      ]
+    },
+    {
+      "id": "KCalendar",
+      "title": "KCalendar",
+      "primary": "KCalendar",
+      "tags": [
+        "date"
+      ],
+      "sourcePath": "core/src/androidMain/kotlin/dev/kindling/core/components/Calendar.kt",
+      "api": [
+        {
+          "name": "KCalendar",
+          "signature": "fun KCalendar(modifier: Modifier = Modifier, // ── Selection ───────────────────────────── mode: KCalendarMode = KCalendarMode.Single, selected: LocalDate? = null, onSelectSingle: ((LocalDate?) -> Unit)? = null, selectedRange: KDateRange = KDateRange(), onSelectRange: ((KDateRange) -> Unit)? = null, // ── Display ─────────────────────────────── captionLayout: KCalendarCaptionLayout = KCalendarCaptionLayout.Label, calendarLocale: KCalendarLocale = KCalendarLocale.Standard(), showOutsideDays: Boolean = true, showWeekNumber: Boolean = false, numberOfMonths: Int = 1, // ── Disabled / booked dates ─────────────── disabledDates: Set<LocalDate> = emptySet(), bookedDates: Set<LocalDate> = emptySet(), minDate: LocalDate? = null, maxDate: LocalDate? = null, // ── Extra UI ────────────────────────────── presets: List<KCalendarPreset> = emptyList(), timeRange: KCalendarTimeRange? = null, onTimeRangeChange: ((KCalendarTimeRange) -> Unit)? = null, dayContent: KCalendarDayContent? = null)",
+          "params": [
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            },
+            {
+              "name": "// ── Selection ─────────────────────────────\n    mode",
+              "type": "KCalendarMode",
+              "default": "KCalendarMode.Single"
+            },
+            {
+              "name": "selected",
+              "type": "LocalDate?",
+              "default": "null"
+            },
+            {
+              "name": "onSelectSingle",
+              "type": "((LocalDate?) -> Unit)?",
+              "default": "null"
+            },
+            {
+              "name": "selectedRange",
+              "type": "KDateRange",
+              "default": "KDateRange()"
+            },
+            {
+              "name": "onSelectRange",
+              "type": "((KDateRange) -> Unit)?",
+              "default": "null"
+            },
+            {
+              "name": "// ── Display ───────────────────────────────\n    captionLayout",
+              "type": "KCalendarCaptionLayout",
+              "default": "KCalendarCaptionLayout.Label"
+            },
+            {
+              "name": "calendarLocale",
+              "type": "KCalendarLocale",
+              "default": "KCalendarLocale.Standard()"
+            },
+            {
+              "name": "showOutsideDays",
+              "type": "Boolean",
+              "default": "true"
+            },
+            {
+              "name": "showWeekNumber",
+              "type": "Boolean",
+              "default": "false"
+            },
+            {
+              "name": "numberOfMonths",
+              "type": "Int",
+              "default": "1"
+            },
+            {
+              "name": "// ── Disabled / booked dates ───────────────\n    disabledDates",
+              "type": "Set<LocalDate>",
+              "default": "emptySet()"
+            },
+            {
+              "name": "bookedDates",
+              "type": "Set<LocalDate>",
+              "default": "emptySet()"
+            },
+            {
+              "name": "minDate",
+              "type": "LocalDate?",
+              "default": "null"
+            },
+            {
+              "name": "maxDate",
+              "type": "LocalDate?",
+              "default": "null"
+            },
+            {
+              "name": "// ── Extra UI ──────────────────────────────\n    presets",
+              "type": "List<KCalendarPreset>",
+              "default": "emptyList()"
+            },
+            {
+              "name": "timeRange",
+              "type": "KCalendarTimeRange?",
+              "default": "null"
+            },
+            {
+              "name": "onTimeRangeChange",
+              "type": "((KCalendarTimeRange) -> Unit)?",
+              "default": "null"
+            },
+            {
+              "name": "dayContent",
+              "type": "KCalendarDayContent?",
+              "default": "null"
+            }
+          ],
+          "examples": []
+        },
+        {
+          "name": "KCalendarMonth",
+          "signature": "fun KCalendarMonth(month: CalMonth, adapter: CalendarAdapter, captionLayout: KCalendarCaptionLayout, mode: KCalendarMode, selected: LocalDate?, onSelectSingle: ((LocalDate?) -> Unit)?, selectedRange: KDateRange, onSelectRange: ((KDateRange) -> Unit)?, showOutsideDays: Boolean, showWeekNumber: Boolean, disabledDates: Set<LocalDate>, bookedDates: Set<LocalDate>, minDate: LocalDate?, maxDate: LocalDate?, dayContent: KCalendarDayContent?, showNavPrev: Boolean, showNavNext: Boolean, onPrev: () -> Unit, onNext: () -> Unit, onMonthChange: (CalMonth) -> Unit, modifier: Modifier = Modifier)",
+          "params": [
+            {
+              "name": "month",
+              "type": "CalMonth"
+            },
+            {
+              "name": "adapter",
+              "type": "CalendarAdapter"
+            },
+            {
+              "name": "captionLayout",
+              "type": "KCalendarCaptionLayout"
+            },
+            {
+              "name": "mode",
+              "type": "KCalendarMode"
+            },
+            {
+              "name": "selected",
+              "type": "LocalDate?"
+            },
+            {
+              "name": "onSelectSingle",
+              "type": "((LocalDate?) -> Unit)?"
+            },
+            {
+              "name": "selectedRange",
+              "type": "KDateRange"
+            },
+            {
+              "name": "onSelectRange",
+              "type": "((KDateRange) -> Unit)?"
+            },
+            {
+              "name": "showOutsideDays",
+              "type": "Boolean"
+            },
+            {
+              "name": "showWeekNumber",
+              "type": "Boolean"
+            },
+            {
+              "name": "disabledDates",
+              "type": "Set<LocalDate>"
+            },
+            {
+              "name": "bookedDates",
+              "type": "Set<LocalDate>"
+            },
+            {
+              "name": "minDate",
+              "type": "LocalDate?"
+            },
+            {
+              "name": "maxDate",
+              "type": "LocalDate?"
+            },
+            {
+              "name": "dayContent",
+              "type": "KCalendarDayContent?"
+            },
+            {
+              "name": "showNavPrev",
+              "type": "Boolean"
+            },
+            {
+              "name": "showNavNext",
+              "type": "Boolean"
+            },
+            {
+              "name": "onPrev",
+              "type": "() -> Unit"
+            },
+            {
+              "name": "onNext",
+              "type": "() -> Unit"
+            },
+            {
+              "name": "onMonthChange",
+              "type": "(CalMonth) -> Unit"
+            },
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            }
+          ],
+          "examples": []
+        }
+      ]
+    },
+    {
+      "id": "KCard",
+      "title": "KCard",
+      "primary": "KCard",
+      "tags": [
+        "layout"
+      ],
+      "sourcePath": "core/src/androidMain/kotlin/dev/kindling/core/components/Card.kt",
+      "api": [
+        {
+          "name": "KCard",
+          "signature": "fun KCard(modifier: Modifier = Modifier, size: KCardSize = KCardSize.Default, image: Painter? = null, content: @Composable ColumnScope.() -> Unit)",
+          "params": [
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            },
+            {
+              "name": "size",
+              "type": "KCardSize",
+              "default": "KCardSize.Default"
+            },
+            {
+              "name": "image",
+              "type": "Painter?",
+              "default": "null"
+            },
+            {
+              "name": "content",
+              "type": "@Composable ColumnScope.() -> Unit"
+            }
+          ],
+          "examples": []
+        },
+        {
+          "name": "KCardHeader",
+          "signature": "fun KCardHeader(modifier: Modifier = Modifier, action: (@Composable () -> Unit)? = null, content: @Composable ColumnScope.() -> Unit)",
+          "params": [
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            },
+            {
+              "name": "action",
+              "type": "(@Composable () -> Unit)?",
+              "default": "null"
+            },
+            {
+              "name": "content",
+              "type": "@Composable ColumnScope.() -> Unit"
+            }
+          ],
+          "examples": []
+        },
+        {
+          "name": "KCardTitle",
+          "signature": "fun KCardTitle(text: String, modifier: Modifier = Modifier)",
+          "params": [
+            {
+              "name": "text",
+              "type": "String"
+            },
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            }
+          ],
+          "examples": []
+        },
+        {
+          "name": "KCardDescription",
+          "signature": "fun KCardDescription(text: String, modifier: Modifier = Modifier)",
+          "params": [
+            {
+              "name": "text",
+              "type": "String"
+            },
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            }
+          ],
+          "examples": []
+        },
+        {
+          "name": "KCardAction",
+          "signature": "fun KCardAction(modifier: Modifier = Modifier, content: @Composable () -> Unit)",
+          "params": [
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            },
+            {
+              "name": "content",
+              "type": "@Composable () -> Unit"
+            }
+          ],
+          "examples": []
+        },
+        {
+          "name": "KCardContent",
+          "signature": "fun KCardContent(modifier: Modifier = Modifier, verticalArrangement: Arrangement.Vertical = Arrangement.Top, content: @Composable ColumnScope.() -> Unit)",
+          "params": [
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            },
+            {
+              "name": "verticalArrangement",
+              "type": "Arrangement.Vertical",
+              "default": "Arrangement.Top"
+            },
+            {
+              "name": "content",
+              "type": "@Composable ColumnScope.() -> Unit"
+            }
+          ],
+          "examples": []
+        },
+        {
+          "name": "KCardFooter",
+          "signature": "fun KCardFooter(modifier: Modifier = Modifier, horizontalArrangement: Arrangement.Horizontal = Arrangement.spacedBy(8.dp), content: @Composable RowScope.() -> Unit)",
+          "params": [
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            },
+            {
+              "name": "horizontalArrangement",
+              "type": "Arrangement.Horizontal",
+              "default": "Arrangement.spacedBy(8.dp)"
+            },
+            {
+              "name": "content",
+              "type": "@Composable RowScope.() -> Unit"
+            }
+          ],
+          "examples": []
+        }
+      ]
+    },
+    {
+      "id": "KCarousel",
+      "title": "KCarousel",
+      "primary": "KCarousel",
+      "tags": [
+        "media"
+      ],
+      "sourcePath": "core/src/androidMain/kotlin/dev/kindling/core/components/Carousel.kt",
+      "api": [
+        {
+          "name": "KCarousel",
+          "signature": "fun KCarousel(pageCount: Int, modifier: Modifier = Modifier, orientation: KCarouselOrientation = KCarouselOrientation.Horizontal, // ── Visible items ──────────────────────────────────────────────────── /** Number of slides visible simultaneously. Arrows still scroll one at a time. */ visibleItems: Int = 1, // ── Navigation ────────────────────────────────────────────────────── showArrows: Boolean = true, showDots: Boolean = pageCount > 1, // ── Auto-play ─────────────────────────────────────────────────────── autoPlay: KCarouselAutoPlay? = null, // ── Layout ────────────────────────────────────────────────────────── pageSpacing: Dp = 8.dp, /** * Explicit height for the [VerticalPager]. Has no effect on horizontal carousels * (which size to their slide content naturally). Required for vertical because * [VerticalPager] needs a bounded height constraint to render. */ verticalPagerHeight: Dp = 300.dp, state: PagerState = rememberPagerState { pageCount }, // ── Footer slot ───────────────────────────────────────────────────── footer: (@Composable () -> Unit)? = null, content: @Composable BoxScope.(page: Int) -> Unit)",
+          "params": [
+            {
+              "name": "pageCount",
+              "type": "Int"
+            },
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            },
+            {
+              "name": "orientation",
+              "type": "KCarouselOrientation",
+              "default": "KCarouselOrientation.Horizontal"
+            },
+            {
+              "name": "// ── Visible items ────────────────────────────────────────────────────\n    /** Number of slides visible simultaneously. Arrows still scroll one at a time. */\n    visibleItems",
+              "type": "Int",
+              "default": "1"
+            },
+            {
+              "name": "// ── Navigation ──────────────────────────────────────────────────────\n    showArrows",
+              "type": "Boolean",
+              "default": "true"
+            },
+            {
+              "name": "showDots",
+              "type": "Boolean",
+              "default": "pageCount > 1"
+            },
+            {
+              "name": "// ── Auto-play ───────────────────────────────────────────────────────\n    autoPlay",
+              "type": "KCarouselAutoPlay?",
+              "default": "null"
+            },
+            {
+              "name": "// ── Layout ──────────────────────────────────────────────────────────\n    pageSpacing",
+              "type": "Dp",
+              "default": "8.dp"
+            },
+            {
+              "name": "/**\n     * Explicit height for the [VerticalPager]. Has no effect on horizontal carousels\n     * (which size to their slide content naturally). Required for vertical because\n     * [VerticalPager] needs a bounded height constraint to render.\n     */\n    verticalPagerHeight",
+              "type": "Dp",
+              "default": "300.dp"
+            },
+            {
+              "name": "state",
+              "type": "PagerState",
+              "default": "rememberPagerState { pageCount }"
+            },
+            {
+              "name": "// ── Footer slot ─────────────────────────────────────────────────────\n    footer",
+              "type": "(@Composable () -> Unit)?",
+              "default": "null"
+            },
+            {
+              "name": "content",
+              "type": "@Composable BoxScope.(page: Int) -> Unit"
+            }
+          ],
+          "examples": []
+        },
+        {
+          "name": "KCarouselFooter",
+          "signature": "fun KCarouselFooter(modifier: Modifier = Modifier, horizontalArrangement: Arrangement.Horizontal = Arrangement.Center, content: @Composable RowScope.() -> Unit)",
+          "params": [
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            },
+            {
+              "name": "horizontalArrangement",
+              "type": "Arrangement.Horizontal",
+              "default": "Arrangement.Center"
+            },
+            {
+              "name": "content",
+              "type": "@Composable RowScope.() -> Unit"
+            }
+          ],
+          "examples": []
+        },
+        {
+          "name": "KCarouselSlideCounter",
+          "signature": "fun KCarouselSlideCounter(state: PagerState, total: Int, modifier: Modifier = Modifier, label: (current: Int, total: Int) -> String = { n, t -> \"Slide $n of $t\" })",
+          "params": [
+            {
+              "name": "state",
+              "type": "PagerState"
+            },
+            {
+              "name": "total",
+              "type": "Int"
+            },
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            },
+            {
+              "name": "label",
+              "type": "(current: Int, total: Int) -> String",
+              "default": "{ n"
+            }
+          ],
+          "examples": []
+        },
+        {
+          "name": "KCarouselArrowButton",
+          "signature": "fun KCarouselArrowButton(direction: KCarouselArrowDirection, enabled: Boolean, modifier: Modifier = Modifier, onClick: () -> Unit)",
+          "params": [
+            {
+              "name": "direction",
+              "type": "KCarouselArrowDirection"
+            },
+            {
+              "name": "enabled",
+              "type": "Boolean"
+            },
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            },
+            {
+              "name": "onClick",
+              "type": "() -> Unit"
+            }
+          ],
+          "examples": []
+        }
+      ]
+    },
+    {
+      "id": "KCenteredBox",
+      "title": "KCenteredBox",
+      "primary": "KCenteredBox",
+      "tags": [
+        "ui"
+      ],
+      "sourcePath": "core/src/androidMain/kotlin/dev/kindling/core/components/Layout.kt",
+      "api": [
+        {
+          "name": "KCenteredBox",
+          "signature": "fun KCenteredBox(modifier: Modifier = Modifier, horizontalPadding: Dp = 32.dp, content: @Composable BoxScope.() -> Unit)",
+          "params": [
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            },
+            {
+              "name": "horizontalPadding",
+              "type": "Dp",
+              "default": "32.dp"
+            },
+            {
+              "name": "content",
+              "type": "@Composable BoxScope.() -> Unit"
+            }
+          ],
+          "examples": []
+        },
+        {
+          "name": "KCenteredColumn",
+          "signature": "fun KCenteredColumn(modifier: Modifier = Modifier, horizontalAlignment: Alignment.Horizontal = Alignment.CenterHorizontally, verticalArrangement: Arrangement.Vertical = Arrangement.Center, content: @Composable ColumnScope.() -> Unit)",
+          "params": [
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            },
+            {
+              "name": "horizontalAlignment",
+              "type": "Alignment.Horizontal",
+              "default": "Alignment.CenterHorizontally"
+            },
+            {
+              "name": "verticalArrangement",
+              "type": "Arrangement.Vertical",
+              "default": "Arrangement.Center"
+            },
+            {
+              "name": "content",
+              "type": "@Composable ColumnScope.() -> Unit"
+            }
+          ],
+          "examples": []
+        },
+        {
+          "name": "KSmallSpacer",
+          "signature": "fun KSmallSpacer()",
+          "params": [],
+          "examples": []
+        },
+        {
+          "name": "KMediumSpacer",
+          "signature": "fun KMediumSpacer()",
+          "params": [],
+          "examples": []
+        },
+        {
+          "name": "KLargeSpacer",
+          "signature": "fun KLargeSpacer()",
+          "params": [],
+          "examples": []
+        },
+        {
+          "name": "KExtraLargeSpacer",
+          "signature": "fun KExtraLargeSpacer()",
+          "params": [],
+          "examples": []
+        },
+        {
+          "name": "KCustomSpacer",
+          "signature": "fun KCustomSpacer(height: Dp)",
+          "params": [
+            {
+              "name": "height",
+              "type": "Dp"
+            }
+          ],
+          "examples": []
+        }
+      ]
+    },
+    {
+      "id": "KCombobox",
+      "title": "KCombobox",
+      "primary": "KCombobox",
+      "tags": [
+        "select"
+      ],
+      "sourcePath": "core/src/androidMain/kotlin/dev/kindling/core/components/Combobox.kt",
+      "api": [
+        {
+          "name": "KCombobox",
+          "signature": "fun KCombobox(items: List<KComboboxItem>, modifier: Modifier = Modifier, // ── Single selection ───────────────────────────────────────────────── selected: KComboboxItem? = null, onSelect: (KComboboxItem?) -> Unit = {}, // ── Multiple selection ─────────────────────────────────────────────── multiple: Boolean = false, selectedMultiple: List<KComboboxItem> = emptyList(), onSelectMultiple: (List<KComboboxItem>) -> Unit = {}, // ── Display ────────────────────────────────────────────────────────── placeholder: String = \"Select…\", searchPlaceholder: String = \"Search…\", /** Show a search field at the top of the dropdown. */ showSearch: Boolean = true, // ── Clear button (single mode only) ────────────────────────────────── /** Show an × button inside the trigger when a value is selected. */ showClear: Boolean = false, // ── Groups ──────────────────────────────────────────────────────────── /** Optional group definitions. Items are bucketed by [KComboboxItem.group]. */ groups: List<KComboboxGroup> = emptyList(), // ── Custom item ─────────────────────────────────────────────────────── /** Override the default label row with a fully custom composable per item. */ customItem: (@Composable (KComboboxItem) -> Unit)? = null, // ── Input group addon ───────────────────────────────────────────────── /** Leading slot rendered left of the trigger label (icon, flag, etc.). */ addon: (@Composable () -> Unit)? = null, // ── State ───────────────────────────────────────────────────────────── enabled: Boolean = true, isInvalid: Boolean = false, // ── Auto-highlight ──────────────────────────────────────────────────── /** Automatically highlight the first filtered item when query changes. */ autoHighlight: Boolean = false, // ── Layout ──────────────────────────────────────────────────────────── maxDropdownHeight: Dp = 240.dp, emptyLabel: String = \"No results found.\")",
+          "params": [
+            {
+              "name": "items",
+              "type": "List<KComboboxItem>"
+            },
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            },
+            {
+              "name": "// ── Single selection ─────────────────────────────────────────────────\n    selected",
+              "type": "KComboboxItem?",
+              "default": "null"
+            },
+            {
+              "name": "onSelect",
+              "type": "(KComboboxItem?) -> Unit",
+              "default": "{}"
+            },
+            {
+              "name": "// ── Multiple selection ───────────────────────────────────────────────\n    multiple",
+              "type": "Boolean",
+              "default": "false"
+            },
+            {
+              "name": "selectedMultiple",
+              "type": "List<KComboboxItem>",
+              "default": "emptyList()"
+            },
+            {
+              "name": "onSelectMultiple",
+              "type": "(List<KComboboxItem>) -> Unit",
+              "default": "{}"
+            },
+            {
+              "name": "// ── Display ──────────────────────────────────────────────────────────\n    placeholder",
+              "type": "String",
+              "default": "\"Select…\""
+            },
+            {
+              "name": "searchPlaceholder",
+              "type": "String",
+              "default": "\"Search…\""
+            },
+            {
+              "name": "/** Show a search field at the top of the dropdown. */\n    showSearch",
+              "type": "Boolean",
+              "default": "true"
+            },
+            {
+              "name": "// ── Clear button (single mode only) ──────────────────────────────────\n    /** Show an × button inside the trigger when a value is selected. */\n    showClear",
+              "type": "Boolean",
+              "default": "false"
+            },
+            {
+              "name": "// ── Groups ────────────────────────────────────────────────────────────\n    /** Optional group definitions. Items are bucketed by [KComboboxItem.group]. */\n    groups",
+              "type": "List<KComboboxGroup>",
+              "default": "emptyList()"
+            },
+            {
+              "name": "// ── Custom item ───────────────────────────────────────────────────────\n    /** Override the default label row with a fully custom composable per item. */\n    customItem",
+              "type": "(@Composable (KComboboxItem) -> Unit)?",
+              "default": "null"
+            },
+            {
+              "name": "// ── Input group addon ─────────────────────────────────────────────────\n    /** Leading slot rendered left of the trigger label (icon, flag, etc.). */\n    addon",
+              "type": "(@Composable () -> Unit)?",
+              "default": "null"
+            },
+            {
+              "name": "// ── State ─────────────────────────────────────────────────────────────\n    enabled",
+              "type": "Boolean",
+              "default": "true"
+            },
+            {
+              "name": "isInvalid",
+              "type": "Boolean",
+              "default": "false"
+            },
+            {
+              "name": "// ── Auto-highlight ────────────────────────────────────────────────────\n    /** Automatically highlight the first filtered item when query changes. */\n    autoHighlight",
+              "type": "Boolean",
+              "default": "false"
+            },
+            {
+              "name": "// ── Layout ────────────────────────────────────────────────────────────\n    maxDropdownHeight",
+              "type": "Dp",
+              "default": "240.dp"
+            },
+            {
+              "name": "emptyLabel",
+              "type": "String",
+              "default": "\"No results found.\""
+            }
+          ],
+          "examples": []
+        },
+        {
+          "name": "KComboboxChip",
+          "signature": "fun KComboboxChip(label: String, onRemove: () -> Unit, modifier: Modifier = Modifier)",
+          "params": [
+            {
+              "name": "label",
+              "type": "String"
+            },
+            {
+              "name": "onRemove",
+              "type": "() -> Unit"
+            },
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            }
+          ],
+          "examples": []
+        },
+        {
+          "name": "KComboboxSeparator",
+          "signature": "fun KComboboxSeparator(modifier: Modifier = Modifier)",
+          "params": [
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            }
+          ],
+          "examples": []
+        },
+        {
+          "name": "KComboboxDropdownItem",
+          "signature": "fun KComboboxDropdownItem(item: KComboboxItem, isSelected: Boolean, isHighlighted: Boolean, customItem: (@Composable (KComboboxItem) -> Unit)?, onClick: () -> Unit)",
+          "params": [
+            {
+              "name": "item",
+              "type": "KComboboxItem"
+            },
+            {
+              "name": "isSelected",
+              "type": "Boolean"
+            },
+            {
+              "name": "isHighlighted",
+              "type": "Boolean"
+            },
+            {
+              "name": "customItem",
+              "type": "(@Composable (KComboboxItem) -> Unit)?"
+            },
+            {
+              "name": "onClick",
+              "type": "() -> Unit"
+            }
+          ],
+          "examples": []
+        }
+      ]
+    },
+    {
+      "id": "KDatePicker",
+      "title": "KDatePicker",
+      "primary": "KDatePicker",
+      "tags": [
+        "date"
+      ],
+      "sourcePath": "core/src/androidMain/kotlin/dev/kindling/core/components/Datepicker.kt",
+      "api": [
+        {
+          "name": "KDatePicker",
+          "signature": "fun KDatePicker(selected: LocalDate?, onSelect: (LocalDate) -> Unit, modifier: Modifier = Modifier, placeholder: String = \"Pick a date\", enabled: Boolean = true, minDate: LocalDate? = null, maxDate: LocalDate? = null, locale: Locale = Locale.getDefault())",
+          "params": [
+            {
+              "name": "selected",
+              "type": "LocalDate?"
+            },
+            {
+              "name": "onSelect",
+              "type": "(LocalDate) -> Unit"
+            },
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            },
+            {
+              "name": "placeholder",
+              "type": "String",
+              "default": "\"Pick a date\""
+            },
+            {
+              "name": "enabled",
+              "type": "Boolean",
+              "default": "true"
+            },
+            {
+              "name": "minDate",
+              "type": "LocalDate?",
+              "default": "null"
+            },
+            {
+              "name": "maxDate",
+              "type": "LocalDate?",
+              "default": "null"
+            },
+            {
+              "name": "locale",
+              "type": "Locale",
+              "default": "Locale.getDefault()"
+            }
+          ],
+          "examples": []
+        }
+      ]
+    },
+    {
+      "id": "KDirectionProvider",
+      "title": "KDirectionProvider",
+      "primary": "KDirectionProvider",
+      "tags": [
+        "i18n"
+      ],
+      "sourcePath": "core/src/androidMain/kotlin/dev/kindling/core/components/Direction.kt",
+      "api": [
+        {
+          "name": "KDirectionProvider",
+          "signature": "fun KDirectionProvider(direction: LayoutDirection = LayoutDirection.Ltr, content: @Composable () -> Unit)",
+          "params": [
+            {
+              "name": "direction",
+              "type": "LayoutDirection",
+              "default": "LayoutDirection.Ltr"
+            },
+            {
+              "name": "content",
+              "type": "@Composable () -> Unit"
+            }
+          ],
+          "examples": []
+        }
+      ]
+    },
+    {
+      "id": "KEmpty",
+      "title": "KEmpty",
+      "primary": "KEmpty",
+      "tags": [
+        "empty-state"
+      ],
+      "sourcePath": "core/src/androidMain/kotlin/dev/kindling/core/components/Empty.kt",
+      "api": [
+        {
+          "name": "KEmpty",
+          "signature": "fun KEmpty(modifier: Modifier = Modifier, outlined: Boolean = false, showBackground: Boolean = false, shape: Shape = RoundedCornerShape(12.dp), content: @Composable ColumnScope.() -> Unit)",
+          "params": [
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            },
+            {
+              "name": "outlined",
+              "type": "Boolean",
+              "default": "false"
+            },
+            {
+              "name": "showBackground",
+              "type": "Boolean",
+              "default": "false"
+            },
+            {
+              "name": "shape",
+              "type": "Shape",
+              "default": "RoundedCornerShape(12.dp)"
+            },
+            {
+              "name": "content",
+              "type": "@Composable ColumnScope.() -> Unit"
+            }
+          ],
+          "examples": []
+        },
+        {
+          "name": "KEmptyHeader",
+          "signature": "fun KEmptyHeader(modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit)",
+          "params": [
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            },
+            {
+              "name": "content",
+              "type": "@Composable ColumnScope.() -> Unit"
+            }
+          ],
+          "examples": []
+        },
+        {
+          "name": "KEmptyMedia",
+          "signature": "fun KEmptyMedia(modifier: Modifier = Modifier, variant: KEmptyMediaVariant = KEmptyMediaVariant.Icon, size: Dp = 56.dp, iconBoxColor: Color = MaterialTheme.colorScheme.surfaceVariant, content: @Composable BoxScope.() -> Unit)",
+          "params": [
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            },
+            {
+              "name": "variant",
+              "type": "KEmptyMediaVariant",
+              "default": "KEmptyMediaVariant.Icon"
+            },
+            {
+              "name": "size",
+              "type": "Dp",
+              "default": "56.dp"
+            },
+            {
+              "name": "iconBoxColor",
+              "type": "Color",
+              "default": "MaterialTheme.colorScheme.surfaceVariant"
+            },
+            {
+              "name": "content",
+              "type": "@Composable BoxScope.() -> Unit"
+            }
+          ],
+          "examples": []
+        },
+        {
+          "name": "KEmptyTitle",
+          "signature": "fun KEmptyTitle(text: String, modifier: Modifier = Modifier)",
+          "params": [
+            {
+              "name": "text",
+              "type": "String"
+            },
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            }
+          ],
+          "examples": []
+        },
+        {
+          "name": "KEmptyDescription",
+          "signature": "fun KEmptyDescription(text: String, modifier: Modifier = Modifier)",
+          "params": [
+            {
+              "name": "text",
+              "type": "String"
+            },
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            }
+          ],
+          "examples": []
+        },
+        {
+          "name": "KEmptyContent",
+          "signature": "fun KEmptyContent(modifier: Modifier = Modifier, verticalSpacing: Dp = 8.dp, content: @Composable ColumnScope.() -> Unit)",
+          "params": [
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            },
+            {
+              "name": "verticalSpacing",
+              "type": "Dp",
+              "default": "8.dp"
+            },
+            {
+              "name": "content",
+              "type": "@Composable ColumnScope.() -> Unit"
+            }
+          ],
+          "examples": []
+        },
+        {
+          "name": "KEmptyState",
+          "signature": "fun KEmptyState(icon: ImageVector, title: String, description: String, modifier: Modifier = Modifier, outlined: Boolean = false, showBackground: Boolean = false, actionLabel: String? = null, secondaryActionLabel: String? = null, onAction: (() -> Unit)? = null, onSecondaryAction: (() -> Unit)? = null)",
+          "params": [
+            {
+              "name": "icon",
+              "type": "ImageVector"
+            },
+            {
+              "name": "title",
+              "type": "String"
+            },
+            {
+              "name": "description",
+              "type": "String"
+            },
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            },
+            {
+              "name": "outlined",
+              "type": "Boolean",
+              "default": "false"
+            },
+            {
+              "name": "showBackground",
+              "type": "Boolean",
+              "default": "false"
+            },
+            {
+              "name": "actionLabel",
+              "type": "String?",
+              "default": "null"
+            },
+            {
+              "name": "secondaryActionLabel",
+              "type": "String?",
+              "default": "null"
+            },
+            {
+              "name": "onAction",
+              "type": "(() -> Unit)?",
+              "default": "null"
+            },
+            {
+              "name": "onSecondaryAction",
+              "type": "(() -> Unit)?",
+              "default": "null"
+            }
+          ],
+          "examples": []
+        }
+      ]
+    },
+    {
+      "id": "KInput",
+      "title": "KInput",
+      "primary": "KInput",
+      "tags": [
+        "forms"
+      ],
+      "sourcePath": "core/src/androidMain/kotlin/dev/kindling/core/components/Input.kt",
+      "api": [
+        {
+          "name": "KInput",
+          "signature": "fun KInput(value: String, onValueChange: (String) -> Unit, modifier: Modifier = Modifier, placeholder: String = \"\", enabled: Boolean = true, isPassword: Boolean = false, isError: Boolean = false, singleLine: Boolean = true, maxLines: Int = if (singleLine) 1 else Int.MAX_VALUE, minLines: Int = 1, leadingIcon: (@Composable () -> Unit)? = null, trailingIcon: (@Composable () -> Unit)? = null, keyboardOptions: KeyboardOptions = KeyboardOptions.Default.copy( keyboardType = if (isPassword) KeyboardType.Password else KeyboardType.Text ), keyboardActions: KeyboardActions = KeyboardActions.Default, interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },)",
+          "params": [
+            {
+              "name": "value",
+              "type": "String"
+            },
+            {
+              "name": "onValueChange",
+              "type": "(String) -> Unit"
+            },
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            },
+            {
+              "name": "placeholder",
+              "type": "String",
+              "default": "\"\""
+            },
+            {
+              "name": "enabled",
+              "type": "Boolean",
+              "default": "true"
+            },
+            {
+              "name": "isPassword",
+              "type": "Boolean",
+              "default": "false"
+            },
+            {
+              "name": "isError",
+              "type": "Boolean",
+              "default": "false"
+            },
+            {
+              "name": "singleLine",
+              "type": "Boolean",
+              "default": "true"
+            },
+            {
+              "name": "maxLines",
+              "type": "Int",
+              "default": "if (singleLine) 1 else Int.MAX_VALUE"
+            },
+            {
+              "name": "minLines",
+              "type": "Int",
+              "default": "1"
+            },
+            {
+              "name": "leadingIcon",
+              "type": "(@Composable () -> Unit)?",
+              "default": "null"
+            },
+            {
+              "name": "trailingIcon",
+              "type": "(@Composable () -> Unit)?",
+              "default": "null"
+            },
+            {
+              "name": "keyboardOptions",
+              "type": "KeyboardOptions",
+              "default": "KeyboardOptions.Default.copy(\n        keyboardType = if (isPassword) KeyboardType.Password else KeyboardType.Text\n    )"
+            },
+            {
+              "name": "keyboardActions",
+              "type": "KeyboardActions",
+              "default": "KeyboardActions.Default"
+            },
+            {
+              "name": "interactionSource",
+              "type": "MutableInteractionSource",
+              "default": "remember { MutableInteractionSource() }"
+            }
+          ],
+          "examples": []
+        },
+        {
+          "name": "KFormField",
+          "signature": "fun KFormField(label: String, value: String, onValueChange: (String) -> Unit, modifier: Modifier = Modifier, placeholder: String = \"\", helperText: String? = null, errorMessage: String? = null, isError: Boolean = false, enabled: Boolean = true, isPassword: Boolean = false, leadingIcon: (@Composable () -> Unit)? = null, trailingIcon: (@Composable () -> Unit)? = null, keyboardOptions: KeyboardOptions = KeyboardOptions.Default, keyboardActions: KeyboardActions = KeyboardActions.Default,)",
+          "params": [
+            {
+              "name": "label",
+              "type": "String"
+            },
+            {
+              "name": "value",
+              "type": "String"
+            },
+            {
+              "name": "onValueChange",
+              "type": "(String) -> Unit"
+            },
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            },
+            {
+              "name": "placeholder",
+              "type": "String",
+              "default": "\"\""
+            },
+            {
+              "name": "helperText",
+              "type": "String?",
+              "default": "null"
+            },
+            {
+              "name": "errorMessage",
+              "type": "String?",
+              "default": "null"
+            },
+            {
+              "name": "isError",
+              "type": "Boolean",
+              "default": "false"
+            },
+            {
+              "name": "enabled",
+              "type": "Boolean",
+              "default": "true"
+            },
+            {
+              "name": "isPassword",
+              "type": "Boolean",
+              "default": "false"
+            },
+            {
+              "name": "leadingIcon",
+              "type": "(@Composable () -> Unit)?",
+              "default": "null"
+            },
+            {
+              "name": "trailingIcon",
+              "type": "(@Composable () -> Unit)?",
+              "default": "null"
+            },
+            {
+              "name": "keyboardOptions",
+              "type": "KeyboardOptions",
+              "default": "KeyboardOptions.Default"
+            },
+            {
+              "name": "keyboardActions",
+              "type": "KeyboardActions",
+              "default": "KeyboardActions.Default"
+            }
+          ],
+          "examples": []
+        }
+      ]
+    },
+    {
+      "id": "KInputGroup",
+      "title": "KInputGroup",
+      "primary": "KInputGroup",
+      "tags": [
+        "forms"
+      ],
+      "sourcePath": "core/src/androidMain/kotlin/dev/kindling/core/components/InputGroup.kt",
+      "api": [
+        {
+          "name": "KInputGroup",
+          "signature": "fun KInputGroup(modifier: Modifier = Modifier, isError: Boolean = false, enabled: Boolean = true, content: @Composable KInputGroupScope.() -> Unit)",
+          "params": [
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            },
+            {
+              "name": "isError",
+              "type": "Boolean",
+              "default": "false"
+            },
+            {
+              "name": "enabled",
+              "type": "Boolean",
+              "default": "true"
+            },
+            {
+              "name": "content",
+              "type": "@Composable KInputGroupScope.() -> Unit"
+            }
+          ],
+          "examples": []
+        },
+        {
+          "name": "KInputGroupButton",
+          "signature": "fun KInputGroupButton(onClick: () -> Unit, modifier: Modifier = Modifier, enabled: Boolean = true, content: @Composable RowScope.() -> Unit)",
+          "params": [
+            {
+              "name": "onClick",
+              "type": "() -> Unit"
+            },
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            },
+            {
+              "name": "enabled",
+              "type": "Boolean",
+              "default": "true"
+            },
+            {
+              "name": "content",
+              "type": "@Composable RowScope.() -> Unit"
+            }
+          ],
+          "examples": []
+        },
+        {
+          "name": "KInputGroupText",
+          "signature": "fun KInputGroupText(text: String, modifier: Modifier = Modifier)",
+          "params": [
+            {
+              "name": "text",
+              "type": "String"
+            },
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            }
+          ],
+          "examples": []
+        }
+      ]
+    },
+    {
+      "id": "KInputOtp",
+      "title": "KInputOtp",
+      "primary": "KInputOtp",
+      "tags": [
+        "forms",
+        "otp"
+      ],
+      "sourcePath": "core/src/androidMain/kotlin/dev/kindling/core/components/InputOtp.kt",
+      "api": [
+        {
+          "name": "KInputOtp",
+          "signature": "fun KInputOtp(value: String, onValueChange: (String) -> Unit, length: Int = 6, separatorAt: Set<Int> = emptySet(), isError: Boolean = false, enabled: Boolean = true, modifier: Modifier = Modifier)",
+          "params": [
+            {
+              "name": "value",
+              "type": "String"
+            },
+            {
+              "name": "onValueChange",
+              "type": "(String) -> Unit"
+            },
+            {
+              "name": "length",
+              "type": "Int",
+              "default": "6"
+            },
+            {
+              "name": "separatorAt",
+              "type": "Set<Int>",
+              "default": "emptySet()"
+            },
+            {
+              "name": "isError",
+              "type": "Boolean",
+              "default": "false"
+            },
+            {
+              "name": "enabled",
+              "type": "Boolean",
+              "default": "true"
+            },
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            }
+          ],
+          "examples": []
+        },
+        {
+          "name": "KInputOtpGroup",
+          "signature": "fun KInputOtpGroup(modifier: Modifier = Modifier, content: @Composable RowScope.() -> Unit)",
+          "params": [
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            },
+            {
+              "name": "content",
+              "type": "@Composable RowScope.() -> Unit"
+            }
+          ],
+          "examples": []
+        }
+      ]
+    },
+    {
+      "id": "KLabel",
+      "title": "KLabel",
+      "primary": "KLabel",
+      "tags": [
+        "ui"
+      ],
+      "sourcePath": "core/src/androidMain/kotlin/dev/kindling/core/components/Label.kt",
+      "api": [
+        {
+          "name": "KLabel",
+          "signature": "fun KLabel(text: String, modifier: Modifier = Modifier, disabled: Boolean = false, style: TextStyle = MaterialTheme.typography.labelLarge.copy( fontSize = 14.sp, fontWeight = FontWeight.Medium, lineHeight = 20.sp, letterSpacing = 0.1.sp ), color: Color = if (disabled) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f) else MaterialTheme.colorScheme.onBackground)",
+          "params": [
+            {
+              "name": "text",
+              "type": "String"
+            },
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            },
+            {
+              "name": "disabled",
+              "type": "Boolean",
+              "default": "false"
+            },
+            {
+              "name": "style",
+              "type": "TextStyle",
+              "default": "MaterialTheme.typography.labelLarge.copy(\n        fontSize      = 14.sp,\n        fontWeight    = FontWeight.Medium,\n        lineHeight    = 20.sp,\n        letterSpacing = 0.1.sp\n    )"
+            },
+            {
+              "name": "color",
+              "type": "Color",
+              "default": "if (disabled)\n        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)\n    else\n        MaterialTheme.colorScheme.onBackground"
+            }
+          ],
+          "examples": []
+        }
+      ]
+    },
+    {
+      "id": "KMaskInput",
+      "title": "KMaskInput",
+      "primary": "KMaskInput",
+      "tags": [
+        "forms"
+      ],
+      "sourcePath": "core/src/androidMain/kotlin/dev/kindling/core/components/MaskInput.kt",
+      "api": [
+        {
+          "name": "KMaskInput",
+          "signature": "fun KMaskInput(value: String, onValueChange: (String) -> Unit, modifier: Modifier = Modifier, mask: KMaskPattern? = null, customPattern: String? = null, allowLetters: Boolean = mask?.keyboardType == KeyboardType.Text, placeholder: String = mask?.placeholder ?: customPattern?.replace('#', '0') ?: \"\", enabled: Boolean = true, isError: Boolean = false, keyboardActions: KeyboardActions = KeyboardActions.Default)",
+          "params": [
+            {
+              "name": "value",
+              "type": "String"
+            },
+            {
+              "name": "onValueChange",
+              "type": "(String) -> Unit"
+            },
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            },
+            {
+              "name": "mask",
+              "type": "KMaskPattern?",
+              "default": "null"
+            },
+            {
+              "name": "customPattern",
+              "type": "String?",
+              "default": "null"
+            },
+            {
+              "name": "allowLetters",
+              "type": "Boolean",
+              "default": "mask?.keyboardType == KeyboardType.Text"
+            },
+            {
+              "name": "placeholder",
+              "type": "String",
+              "default": "mask?.placeholder ?: customPattern?.replace('#', '0') ?: \"\""
+            },
+            {
+              "name": "enabled",
+              "type": "Boolean",
+              "default": "true"
+            },
+            {
+              "name": "isError",
+              "type": "Boolean",
+              "default": "false"
+            },
+            {
+              "name": "keyboardActions",
+              "type": "KeyboardActions",
+              "default": "KeyboardActions.Default"
+            }
+          ],
+          "examples": []
+        },
+        {
+          "name": "KPhoneInput",
+          "signature": "fun KPhoneInput(value: String, onValueChange: (String) -> Unit, modifier: Modifier = Modifier, placeholder: String = \"(555) 000-0000\", enabled: Boolean = true, isError: Boolean = false)",
+          "params": [
+            {
+              "name": "value",
+              "type": "String"
+            },
+            {
+              "name": "onValueChange",
+              "type": "(String) -> Unit"
+            },
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            },
+            {
+              "name": "placeholder",
+              "type": "String",
+              "default": "\"(555) 000-0000\""
+            },
+            {
+              "name": "enabled",
+              "type": "Boolean",
+              "default": "true"
+            },
+            {
+              "name": "isError",
+              "type": "Boolean",
+              "default": "false"
+            }
+          ],
+          "examples": []
+        },
+        {
+          "name": "KSsnInput",
+          "signature": "fun KSsnInput(value: String, onValueChange: (String) -> Unit, modifier: Modifier = Modifier, enabled: Boolean = true, isError: Boolean = false)",
+          "params": [
+            {
+              "name": "value",
+              "type": "String"
+            },
+            {
+              "name": "onValueChange",
+              "type": "(String) -> Unit"
+            },
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            },
+            {
+              "name": "enabled",
+              "type": "Boolean",
+              "default": "true"
+            },
+            {
+              "name": "isError",
+              "type": "Boolean",
+              "default": "false"
+            }
+          ],
+          "examples": []
+        },
+        {
+          "name": "KDateMaskInput",
+          "signature": "fun KDateMaskInput(value: String, onValueChange: (String) -> Unit, modifier: Modifier = Modifier, enabled: Boolean = true, isError: Boolean = false)",
+          "params": [
+            {
+              "name": "value",
+              "type": "String"
+            },
+            {
+              "name": "onValueChange",
+              "type": "(String) -> Unit"
+            },
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            },
+            {
+              "name": "enabled",
+              "type": "Boolean",
+              "default": "true"
+            },
+            {
+              "name": "isError",
+              "type": "Boolean",
+              "default": "false"
+            }
+          ],
+          "examples": []
+        },
+        {
+          "name": "KCreditCardInput",
+          "signature": "fun KCreditCardInput(value: String, onValueChange: (String) -> Unit, modifier: Modifier = Modifier, enabled: Boolean = true, isError: Boolean = false)",
+          "params": [
+            {
+              "name": "value",
+              "type": "String"
+            },
+            {
+              "name": "onValueChange",
+              "type": "(String) -> Unit"
+            },
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            },
+            {
+              "name": "enabled",
+              "type": "Boolean",
+              "default": "true"
+            },
+            {
+              "name": "isError",
+              "type": "Boolean",
+              "default": "false"
+            }
+          ],
+          "examples": []
+        },
+        {
+          "name": "KEinInput",
+          "signature": "fun KEinInput(value: String, onValueChange: (String) -> Unit, modifier: Modifier = Modifier, enabled: Boolean = true, isError: Boolean = false)",
+          "params": [
+            {
+              "name": "value",
+              "type": "String"
+            },
+            {
+              "name": "onValueChange",
+              "type": "(String) -> Unit"
+            },
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            },
+            {
+              "name": "enabled",
+              "type": "Boolean",
+              "default": "true"
+            },
+            {
+              "name": "isError",
+              "type": "Boolean",
+              "default": "false"
+            }
+          ],
+          "examples": []
+        },
+        {
+          "name": "KCurrencyInput",
+          "signature": "fun KCurrencyInput(value: String, onValueChange: (String) -> Unit, modifier: Modifier = Modifier, currencySymbol: String = \"$\", locale: java.util.Locale = java.util.Locale.getDefault(), enabled: Boolean = true, isError: Boolean = false, placeholder: String = \"${currencySymbol}0.00\")",
+          "params": [
+            {
+              "name": "value",
+              "type": "String"
+            },
+            {
+              "name": "onValueChange",
+              "type": "(String) -> Unit"
+            },
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            },
+            {
+              "name": "currencySymbol",
+              "type": "String",
+              "default": "\"$\""
+            },
+            {
+              "name": "locale",
+              "type": "java.util.Locale",
+              "default": "java.util.Locale.getDefault()"
+            },
+            {
+              "name": "enabled",
+              "type": "Boolean",
+              "default": "true"
+            },
+            {
+              "name": "isError",
+              "type": "Boolean",
+              "default": "false"
+            },
+            {
+              "name": "placeholder",
+              "type": "String",
+              "default": "\"${currencySymbol}0.00\""
+            }
+          ],
+          "examples": []
+        },
+        {
+          "name": "KPercentageInput",
+          "signature": "fun KPercentageInput(value: String, onValueChange: (String) -> Unit, modifier: Modifier = Modifier, enabled: Boolean = true, isError: Boolean = false)",
+          "params": [
+            {
+              "name": "value",
+              "type": "String"
+            },
+            {
+              "name": "onValueChange",
+              "type": "(String) -> Unit"
+            },
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            },
+            {
+              "name": "enabled",
+              "type": "Boolean",
+              "default": "true"
+            },
+            {
+              "name": "isError",
+              "type": "Boolean",
+              "default": "false"
+            }
+          ],
+          "examples": []
+        }
+      ]
+    },
+    {
+      "id": "KPagination",
+      "title": "KPagination",
+      "primary": "KPagination",
+      "tags": [
+        "navigation"
+      ],
+      "sourcePath": "core/src/androidMain/kotlin/dev/kindling/core/components/Pagination.kt",
+      "api": [
+        {
+          "name": "KPagination",
+          "signature": "fun KPagination(currentPage: Int, totalPages: Int, onPageChange: (Int) -> Unit, modifier: Modifier = Modifier, siblingCount: Int = 1, showEdges: Boolean = true)",
+          "params": [
+            {
+              "name": "currentPage",
+              "type": "Int"
+            },
+            {
+              "name": "totalPages",
+              "type": "Int"
+            },
+            {
+              "name": "onPageChange",
+              "type": "(Int) -> Unit"
+            },
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            },
+            {
+              "name": "siblingCount",
+              "type": "Int",
+              "default": "1"
+            },
+            {
+              "name": "showEdges",
+              "type": "Boolean",
+              "default": "true"
+            }
+          ],
+          "examples": []
+        }
+      ]
+    },
+    {
+      "id": "KPopover",
+      "title": "KPopover",
+      "primary": "KPopover",
+      "tags": [
+        "overlay"
+      ],
+      "sourcePath": "core/src/androidMain/kotlin/dev/kindling/core/components/Popover.kt",
+      "api": [
+        {
+          "name": "KPopover",
+          "signature": "fun KPopover(open: Boolean, onDismiss: () -> Unit, trigger: @Composable () -> Unit, modifier: Modifier = Modifier, // ── Inline mode ─────────────────────────── side: KPopoverSide = KPopoverSide.Bottom, align: KPopoverAlign = KPopoverAlign.Center, sideOffset: Dp = 4.dp, // ── Overlay mode ────────────────────────── overlayZone: KPopoverOverlayPosition? = null, // ── Shared ──────────────────────────────── dismissOnClickOutside: Boolean = true, content: @Composable ColumnScope.() -> Unit)",
+          "params": [
+            {
+              "name": "open",
+              "type": "Boolean"
+            },
+            {
+              "name": "onDismiss",
+              "type": "() -> Unit"
+            },
+            {
+              "name": "trigger",
+              "type": "@Composable () -> Unit"
+            },
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            },
+            {
+              "name": "// ── Inline mode ───────────────────────────\n    side",
+              "type": "KPopoverSide",
+              "default": "KPopoverSide.Bottom"
+            },
+            {
+              "name": "align",
+              "type": "KPopoverAlign",
+              "default": "KPopoverAlign.Center"
+            },
+            {
+              "name": "sideOffset",
+              "type": "Dp",
+              "default": "4.dp"
+            },
+            {
+              "name": "// ── Overlay mode ──────────────────────────\n    overlayZone",
+              "type": "KPopoverOverlayPosition?",
+              "default": "null"
+            },
+            {
+              "name": "// ── Shared ────────────────────────────────\n    dismissOnClickOutside",
+              "type": "Boolean",
+              "default": "true"
+            },
+            {
+              "name": "content",
+              "type": "@Composable ColumnScope.() -> Unit"
+            }
+          ],
+          "examples": []
+        },
+        {
+          "name": "KPopoverInline",
+          "signature": "fun KPopoverInline(open: Boolean, onDismiss: () -> Unit, trigger: @Composable () -> Unit, side: KPopoverSide, align: KPopoverAlign, sideOffset: Dp, dismissOnClickOutside: Boolean, modifier: Modifier, content: @Composable ColumnScope.() -> Unit)",
+          "params": [
+            {
+              "name": "open",
+              "type": "Boolean"
+            },
+            {
+              "name": "onDismiss",
+              "type": "() -> Unit"
+            },
+            {
+              "name": "trigger",
+              "type": "@Composable () -> Unit"
+            },
+            {
+              "name": "side",
+              "type": "KPopoverSide"
+            },
+            {
+              "name": "align",
+              "type": "KPopoverAlign"
+            },
+            {
+              "name": "sideOffset",
+              "type": "Dp"
+            },
+            {
+              "name": "dismissOnClickOutside",
+              "type": "Boolean"
+            },
+            {
+              "name": "modifier",
+              "type": "Modifier"
+            },
+            {
+              "name": "content",
+              "type": "@Composable ColumnScope.() -> Unit"
+            }
+          ],
+          "examples": []
+        },
+        {
+          "name": "KPopoverOverlay",
+          "signature": "fun KPopoverOverlay(open: Boolean, onDismiss: () -> Unit, position: KPopoverOverlayPosition, dismissOnClickOutside: Boolean, trigger: @Composable () -> Unit, modifier: Modifier, content: @Composable ColumnScope.() -> Unit)",
+          "params": [
+            {
+              "name": "open",
+              "type": "Boolean"
+            },
+            {
+              "name": "onDismiss",
+              "type": "() -> Unit"
+            },
+            {
+              "name": "position",
+              "type": "KPopoverOverlayPosition"
+            },
+            {
+              "name": "dismissOnClickOutside",
+              "type": "Boolean"
+            },
+            {
+              "name": "trigger",
+              "type": "@Composable () -> Unit"
+            },
+            {
+              "name": "modifier",
+              "type": "Modifier"
+            },
+            {
+              "name": "content",
+              "type": "@Composable ColumnScope.() -> Unit"
+            }
+          ],
+          "examples": []
+        },
+        {
+          "name": "KPopoverHeader",
+          "signature": "fun KPopoverHeader(modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit)",
+          "params": [
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            },
+            {
+              "name": "content",
+              "type": "@Composable ColumnScope.() -> Unit"
+            }
+          ],
+          "examples": []
+        },
+        {
+          "name": "KPopoverTitle",
+          "signature": "fun KPopoverTitle(text: String, modifier: Modifier = Modifier)",
+          "params": [
+            {
+              "name": "text",
+              "type": "String"
+            },
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            }
+          ],
+          "examples": []
+        },
+        {
+          "name": "KPopoverDescription",
+          "signature": "fun KPopoverDescription(text: String, modifier: Modifier = Modifier)",
+          "params": [
+            {
+              "name": "text",
+              "type": "String"
+            },
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            }
+          ],
+          "examples": []
+        }
+      ]
+    },
+    {
+      "id": "KSkeleton",
+      "title": "KSkeleton",
+      "primary": "KSkeleton",
+      "tags": [
+        "loading"
+      ],
+      "sourcePath": "core/src/androidMain/kotlin/dev/kindling/core/components/Skeleton.kt",
+      "api": [
+        {
+          "name": "KSkeleton",
+          "signature": "fun KSkeleton(modifier: Modifier = Modifier, shape: Shape = RoundedCornerShape(4.dp),)",
+          "params": [
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            },
+            {
+              "name": "shape",
+              "type": "Shape",
+              "default": "RoundedCornerShape(4.dp)"
+            }
+          ],
+          "examples": []
+        }
+      ]
+    },
+    {
+      "id": "KSpinner",
+      "title": "KSpinner",
+      "primary": "KSpinner",
+      "tags": [
+        "loading"
+      ],
+      "sourcePath": "core/src/androidMain/kotlin/dev/kindling/core/components/Spinner.kt",
+      "api": [
+        {
+          "name": "KSpinner",
+          "signature": "fun KSpinner(modifier: Modifier = Modifier, size: KSpinnerSize = KSpinnerSize.Default, color: Color = MaterialTheme.colorScheme.primary, trackColor: Color = color.copy(alpha = 0.15f), label: String? = null,)",
+          "params": [
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            },
+            {
+              "name": "size",
+              "type": "KSpinnerSize",
+              "default": "KSpinnerSize.Default"
+            },
+            {
+              "name": "color",
+              "type": "Color",
+              "default": "MaterialTheme.colorScheme.primary"
+            },
+            {
+              "name": "trackColor",
+              "type": "Color",
+              "default": "color.copy(alpha = 0.15f)"
+            },
+            {
+              "name": "label",
+              "type": "String?",
+              "default": "null"
+            }
+          ],
+          "examples": []
+        },
+        {
+          "name": "KSpinnerOverlay",
+          "signature": "fun KSpinnerOverlay(modifier: Modifier = Modifier.fillMaxSize(), size: KSpinnerSize = KSpinnerSize.Lg, label: String? = null,)",
+          "params": [
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier.fillMaxSize()"
+            },
+            {
+              "name": "size",
+              "type": "KSpinnerSize",
+              "default": "KSpinnerSize.Lg"
+            },
+            {
+              "name": "label",
+              "type": "String?",
+              "default": "null"
+            }
+          ],
+          "examples": []
+        }
+      ]
+    },
+    {
+      "id": "KStepper",
+      "title": "KStepper",
+      "primary": "KStepper",
+      "tags": [
+        "navigation"
+      ],
+      "sourcePath": "core/src/androidMain/kotlin/dev/kindling/core/components/Stepper.kt",
+      "api": [
+        {
+          "name": "KStepper",
+          "signature": "fun KStepper(steps: List<KStep>, currentStep: Int, modifier: Modifier = Modifier, orientation: KStepperOrientation = KStepperOrientation.Horizontal, onStepClick: ((Int) -> Unit)? = null)",
+          "params": [
+            {
+              "name": "steps",
+              "type": "List<KStep>"
+            },
+            {
+              "name": "currentStep",
+              "type": "Int"
+            },
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            },
+            {
+              "name": "orientation",
+              "type": "KStepperOrientation",
+              "default": "KStepperOrientation.Horizontal"
+            },
+            {
+              "name": "onStepClick",
+              "type": "((Int) -> Unit)?",
+              "default": "null"
+            }
+          ],
+          "examples": []
+        }
+      ]
+    },
+    {
+      "id": "KTextarea",
+      "title": "KTextarea",
+      "primary": "KTextarea",
+      "tags": [
+        "forms"
+      ],
+      "sourcePath": "core/src/androidMain/kotlin/dev/kindling/core/components/Textarea.kt",
+      "api": [
+        {
+          "name": "KTextarea",
+          "signature": "fun KTextarea(value: String, onValueChange: (String) -> Unit, modifier: Modifier = Modifier, placeholder: String = \"\", enabled: Boolean = true, isError: Boolean = false, minLines: Int = 2, maxLines: Int = Int.MAX_VALUE, keyboardOptions: KeyboardOptions = KeyboardOptions( keyboardType = KeyboardType.Text, imeAction = ImeAction.Default ), keyboardActions: KeyboardActions = KeyboardActions.Default)",
+          "params": [
+            {
+              "name": "value",
+              "type": "String"
+            },
+            {
+              "name": "onValueChange",
+              "type": "(String) -> Unit"
+            },
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            },
+            {
+              "name": "placeholder",
+              "type": "String",
+              "default": "\"\""
+            },
+            {
+              "name": "enabled",
+              "type": "Boolean",
+              "default": "true"
+            },
+            {
+              "name": "isError",
+              "type": "Boolean",
+              "default": "false"
+            },
+            {
+              "name": "minLines",
+              "type": "Int",
+              "default": "2"
+            },
+            {
+              "name": "maxLines",
+              "type": "Int",
+              "default": "Int.MAX_VALUE"
+            },
+            {
+              "name": "keyboardOptions",
+              "type": "KeyboardOptions",
+              "default": "KeyboardOptions(\n        keyboardType = KeyboardType.Text,\n        imeAction    = ImeAction.Default\n    )"
+            },
+            {
+              "name": "keyboardActions",
+              "type": "KeyboardActions",
+              "default": "KeyboardActions.Default"
+            }
+          ],
+          "examples": []
+        }
+      ]
+    },
+    {
+      "id": "KToasterHost",
+      "title": "KToasterHost",
+      "primary": "KToasterHost",
+      "tags": [
+        "feedback"
+      ],
+      "sourcePath": "core/src/androidMain/kotlin/dev/kindling/core/components/Toaster.kt",
+      "api": [
+        {
+          "name": "KToasterHost",
+          "signature": "fun KToasterHost(modifier: Modifier = Modifier, maxVisible: Int = 3)",
+          "params": [
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            },
+            {
+              "name": "maxVisible",
+              "type": "Int",
+              "default": "3"
+            }
+          ],
+          "examples": []
+        }
+      ]
+    }
+  ]
+}

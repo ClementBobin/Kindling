@@ -1,0 +1,127 @@
+{
+  "module": "utils",
+  "title": "Utils",
+  "artifact": "io.github.clementbobin.kindling:utils",
+  "description": "Coroutine utilities for debouncing, throttling, and Flow helpers.",
+  "pages": [
+    {
+      "id": "Debouncer",
+      "title": "Debouncer",
+      "primary": "Debouncer",
+      "summary": "Delays forwarding values until no new values have arrived for a given delay.",
+      "tags": ["coroutines", "flow"],
+      "sourcePath": "utils/src/main/kotlin/dev/kindling/library/utils/Debouncer.kt",
+      "api": [
+        {
+          "name": "Debouncer",
+          "signature": "class Debouncer<T>(scope: CoroutineScope, delay: Duration = 300.milliseconds, leading: Boolean = false)",
+          "summary": "Coroutine-based debouncer with trailing-edge (default) and optional leading-edge semantics.",
+          "params": [
+            { "name": "scope", "type": "CoroutineScope", "description": "Scope that owns the internal job." },
+            { "name": "delay", "type": "Duration", "default": "300.milliseconds", "description": "Quiet period before a value is forwarded." },
+            { "name": "leading", "type": "Boolean", "default": "false", "description": "If true, emit immediately then suppress for the delay window." }
+          ],
+          "examples": [
+            {
+              "language": "kotlin",
+              "code": "val debouncer = Debouncer<String>(scope = viewModelScope, delay = 300.milliseconds)\n\n// Emit from a text-field's onValueChange:\nonValueChange = { text -> debouncer.emit(text) }\n\n// Collect the stable values:\ndebouncer.flow.collect { stableText -> search(stableText) }"
+            }
+          ]
+        },
+        {
+          "name": "KDebounce",
+          "signature": "fun <T> KDebounce(scope: CoroutineScope, delay: Duration = 300.milliseconds, leading: Boolean = false, block: suspend (T) -> Unit): KDebouncer<T>",
+          "summary": "Factory helper that creates a debouncer and registers a suspending callback.",
+          "params": [
+            { "name": "scope", "type": "CoroutineScope" },
+            { "name": "delay", "type": "Duration", "default": "300.milliseconds" },
+            { "name": "leading", "type": "Boolean", "default": "false" },
+            { "name": "block", "type": "suspend (T) -> Unit" }
+          ],
+          "examples": [
+            {
+              "language": "kotlin",
+              "code": "private val searchDebouncer = KDebounce(viewModelScope, 300.milliseconds) { query -> search(query) }\n\nKInput(\n    value = searchText,\n    onValueChange = { text -> searchText = text; searchDebouncer.emit(text) }\n)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Throttler",
+      "title": "Throttler",
+      "primary": "Throttler",
+      "summary": "Forwards at most one value per period (leading-edge).",
+      "tags": ["coroutines", "flow"],
+      "sourcePath": "utils/src/main/kotlin/dev/kindling/library/utils/Debouncer.kt",
+      "api": [
+        {
+          "name": "Throttler",
+          "signature": "class Throttler<T>(scope: CoroutineScope, period: Duration = 500.milliseconds)",
+          "summary": "Coroutine-based throttler that drops values inside the same period window.",
+          "params": [
+            { "name": "scope", "type": "CoroutineScope" },
+            { "name": "period", "type": "Duration", "default": "500.milliseconds" }
+          ],
+          "examples": [
+            {
+              "language": "kotlin",
+              "code": "private val submitThrottler = Throttler<Unit>(scope = viewModelScope, period = 500.milliseconds)\nsubmitThrottler.onThrottled { submitForm() }\n\nKButton(text = \"Submit\", onClick = { submitThrottler.emit(Unit) })"
+            }
+          ]
+        },
+        {
+          "name": "KThrottle",
+          "signature": "fun <T> KThrottle(scope: CoroutineScope, period: Duration = 500.milliseconds, block: suspend (T) -> Unit): KThrottler<T>",
+          "summary": "Factory helper that creates a throttler and registers a suspending callback.",
+          "params": [
+            { "name": "scope", "type": "CoroutineScope" },
+            { "name": "period", "type": "Duration", "default": "500.milliseconds" },
+            { "name": "block", "type": "suspend (T) -> Unit" }
+          ],
+          "examples": [
+            {
+              "language": "kotlin",
+              "code": "private val clickThrottler = KThrottle(viewModelScope, 500.milliseconds) { handleClick() }\n\nKButton(text = \"Click\", onClick = { clickThrottler.emit(Unit) })"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "FlowExtensions",
+      "title": "Flow extensions",
+      "primary": "Flow extensions",
+      "summary": "Leading-edge debounce and throttle-first helpers for any Flow.",
+      "tags": ["coroutines", "flow"],
+      "sourcePath": "utils/src/main/kotlin/dev/kindling/library/utils/PublicApi.kt",
+      "api": [
+        {
+          "name": "kDebounceLeading",
+          "signature": "fun <T> Flow<T>.kDebounceLeading(duration: Duration): Flow<T>",
+          "summary": "Emits the first item in a burst immediately, then suppresses further items until the duration elapses.",
+          "params": [{ "name": "duration", "type": "Duration" }],
+          "examples": [
+            {
+              "language": "kotlin",
+              "code": "searchFlow\n    .kDebounceLeading(300.milliseconds)\n    .collect { query -> search(query) }"
+            }
+          ]
+        },
+        {
+          "name": "kThrottleFirst",
+          "signature": "fun <T> Flow<T>.kThrottleFirst(period: Duration): Flow<T>",
+          "summary": "Throttles a Flow to emit at most one item per period (leading edge).",
+          "params": [{ "name": "period", "type": "Duration" }],
+          "examples": [
+            {
+              "language": "kotlin",
+              "code": "clickFlow\n    .kThrottleFirst(500.milliseconds)\n    .collect { handleClick() }"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+

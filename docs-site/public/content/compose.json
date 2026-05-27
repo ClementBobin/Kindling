@@ -1,0 +1,95 @@
+{
+  "module": "compose",
+  "title": "Compose",
+  "artifact": "io.github.clementbobin.kindling:compose",
+  "description": "Typed navigation helpers and a structured ViewModel base for Compose apps.",
+  "pages": [
+    {
+      "id": "TypedNavigation",
+      "title": "Typed navigation",
+      "primary": "Destination",
+      "summary": "Centralize routes and arguments with a typed Destination contract and helpers.",
+      "tags": ["navigation", "compose"],
+      "sourcePath": "compose/src/main/kotlin/dev/kindling/compose/Destination.kt",
+      "api": [
+        {
+          "name": "Destination",
+          "signature": "interface Destination { val route: String; val arguments: List<NamedNavArgument> }",
+          "summary": "Base contract for navigation destinations (typically implemented via a sealed class/interface).",
+          "params": [],
+          "examples": [
+            {
+              "language": "kotlin",
+              "code": "sealed class Screen(route: String, arguments: List<NamedNavArgument> = emptyList())\n    : Destination(route, arguments) {\n\n    object Splash  : Screen(\"splash\")\n    object Home    : Screen(\"home\")\n    object Profile : Screen(\n        route     = \"profile/{userId}\",\n        arguments = listOf(navArgument(\"userId\") { type = NavType.StringType })\n    )\n}"
+            }
+          ]
+        },
+        {
+          "name": "KNavHost",
+          "signature": "@Composable fun KNavHost(navController: NavHostController, startDestination: Destination, modifier: Modifier = Modifier, builder: NavGraphBuilder.() -> Unit)",
+          "summary": "Typed wrapper around NavHost to avoid raw route strings at call sites.",
+          "params": [
+            { "name": "navController", "type": "NavHostController" },
+            { "name": "startDestination", "type": "Destination" },
+            { "name": "modifier", "type": "Modifier", "default": "Modifier" },
+            { "name": "builder", "type": "NavGraphBuilder.() -> Unit" }
+          ],
+          "examples": [
+            {
+              "language": "kotlin",
+              "code": "@Composable\nfun AppNavHost(navController: NavHostController) {\n  KNavHost(navController, startDestination = Screen.Splash) {\n    composable(Screen.Splash) { SplashScreen(navController) }\n    composable(Screen.Home)   { HomeScreen(navController) }\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "NavController.navigate",
+          "signature": "fun NavController.navigate(destination: Destination, navOptions: NavOptions? = null, navigatorExtras: Navigator.Extras? = null)",
+          "summary": "Navigate to a typed Destination.",
+          "params": [
+            { "name": "destination", "type": "Destination" },
+            { "name": "navOptions", "type": "NavOptions?", "default": "null" },
+            { "name": "navigatorExtras", "type": "Navigator.Extras?", "default": "null" }
+          ],
+          "examples": [
+            { "language": "kotlin", "code": "navController.navigate(Screen.Home)" }
+          ]
+        },
+        {
+          "name": "NavController.popBackTo",
+          "signature": "fun NavController.popBackTo(destination: Destination, inclusive: Boolean = false): Boolean",
+          "summary": "Pop the back stack to a typed Destination.",
+          "params": [
+            { "name": "destination", "type": "Destination" },
+            { "name": "inclusive", "type": "Boolean", "default": "false" }
+          ],
+          "examples": [
+            { "language": "kotlin", "code": "navController.popBackTo(Screen.Login, inclusive = true)" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "KViewModel",
+      "title": "KViewModel",
+      "primary": "KViewModel",
+      "summary": "StateFlow + SharedFlow foundation with async helpers (fetchData/collectData).",
+      "tags": ["architecture", "compose"],
+      "sourcePath": "compose/src/main/kotlin/dev/kindling/compose/KViewModel.kt",
+      "api": [
+        {
+          "name": "KViewModel",
+          "signature": "abstract class KViewModel<State, Event>(initialState: State) : ViewModel()",
+          "summary": "Structured base ViewModel for Compose-driven UIs: state, one-shot events, and async helpers.",
+          "params": [{ "name": "initialState", "type": "State" }],
+          "examples": [
+            {
+              "language": "kotlin",
+              "code": "data class HomeState(\n  val isLoading: Boolean = true,\n  val items: List<String> = emptyList()\n)\n\nsealed interface HomeEvent {\n  data class ShowError(val message: String) : HomeEvent\n}\n\nclass HomeViewModel(\n  private val repository: ItemRepository\n) : KViewModel<HomeState, HomeEvent>(HomeState()) {\n\n  init { loadItems() }\n\n  private fun loadItems() {\n    fetchData(\n      source = { repository.getItems() },\n      onResult = { result ->\n        result\n          .onSuccess { items -> updateState { copy(items = items, isLoading = false) } }\n          .onFailure { e -> sendEvent(HomeEvent.ShowError(e.message ?: \"Unknown error\")) }\n      }\n    )\n  }\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+
