@@ -12,9 +12,9 @@ async function loadJson<T>(path: string): Promise<T> {
 }
 
 const MODULES: { module: ModuleName; path: string }[] = [
-  { module: 'core', path: '/content/core.json' },
-  { module: 'utils', path: '/content/utils.json' },
-  { module: 'compose', path: '/content/compose.json' },
+  { module: 'core', path: `${import.meta.env.BASE_URL}content/core.json` },
+  { module: 'utils', path: `${import.meta.env.BASE_URL}content/utils.json` },
+  { module: 'compose', path: `${import.meta.env.BASE_URL}content/compose.json` },
 ]
 
 export default function App() {
