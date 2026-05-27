@@ -204,10 +204,75 @@ h2 {
   color: var(--muted);
   font-size: 12px;
   align-items: center;
+  flex-wrap: nowrap;
+  overflow: hidden;
 }
 
 .sep {
   opacity: 0.6;
+}
+
+.crumbWrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.crumbButton {
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 12px;
+  padding: 0;
+}
+
+.crumbButton:hover {
+  color: var(--fg);
+  text-decoration: underline;
+}
+
+.crumbDropdown {
+  position: relative;
+  display: inline-flex;
+}
+
+.crumbDropdown summary {
+  list-style: none;
+}
+
+.crumbDropdown summary::-webkit-details-marker {
+  display: none;
+}
+
+.crumbMenu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  min-width: 180px;
+  background: color-mix(in oklab, var(--panel) 92%, var(--bg));
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 6px;
+  display: grid;
+  gap: 2px;
+  z-index: 10;
+  box-shadow: 0 18px 40px color-mix(in oklab, black 18%, transparent);
+}
+
+.crumbMenuItem {
+  text-align: left;
+  border: 0;
+  background: transparent;
+  color: var(--fg);
+  font-size: 12px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.crumbMenuItem:hover {
+  background: color-mix(in oklab, var(--accent) 10%, var(--panel));
 }
 
 .pageTitle {
@@ -310,6 +375,12 @@ h2 {
   padding-top: 10px;
 }
 
+.apiBlockSep {
+  border-top: 1px solid var(--border);
+  margin-top: 28px;
+  padding-top: 28px;
+}
+
 .apiTitle {
   font-family: var(--serif);
   font-size: 22px;
@@ -320,6 +391,18 @@ h2 {
 .apiSummary {
   margin: 10px 0 0;
   color: var(--muted);
+}
+
+.subSection {
+  margin-top: 14px;
+}
+
+.subTitle {
+  font-size: 12px;
+  letter-spacing: 0.2px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 8px;
 }
 
 .tableWrap {
@@ -362,6 +445,17 @@ h2 {
 .cellDesc {
   color: var(--muted);
   max-width: 50ch;
+}
+
+.cellValues {
+  min-width: 220px;
+}
+
+.valuesWrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
 }
 
 .muted {

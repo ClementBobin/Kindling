@@ -5,14 +5,30 @@
   "description": "Typed navigation helpers and a structured ViewModel base for Compose apps.",
   "pages": [
     {
+      "id": "KindlingComposeApi",
+      "title": "KindlingComposeApi",
+      "primary": "KindlingComposeApi",
+      "summary": "Public API entrypoint for the Kindling Compose module.",
+      "tags": [],
+      "sourcePath": "compose/src/main/kotlin/dev/kindling/compose/PublicApi.kt",
+      "api": [
+        {
+          "name": "KindlingComposeApi",
+          "signature": "object KindlingComposeApi",
+          "summary": "Public API entrypoint for the Kindling Compose module.",
+          "kdoc": "Public API entrypoint for the Kindling Compose module.\n\nThis object defines a stable boundary for the framework.\n\nIt intentionally contains no logic.\nIt only exists to group and expose public-facing primitives.\n\nPrefer importing from this file instead of internal packages\nlike `experimental`.\n\nThe primary public surface — [Destination], [NavigationEvent],\n[KNavHost], [KViewModel], [KScreen] and their NavController\nextensions — is declared directly in this package and does not\nneed re-exporting here.",
+          "params": [],
+          "examples": [],
+          "enums": []
+        }
+      ]
+    },
+    {
       "id": "KScreen",
       "title": "KScreen",
       "primary": "KScreen",
       "summary": "Generic screen wrapper for ViewModel-driven Compose screens.",
-      "tags": [
-        "architecture",
-        "compose"
-      ],
+      "tags": [],
       "sourcePath": "compose/src/main/kotlin/dev/kindling/compose/KScreen.kt",
       "api": [
         {
@@ -54,59 +70,17 @@
               "language": "kotlin",
               "code": "KScreen(\n    viewModel = homeViewModel,\n    navController = navController,\n    onEvent = { _, _, event ->\n        when(event) {\n            is HomeEvent.ShowSnackbar -> {\n                snackbarHostState.showSnackbar(event.message)\n            }\n        }\n    }\n) { state, viewModel ->\n\n    HomeScreenContent(\n        state = state,\n        onRefresh = viewModel::refresh\n    )\n}"
             }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "KViewModel",
-      "title": "KViewModel",
-      "primary": "KViewModel",
-      "summary": "Base ViewModel for Kindling applications.",
-      "tags": [
-        "architecture",
-        "compose"
-      ],
-      "sourcePath": "compose/src/main/kotlin/dev/kindling/compose/KViewModel.kt",
-      "api": [
-        {
-          "name": "KViewModel",
-          "signature": "abstract class KViewModel<State, Event>(initialState: State)",
-          "summary": "Base ViewModel for Kindling applications.",
-          "kdoc": "Base ViewModel for Kindling applications.\n\n`KViewModel` provides a structured foundation for building\nCompose-driven UIs with a clear separation of concerns:\n\n- **State management** via [StateFlow]\n- **One-shot UI events** via [SharedFlow]\n- **Async execution helpers** for repository and Flow integration\n- **Lifecycle-safe coroutine scope** via [viewModelScope]\n\nIt is designed to work seamlessly with [KScreen], which handles:\n- state collection\n- event dispatching\n- navigation events\n- back handling\n\n---\n\n## 🧠 Core Concepts\n\n### 1. State (UI as a function of data)\n\nState is immutable from the UI side and updated only via [updateState].\n\n```kotlin\ndata class HomeState(\n    val isLoading: Boolean = false,\n    val items: List<String> = emptyList()\n)\n```\n\n---\n\n### 2. Events (one-time effects)\n\nEvents represent UI side-effects such as:\n- navigation\n- snackbars\n- dialogs\n\n```kotlin\nsealed interface HomeEvent {\n    data class ShowMessage(val text: String) : HomeEvent\n    data object NavigateNext : HomeEvent\n}\n```\n\n---\n\n### 3. Data loading\n\nBuilt-in helpers simplify async work:\n\n- [fetchData] → single suspend call\n- [collectData] → Flow collection\n\n---\n\n## 📦 Example Usage\n\n```kotlin\nclass HomeViewModel(\n    private val repository: ItemRepository\n) : KViewModel<HomeState, HomeEvent>(HomeState()) {\n\n    init {\n        loadItems()\n    }\n\n    private fun loadItems() {\n        fetchData(\n            source = { repository.getItems() },\n            onResult = { result ->\n                result\n                    .onSuccess { items ->\n                        updateState { copy(items = items, isLoading = false) }\n                    }\n                    .onFailure { error ->\n                        sendEvent(HomeEvent.ShowMessage(error.message ?: \"Unknown error\"))\n                    }\n            }\n        )\n    }\n}\n```\n\n---\n\n@param State The UI state type. Prefer immutable data classes.\n@param Event The UI event type. Prefer sealed interfaces for exhaustiveness.\n@param initialState The initial state emitted to collectors immediately.",
-          "params": [
-            {
-              "name": "initialState",
-              "type": "State",
-              "description": "The initial state emitted to collectors immediately."
-            }
           ],
-          "examples": [
-            {
-              "language": "kotlin",
-              "code": "data class HomeState(\n    val isLoading: Boolean = false,\n    val items: List<String> = emptyList()\n)"
-            },
-            {
-              "language": "kotlin",
-              "code": "sealed interface HomeEvent {\n    data class ShowMessage(val text: String) : HomeEvent\n    data object NavigateNext : HomeEvent\n}"
-            },
-            {
-              "language": "kotlin",
-              "code": "class HomeViewModel(\n    private val repository: ItemRepository\n) : KViewModel<HomeState, HomeEvent>(HomeState()) {\n\n    init {\n        loadItems()\n    }\n\n    private fun loadItems() {\n        fetchData(\n            source = { repository.getItems() },\n            onResult = { result ->\n                result\n                    .onSuccess { items ->\n                        updateState { copy(items = items, isLoading = false) }\n                    }\n                    .onFailure { error ->\n                        sendEvent(HomeEvent.ShowMessage(error.message ?: \"Unknown error\"))\n                    }\n            }\n        )\n    }\n}"
-            }
-          ]
+          "enums": []
         }
       ]
     },
     {
-      "id": "TypedNavigation",
-      "title": "Typed navigation",
-      "primary": "Destination",
+      "id": "NavController.navigate",
+      "title": "NavController.navigate",
+      "primary": "NavController.navigate",
       "summary": "Navigates to a typed [Destination].",
-      "tags": [
-        "navigation",
-        "compose"
-      ],
+      "tags": [],
       "sourcePath": "compose/src/main/kotlin/dev/kindling/compose/Destination.kt",
       "api": [
         {
@@ -138,7 +112,8 @@
               "language": "kotlin",
               "code": "navController.navigate(Screen.Home)"
             }
-          ]
+          ],
+          "enums": []
         },
         {
           "name": "NavController.popBackTo",
@@ -163,7 +138,8 @@
               "language": "kotlin",
               "code": "navController.popBackTo(Screen.Login)\n\nnavController.popBackTo(\n    destination = Screen.Splash,\n    inclusive = true\n)"
             }
-          ]
+          ],
+          "enums": []
         },
         {
           "name": "KNavHost",
@@ -198,7 +174,8 @@
               "language": "kotlin",
               "code": "@Composable\nfun AppNavigation(navController: NavHostController) {\n    KNavHost(\n        navController = navController,\n        startDestination = Screen.Splash\n    ) {\n\n        composable(Screen.Splash) {\n            SplashScreen(navController)\n        }\n\n        composable(Screen.Home) {\n            HomeScreen(navController)\n        }\n    }\n}"
             }
-          ]
+          ],
+          "enums": []
         },
         {
           "name": "Destination",
@@ -211,7 +188,390 @@
               "language": "kotlin",
               "code": "sealed class Screen(\n    override val route: String\n) : Destination {\n\n    data object Splash : Screen(\"splash\")\n    data object Home : Screen(\"home\")\n\n    data object Profile : Screen(\"profile/{userId}\") {\n        override val arguments = listOf(\n            navArgument(\"userId\") {\n                type = NavType.StringType\n            }\n        )\n    }\n}"
             }
-          ]
+          ],
+          "enums": []
+        },
+        {
+          "name": "NavigationEvent",
+          "signature": "interface NavigationEvent",
+          "summary": "Explicit contract for navigation-related events.",
+          "kdoc": "Explicit contract for navigation-related events.\n\nThis interface allows ViewModels to emit navigation requests without\nintroducing implicit runtime behaviour.\n\nInstead of checking arbitrary event types at runtime, Kindling only performs\nnavigation for events explicitly implementing [NavigationEvent].\n\n## Example\n\n```kotlin\nsealed interface HomeEvent {\n\n    data class Navigate(\n        override val destination: Destination\n    ) : HomeEvent, NavigationEvent\n}\n```\n\n@property destination The destination to navigate to.\n@property navOptions Optional navigation configuration.\n@property navigatorExtras Optional navigator-specific extras.",
+          "params": [],
+          "examples": [
+            {
+              "language": "kotlin",
+              "code": "sealed interface HomeEvent {\n\n    data class Navigate(\n        override val destination: Destination\n    ) : HomeEvent, NavigationEvent\n}"
+            }
+          ],
+          "enums": []
+        }
+      ]
+    },
+    {
+      "id": "setState",
+      "title": "setState",
+      "primary": "setState",
+      "packagePath": "experimental",
+      "summary": "Updates the current state using a reducer function.",
+      "tags": [],
+      "sourcePath": "compose/src/main/kotlin/dev/kindling/compose/experimental/KMviViewModel.kt",
+      "api": [
+        {
+          "name": "setState",
+          "signature": "fun setState(reducer: State.() -> State)",
+          "summary": "Updates the current state using a reducer function.",
+          "kdoc": "Updates the current state using a reducer function.\n\n## Example\n\n```kotlin\nsetState {\n    copy(isLoading = true)\n}\n```",
+          "params": [
+            {
+              "name": "reducer",
+              "type": "State.() -> State"
+            }
+          ],
+          "examples": [
+            {
+              "language": "kotlin",
+              "code": "setState {\n    copy(isLoading = true)\n}"
+            }
+          ],
+          "enums": []
+        },
+        {
+          "name": "emitEffect",
+          "signature": "fun emitEffect(effect: E)",
+          "summary": "Emits a one-time effect to the UI layer.",
+          "kdoc": "Emits a one-time effect to the UI layer.\n\n## Example\n\n```kotlin\nemitEffect(HomeEffect.ShowSnackbar(\"Saved successfully\"))\n```",
+          "params": [
+            {
+              "name": "effect",
+              "type": "E"
+            }
+          ],
+          "examples": [
+            {
+              "language": "kotlin",
+              "code": "emitEffect(HomeEffect.ShowSnackbar(\"Saved successfully\"))"
+            }
+          ],
+          "enums": []
+        },
+        {
+          "name": "emitEffectSuspend",
+          "signature": "fun emitEffectSuspend(effect: E)",
+          "summary": "Suspended variant of [emitEffect].",
+          "kdoc": "Suspended variant of [emitEffect].\n\nEnsures guaranteed delivery of the effect.",
+          "params": [
+            {
+              "name": "effect",
+              "type": "E"
+            }
+          ],
+          "examples": [],
+          "enums": []
+        },
+        {
+          "name": "handleIntent",
+          "signature": "fun handleIntent(intent: I)",
+          "summary": "Handles incoming UI intents.",
+          "kdoc": "Handles incoming UI intents.\n\nThis is the single entry point for all user actions.",
+          "params": [
+            {
+              "name": "intent",
+              "type": "I"
+            }
+          ],
+          "examples": [],
+          "enums": []
+        },
+        {
+          "name": "async",
+          "signature": "fun <T> async(block: suspend () -> T, reducer: State.(Result<T>) -> State)",
+          "summary": "Executes a suspend operation on IO and reduces the result into state.",
+          "kdoc": "Executes a suspend operation on IO and reduces the result into state.\n\n## Example\n\n```kotlin\nasync(\n    block = { repository.getItems() }\n) { result ->\n    result.onSuccess { items ->\n        copy(items = items)\n    }\n}\n```",
+          "params": [
+            {
+              "name": "block",
+              "type": "suspend () -> T"
+            },
+            {
+              "name": "reducer",
+              "type": "State.(Result<T>) -> State"
+            }
+          ],
+          "examples": [
+            {
+              "language": "kotlin",
+              "code": "async(\n    block = { repository.getItems() }\n) { result ->\n    result.onSuccess { items ->\n        copy(items = items)\n    }\n}"
+            }
+          ],
+          "enums": []
+        },
+        {
+          "name": "collectFlow",
+          "signature": "fun <T> collectFlow(source: () -> Flow<T>, reducer: State.(T) -> State)",
+          "summary": "Collects a Flow inside the ViewModel scope.",
+          "kdoc": "Collects a Flow inside the ViewModel scope.\n\nEach emission is reduced into state.\n\n## Example\n\n```kotlin\ncollectFlow(\n    source = { repository.observeItems() }\n) { items ->\n    copy(items = items)\n}\n```",
+          "params": [
+            {
+              "name": "source",
+              "type": "() -> Flow<T>"
+            },
+            {
+              "name": "reducer",
+              "type": "State.(T) -> State"
+            }
+          ],
+          "examples": [
+            {
+              "language": "kotlin",
+              "code": "collectFlow(\n    source = { repository.observeItems() }\n) { items ->\n    copy(items = items)\n}"
+            }
+          ],
+          "enums": []
+        },
+        {
+          "name": "Intent",
+          "signature": "interface Intent",
+          "summary": "Marker interface for UI actions coming from the view layer.",
+          "kdoc": "Marker interface for UI actions coming from the view layer.\n\nThese represent user intentions such as clicks, input changes,\nor lifecycle triggers.\n\n## Example\n\n```kotlin\nsealed interface HomeIntent : Intent {\n    data object LoadItems : HomeIntent\n    data class Search(val query: String) : HomeIntent\n}\n```",
+          "params": [],
+          "examples": [
+            {
+              "language": "kotlin",
+              "code": "sealed interface HomeIntent : Intent {\n    data object LoadItems : HomeIntent\n    data class Search(val query: String) : HomeIntent\n}"
+            }
+          ],
+          "enums": []
+        },
+        {
+          "name": "Effect",
+          "signature": "interface Effect",
+          "summary": "One-time side effects emitted by the ViewModel.",
+          "kdoc": "One-time side effects emitted by the ViewModel.\n\nEffects are consumed once by the UI layer and are not part of state.\n\nTypical uses:\n- navigation\n- snackbar messages\n- dialogs\n- external actions (analytics, deep links)\n\n## Example\n\n```kotlin\nsealed interface HomeEffect : Effect {\n    data class ShowSnackbar(val message: String) : HomeEffect\n    data class Navigate(val route: String) : HomeEffect\n}\n```",
+          "params": [],
+          "examples": [
+            {
+              "language": "kotlin",
+              "code": "sealed interface HomeEffect : Effect {\n    data class ShowSnackbar(val message: String) : HomeEffect\n    data class Navigate(val route: String) : HomeEffect\n}"
+            }
+          ],
+          "enums": []
+        },
+        {
+          "name": "MviViewModel",
+          "signature": "interface MviViewModel<State, I, E>",
+          "summary": "Core contract for MVI ViewModels in Kindling.",
+          "kdoc": "Core contract for MVI ViewModels in Kindling.\n\nDefines a strict unidirectional flow:\n\n```\nIntent → ViewModel → State + Effect → UI\n```\n\n## Example\n\n```kotlin\nclass HomeViewModel : KMviViewModel<HomeState, HomeIntent, HomeEffect>(\n    HomeState()\n) {\n    override suspend fun handleIntent(intent: HomeIntent) {\n        when (intent) {\n            HomeIntent.LoadItems -> loadItems()\n        }\n    }\n}\n```",
+          "params": [],
+          "examples": [
+            {
+              "code": "Intent → ViewModel → State + Effect → UI"
+            },
+            {
+              "language": "kotlin",
+              "code": "class HomeViewModel : KMviViewModel<HomeState, HomeIntent, HomeEffect>(\n    HomeState()\n) {\n    override suspend fun handleIntent(intent: HomeIntent) {\n        when (intent) {\n            HomeIntent.LoadItems -> loadItems()\n        }\n    }\n}"
+            }
+          ],
+          "enums": []
+        },
+        {
+          "name": "KMviViewModel",
+          "signature": "abstract class KMviViewModel<State, I, E>(initialState: State)",
+          "summary": "Base implementation of a strict MVI ViewModel.",
+          "kdoc": "Base implementation of a strict MVI ViewModel.\n\nProvides:\n- State management via StateFlow\n- One-time effects via SharedFlow\n- Coroutine-safe intent handling\n- IO-safe async helpers\n\nDesigned to work seamlessly with `KScreen`.\n\n## Architecture Flow\n\n```\nUI → Intent → ViewModel → State / Effect → UI\n```\n\n## Example\n\n```kotlin\nclass HomeViewModel(\n    private val repo: ItemRepository\n) : KMviViewModel<HomeState, HomeIntent, HomeEffect>(\n    HomeState()\n) {\n\n    override suspend fun handleIntent(intent: HomeIntent) {\n        when (intent) {\n            HomeIntent.LoadItems -> loadItems()\n        }\n    }\n\n    private fun loadItems() {\n        async(\n            block = { repo.getItems() }\n        ) { result ->\n            result\n                .onSuccess { items ->\n                    copy(items = items, isLoading = false)\n                }\n                .onFailure {\n                    emitEffect(HomeEffect.ShowSnackbar(\"Error loading items\"))\n                    this\n                }\n        }\n    }\n}\n```",
+          "params": [
+            {
+              "name": "initialState",
+              "type": "State"
+            }
+          ],
+          "examples": [
+            {
+              "code": "UI → Intent → ViewModel → State / Effect → UI"
+            },
+            {
+              "language": "kotlin",
+              "code": "class HomeViewModel(\n    private val repo: ItemRepository\n) : KMviViewModel<HomeState, HomeIntent, HomeEffect>(\n    HomeState()\n) {\n\n    override suspend fun handleIntent(intent: HomeIntent) {\n        when (intent) {\n            HomeIntent.LoadItems -> loadItems()\n        }\n    }\n\n    private fun loadItems() {\n        async(\n            block = { repo.getItems() }\n        ) { result ->\n            result\n                .onSuccess { items ->\n                    copy(items = items, isLoading = false)\n                }\n                .onFailure {\n                    emitEffect(HomeEffect.ShowSnackbar(\"Error loading items\"))\n                    this\n                }\n        }\n    }\n}"
+            }
+          ],
+          "enums": []
+        }
+      ]
+    },
+    {
+      "id": "updateState",
+      "title": "updateState",
+      "primary": "updateState",
+      "summary": "Updates the current state atomically using a reducer function.",
+      "tags": [],
+      "sourcePath": "compose/src/main/kotlin/dev/kindling/compose/KViewModel.kt",
+      "api": [
+        {
+          "name": "updateState",
+          "signature": "fun updateState(reducer: State.() -> State)",
+          "summary": "Updates the current state atomically using a reducer function.",
+          "kdoc": "Updates the current state atomically using a reducer function.\n\n```kotlin\nupdateState { copy(isLoading = true) }\n```",
+          "params": [
+            {
+              "name": "reducer",
+              "type": "State.() -> State"
+            }
+          ],
+          "examples": [
+            {
+              "language": "kotlin",
+              "code": "updateState { copy(isLoading = true) }"
+            }
+          ],
+          "enums": []
+        },
+        {
+          "name": "setState",
+          "signature": "fun setState(newState: State)",
+          "summary": "Replaces the entire state value.",
+          "kdoc": "Replaces the entire state value.\n\nUse sparingly; prefer [updateState] for partial updates.",
+          "params": [
+            {
+              "name": "newState",
+              "type": "State"
+            }
+          ],
+          "examples": [],
+          "enums": []
+        },
+        {
+          "name": "sendEvent",
+          "signature": "fun sendEvent(event: Event)",
+          "summary": "Emits a one-time event to the UI layer.",
+          "kdoc": "Emits a one-time event to the UI layer.\n\nThis is safe to call from any coroutine context.\n\n```kotlin\nsendEvent(HomeEvent.ShowMessage(\"Saved successfully\"))\n```",
+          "params": [
+            {
+              "name": "event",
+              "type": "Event"
+            }
+          ],
+          "examples": [
+            {
+              "language": "kotlin",
+              "code": "sendEvent(HomeEvent.ShowMessage(\"Saved successfully\"))"
+            }
+          ],
+          "enums": []
+        },
+        {
+          "name": "sendEventSuspend",
+          "signature": "fun sendEventSuspend(event: Event)",
+          "summary": "Suspended variant of [sendEvent].",
+          "kdoc": "Suspended variant of [sendEvent].\n\nUse this when ordering matters or emission must be guaranteed.",
+          "params": [
+            {
+              "name": "event",
+              "type": "Event"
+            }
+          ],
+          "examples": [],
+          "enums": []
+        },
+        {
+          "name": "fetchData",
+          "signature": "fun <T> fetchData(source: suspend () -> T, onResult: (Result<T>) -> Unit)",
+          "summary": "Executes a suspend operation on `Dispatchers.IO` and returns the result wrapped in [Result].",
+          "kdoc": "Executes a suspend operation on `Dispatchers.IO`\nand returns the result wrapped in [Result].\n\nThe callback is always invoked on the ViewModel scope.\n\n```kotlin\nfetchData(\n    source = { repository.getUser() },\n    onResult = { result ->\n        result\n            .onSuccess { user -> updateState { copy(user = user) } }\n            .onFailure { error -> sendEvent(HomeEvent.ShowMessage(error.message ?: \"\")) }\n    }\n)\n```",
+          "params": [
+            {
+              "name": "source",
+              "type": "suspend () -> T"
+            },
+            {
+              "name": "onResult",
+              "type": "(Result<T>) -> Unit"
+            }
+          ],
+          "examples": [
+            {
+              "language": "kotlin",
+              "code": "fetchData(\n    source = { repository.getUser() },\n    onResult = { result ->\n        result\n            .onSuccess { user -> updateState { copy(user = user) } }\n            .onFailure { error -> sendEvent(HomeEvent.ShowMessage(error.message ?: \"\")) }\n    }\n)"
+            }
+          ],
+          "enums": []
+        },
+        {
+          "name": "collectData",
+          "signature": "fun <T> collectData(source: () -> Flow<T>, onEach: (T) -> Unit, onError: (Throwable) -> Unit = {})",
+          "summary": "Collects a [Flow] inside [viewModelScope].",
+          "kdoc": "Collects a [Flow] inside [viewModelScope].\n\nErrors are forwarded to [onError] instead of crashing the scope.\n\n```kotlin\ncollectData(\n    source = { repository.observeItems() },\n    onEach = { items -> updateState { copy(items = items) } },\n    onError = { error -> sendEvent(HomeEvent.ShowMessage(error.message ?: \"\")) }\n)\n```",
+          "params": [
+            {
+              "name": "source",
+              "type": "() -> Flow<T>"
+            },
+            {
+              "name": "onEach",
+              "type": "(T) -> Unit"
+            },
+            {
+              "name": "onError",
+              "type": "(Throwable) -> Unit",
+              "default": "{}"
+            }
+          ],
+          "examples": [
+            {
+              "language": "kotlin",
+              "code": "collectData(\n    source = { repository.observeItems() },\n    onEach = { items -> updateState { copy(items = items) } },\n    onError = { error -> sendEvent(HomeEvent.ShowMessage(error.message ?: \"\")) }\n)"
+            }
+          ],
+          "enums": []
+        },
+        {
+          "name": "fetchAndReduce",
+          "signature": "fun <T> fetchAndReduce(source: suspend () -> T, reducer: State.(T) -> State)",
+          "summary": "Convenience helper combining data fetching and state reduction.",
+          "kdoc": "Convenience helper combining data fetching and state reduction.\n\nUseful for simple “load → update state” flows.\n\n```kotlin\nfetchAndReduce(\n    source = { repository.getItems() }\n) { items ->\n    copy(items = items, isLoading = false)\n}\n```",
+          "params": [
+            {
+              "name": "source",
+              "type": "suspend () -> T"
+            },
+            {
+              "name": "reducer",
+              "type": "State.(T) -> State"
+            }
+          ],
+          "examples": [
+            {
+              "language": "kotlin",
+              "code": "fetchAndReduce(\n    source = { repository.getItems() }\n) { items ->\n    copy(items = items, isLoading = false)\n}"
+            }
+          ],
+          "enums": []
+        },
+        {
+          "name": "KViewModel",
+          "signature": "abstract class KViewModel<State, Event>(initialState: State)",
+          "summary": "Base ViewModel for Kindling applications.",
+          "kdoc": "Base ViewModel for Kindling applications.\n\n`KViewModel` provides a structured foundation for building\nCompose-driven UIs with a clear separation of concerns:\n\n- **State management** via [StateFlow]\n- **One-shot UI events** via [SharedFlow]\n- **Async execution helpers** for repository and Flow integration\n- **Lifecycle-safe coroutine scope** via [viewModelScope]\n\nIt is designed to work seamlessly with [KScreen], which handles:\n- state collection\n- event dispatching\n- navigation events\n- back handling\n\n---\n\n## 🧠 Core Concepts\n\n### 1. State (UI as a function of data)\n\nState is immutable from the UI side and updated only via [updateState].\n\n```kotlin\ndata class HomeState(\n    val isLoading: Boolean = false,\n    val items: List<String> = emptyList()\n)\n```\n\n---\n\n### 2. Events (one-time effects)\n\nEvents represent UI side-effects such as:\n- navigation\n- snackbars\n- dialogs\n\n```kotlin\nsealed interface HomeEvent {\n    data class ShowMessage(val text: String) : HomeEvent\n    data object NavigateNext : HomeEvent\n}\n```\n\n---\n\n### 3. Data loading\n\nBuilt-in helpers simplify async work:\n\n- [fetchData] → single suspend call\n- [collectData] → Flow collection\n\n---\n\n## 📦 Example Usage\n\n```kotlin\nclass HomeViewModel(\n    private val repository: ItemRepository\n) : KViewModel<HomeState, HomeEvent>(HomeState()) {\n\n    init {\n        loadItems()\n    }\n\n    private fun loadItems() {\n        fetchData(\n            source = { repository.getItems() },\n            onResult = { result ->\n                result\n                    .onSuccess { items ->\n                        updateState { copy(items = items, isLoading = false) }\n                    }\n                    .onFailure { error ->\n                        sendEvent(HomeEvent.ShowMessage(error.message ?: \"Unknown error\"))\n                    }\n            }\n        )\n    }\n}\n```\n\n---\n\n@param State The UI state type. Prefer immutable data classes.\n@param Event The UI event type. Prefer sealed interfaces for exhaustiveness.\n@param initialState The initial state emitted to collectors immediately.",
+          "params": [
+            {
+              "name": "initialState",
+              "type": "State",
+              "description": "The initial state emitted to collectors immediately."
+            }
+          ],
+          "examples": [
+            {
+              "language": "kotlin",
+              "code": "data class HomeState(\n    val isLoading: Boolean = false,\n    val items: List<String> = emptyList()\n)"
+            },
+            {
+              "language": "kotlin",
+              "code": "sealed interface HomeEvent {\n    data class ShowMessage(val text: String) : HomeEvent\n    data object NavigateNext : HomeEvent\n}"
+            },
+            {
+              "language": "kotlin",
+              "code": "class HomeViewModel(\n    private val repository: ItemRepository\n) : KViewModel<HomeState, HomeEvent>(HomeState()) {\n\n    init {\n        loadItems()\n    }\n\n    private fun loadItems() {\n        fetchData(\n            source = { repository.getItems() },\n            onResult = { result ->\n                result\n                    .onSuccess { items ->\n                        updateState { copy(items = items, isLoading = false) }\n                    }\n                    .onFailure { error ->\n                        sendEvent(HomeEvent.ShowMessage(error.message ?: \"Unknown error\"))\n                    }\n            }\n        )\n    }\n}"
+            }
+          ],
+          "enums": []
         }
       ]
     }

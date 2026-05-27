@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import type { ModuleDoc, ModuleName } from '../types'
+import type { EnumDoc, ModuleDoc, ModuleName } from '../types'
 import type { Route } from '../lib/useHashRoute'
 import { CodeBlock } from './CodeBlock'
 import './page.css'
@@ -13,6 +13,132 @@ function moduleLabel(module: ModuleName) {
 function githubBlobUrl(sourcePath?: string) {
   if (!sourcePath) return undefined
   return `https://github.com/ClementBobin/Kindling/blob/main/${sourcePath}`
+}
+
+type CrumbItem = {
+  label: string
+  onClick?: () => void
+}
+
+function EllipsisCrumb(props: { items: CrumbItem[] }) {
+  const ref = useRef<HTMLDetailsElement | null>(null)
+  if (props.items.length === 0) return null
+  return (
+    <details className="crumbDropdown" ref={ref}>
+      <summary className="crumbButton" aria-label="Show full breadcrumb">
+        …
+      </summary>
+      <div className="crumbMenu" role="menu">
+        {props.items.map((c, idx) => (
+          <button
+            key={`${c.label}:${idx}`}
+            type="button"
+            className="crumbMenuItem"
+            onClick={() => {
+              c.onClick?.()
+              if (ref.current) ref.current.open = false
+            }}
+            role="menuitem"
+          >
+            {c.label}
+          </button>
+        ))}
+      </div>
+    </details>
+  )
+}
+
+function Breadcrumbs(props: { items: CrumbItem[] }) {
+  const items = props.items
+  const ref = useRef<HTMLDivElement | null>(null)
+  const [overflowCollapsed, setOverflowCollapsed] = useState(false)
+  const labelsKey = useMemo(() => items.map((i) => i.label).join('|'), [items])
+  const collapsed = items.length > 3 || overflowCollapsed
+
+  useEffect(() => {
+    if (items.length > 3) return
+    const el = ref.current
+    if (!el) return
+
+    const raf = requestAnimationFrame(() => {
+      const needsCollapse = el.scrollWidth > el.clientWidth + 1
+      setOverflowCollapsed(needsCollapse)
+    })
+
+    const ro = new ResizeObserver(() => {
+      const needsCollapse = el.scrollWidth > el.clientWidth + 1
+      setOverflowCollapsed(needsCollapse)
+    })
+    ro.observe(el)
+    return () => {
+      cancelAnimationFrame(raf)
+      ro.disconnect()
+    }
+  }, [items.length, labelsKey])
+
+  if (!collapsed) {
+    return (
+      <div className="crumbs" ref={ref}>
+        {items.map((c, idx) => (
+          <span key={`${c.label}:${idx}`} className="crumbWrap">
+            {idx > 0 ? <span className="sep">/</span> : null}
+            {c.onClick ? (
+              <button type="button" className="crumbButton" onClick={c.onClick}>
+                {c.label}
+              </button>
+            ) : (
+              <span className="crumb">{c.label}</span>
+            )}
+          </span>
+        ))}
+      </div>
+    )
+  }
+
+  const first = items[0]
+  const last = items[items.length - 1]
+  const hidden = items.slice(1, -1)
+
+  return (
+    <div className="crumbs" ref={ref}>
+      <span className="crumbWrap">
+        {first.onClick ? (
+          <button type="button" className="crumbButton" onClick={first.onClick}>
+            {first.label}
+          </button>
+        ) : (
+          <span className="crumb">{first.label}</span>
+        )}
+      </span>
+      <span className="sep">/</span>
+      <EllipsisCrumb items={hidden} />
+      <span className="sep">/</span>
+      <span className="crumbWrap">
+        {last.onClick ? (
+          <button type="button" className="crumbButton" onClick={last.onClick}>
+            {last.label}
+          </button>
+        ) : (
+          <span className="crumb">{last.label}</span>
+        )}
+      </span>
+    </div>
+  )
+}
+
+function collectEnums(entry: { params: { enum?: EnumDoc }[]; enums?: EnumDoc[] }): EnumDoc[] {
+  const out: EnumDoc[] = []
+  const seen = new Set<string>()
+  const add = (e: EnumDoc | undefined) => {
+    if (!e) return
+    if (seen.has(e.name)) return
+    seen.add(e.name)
+    out.push(e)
+  }
+
+  for (const p of entry.params) add(p.enum)
+  for (const e of entry.enums ?? []) add(e)
+  return out
 }
 
 export function PageView(props: { route: Route; modules: ModuleDoc[]; onNavigate: (next: Route) => void }) {
@@ -32,9 +158,13 @@ export function PageView(props: { route: Route; modules: ModuleDoc[]; onNavigate
     return <ModuleView module={mod} onNavigate={props.onNavigate} />
   }
 
+  if (route.kind === 'package') {
+    return <PackageView module={mod} packagePath={route.packagePath} onNavigate={props.onNavigate} />
+  }
+
   const page = mod.pages.find((p) => p.id === route.pageId)
   if (!page) return <NotFound />
-  return <DocPageView module={mod} pageId={page.id} />
+  return <DocPageView module={mod} pageId={page.id} onNavigate={props.onNavigate} />
 }
 
 function HomeView(props: {
@@ -134,9 +264,7 @@ function ModuleView(props: { module: ModuleDoc; onNavigate: (next: Route) => voi
   return (
     <div className="content">
       <header className="pageHeader">
-        <div className="crumbs">
-          <span className="crumb">{moduleLabel(props.module.module)}</span>
-        </div>
+        <Breadcrumbs items={[{ label: moduleLabel(props.module.module) }]} />
         <h1 className="pageTitle">{props.module.title}</h1>
         <p className="pageSubtitle">{props.module.description}</p>
         <div className="meta">
@@ -171,7 +299,60 @@ function ModuleView(props: { module: ModuleDoc; onNavigate: (next: Route) => voi
   )
 }
 
-function DocPageView(props: { module: ModuleDoc; pageId: string }) {
+function PackageView(props: { module: ModuleDoc; packagePath: string[]; onNavigate: (next: Route) => void }) {
+  const prefix = props.packagePath.filter(Boolean).join('/')
+  const pages = props.module.pages.filter((p) => {
+    const pp = p.packagePath ?? ''
+    if (!prefix) return pp === ''
+    return pp === prefix || pp.startsWith(`${prefix}/`)
+  })
+
+  const crumbs: CrumbItem[] = [
+    { label: moduleLabel(props.module.module), onClick: () => props.onNavigate({ kind: 'module', module: props.module.module }) },
+  ]
+  for (let i = 0; i < props.packagePath.length; i += 1) {
+    const seg = props.packagePath[i]
+    const path = props.packagePath.slice(0, i + 1)
+    crumbs.push({ label: seg, onClick: () => props.onNavigate({ kind: 'package', module: props.module.module, packagePath: path }) })
+  }
+
+  const title = prefix || moduleLabel(props.module.module)
+
+  return (
+    <div className="content">
+      <header className="pageHeader">
+        <Breadcrumbs items={crumbs} />
+        <h1 className="pageTitle">{title}</h1>
+        <p className="pageSubtitle">{pages.length} page(s)</p>
+      </header>
+
+      <section className="section">
+        <h2>Pages</h2>
+        <div className="pageList">
+          {pages.map((p) => (
+            <button
+              key={p.id}
+              type="button"
+              className="pageRow"
+              onClick={() => props.onNavigate({ kind: 'page', module: props.module.module, pageId: p.id })}
+            >
+              <div className="pageRowTitle">{p.title}</div>
+              <div className="pageRowMeta">
+                {p.tags.slice(0, 3).map((t) => (
+                  <span key={t} className="pageTag">
+                    {t}
+                  </span>
+                ))}
+              </div>
+            </button>
+          ))}
+        </div>
+      </section>
+    </div>
+  )
+}
+
+function DocPageView(props: { module: ModuleDoc; pageId: string; onNavigate: (next: Route) => void }) {
   const page = props.module.pages.find((p) => p.id === props.pageId)
   const tocRef = useRef<HTMLDivElement | null>(null)
   const [activeAnchor, setActiveAnchor] = useState<string | null>(null)
@@ -214,16 +395,22 @@ function DocPageView(props: { module: ModuleDoc; pageId: string }) {
   if (!page) return <NotFound />
 
   const sourceUrl = githubBlobUrl(page.sourcePath)
+  const packageSegments = (page.packagePath ?? '').split('/').filter(Boolean)
+  const crumbs: CrumbItem[] = [
+    { label: moduleLabel(props.module.module), onClick: () => props.onNavigate({ kind: 'module', module: props.module.module }) },
+    ...packageSegments.map((seg, idx) => ({
+      label: seg,
+      onClick: () =>
+        props.onNavigate({ kind: 'package', module: props.module.module, packagePath: packageSegments.slice(0, idx + 1) }),
+    })),
+    { label: page.title },
+  ]
 
   return (
     <div className="content contentWithToc">
       <div className="main">
         <header className="pageHeader">
-          <div className="crumbs">
-            <span className="crumb">{moduleLabel(props.module.module)}</span>
-            <span className="sep">/</span>
-            <span className="crumb">{page.title}</span>
-          </div>
+          <Breadcrumbs items={crumbs} />
           <h1 className="pageTitle">{page.title}</h1>
           {page.summary ? <p className="pageSubtitle">{page.summary}</p> : null}
           <div className="tagRow">
@@ -241,8 +428,10 @@ function DocPageView(props: { module: ModuleDoc; pageId: string }) {
         </header>
 
         <section className="section">
-          {page.api.map((a) => (
-            <div key={a.name} className="apiBlock">
+          {page.api.map((a, idx) => {
+            const enums = collectEnums(a)
+            return (
+            <div key={a.name} className={idx === 0 ? 'apiBlock' : 'apiBlock apiBlockSep'}>
               <h2 id={`api-${a.name}`} className="apiTitle">
                 {a.name}
               </h2>
@@ -250,45 +439,89 @@ function DocPageView(props: { module: ModuleDoc; pageId: string }) {
               {a.summary ? <p className="apiSummary">{a.summary}</p> : null}
 
               {a.params.length ? (
-                <div className="tableWrap">
-                  <table className="table">
-                    <thead>
-                      <tr>
-                        <th>Prop</th>
-                        <th>Type</th>
-                        <th>Default</th>
-                        <th>Description</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {a.params.map((p) => (
-                        <tr key={p.name}>
-                          <td>
-                            <code>{p.name}</code>
-                          </td>
-                          <td>
-                            <code>{p.type}</code>
-                          </td>
-                          <td>{p.default ? <code>{p.default}</code> : <span className="muted">—</span>}</td>
-                          <td className="cellDesc">{p.description ?? <span className="muted">—</span>}</td>
+                <div className="subSection">
+                  <h3 className="subTitle">Props</h3>
+                  <div className="tableWrap">
+                    <table className="table">
+                      <thead>
+                        <tr>
+                          <th>Prop</th>
+                          <th>Type</th>
+                          <th>Default</th>
+                          <th>Description</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody>
+                        {a.params.map((p) => (
+                          <tr key={p.name}>
+                            <td>
+                              <code>{p.name}</code>
+                            </td>
+                            <td>
+                              <code>{p.type}</code>
+                            </td>
+                            <td>{p.default ? <code>{p.default}</code> : <span className="muted">—</span>}</td>
+                            <td className="cellDesc">{p.description ?? <span className="muted">—</span>}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              ) : null}
+
+              {enums.length ? (
+                <div className="subSection">
+                  <h3 className="subTitle">Enums</h3>
+                  <div className="tableWrap">
+                    <table className="table">
+                      <thead>
+                        <tr>
+                          <th>Enum</th>
+                          <th>Values</th>
+                          <th>Description</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {enums.map((e) => (
+                          <tr key={e.name}>
+                            <td>
+                              <code>{e.name}</code>
+                            </td>
+                            <td className="cellValues">
+                              {e.values.length ? (
+                                <span className="valuesWrap">
+                                  {e.values.map((v) => (
+                                    <code key={v}>{v}</code>
+                                  ))}
+                                </span>
+                              ) : (
+                                <span className="muted">—</span>
+                              )}
+                            </td>
+                            <td className="cellDesc">{e.summary ?? <span className="muted">—</span>}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               ) : null}
 
               {a.examples.length ? (
-                <div className="examples">
-                  {a.examples.map((ex, idx) => (
-                    <div key={idx} className="example">
-                      <CodeBlock language={ex.language ?? 'kotlin'} code={ex.code} />
-                    </div>
-                  ))}
+                <div className="subSection">
+                  <h3 className="subTitle">Examples</h3>
+                  <div className="examples">
+                    {a.examples.map((ex, idx) => (
+                      <div key={idx} className="example">
+                        <CodeBlock language={ex.language ?? 'kotlin'} code={ex.code} />
+                      </div>
+                    ))}
+                  </div>
                 </div>
               ) : null}
             </div>
-          ))}
+          )})}
         </section>
       </div>
 

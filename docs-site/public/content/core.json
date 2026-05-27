@@ -5,9 +5,406 @@
   "description": "Shadcn/ui-style Jetpack Compose UI components, fully theme-aware via Material3.",
   "pages": [
     {
+      "id": "applyKMask",
+      "title": "applyKMask",
+      "primary": "applyKMask",
+      "packagePath": "components",
+      "summary": "Strips non-digit (or non-alphanumeric for text-pattern masks) characters from [raw], then applies the `#`-based [pattern].",
+      "tags": [
+        "forms"
+      ],
+      "sourcePath": "core/src/androidMain/kotlin/dev/kindling/core/components/MaskInput.kt",
+      "api": [
+        {
+          "name": "applyKMask",
+          "signature": "fun applyKMask(raw: String, pattern: String, allowLetters: Boolean = false): String",
+          "summary": "Strips non-digit (or non-alphanumeric for text-pattern masks) characters from [raw], then applies the `#`-based [pattern].",
+          "kdoc": "Strips non-digit (or non-alphanumeric for text-pattern masks) characters\nfrom [raw], then applies the `#`-based [pattern].\n\nReturns the formatted display string.",
+          "params": [
+            {
+              "name": "raw",
+              "type": "String"
+            },
+            {
+              "name": "pattern",
+              "type": "String"
+            },
+            {
+              "name": "allowLetters",
+              "type": "Boolean",
+              "default": "false"
+            }
+          ],
+          "examples": [],
+          "enums": []
+        },
+        {
+          "name": "stripKMask",
+          "signature": "fun stripKMask(value: String, allowLetters: Boolean = false): String",
+          "summary": "Returns the raw (un-masked) digits / characters from a masked [value].",
+          "kdoc": "Returns the raw (un-masked) digits / characters from a masked [value].",
+          "params": [
+            {
+              "name": "value",
+              "type": "String"
+            },
+            {
+              "name": "allowLetters",
+              "type": "Boolean",
+              "default": "false"
+            }
+          ],
+          "examples": [],
+          "enums": []
+        },
+        {
+          "name": "KMaskInput",
+          "signature": "fun KMaskInput(value: String, onValueChange: (String) -> Unit, modifier: Modifier = Modifier, mask: KMaskPattern? = null, customPattern: String? = null, allowLetters: Boolean = mask?.keyboardType == KeyboardType.Text, placeholder: String = mask?.placeholder ?: customPattern?.replace('#', '0') ?: \"\", enabled: Boolean = true, isError: Boolean = false, keyboardActions: KeyboardActions = KeyboardActions.Default)",
+          "summary": "Shadcn/ui-style masked input field.",
+          "kdoc": "Shadcn/ui-style masked input field.\n\nApplies a `#`-placeholder [mask] pattern on every keystroke, keeping the\nunderlying value as raw digits/characters.  Mirrors the behaviour of\n`mask-input.tsx` (MaskInput component).\n\nFor currency and percentage use [KCurrencyInput] and [KPercentageInput]\nhelpers below — they handle the decimal formatting separately.\n\n```kotlin\nvar phone by remember { mutableStateOf(\"\") }\n\nKMaskInput(\n    value         = phone,\n    onValueChange = { phone = it },        // raw digits\n    mask          = KMaskPattern.Phone,\n    placeholder   = \"(555) 000-0000\"\n)\n\n// Custom pattern\nKMaskInput(\n    value         = value,\n    onValueChange = { value = it },\n    customPattern = \"##-##-####\"\n)\n```\n\n@param value           Raw (unmasked) value — digits for numeric masks.\n@param onValueChange   Called with the new raw value on each keystroke.\n@param mask            Named mask preset; ignored when [customPattern] is set.\n@param customPattern   Custom `#`-placeholder pattern (overrides [mask]).\n@param allowLetters    Set `true` for alphanumeric masks (e.g. license plate).\n@param placeholder     Hint text shown when empty.\n@param enabled         Whether the field is editable.\n@param isError         Applies error styling.\n@param modifier        Applied to the underlying [KInput].",
+          "params": [
+            {
+              "name": "value",
+              "type": "String",
+              "description": "Raw (unmasked) value — digits for numeric masks."
+            },
+            {
+              "name": "onValueChange",
+              "type": "(String) -> Unit",
+              "description": "Called with the new raw value on each keystroke."
+            },
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier",
+              "description": "Applied to the underlying [KInput]."
+            },
+            {
+              "name": "mask",
+              "type": "KMaskPattern?",
+              "default": "null",
+              "description": "Named mask preset; ignored when [customPattern] is set.",
+              "enum": {
+                "name": "KMaskPattern",
+                "values": [
+                  "Phone",
+                  "Ssn",
+                  "Date",
+                  "Time",
+                  "CreditCard",
+                  "CreditCardExpiry",
+                  "ZipCode",
+                  "ZipCodeExtended",
+                  "Ein",
+                  "Isbn",
+                  "LicensePlate",
+                  "MacAddress"
+                ],
+                "summary": "Named mask patterns — mirrors `MaskPatternKey` from `mask-input.tsx`."
+              }
+            },
+            {
+              "name": "customPattern",
+              "type": "String?",
+              "default": "null",
+              "description": "Custom `#`-placeholder pattern (overrides [mask])."
+            },
+            {
+              "name": "allowLetters",
+              "type": "Boolean",
+              "default": "mask?.keyboardType == KeyboardType.Text",
+              "description": "Set `true` for alphanumeric masks (e.g. license plate)."
+            },
+            {
+              "name": "placeholder",
+              "type": "String",
+              "default": "mask?.placeholder ?: customPattern?.replace('#', '0') ?: \"\"",
+              "description": "Hint text shown when empty."
+            },
+            {
+              "name": "enabled",
+              "type": "Boolean",
+              "default": "true",
+              "description": "Whether the field is editable."
+            },
+            {
+              "name": "isError",
+              "type": "Boolean",
+              "default": "false",
+              "description": "Applies error styling."
+            },
+            {
+              "name": "keyboardActions",
+              "type": "KeyboardActions",
+              "default": "KeyboardActions.Default"
+            }
+          ],
+          "examples": [
+            {
+              "language": "kotlin",
+              "code": "var phone by remember { mutableStateOf(\"\") }\n\nKMaskInput(\n    value         = phone,\n    onValueChange = { phone = it },        // raw digits\n    mask          = KMaskPattern.Phone,\n    placeholder   = \"(555) 000-0000\"\n)\n\n// Custom pattern\nKMaskInput(\n    value         = value,\n    onValueChange = { value = it },\n    customPattern = \"##-##-####\"\n)"
+            }
+          ],
+          "enums": []
+        },
+        {
+          "name": "KPhoneInput",
+          "signature": "fun KPhoneInput(value: String, onValueChange: (String) -> Unit, modifier: Modifier = Modifier, placeholder: String = \"(555) 000-0000\", enabled: Boolean = true, isError: Boolean = false)",
+          "summary": "Phone number input — formats as `(###) ###-####`.",
+          "kdoc": "Phone number input — formats as `(###) ###-####`.",
+          "params": [
+            {
+              "name": "value",
+              "type": "String"
+            },
+            {
+              "name": "onValueChange",
+              "type": "(String) -> Unit"
+            },
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            },
+            {
+              "name": "placeholder",
+              "type": "String",
+              "default": "\"(555) 000-0000\""
+            },
+            {
+              "name": "enabled",
+              "type": "Boolean",
+              "default": "true"
+            },
+            {
+              "name": "isError",
+              "type": "Boolean",
+              "default": "false"
+            }
+          ],
+          "examples": [],
+          "enums": []
+        },
+        {
+          "name": "KSsnInput",
+          "signature": "fun KSsnInput(value: String, onValueChange: (String) -> Unit, modifier: Modifier = Modifier, enabled: Boolean = true, isError: Boolean = false)",
+          "summary": "US SSN input — formats as `###-##-####`.",
+          "kdoc": "US SSN input — formats as `###-##-####`.",
+          "params": [
+            {
+              "name": "value",
+              "type": "String"
+            },
+            {
+              "name": "onValueChange",
+              "type": "(String) -> Unit"
+            },
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            },
+            {
+              "name": "enabled",
+              "type": "Boolean",
+              "default": "true"
+            },
+            {
+              "name": "isError",
+              "type": "Boolean",
+              "default": "false"
+            }
+          ],
+          "examples": [],
+          "enums": []
+        },
+        {
+          "name": "KDateMaskInput",
+          "signature": "fun KDateMaskInput(value: String, onValueChange: (String) -> Unit, modifier: Modifier = Modifier, enabled: Boolean = true, isError: Boolean = false)",
+          "summary": "Date input — formats as `MM/DD/YYYY`.",
+          "kdoc": "Date input — formats as `MM/DD/YYYY`.",
+          "params": [
+            {
+              "name": "value",
+              "type": "String"
+            },
+            {
+              "name": "onValueChange",
+              "type": "(String) -> Unit"
+            },
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            },
+            {
+              "name": "enabled",
+              "type": "Boolean",
+              "default": "true"
+            },
+            {
+              "name": "isError",
+              "type": "Boolean",
+              "default": "false"
+            }
+          ],
+          "examples": [],
+          "enums": []
+        },
+        {
+          "name": "KCreditCardInput",
+          "signature": "fun KCreditCardInput(value: String, onValueChange: (String) -> Unit, modifier: Modifier = Modifier, enabled: Boolean = true, isError: Boolean = false)",
+          "summary": "Credit-card input — formats as `#### #### #### ####`.",
+          "kdoc": "Credit-card input — formats as `#### #### #### ####`.",
+          "params": [
+            {
+              "name": "value",
+              "type": "String"
+            },
+            {
+              "name": "onValueChange",
+              "type": "(String) -> Unit"
+            },
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            },
+            {
+              "name": "enabled",
+              "type": "Boolean",
+              "default": "true"
+            },
+            {
+              "name": "isError",
+              "type": "Boolean",
+              "default": "false"
+            }
+          ],
+          "examples": [],
+          "enums": []
+        },
+        {
+          "name": "KEinInput",
+          "signature": "fun KEinInput(value: String, onValueChange: (String) -> Unit, modifier: Modifier = Modifier, enabled: Boolean = true, isError: Boolean = false)",
+          "summary": "EIN input — formats as `##-#######`.",
+          "kdoc": "EIN input — formats as `##-#######`.",
+          "params": [
+            {
+              "name": "value",
+              "type": "String"
+            },
+            {
+              "name": "onValueChange",
+              "type": "(String) -> Unit"
+            },
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            },
+            {
+              "name": "enabled",
+              "type": "Boolean",
+              "default": "true"
+            },
+            {
+              "name": "isError",
+              "type": "Boolean",
+              "default": "false"
+            }
+          ],
+          "examples": [],
+          "enums": []
+        },
+        {
+          "name": "KCurrencyInput",
+          "signature": "fun KCurrencyInput(value: String, onValueChange: (String) -> Unit, modifier: Modifier = Modifier, currencySymbol: String = \"$\", locale: java.util.Locale = java.util.Locale.getDefault(), enabled: Boolean = true, isError: Boolean = false, placeholder: String = \"${currencySymbol}0.00\")",
+          "summary": "Currency input field.",
+          "kdoc": "Currency input field.\n\nFormats the raw numeric string with thousand separators and two decimal\nplaces using [java.text.NumberFormat] for the given [locale].\n\nThe [onValueChange] callback receives the raw numeric string (digits + optional decimal point).",
+          "params": [
+            {
+              "name": "value",
+              "type": "String"
+            },
+            {
+              "name": "onValueChange",
+              "type": "(String) -> Unit"
+            },
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            },
+            {
+              "name": "currencySymbol",
+              "type": "String",
+              "default": "\"$\""
+            },
+            {
+              "name": "locale",
+              "type": "java.util.Locale",
+              "default": "java.util.Locale.getDefault()"
+            },
+            {
+              "name": "enabled",
+              "type": "Boolean",
+              "default": "true"
+            },
+            {
+              "name": "isError",
+              "type": "Boolean",
+              "default": "false"
+            },
+            {
+              "name": "placeholder",
+              "type": "String",
+              "default": "\"${currencySymbol}0.00\""
+            }
+          ],
+          "examples": [],
+          "enums": []
+        },
+        {
+          "name": "KPercentageInput",
+          "signature": "fun KPercentageInput(value: String, onValueChange: (String) -> Unit, modifier: Modifier = Modifier, enabled: Boolean = true, isError: Boolean = false)",
+          "summary": "Percentage input — appends `%` to the display value.",
+          "kdoc": "Percentage input — appends `%` to the display value.",
+          "params": [
+            {
+              "name": "value",
+              "type": "String"
+            },
+            {
+              "name": "onValueChange",
+              "type": "(String) -> Unit"
+            },
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            },
+            {
+              "name": "enabled",
+              "type": "Boolean",
+              "default": "true"
+            },
+            {
+              "name": "isError",
+              "type": "Boolean",
+              "default": "false"
+            }
+          ],
+          "examples": [],
+          "enums": []
+        }
+      ]
+    },
+    {
       "id": "KAlertDialog",
       "title": "KAlertDialog",
       "primary": "KAlertDialog",
+      "packagePath": "components",
       "summary": "Shadcn/ui-style AlertDialog — confirmation / destructive actions.",
       "tags": [
         "overlay"
@@ -16,7 +413,7 @@
       "api": [
         {
           "name": "KAlertDialog",
-          "signature": "fun KAlertDialog(open: Boolean, onDismiss: () -> Unit, title: String, description: String? = null, confirmLabel: String = \"Continue\", cancelLabel: String = \"Cancel\", isDestructive: Boolean = false, onConfirm: () -> Unit, // Keep usePlatformDefaultWidth = true (the default) to avoid measurement // crashes on devices that don't support custom-width dialogs in all // configurations. Callers can override if they need it. properties: DialogProperties = DialogProperties(usePlatformDefaultWidth = true))",
+          "signature": "fun KAlertDialog(open: Boolean, onDismiss: () -> Unit, title: String, description: String? = null, confirmLabel: String = \"Continue\", cancelLabel: String = \"Cancel\", isDestructive: Boolean = false, onConfirm: () -> Unit, properties: DialogProperties = DialogProperties(usePlatformDefaultWidth = true))",
           "summary": "Shadcn/ui-style AlertDialog — confirmation / destructive actions.",
           "kdoc": "Shadcn/ui-style AlertDialog — confirmation / destructive actions.\n\n```kotlin\nKAlertDialog(\n    open          = open,\n    onDismiss     = { open = false },\n    title         = \"Are you absolutely sure?\",\n    description   = \"This action cannot be undone.\",\n    confirmLabel  = \"Continue\",\n    onConfirm     = { open = false },\n    isDestructive = true\n)\n```",
           "params": [
@@ -57,7 +454,7 @@
               "type": "() -> Unit"
             },
             {
-              "name": "// Keep usePlatformDefaultWidth = true (the default) to avoid measurement\n    // crashes on devices that don't support custom-width dialogs in all\n    // configurations. Callers can override if they need it.\n    properties",
+              "name": "properties",
               "type": "DialogProperties",
               "default": "DialogProperties(usePlatformDefaultWidth = true)"
             }
@@ -67,7 +464,8 @@
               "language": "kotlin",
               "code": "KAlertDialog(\n    open          = open,\n    onDismiss     = { open = false },\n    title         = \"Are you absolutely sure?\",\n    description   = \"This action cannot be undone.\",\n    confirmLabel  = \"Continue\",\n    onConfirm     = { open = false },\n    isDestructive = true\n)"
             }
-          ]
+          ],
+          "enums": []
         },
         {
           "name": "KDialog",
@@ -98,7 +496,8 @@
               "language": "kotlin",
               "code": "KDialog(open = open, onDismiss = { open = false }) {\n    KDialogHeader(title = \"Edit Profile\", description = \"Make changes here.\")\n    Spacer(Modifier.height(16.dp))\n    KFormField(…)\n    KDialogFooter {\n        KButton(text = \"Cancel\", onClick = { open = false }, variant = KButtonVariant.Outline)\n        KButton(text = \"Save\",   onClick = { open = false })\n    }\n}"
             }
-          ]
+          ],
+          "enums": []
         },
         {
           "name": "KDialogHeader",
@@ -121,7 +520,8 @@
               "default": "Modifier"
             }
           ],
-          "examples": []
+          "examples": [],
+          "enums": []
         },
         {
           "name": "KDialogFooter",
@@ -139,7 +539,8 @@
               "type": "@Composable RowScope.() -> Unit"
             }
           ],
-          "examples": []
+          "examples": [],
+          "enums": []
         }
       ]
     },
@@ -147,6 +548,7 @@
       "id": "KAspectRatio",
       "title": "KAspectRatio",
       "primary": "KAspectRatio",
+      "packagePath": "components",
       "summary": "Constrains its content to a given aspect ratio.",
       "tags": [
         "layout"
@@ -182,7 +584,8 @@
               "language": "kotlin",
               "code": "KAspectRatio(ratio = 16f / 9f) {\n    Image(\n        painter = painterResource(R.drawable.hero),\n        contentDescription = null,\n        contentScale = ContentScale.Crop,\n        modifier = Modifier.fillMaxSize()\n    )\n}"
             }
-          ]
+          ],
+          "enums": []
         }
       ]
     },
@@ -190,6 +593,7 @@
       "id": "KAvatar",
       "title": "KAvatar",
       "primary": "KAvatar",
+      "packagePath": "components",
       "summary": "Shadcn/ui-style Avatar.",
       "tags": [
         "identity"
@@ -224,7 +628,16 @@
               "name": "size",
               "type": "KAvatarSize",
               "default": "KAvatarSize.Default",
-              "description": "Size preset."
+              "description": "Size preset.",
+              "enum": {
+                "name": "KAvatarSize",
+                "values": [
+                  "Sm",
+                  "Default",
+                  "Lg"
+                ],
+                "summary": "Avatar size presets matching the shadcn/ui `size` data attribute: `sm` = 24 dp, `default` = 32 dp, `lg` = 40 dp."
+              }
             },
             {
               "name": "modifier",
@@ -244,7 +657,8 @@
               "language": "kotlin",
               "code": "// Image avatar\nKAvatar(painter = rememberAsyncImagePainter(url), contentDescription = \"Alice\")\n\n// Fallback initials\nKAvatar(fallbackText = \"CN\")\n\n// With badge\nKAvatar(fallbackText = \"AB\", size = KAvatarSize.Lg) {\n    Box(Modifier.fillMaxSize().background(Color.Green))\n}"
             }
-          ]
+          ],
+          "enums": []
         },
         {
           "name": "KAvatarGroup",
@@ -269,7 +683,16 @@
             {
               "name": "size",
               "type": "KAvatarSize",
-              "default": "KAvatarSize.Default"
+              "default": "KAvatarSize.Default",
+              "enum": {
+                "name": "KAvatarSize",
+                "values": [
+                  "Sm",
+                  "Default",
+                  "Lg"
+                ],
+                "summary": "Avatar size presets matching the shadcn/ui `size` data attribute: `sm` = 24 dp, `default` = 32 dp, `lg` = 40 dp."
+              }
             },
             {
               "name": "overlap",
@@ -282,7 +705,33 @@
               "language": "kotlin",
               "code": "KAvatarGroup(\n    avatars = listOf(\n        KAvatarData(fallbackText = \"CN\"),\n        KAvatarData(fallbackText = \"AB\"),\n        KAvatarData(fallbackText = \"MX\"),\n    ),\n    maxVisible = 3,\n    size = KAvatarSize.Default\n)"
             }
-          ]
+          ],
+          "enums": []
+        },
+        {
+          "name": "KAvatarData",
+          "signature": "data class KAvatarData(painter: Painter? = null, contentDescription: String? = null, fallbackText: String? = null)",
+          "summary": "Data holder for a single avatar in [KAvatarGroup].",
+          "kdoc": "Data holder for a single avatar in [KAvatarGroup].",
+          "params": [
+            {
+              "name": "painter",
+              "type": "Painter?",
+              "default": "null"
+            },
+            {
+              "name": "contentDescription",
+              "type": "String?",
+              "default": "null"
+            },
+            {
+              "name": "fallbackText",
+              "type": "String?",
+              "default": "null"
+            }
+          ],
+          "examples": [],
+          "enums": []
         }
       ]
     },
@@ -290,6 +739,7 @@
       "id": "KButton",
       "title": "KButton",
       "primary": "KButton",
+      "packagePath": "components",
       "summary": "Shadcn/ui-style Button for Jetpack Compose.",
       "tags": [
         "actions"
@@ -314,12 +764,34 @@
             {
               "name": "variant",
               "type": "KButtonVariant",
-              "default": "KButtonVariant.Default"
+              "default": "KButtonVariant.Default",
+              "enum": {
+                "name": "KButtonVariant",
+                "values": [
+                  "Default",
+                  "Destructive",
+                  "Outline",
+                  "Secondary",
+                  "Ghost",
+                  "Link"
+                ],
+                "summary": "Button visual style."
+              }
             },
             {
               "name": "size",
               "type": "KButtonSize",
-              "default": "KButtonSize.Default"
+              "default": "KButtonSize.Default",
+              "enum": {
+                "name": "KButtonSize",
+                "values": [
+                  "Default",
+                  "Sm",
+                  "Lg",
+                  "Icon"
+                ],
+                "summary": "Button sizing preset."
+              }
             },
             {
               "name": "enabled",
@@ -346,7 +818,8 @@
               "language": "kotlin",
               "code": "KButton(onClick = { }) { Text(\"Click me\") }\nKButton(onClick = { }, variant = KButtonVariant.Outline) { Text(\"Outlined\") }\nKButton(onClick = { }, variant = KButtonVariant.Destructive) { Text(\"Delete\") }\nKButton(onClick = { }, size = KButtonSize.Icon) { Icon(Icons.Default.Add, null) }"
             }
-          ]
+          ],
+          "enums": []
         },
         {
           "name": "KButton",
@@ -370,12 +843,34 @@
             {
               "name": "variant",
               "type": "KButtonVariant",
-              "default": "KButtonVariant.Default"
+              "default": "KButtonVariant.Default",
+              "enum": {
+                "name": "KButtonVariant",
+                "values": [
+                  "Default",
+                  "Destructive",
+                  "Outline",
+                  "Secondary",
+                  "Ghost",
+                  "Link"
+                ],
+                "summary": "Button visual style."
+              }
             },
             {
               "name": "size",
               "type": "KButtonSize",
-              "default": "KButtonSize.Default"
+              "default": "KButtonSize.Default",
+              "enum": {
+                "name": "KButtonSize",
+                "values": [
+                  "Default",
+                  "Sm",
+                  "Lg",
+                  "Icon"
+                ],
+                "summary": "Button sizing preset."
+              }
             },
             {
               "name": "enabled",
@@ -388,7 +883,8 @@
               "default": "false"
             }
           ],
-          "examples": []
+          "examples": [],
+          "enums": []
         }
       ]
     },
@@ -396,6 +892,7 @@
       "id": "KCalendar",
       "title": "KCalendar",
       "primary": "KCalendar",
+      "packagePath": "components",
       "summary": "Shadcn/ui-style Calendar component.",
       "tags": [
         "date"
@@ -404,7 +901,7 @@
       "api": [
         {
           "name": "KCalendar",
-          "signature": "fun KCalendar(modifier: Modifier = Modifier, // ── Selection ───────────────────────────── mode: KCalendarMode = KCalendarMode.Single, selected: LocalDate? = null, onSelectSingle: ((LocalDate?) -> Unit)? = null, selectedRange: KDateRange = KDateRange(), onSelectRange: ((KDateRange) -> Unit)? = null, // ── Display ─────────────────────────────── captionLayout: KCalendarCaptionLayout = KCalendarCaptionLayout.Label, calendarLocale: KCalendarLocale = KCalendarLocale.Standard(), showOutsideDays: Boolean = true, showWeekNumber: Boolean = false, numberOfMonths: Int = 1, // ── Disabled / booked dates ─────────────── disabledDates: Set<LocalDate> = emptySet(), bookedDates: Set<LocalDate> = emptySet(), minDate: LocalDate? = null, maxDate: LocalDate? = null, // ── Extra UI ────────────────────────────── presets: List<KCalendarPreset> = emptyList(), timeRange: KCalendarTimeRange? = null, onTimeRangeChange: ((KCalendarTimeRange) -> Unit)? = null, dayContent: KCalendarDayContent? = null)",
+          "signature": "fun KCalendar(modifier: Modifier = Modifier, mode: KCalendarMode = KCalendarMode.Single, selected: LocalDate? = null, onSelectSingle: ((LocalDate?) -> Unit)? = null, selectedRange: KDateRange = KDateRange(), onSelectRange: ((KDateRange) -> Unit)? = null, captionLayout: KCalendarCaptionLayout = KCalendarCaptionLayout.Label, calendarLocale: KCalendarLocale = KCalendarLocale.Standard(), showOutsideDays: Boolean = true, showWeekNumber: Boolean = false, numberOfMonths: Int = 1, disabledDates: Set<LocalDate> = emptySet(), bookedDates: Set<LocalDate> = emptySet(), minDate: LocalDate? = null, maxDate: LocalDate? = null, presets: List<KCalendarPreset> = emptyList(), timeRange: KCalendarTimeRange? = null, onTimeRangeChange: ((KCalendarTimeRange) -> Unit)? = null, dayContent: KCalendarDayContent? = null)",
           "summary": "Shadcn/ui-style Calendar component.",
           "kdoc": "Shadcn/ui-style Calendar component.\n\nSupports:\n- Single and range date selection\n- Dropdown or label caption layout\n- Week numbers column (image 8)\n- Outside days display\n- Booked / disabled dates with strikethrough (image 6)\n- Per-cell custom content slot (image 7 — prices etc.)\n- Preset buttons row (image 4)\n- Start/End time pickers (image 5)\n- Multi-month display (image 3)\n- Persian (Jalali/Shamsi), Hijri, and standard Gregorian locales\n\n```kotlin\n// Basic single selection\nvar date by remember { mutableStateOf<LocalDate?>(null) }\nKCalendar(selected = date, onSelectSingle = { date = it })\n\n// Range + dropdown caption\nvar range by remember { mutableStateOf(KDateRange()) }\nKCalendar(\n    mode          = KCalendarMode.Range,\n    selectedRange = range,\n    onSelectRange = { range = it },\n    captionLayout = KCalendarCaptionLayout.Dropdown\n)\n\n// Persian locale\nKCalendar(\n    selected      = date,\n    onSelectSingle = { date = it },\n    calendarLocale = KCalendarLocale.Persian()\n)\n\n// With presets\nKCalendar(\n    selected = date,\n    onSelectSingle = { date = it },\n    presets = listOf(\n        KCalendarPreset(\"Today\",     LocalDate.now()),\n        KCalendarPreset(\"Tomorrow\",  LocalDate.now().plusDays(1)),\n        KCalendarPreset(\"In 3 days\", LocalDate.now().plusDays(3)),\n    )\n)\n\n// With time pickers\nvar timeRange by remember { mutableStateOf(KCalendarTimeRange()) }\nKCalendar(\n    selected      = date,\n    onSelectSingle = { date = it },\n    timeRange     = timeRange,\n    onTimeRangeChange = { timeRange = it }\n)\n\n// Per-cell price content\nKCalendar(\n    selected = date,\n    onSelectSingle = { date = it },\n    dayContent = { d -> Text(\"\\$100\", fontSize = 9.sp) }\n)\n```",
           "params": [
@@ -414,7 +911,7 @@
               "default": "Modifier"
             },
             {
-              "name": "// ── Selection ─────────────────────────────\n    mode",
+              "name": "mode",
               "type": "KCalendarMode",
               "default": "KCalendarMode.Single"
             },
@@ -439,9 +936,17 @@
               "default": "null"
             },
             {
-              "name": "// ── Display ───────────────────────────────\n    captionLayout",
+              "name": "captionLayout",
               "type": "KCalendarCaptionLayout",
-              "default": "KCalendarCaptionLayout.Label"
+              "default": "KCalendarCaptionLayout.Label",
+              "enum": {
+                "name": "KCalendarCaptionLayout",
+                "values": [
+                  "Label",
+                  "Dropdown"
+                ],
+                "summary": "Controls how the month/year header is rendered."
+              }
             },
             {
               "name": "calendarLocale",
@@ -464,7 +969,7 @@
               "default": "1"
             },
             {
-              "name": "// ── Disabled / booked dates ───────────────\n    disabledDates",
+              "name": "disabledDates",
               "type": "Set<LocalDate>",
               "default": "emptySet()"
             },
@@ -484,7 +989,7 @@
               "default": "null"
             },
             {
-              "name": "// ── Extra UI ──────────────────────────────\n    presets",
+              "name": "presets",
               "type": "List<KCalendarPreset>",
               "default": "emptyList()"
             },
@@ -509,137 +1014,132 @@
               "language": "kotlin",
               "code": "// Basic single selection\nvar date by remember { mutableStateOf<LocalDate?>(null) }\nKCalendar(selected = date, onSelectSingle = { date = it })\n\n// Range + dropdown caption\nvar range by remember { mutableStateOf(KDateRange()) }\nKCalendar(\n    mode          = KCalendarMode.Range,\n    selectedRange = range,\n    onSelectRange = { range = it },\n    captionLayout = KCalendarCaptionLayout.Dropdown\n)\n\n// Persian locale\nKCalendar(\n    selected      = date,\n    onSelectSingle = { date = it },\n    calendarLocale = KCalendarLocale.Persian()\n)\n\n// With presets\nKCalendar(\n    selected = date,\n    onSelectSingle = { date = it },\n    presets = listOf(\n        KCalendarPreset(\"Today\",     LocalDate.now()),\n        KCalendarPreset(\"Tomorrow\",  LocalDate.now().plusDays(1)),\n        KCalendarPreset(\"In 3 days\", LocalDate.now().plusDays(3)),\n    )\n)\n\n// With time pickers\nvar timeRange by remember { mutableStateOf(KCalendarTimeRange()) }\nKCalendar(\n    selected      = date,\n    onSelectSingle = { date = it },\n    timeRange     = timeRange,\n    onTimeRangeChange = { timeRange = it }\n)\n\n// Per-cell price content\nKCalendar(\n    selected = date,\n    onSelectSingle = { date = it },\n    dayContent = { d -> Text(\"\\$100\", fontSize = 9.sp) }\n)"
             }
-          ]
+          ],
+          "enums": []
         },
         {
-          "name": "KCalendarMonth",
-          "signature": "fun KCalendarMonth(month: CalMonth, adapter: CalendarAdapter, captionLayout: KCalendarCaptionLayout, mode: KCalendarMode, selected: LocalDate?, onSelectSingle: ((LocalDate?) -> Unit)?, selectedRange: KDateRange, onSelectRange: ((KDateRange) -> Unit)?, showOutsideDays: Boolean, showWeekNumber: Boolean, disabledDates: Set<LocalDate>, bookedDates: Set<LocalDate>, minDate: LocalDate?, maxDate: LocalDate?, dayContent: KCalendarDayContent?, showNavPrev: Boolean, showNavNext: Boolean, onPrev: () -> Unit, onNext: () -> Unit, onMonthChange: (CalMonth) -> Unit, modifier: Modifier = Modifier)",
+          "name": "KCalendarLocale",
+          "signature": "sealed interface KCalendarLocale",
+          "summary": "Locale system used by [KCalendar].",
+          "kdoc": "Locale system used by [KCalendar].\n\n[Standard] wraps a [java.util.Locale] — covers all Gregorian-based locales\nand locale-aware display (e.g. Arabic months in Gregorian).\n\n[Persian] uses the Solar Hijri (Shamsi / Jalali) calendar system.\n[Hijri]   uses the Islamic (Lunar Hijri) calendar system.\n\nBoth non-Gregorian systems are approximated via [java.util.Calendar]\nwith the appropriate calendar type so the library stays dependency-free.",
+          "params": [],
+          "examples": [],
+          "enums": []
+        },
+        {
+          "name": "Standard",
+          "signature": "data class Standard(locale: Locale = Locale.getDefault())",
+          "summary": "Standard Gregorian locale. [locale] drives all display strings.",
+          "kdoc": "Standard Gregorian locale. [locale] drives all display strings.",
           "params": [
             {
-              "name": "month",
-              "type": "CalMonth"
-            },
-            {
-              "name": "adapter",
-              "type": "CalendarAdapter"
-            },
-            {
-              "name": "captionLayout",
-              "type": "KCalendarCaptionLayout"
-            },
-            {
-              "name": "mode",
-              "type": "KCalendarMode"
-            },
-            {
-              "name": "selected",
-              "type": "LocalDate?"
-            },
-            {
-              "name": "onSelectSingle",
-              "type": "((LocalDate?) -> Unit)?"
-            },
-            {
-              "name": "selectedRange",
-              "type": "KDateRange"
-            },
-            {
-              "name": "onSelectRange",
-              "type": "((KDateRange) -> Unit)?"
-            },
-            {
-              "name": "showOutsideDays",
-              "type": "Boolean"
-            },
-            {
-              "name": "showWeekNumber",
-              "type": "Boolean"
-            },
-            {
-              "name": "disabledDates",
-              "type": "Set<LocalDate>"
-            },
-            {
-              "name": "bookedDates",
-              "type": "Set<LocalDate>"
-            },
-            {
-              "name": "minDate",
-              "type": "LocalDate?"
-            },
-            {
-              "name": "maxDate",
-              "type": "LocalDate?"
-            },
-            {
-              "name": "dayContent",
-              "type": "KCalendarDayContent?"
-            },
-            {
-              "name": "showNavPrev",
-              "type": "Boolean"
-            },
-            {
-              "name": "showNavNext",
-              "type": "Boolean"
-            },
-            {
-              "name": "onPrev",
-              "type": "() -> Unit"
-            },
-            {
-              "name": "onNext",
-              "type": "() -> Unit"
-            },
-            {
-              "name": "onMonthChange",
-              "type": "(CalMonth) -> Unit"
-            },
-            {
-              "name": "modifier",
-              "type": "Modifier",
-              "default": "Modifier"
+              "name": "locale",
+              "type": "Locale",
+              "default": "Locale.getDefault()"
             }
           ],
-          "examples": []
+          "examples": [],
+          "enums": []
+        },
+        {
+          "name": "Persian",
+          "signature": "data class Persian(locale: Locale = Locale(\"fa\", \"IR\"))",
+          "summary": "Solar Hijri / Jalali / Shamsi calendar (used in Iran/Afghanistan).",
+          "kdoc": "Solar Hijri / Jalali / Shamsi calendar (used in Iran/Afghanistan).",
+          "params": [
+            {
+              "name": "locale",
+              "type": "Locale",
+              "default": "Locale(\"fa\", \"IR\")"
+            }
+          ],
+          "examples": [],
+          "enums": []
+        },
+        {
+          "name": "Hijri",
+          "signature": "data class Hijri(locale: Locale = Locale(\"ar\", \"SA\"))",
+          "summary": "Islamic Lunar Hijri calendar.",
+          "kdoc": "Islamic Lunar Hijri calendar.",
+          "params": [
+            {
+              "name": "locale",
+              "type": "Locale",
+              "default": "Locale(\"ar\", \"SA\")"
+            }
+          ],
+          "examples": [],
+          "enums": []
+        },
+        {
+          "name": "KCalendarTimeRange",
+          "signature": "data class KCalendarTimeRange(startTime: LocalTime = LocalTime.of(10, 30), endTime: LocalTime = LocalTime.of(12, 30))",
+          "summary": "Holds start/end time for the time-picker variant (image 5).",
+          "kdoc": "Holds start/end time for the time-picker variant (image 5).",
+          "params": [
+            {
+              "name": "startTime",
+              "type": "LocalTime",
+              "default": "LocalTime.of(10, 30)"
+            },
+            {
+              "name": "endTime",
+              "type": "LocalTime",
+              "default": "LocalTime.of(12, 30)"
+            }
+          ],
+          "examples": [],
+          "enums": []
+        },
+        {
+          "name": "KCalendarPreset",
+          "signature": "data class KCalendarPreset(label: String, date: LocalDate)",
+          "summary": "A named preset button shown below the calendar grid (image 4).",
+          "kdoc": "A named preset button shown below the calendar grid (image 4).",
+          "params": [
+            {
+              "name": "label",
+              "type": "String"
+            },
+            {
+              "name": "date",
+              "type": "LocalDate"
+            }
+          ],
+          "examples": [],
+          "enums": []
+        },
+        {
+          "name": "CalMonth",
+          "signature": "data class CalMonth(year: Int, month: Int)",
+          "summary": "Opaque month token (year + month in the calendar system).",
+          "kdoc": "Opaque month token (year + month in the calendar system).",
+          "params": [
+            {
+              "name": "year",
+              "type": "Int"
+            },
+            {
+              "name": "month",
+              "type": "Int"
+            }
+          ],
+          "examples": [],
+          "enums": []
         }
       ]
     },
     {
-      "id": "KCard",
-      "title": "KCard",
-      "primary": "KCard",
+      "id": "KCardHeader",
+      "title": "KCardHeader",
+      "primary": "KCardHeader",
+      "packagePath": "components",
+      "summary": "Header section with an optional trailing [action] slot (top-right).",
       "tags": [
         "layout"
       ],
       "sourcePath": "core/src/androidMain/kotlin/dev/kindling/core/components/Card.kt",
       "api": [
-        {
-          "name": "KCard",
-          "signature": "fun KCard(modifier: Modifier = Modifier, size: KCardSize = KCardSize.Default, image: Painter? = null, content: @Composable ColumnScope.() -> Unit)",
-          "params": [
-            {
-              "name": "modifier",
-              "type": "Modifier",
-              "default": "Modifier"
-            },
-            {
-              "name": "size",
-              "type": "KCardSize",
-              "default": "KCardSize.Default"
-            },
-            {
-              "name": "image",
-              "type": "Painter?",
-              "default": "null"
-            },
-            {
-              "name": "content",
-              "type": "@Composable ColumnScope.() -> Unit"
-            }
-          ],
-          "examples": []
-        },
         {
           "name": "KCardHeader",
           "signature": "fun KCardHeader(modifier: Modifier = Modifier, action: (@Composable () -> Unit)? = null, content: @Composable ColumnScope.() -> Unit)",
@@ -661,7 +1161,8 @@
               "type": "@Composable ColumnScope.() -> Unit"
             }
           ],
-          "examples": []
+          "examples": [],
+          "enums": []
         },
         {
           "name": "KCardTitle",
@@ -679,7 +1180,8 @@
               "default": "Modifier"
             }
           ],
-          "examples": []
+          "examples": [],
+          "enums": []
         },
         {
           "name": "KCardDescription",
@@ -697,7 +1199,8 @@
               "default": "Modifier"
             }
           ],
-          "examples": []
+          "examples": [],
+          "enums": []
         },
         {
           "name": "KCardAction",
@@ -720,7 +1223,8 @@
               "language": "kotlin",
               "code": "KCardHeader(action = { KCardAction { Text(\"Sign Up\") } }) { … }"
             }
-          ]
+          ],
+          "enums": []
         },
         {
           "name": "KCardContent",
@@ -743,7 +1247,8 @@
               "type": "@Composable ColumnScope.() -> Unit"
             }
           ],
-          "examples": []
+          "examples": [],
+          "enums": []
         },
         {
           "name": "KCardFooter",
@@ -771,7 +1276,8 @@
               "language": "kotlin",
               "code": "KCardFooter {\n    KButton(\"Login\",              onClick = {}, modifier = Modifier.weight(1f))\n    KButton(\"Login with Google\",  onClick = {}, modifier = Modifier.weight(1f))\n}"
             }
-          ]
+          ],
+          "enums": []
         }
       ]
     },
@@ -779,6 +1285,7 @@
       "id": "KCarousel",
       "title": "KCarousel",
       "primary": "KCarousel",
+      "packagePath": "components",
       "summary": "Shadcn/ui-style Carousel backed by [HorizontalPager] / [VerticalPager].",
       "tags": [
         "media"
@@ -787,7 +1294,7 @@
       "api": [
         {
           "name": "KCarousel",
-          "signature": "fun KCarousel(pageCount: Int, modifier: Modifier = Modifier, orientation: KCarouselOrientation = KCarouselOrientation.Horizontal, // ── Visible items ──────────────────────────────────────────────────── /** Number of slides visible simultaneously. Arrows still scroll one at a time. */ visibleItems: Int = 1, // ── Navigation ────────────────────────────────────────────────────── showArrows: Boolean = true, showDots: Boolean = pageCount > 1, // ── Auto-play ─────────────────────────────────────────────────────── autoPlay: KCarouselAutoPlay? = null, // ── Layout ────────────────────────────────────────────────────────── pageSpacing: Dp = 8.dp, /** * Explicit height for the [VerticalPager]. Has no effect on horizontal carousels * (which size to their slide content naturally). Required for vertical because * [VerticalPager] needs a bounded height constraint to render. */ verticalPagerHeight: Dp = 300.dp, state: PagerState = rememberPagerState { pageCount }, // ── Footer slot ───────────────────────────────────────────────────── footer: (@Composable () -> Unit)? = null, content: @Composable BoxScope.(page: Int) -> Unit)",
+          "signature": "fun KCarousel(pageCount: Int, modifier: Modifier = Modifier, orientation: KCarouselOrientation = KCarouselOrientation.Horizontal, visibleItems: Int = 1, showArrows: Boolean = true, showDots: Boolean = pageCount > 1, autoPlay: KCarouselAutoPlay? = null, pageSpacing: Dp = 8.dp, verticalPagerHeight: Dp = 300.dp, state: PagerState = rememberPagerState { pageCount }, footer: (@Composable () -> Unit)? = null, content: @Composable BoxScope.(page: Int) -> Unit)",
           "summary": "Shadcn/ui-style Carousel backed by [HorizontalPager] / [VerticalPager].",
           "kdoc": "Shadcn/ui-style Carousel backed by [HorizontalPager] / [VerticalPager].\n\nArrows sit **beside** the pager in a Row (horizontal) or above/below (vertical),\nso they are always vertically centred relative to the slide — not overlaid inside it.\n\n```kotlin\n// Basic\nKCarousel(pageCount = 5) { page ->\n    KCard { KCardContent { Text(\"Slide ${page + 1}\") } }\n}\n\n// 3 visible, auto-play, footer\nval state = rememberPagerState { items.size }\nKCarousel(\n    pageCount    = items.size,\n    visibleItems = 3,\n    autoPlay     = KCarouselAutoPlay(delay = 4_000, delayBeforeResume = 8_000),\n    state        = state,\n    footer       = { KCarouselFooter { KCarouselSlideCounter(state, items.size) } }\n) { page -> MySlide(items[page]) }\n```",
           "params": [
@@ -803,15 +1310,22 @@
             {
               "name": "orientation",
               "type": "KCarouselOrientation",
-              "default": "KCarouselOrientation.Horizontal"
+              "default": "KCarouselOrientation.Horizontal",
+              "enum": {
+                "name": "KCarouselOrientation",
+                "values": [
+                  "Horizontal",
+                  "Vertical"
+                ]
+              }
             },
             {
-              "name": "// ── Visible items ────────────────────────────────────────────────────\n    /** Number of slides visible simultaneously. Arrows still scroll one at a time. */\n    visibleItems",
+              "name": "visibleItems",
               "type": "Int",
               "default": "1"
             },
             {
-              "name": "// ── Navigation ──────────────────────────────────────────────────────\n    showArrows",
+              "name": "showArrows",
               "type": "Boolean",
               "default": "true"
             },
@@ -821,17 +1335,17 @@
               "default": "pageCount > 1"
             },
             {
-              "name": "// ── Auto-play ───────────────────────────────────────────────────────\n    autoPlay",
+              "name": "autoPlay",
               "type": "KCarouselAutoPlay?",
               "default": "null"
             },
             {
-              "name": "// ── Layout ──────────────────────────────────────────────────────────\n    pageSpacing",
+              "name": "pageSpacing",
               "type": "Dp",
               "default": "8.dp"
             },
             {
-              "name": "/**\n     * Explicit height for the [VerticalPager]. Has no effect on horizontal carousels\n     * (which size to their slide content naturally). Required for vertical because\n     * [VerticalPager] needs a bounded height constraint to render.\n     */\n    verticalPagerHeight",
+              "name": "verticalPagerHeight",
               "type": "Dp",
               "default": "300.dp"
             },
@@ -841,7 +1355,7 @@
               "default": "rememberPagerState { pageCount }"
             },
             {
-              "name": "// ── Footer slot ─────────────────────────────────────────────────────\n    footer",
+              "name": "footer",
               "type": "(@Composable () -> Unit)?",
               "default": "null"
             },
@@ -855,7 +1369,8 @@
               "language": "kotlin",
               "code": "// Basic\nKCarousel(pageCount = 5) { page ->\n    KCard { KCardContent { Text(\"Slide ${page + 1}\") } }\n}\n\n// 3 visible, auto-play, footer\nval state = rememberPagerState { items.size }\nKCarousel(\n    pageCount    = items.size,\n    visibleItems = 3,\n    autoPlay     = KCarouselAutoPlay(delay = 4_000, delayBeforeResume = 8_000),\n    state        = state,\n    footer       = { KCarouselFooter { KCarouselSlideCounter(state, items.size) } }\n) { page -> MySlide(items[page]) }"
             }
-          ]
+          ],
+          "enums": []
         },
         {
           "name": "KCarouselFooter",
@@ -883,7 +1398,8 @@
               "language": "kotlin",
               "code": "KCarousel(\n    pageCount = 5,\n    footer    = { KCarouselFooter { KCarouselSlideCounter(state, 5) } }\n) { page -> … }"
             }
-          ]
+          ],
+          "enums": []
         },
         {
           "name": "KCarouselSlideCounter",
@@ -915,31 +1431,35 @@
               "language": "kotlin",
               "code": "KCarouselFooter {\n    KCarouselSlideCounter(state, 5)                          // \"Slide 1 of 5\"\n    KCarouselSlideCounter(state, 5) { n, t -> \"$n / $t\" }   // custom format\n}"
             }
-          ]
+          ],
+          "enums": []
         },
         {
-          "name": "KCarouselArrowButton",
-          "signature": "fun KCarouselArrowButton(direction: KCarouselArrowDirection, enabled: Boolean, modifier: Modifier = Modifier, onClick: () -> Unit)",
+          "name": "KCarouselAutoPlay",
+          "signature": "data class KCarouselAutoPlay(delay: Long = 3_000L, delayBeforeResume: Long = delay)",
+          "summary": "Configuration for auto-play behaviour.",
+          "kdoc": "Configuration for auto-play behaviour.\n\n@param delay             Interval between automatic page advances (ms). Default 3 000.\n@param delayBeforeResume After the user manually taps an arrow, how long to wait before\n                         restarting auto-play (ms). Defaults to [delay].\n\n```kotlin\nKCarouselAutoPlay(delay = 4_000, delayBeforeResume = 8_000)\n```",
           "params": [
             {
-              "name": "direction",
-              "type": "KCarouselArrowDirection"
+              "name": "delay",
+              "type": "Long",
+              "default": "3_000L",
+              "description": "Interval between automatic page advances (ms). Default 3 000."
             },
             {
-              "name": "enabled",
-              "type": "Boolean"
-            },
-            {
-              "name": "modifier",
-              "type": "Modifier",
-              "default": "Modifier"
-            },
-            {
-              "name": "onClick",
-              "type": "() -> Unit"
+              "name": "delayBeforeResume",
+              "type": "Long",
+              "default": "delay",
+              "description": "After the user manually taps an arrow, how long to wait before restarting auto-play (ms). Defaults to [delay]."
             }
           ],
-          "examples": []
+          "examples": [
+            {
+              "language": "kotlin",
+              "code": "KCarouselAutoPlay(delay = 4_000, delayBeforeResume = 8_000)"
+            }
+          ],
+          "enums": []
         }
       ]
     },
@@ -947,6 +1467,7 @@
       "id": "KCenteredBox",
       "title": "KCenteredBox",
       "primary": "KCenteredBox",
+      "packagePath": "components",
       "summary": "Fills its parent and centres content.",
       "tags": [
         "ui"
@@ -974,7 +1495,8 @@
               "type": "@Composable BoxScope.() -> Unit"
             }
           ],
-          "examples": []
+          "examples": [],
+          "enums": []
         },
         {
           "name": "KCenteredColumn",
@@ -1002,42 +1524,8 @@
               "type": "@Composable ColumnScope.() -> Unit"
             }
           ],
-          "examples": []
-        },
-        {
-          "name": "KSmallSpacer",
-          "signature": "fun KSmallSpacer()",
-          "params": [],
-          "examples": []
-        },
-        {
-          "name": "KMediumSpacer",
-          "signature": "fun KMediumSpacer()",
-          "params": [],
-          "examples": []
-        },
-        {
-          "name": "KLargeSpacer",
-          "signature": "fun KLargeSpacer()",
-          "params": [],
-          "examples": []
-        },
-        {
-          "name": "KExtraLargeSpacer",
-          "signature": "fun KExtraLargeSpacer()",
-          "params": [],
-          "examples": []
-        },
-        {
-          "name": "KCustomSpacer",
-          "signature": "fun KCustomSpacer(height: Dp)",
-          "params": [
-            {
-              "name": "height",
-              "type": "Dp"
-            }
-          ],
-          "examples": []
+          "examples": [],
+          "enums": []
         }
       ]
     },
@@ -1045,6 +1533,7 @@
       "id": "KCombobox",
       "title": "KCombobox",
       "primary": "KCombobox",
+      "packagePath": "components",
       "summary": "Shadcn/ui-style searchable Combobox compatible with both Android Compose and JetBrains Compose Multiplatform.",
       "tags": [
         "select"
@@ -1053,7 +1542,7 @@
       "api": [
         {
           "name": "KCombobox",
-          "signature": "fun KCombobox(items: List<KComboboxItem>, modifier: Modifier = Modifier, // ── Single selection ───────────────────────────────────────────────── selected: KComboboxItem? = null, onSelect: (KComboboxItem?) -> Unit = {}, // ── Multiple selection ─────────────────────────────────────────────── multiple: Boolean = false, selectedMultiple: List<KComboboxItem> = emptyList(), onSelectMultiple: (List<KComboboxItem>) -> Unit = {}, // ── Display ────────────────────────────────────────────────────────── placeholder: String = \"Select…\", searchPlaceholder: String = \"Search…\", /** Show a search field at the top of the dropdown. */ showSearch: Boolean = true, // ── Clear button (single mode only) ────────────────────────────────── /** Show an × button inside the trigger when a value is selected. */ showClear: Boolean = false, // ── Groups ──────────────────────────────────────────────────────────── /** Optional group definitions. Items are bucketed by [KComboboxItem.group]. */ groups: List<KComboboxGroup> = emptyList(), // ── Custom item ─────────────────────────────────────────────────────── /** Override the default label row with a fully custom composable per item. */ customItem: (@Composable (KComboboxItem) -> Unit)? = null, // ── Input group addon ───────────────────────────────────────────────── /** Leading slot rendered left of the trigger label (icon, flag, etc.). */ addon: (@Composable () -> Unit)? = null, // ── State ───────────────────────────────────────────────────────────── enabled: Boolean = true, isInvalid: Boolean = false, // ── Auto-highlight ──────────────────────────────────────────────────── /** Automatically highlight the first filtered item when query changes. */ autoHighlight: Boolean = false, // ── Layout ──────────────────────────────────────────────────────────── maxDropdownHeight: Dp = 240.dp, emptyLabel: String = \"No results found.\")",
+          "signature": "fun KCombobox(items: List<KComboboxItem>, modifier: Modifier = Modifier, selected: KComboboxItem? = null, onSelect: (KComboboxItem?) -> Unit = {}, multiple: Boolean = false, selectedMultiple: List<KComboboxItem> = emptyList(), onSelectMultiple: (List<KComboboxItem>) -> Unit = {}, placeholder: String = \"Select…\", searchPlaceholder: String = \"Search…\", showSearch: Boolean = true, showClear: Boolean = false, groups: List<KComboboxGroup> = emptyList(), customItem: (@Composable (KComboboxItem) -> Unit)? = null, addon: (@Composable () -> Unit)? = null, enabled: Boolean = true, isInvalid: Boolean = false, autoHighlight: Boolean = false, maxDropdownHeight: Dp = 240.dp, emptyLabel: String = \"No results found.\")",
           "summary": "Shadcn/ui-style searchable Combobox compatible with both Android Compose and JetBrains Compose Multiplatform.",
           "kdoc": "Shadcn/ui-style searchable Combobox compatible with both Android Compose\nand JetBrains Compose Multiplatform.\n\nUses only cross-platform primitives — [Box], [Column], [Surface],\n[DropdownMenu] — avoiding any Skiko-only APIs (`Popup_skikoKt`,\n`ExposedDropdownMenu_skikoKt`, etc.) that crash on Android.\n\n### Single selection\n```kotlin\nvar selected by remember { mutableStateOf<KComboboxItem?>(null) }\nKCombobox(\n    items       = frameworks,\n    selected    = selected,\n    onSelect    = { selected = it },\n    placeholder = \"Select a framework\",\n    showSearch  = false\n)\n```\n\n### Multiple selection (chips in trigger)\n```kotlin\nvar sel by remember { mutableStateOf(emptyList<KComboboxItem>()) }\nKCombobox(\n    items            = frameworks,\n    multiple         = true,\n    selectedMultiple = sel,\n    onSelectMultiple = { sel = it }\n)\n```\n\n### Grouped items\n```kotlin\nKCombobox(\n    items  = timezoneItems,   // each item has group = \"americas\" / \"europe\"\n    groups = timezoneGroups,\n    …\n)\n```\n\n### Custom item rendering\n```kotlin\nKCombobox(\n    items      = countryItems,\n    customItem = { item ->\n        Column {\n            Text(item.label, fontWeight = FontWeight.SemiBold)\n            Text(item.value, fontSize = 11.sp, color = …onSurfaceVariant)\n        }\n    }, …\n)\n```\n\n### Input group addon (leading icon)\n```kotlin\nKCombobox(\n    items = timezoneItems,\n    addon = { Icon(Icons.Default.Language, contentDescription = null) },\n    …\n)\n```",
           "params": [
@@ -1067,7 +1556,7 @@
               "default": "Modifier"
             },
             {
-              "name": "// ── Single selection ─────────────────────────────────────────────────\n    selected",
+              "name": "selected",
               "type": "KComboboxItem?",
               "default": "null"
             },
@@ -1077,7 +1566,7 @@
               "default": "{}"
             },
             {
-              "name": "// ── Multiple selection ───────────────────────────────────────────────\n    multiple",
+              "name": "multiple",
               "type": "Boolean",
               "default": "false"
             },
@@ -1092,7 +1581,7 @@
               "default": "{}"
             },
             {
-              "name": "// ── Display ──────────────────────────────────────────────────────────\n    placeholder",
+              "name": "placeholder",
               "type": "String",
               "default": "\"Select…\""
             },
@@ -1102,32 +1591,32 @@
               "default": "\"Search…\""
             },
             {
-              "name": "/** Show a search field at the top of the dropdown. */\n    showSearch",
+              "name": "showSearch",
               "type": "Boolean",
               "default": "true"
             },
             {
-              "name": "// ── Clear button (single mode only) ──────────────────────────────────\n    /** Show an × button inside the trigger when a value is selected. */\n    showClear",
+              "name": "showClear",
               "type": "Boolean",
               "default": "false"
             },
             {
-              "name": "// ── Groups ────────────────────────────────────────────────────────────\n    /** Optional group definitions. Items are bucketed by [KComboboxItem.group]. */\n    groups",
+              "name": "groups",
               "type": "List<KComboboxGroup>",
               "default": "emptyList()"
             },
             {
-              "name": "// ── Custom item ───────────────────────────────────────────────────────\n    /** Override the default label row with a fully custom composable per item. */\n    customItem",
+              "name": "customItem",
               "type": "(@Composable (KComboboxItem) -> Unit)?",
               "default": "null"
             },
             {
-              "name": "// ── Input group addon ─────────────────────────────────────────────────\n    /** Leading slot rendered left of the trigger label (icon, flag, etc.). */\n    addon",
+              "name": "addon",
               "type": "(@Composable () -> Unit)?",
               "default": "null"
             },
             {
-              "name": "// ── State ─────────────────────────────────────────────────────────────\n    enabled",
+              "name": "enabled",
               "type": "Boolean",
               "default": "true"
             },
@@ -1137,12 +1626,12 @@
               "default": "false"
             },
             {
-              "name": "// ── Auto-highlight ────────────────────────────────────────────────────\n    /** Automatically highlight the first filtered item when query changes. */\n    autoHighlight",
+              "name": "autoHighlight",
               "type": "Boolean",
               "default": "false"
             },
             {
-              "name": "// ── Layout ────────────────────────────────────────────────────────────\n    maxDropdownHeight",
+              "name": "maxDropdownHeight",
               "type": "Dp",
               "default": "240.dp"
             },
@@ -1173,7 +1662,8 @@
               "language": "kotlin",
               "code": "KCombobox(\n    items = timezoneItems,\n    addon = { Icon(Icons.Default.Language, contentDescription = null) },\n    …\n)"
             }
-          ]
+          ],
+          "enums": []
         },
         {
           "name": "KComboboxChip",
@@ -1195,7 +1685,8 @@
               "default": "Modifier"
             }
           ],
-          "examples": []
+          "examples": [],
+          "enums": []
         },
         {
           "name": "KComboboxSeparator",
@@ -1209,34 +1700,57 @@
               "default": "Modifier"
             }
           ],
-          "examples": []
+          "examples": [],
+          "enums": []
         },
         {
-          "name": "KComboboxDropdownItem",
-          "signature": "fun KComboboxDropdownItem(item: KComboboxItem, isSelected: Boolean, isHighlighted: Boolean, customItem: (@Composable (KComboboxItem) -> Unit)?, onClick: () -> Unit)",
+          "name": "KComboboxItem",
+          "signature": "data class KComboboxItem(value: String, label: String, group: String? = null)",
+          "summary": "A single selectable item in [KCombobox].",
+          "kdoc": "A single selectable item in [KCombobox].\n\n@param value  Unique key used for equality checks.\n@param label  Primary display text.\n@param group  Optional group key — matches [KComboboxGroup.key] to bucket this item.",
           "params": [
             {
-              "name": "item",
-              "type": "KComboboxItem"
+              "name": "value",
+              "type": "String",
+              "description": "Unique key used for equality checks."
             },
             {
-              "name": "isSelected",
-              "type": "Boolean"
+              "name": "label",
+              "type": "String",
+              "description": "Primary display text."
             },
             {
-              "name": "isHighlighted",
-              "type": "Boolean"
-            },
-            {
-              "name": "customItem",
-              "type": "(@Composable (KComboboxItem) -> Unit)?"
-            },
-            {
-              "name": "onClick",
-              "type": "() -> Unit"
+              "name": "group",
+              "type": "String?",
+              "default": "null",
+              "description": "Optional group key — matches [KComboboxGroup.key] to bucket this item."
             }
           ],
-          "examples": []
+          "examples": [],
+          "enums": []
+        },
+        {
+          "name": "KComboboxGroup",
+          "signature": "data class KComboboxGroup(key: String, label: String)",
+          "summary": "A labelled group header rendered above its items in the dropdown.",
+          "kdoc": "A labelled group header rendered above its items in the dropdown.\n\n```kotlin\nval groups = listOf(\n    KComboboxGroup(\"americas\", \"Americas\"),\n    KComboboxGroup(\"europe\",   \"Europe\"),\n)\nval items = listOf(\n    KComboboxItem(\"nyc\",    \"(GMT-5) New York\",  group = \"americas\"),\n    KComboboxItem(\"london\", \"(GMT+0) London\",    group = \"europe\"),\n)\n```",
+          "params": [
+            {
+              "name": "key",
+              "type": "String"
+            },
+            {
+              "name": "label",
+              "type": "String"
+            }
+          ],
+          "examples": [
+            {
+              "language": "kotlin",
+              "code": "val groups = listOf(\n    KComboboxGroup(\"americas\", \"Americas\"),\n    KComboboxGroup(\"europe\",   \"Europe\"),\n)\nval items = listOf(\n    KComboboxItem(\"nyc\",    \"(GMT-5) New York\",  group = \"americas\"),\n    KComboboxItem(\"london\", \"(GMT+0) London\",    group = \"europe\"),\n)"
+            }
+          ],
+          "enums": []
         }
       ]
     },
@@ -1244,6 +1758,7 @@
       "id": "KDatePicker",
       "title": "KDatePicker",
       "primary": "KDatePicker",
+      "packagePath": "components",
       "summary": "Shadcn/ui-style DatePicker. Requires API 26+ (java.time).",
       "tags": [
         "date"
@@ -1300,7 +1815,8 @@
               "language": "kotlin",
               "code": "var date by remember { mutableStateOf<LocalDate?>(null) }\nKDatePicker(selected = date, onSelect = { date = it }, placeholder = \"Pick a date\")"
             }
-          ]
+          ],
+          "enums": []
         }
       ]
     },
@@ -1308,6 +1824,7 @@
       "id": "KDirectionProvider",
       "title": "KDirectionProvider",
       "primary": "KDirectionProvider",
+      "packagePath": "components",
       "summary": "Overrides [LocalLayoutDirection] for the subtree.",
       "tags": [
         "i18n"
@@ -1335,7 +1852,31 @@
               "language": "kotlin",
               "code": "KDirectionProvider(LayoutDirection.Rtl) { MyScreen() }"
             }
-          ]
+          ],
+          "enums": []
+        },
+        {
+          "name": "useKDirection",
+          "signature": "fun useKDirection(): LayoutDirection",
+          "summary": "Reads the current [LayoutDirection] from composition.",
+          "kdoc": "Reads the current [LayoutDirection] from composition.",
+          "params": [],
+          "examples": [],
+          "enums": []
+        },
+        {
+          "name": "KDirectionManager",
+          "signature": "object KDirectionManager",
+          "summary": "Singleton for runtime LTR ↔ RTL toggling.",
+          "kdoc": "Singleton for runtime LTR ↔ RTL toggling.\n\n```kotlin\nKDirectionProvider(direction = KDirectionManager.direction) { NavHost(…) }\n// Elsewhere:\nKButton(\"Toggle RTL\", onClick = { KDirectionManager.toggle() })\n```",
+          "params": [],
+          "examples": [
+            {
+              "language": "kotlin",
+              "code": "KDirectionProvider(direction = KDirectionManager.direction) { NavHost(…) }\n// Elsewhere:\nKButton(\"Toggle RTL\", onClick = { KDirectionManager.toggle() })"
+            }
+          ],
+          "enums": []
         }
       ]
     },
@@ -1343,6 +1884,7 @@
       "id": "KEmpty",
       "title": "KEmpty",
       "primary": "KEmpty",
+      "packagePath": "components",
       "summary": "Shadcn/ui-style Empty state root.",
       "tags": [
         "empty-state"
@@ -1385,107 +1927,8 @@
               "language": "kotlin",
               "code": "KEmpty {\n    KEmptyHeader {\n        KEmptyMedia { Icon(Icons.Outlined.FolderOpen, null) }\n        KEmptyTitle(\"No Projects Yet\")\n        KEmptyDescription(\"Create your first project to get started.\")\n    }\n    KEmptyContent {\n        KButton(text = \"Create Project\", onClick = { })\n    }\n}"
             }
-          ]
-        },
-        {
-          "name": "KEmptyHeader",
-          "signature": "fun KEmptyHeader(modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit)",
-          "params": [
-            {
-              "name": "modifier",
-              "type": "Modifier",
-              "default": "Modifier"
-            },
-            {
-              "name": "content",
-              "type": "@Composable ColumnScope.() -> Unit"
-            }
           ],
-          "examples": []
-        },
-        {
-          "name": "KEmptyMedia",
-          "signature": "fun KEmptyMedia(modifier: Modifier = Modifier, variant: KEmptyMediaVariant = KEmptyMediaVariant.Icon, size: Dp = 56.dp, iconBoxColor: Color = MaterialTheme.colorScheme.surfaceVariant, content: @Composable BoxScope.() -> Unit)",
-          "params": [
-            {
-              "name": "modifier",
-              "type": "Modifier",
-              "default": "Modifier"
-            },
-            {
-              "name": "variant",
-              "type": "KEmptyMediaVariant",
-              "default": "KEmptyMediaVariant.Icon"
-            },
-            {
-              "name": "size",
-              "type": "Dp",
-              "default": "56.dp"
-            },
-            {
-              "name": "iconBoxColor",
-              "type": "Color",
-              "default": "MaterialTheme.colorScheme.surfaceVariant"
-            },
-            {
-              "name": "content",
-              "type": "@Composable BoxScope.() -> Unit"
-            }
-          ],
-          "examples": []
-        },
-        {
-          "name": "KEmptyTitle",
-          "signature": "fun KEmptyTitle(text: String, modifier: Modifier = Modifier)",
-          "params": [
-            {
-              "name": "text",
-              "type": "String"
-            },
-            {
-              "name": "modifier",
-              "type": "Modifier",
-              "default": "Modifier"
-            }
-          ],
-          "examples": []
-        },
-        {
-          "name": "KEmptyDescription",
-          "signature": "fun KEmptyDescription(text: String, modifier: Modifier = Modifier)",
-          "params": [
-            {
-              "name": "text",
-              "type": "String"
-            },
-            {
-              "name": "modifier",
-              "type": "Modifier",
-              "default": "Modifier"
-            }
-          ],
-          "examples": []
-        },
-        {
-          "name": "KEmptyContent",
-          "signature": "fun KEmptyContent(modifier: Modifier = Modifier, verticalSpacing: Dp = 8.dp, content: @Composable ColumnScope.() -> Unit)",
-          "params": [
-            {
-              "name": "modifier",
-              "type": "Modifier",
-              "default": "Modifier"
-            },
-            {
-              "name": "verticalSpacing",
-              "type": "Dp",
-              "default": "8.dp"
-            },
-            {
-              "name": "content",
-              "type": "@Composable ColumnScope.() -> Unit"
-            }
-          ],
-          "examples": []
+          "enums": []
         },
         {
           "name": "KEmptyState",
@@ -1546,7 +1989,92 @@
               "language": "kotlin",
               "code": "KEmptyState(\n    icon        = Icons.Outlined.FolderOpen,\n    title       = \"No projects\",\n    description = \"Create your first project.\",\n    actionLabel = \"Create Project\",\n    onAction    = { }\n)"
             }
-          ]
+          ],
+          "enums": []
+        }
+      ]
+    },
+    {
+      "id": "KindlingCoreApi",
+      "title": "KindlingCoreApi",
+      "primary": "KindlingCoreApi",
+      "summary": "Public API entrypoint package for Kindling core module.",
+      "tags": [
+        "ui"
+      ],
+      "sourcePath": "core/src/androidMain/kotlin/dev/kindling/core/PublicApi.kt",
+      "api": [
+        {
+          "name": "KindlingCoreApi",
+          "signature": "object KindlingCoreApi",
+          "summary": "Public API entrypoint package for Kindling core module.",
+          "kdoc": "Public API entrypoint package for Kindling core module.\n\nEvery component type is re-exported via a `typealias` so callers\ncan import from this single surface rather than from internal packages.",
+          "params": [],
+          "examples": [],
+          "enums": []
+        }
+      ]
+    },
+    {
+      "id": "kindlingShimmerBrush",
+      "title": "kindlingShimmerBrush",
+      "primary": "kindlingShimmerBrush",
+      "packagePath": "components",
+      "summary": "Returns a moving shimmer [Brush] from the current Material3 colour scheme. Drop it as a [Modifier.background] to get the skeleton animation on any shape.",
+      "tags": [
+        "ui"
+      ],
+      "sourcePath": "core/src/androidMain/kotlin/dev/kindling/core/components/Skeleton.kt",
+      "api": [
+        {
+          "name": "kindlingShimmerBrush",
+          "signature": "fun kindlingShimmerBrush(baseColor: Color = MaterialTheme.colorScheme.surfaceVariant, highlightColor: Color = MaterialTheme.colorScheme.surface, durationMillis: Int = 1_200): Brush",
+          "summary": "Returns a moving shimmer [Brush] from the current Material3 colour scheme. Drop it as a [Modifier.background] to get the skeleton animation on any shape.",
+          "kdoc": "Returns a moving shimmer [Brush] from the current Material3 colour scheme.\nDrop it as a [Modifier.background] to get the skeleton animation on any shape.",
+          "params": [
+            {
+              "name": "baseColor",
+              "type": "Color",
+              "default": "MaterialTheme.colorScheme.surfaceVariant"
+            },
+            {
+              "name": "highlightColor",
+              "type": "Color",
+              "default": "MaterialTheme.colorScheme.surface"
+            },
+            {
+              "name": "durationMillis",
+              "type": "Int",
+              "default": "1_200"
+            }
+          ],
+          "examples": [],
+          "enums": []
+        },
+        {
+          "name": "KSkeleton",
+          "signature": "fun KSkeleton(modifier: Modifier = Modifier, shape: Shape = RoundedCornerShape(4.dp))",
+          "summary": "Shadcn/ui-style Skeleton — shimmering loading placeholder.",
+          "kdoc": "Shadcn/ui-style Skeleton — shimmering loading placeholder.\n\n```kotlin\nKSkeleton(modifier = Modifier.fillMaxWidth().height(20.dp))\nKSkeleton(modifier = Modifier.size(40.dp), shape = CircleShape)\n```",
+          "params": [
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            },
+            {
+              "name": "shape",
+              "type": "Shape",
+              "default": "RoundedCornerShape(4.dp)"
+            }
+          ],
+          "examples": [
+            {
+              "language": "kotlin",
+              "code": "KSkeleton(modifier = Modifier.fillMaxWidth().height(20.dp))\nKSkeleton(modifier = Modifier.size(40.dp), shape = CircleShape)"
+            }
+          ],
+          "enums": []
         }
       ]
     },
@@ -1554,6 +2082,7 @@
       "id": "KInput",
       "title": "KInput",
       "primary": "KInput",
+      "packagePath": "components",
       "summary": "Shadcn/ui-style Input field.",
       "tags": [
         "forms"
@@ -1562,7 +2091,7 @@
       "api": [
         {
           "name": "KInput",
-          "signature": "fun KInput(value: String, onValueChange: (String) -> Unit, modifier: Modifier = Modifier, placeholder: String = \"\", enabled: Boolean = true, isPassword: Boolean = false, isError: Boolean = false, singleLine: Boolean = true, maxLines: Int = if (singleLine) 1 else Int.MAX_VALUE, minLines: Int = 1, leadingIcon: (@Composable () -> Unit)? = null, trailingIcon: (@Composable () -> Unit)? = null, keyboardOptions: KeyboardOptions = KeyboardOptions.Default.copy( keyboardType = if (isPassword) KeyboardType.Password else KeyboardType.Text ), keyboardActions: KeyboardActions = KeyboardActions.Default, interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },)",
+          "signature": "fun KInput(value: String, onValueChange: (String) -> Unit, modifier: Modifier = Modifier, placeholder: String = \"\", enabled: Boolean = true, isPassword: Boolean = false, isError: Boolean = false, singleLine: Boolean = true, maxLines: Int = if (singleLine) 1 else Int.MAX_VALUE, minLines: Int = 1, leadingIcon: (@Composable () -> Unit)? = null, trailingIcon: (@Composable () -> Unit)? = null, keyboardOptions: KeyboardOptions = KeyboardOptions.Default.copy( keyboardType = if (isPassword) KeyboardType.Password else KeyboardType.Text ), keyboardActions: KeyboardActions = KeyboardActions.Default, interactionSource: MutableInteractionSource = remember { MutableInteractionSource() })",
           "summary": "Shadcn/ui-style Input field.",
           "kdoc": "Shadcn/ui-style Input field.\n\nFully theme-agnostic — colours are resolved from [MaterialTheme.colorScheme].\n\n```kotlin\nvar value by remember { mutableStateOf(\"\") }\nKInput(value = value, onValueChange = { value = it }, placeholder = \"m@example.com\")\n\n// Password\nKInput(value = pwd, onValueChange = { pwd = it }, isPassword = true)\n```",
           "params": [
@@ -1645,11 +2174,12 @@
               "language": "kotlin",
               "code": "var value by remember { mutableStateOf(\"\") }\nKInput(value = value, onValueChange = { value = it }, placeholder = \"m@example.com\")\n\n// Password\nKInput(value = pwd, onValueChange = { pwd = it }, isPassword = true)"
             }
-          ]
+          ],
+          "enums": []
         },
         {
           "name": "KFormField",
-          "signature": "fun KFormField(label: String, value: String, onValueChange: (String) -> Unit, modifier: Modifier = Modifier, placeholder: String = \"\", helperText: String? = null, errorMessage: String? = null, isError: Boolean = false, enabled: Boolean = true, isPassword: Boolean = false, leadingIcon: (@Composable () -> Unit)? = null, trailingIcon: (@Composable () -> Unit)? = null, keyboardOptions: KeyboardOptions = KeyboardOptions.Default, keyboardActions: KeyboardActions = KeyboardActions.Default,)",
+          "signature": "fun KFormField(label: String, value: String, onValueChange: (String) -> Unit, modifier: Modifier = Modifier, placeholder: String = \"\", helperText: String? = null, errorMessage: String? = null, isError: Boolean = false, enabled: Boolean = true, isPassword: Boolean = false, leadingIcon: (@Composable () -> Unit)? = null, trailingIcon: (@Composable () -> Unit)? = null, keyboardOptions: KeyboardOptions = KeyboardOptions.Default, keyboardActions: KeyboardActions = KeyboardActions.Default)",
           "summary": "Convenience wrapper: [KLabel] + [KInput] + optional helper / error text.",
           "kdoc": "Convenience wrapper: [KLabel] + [KInput] + optional helper / error text.\n\n```kotlin\nKFormField(\n    label        = \"Email\",\n    value        = email,\n    onValueChange = { email = it },\n    placeholder  = \"m@example.com\",\n    helperText   = \"We'll never share your email.\",\n    isError      = email.isNotEmpty() && !email.contains(\"@\"),\n    errorMessage = \"Please enter a valid email address.\"\n)\n```",
           "params": [
@@ -1726,7 +2256,8 @@
               "language": "kotlin",
               "code": "KFormField(\n    label        = \"Email\",\n    value        = email,\n    onValueChange = { email = it },\n    placeholder  = \"m@example.com\",\n    helperText   = \"We'll never share your email.\",\n    isError      = email.isNotEmpty() && !email.contains(\"@\"),\n    errorMessage = \"Please enter a valid email address.\"\n)"
             }
-          ]
+          ],
+          "enums": []
         }
       ]
     },
@@ -1734,6 +2265,7 @@
       "id": "KInputGroup",
       "title": "KInputGroup",
       "primary": "KInputGroup",
+      "packagePath": "components",
       "summary": "Shadcn/ui-style InputGroup — a bordered container that composes an input control with inline or block addons (icons, text, buttons).",
       "tags": [
         "forms"
@@ -1771,7 +2303,154 @@
               "language": "kotlin",
               "code": "// Leading icon\nKInputGroup {\n    KInputGroupAddon(align = KInputGroupAlign.InlineStart) {\n        Icon(Icons.Default.Search, contentDescription = null)\n    }\n    KInputGroupInput(value = query, onValueChange = { query = it }, placeholder = \"Search…\")\n}\n\n// Trailing button\nKInputGroup {\n    KInputGroupInput(value = url, onValueChange = { url = it }, placeholder = \"https://…\")\n    KInputGroupAddon(align = KInputGroupAlign.InlineEnd) {\n        KInputGroupButton(onClick = { copy(url) }) { Icon(Icons.Default.ContentCopy, null) }\n    }\n}\n\n// Block label above\nKInputGroup {\n    KInputGroupAddon(align = KInputGroupAlign.BlockStart) { Text(\"https://\") }\n    KInputGroupInput(value = path, onValueChange = { path = it })\n}"
             }
-          ]
+          ],
+          "enums": []
+        },
+        {
+          "name": "KInputGroupScope.KInputGroupAddon",
+          "signature": "fun KInputGroupScope.KInputGroupAddon(align: KInputGroupAlign = KInputGroupAlign.InlineStart, modifier: Modifier = Modifier, content: @Composable () -> Unit)",
+          "summary": "An addon container placed before, after, above, or below the field.",
+          "kdoc": "An addon container placed before, after, above, or below the field.\n\nFor [KInputGroupAlign.InlineStart] / [KInputGroupAlign.InlineEnd] the addon\nis rendered as a [Row] cell next to the input.\n\nFor [KInputGroupAlign.BlockStart] / [KInputGroupAlign.BlockEnd] it spans the\nfull width above / below the input.\n\n@param align  Where to place this addon relative to the input control.",
+          "params": [
+            {
+              "name": "align",
+              "type": "KInputGroupAlign",
+              "default": "KInputGroupAlign.InlineStart",
+              "description": "Where to place this addon relative to the input control.",
+              "enum": {
+                "name": "KInputGroupAlign",
+                "values": [
+                  "InlineStart",
+                  "InlineEnd",
+                  "BlockStart",
+                  "BlockEnd"
+                ],
+                "summary": "Position of an addon relative to the input control."
+              }
+            },
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            },
+            {
+              "name": "content",
+              "type": "@Composable () -> Unit"
+            }
+          ],
+          "examples": [],
+          "enums": []
+        },
+        {
+          "name": "KInputGroupScope.KInputGroupInput",
+          "signature": "fun KInputGroupScope.KInputGroupInput(value: String, onValueChange: (String) -> Unit, modifier: Modifier = Modifier, placeholder: String = \"\", enabled: Boolean = true, isError: Boolean = false, isPassword: Boolean = false, singleLine: Boolean = true, maxLines: Int = if (singleLine) 1 else Int.MAX_VALUE, keyboardOptions: KeyboardOptions = KeyboardOptions.Default, keyboardActions: KeyboardActions = KeyboardActions.Default)",
+          "summary": "The text input control inside a [KInputGroup].",
+          "kdoc": "The text input control inside a [KInputGroup].\n\nStrips the outer border (the group draws its own) and fills available space.\nReuses [KInput] internally.\n\n```kotlin\nKInputGroup {\n    KInputGroupInput(value = text, onValueChange = { text = it }, placeholder = \"Type here…\")\n}\n```",
+          "params": [
+            {
+              "name": "value",
+              "type": "String"
+            },
+            {
+              "name": "onValueChange",
+              "type": "(String) -> Unit"
+            },
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            },
+            {
+              "name": "placeholder",
+              "type": "String",
+              "default": "\"\""
+            },
+            {
+              "name": "enabled",
+              "type": "Boolean",
+              "default": "true"
+            },
+            {
+              "name": "isError",
+              "type": "Boolean",
+              "default": "false"
+            },
+            {
+              "name": "isPassword",
+              "type": "Boolean",
+              "default": "false"
+            },
+            {
+              "name": "singleLine",
+              "type": "Boolean",
+              "default": "true"
+            },
+            {
+              "name": "maxLines",
+              "type": "Int",
+              "default": "if (singleLine) 1 else Int.MAX_VALUE"
+            },
+            {
+              "name": "keyboardOptions",
+              "type": "KeyboardOptions",
+              "default": "KeyboardOptions.Default"
+            },
+            {
+              "name": "keyboardActions",
+              "type": "KeyboardActions",
+              "default": "KeyboardActions.Default"
+            }
+          ],
+          "examples": [
+            {
+              "language": "kotlin",
+              "code": "KInputGroup {\n    KInputGroupInput(value = text, onValueChange = { text = it }, placeholder = \"Type here…\")\n}"
+            }
+          ],
+          "enums": []
+        },
+        {
+          "name": "KInputGroupScope.KInputGroupTextarea",
+          "signature": "fun KInputGroupScope.KInputGroupTextarea(value: String, onValueChange: (String) -> Unit, modifier: Modifier = Modifier, placeholder: String = \"\", enabled: Boolean = true, minLines: Int = 2, maxLines: Int = Int.MAX_VALUE)",
+          "summary": "Multi-line textarea variant for [KInputGroup].",
+          "kdoc": "Multi-line textarea variant for [KInputGroup].\n\nMirrors `InputGroupTextarea` — strips borders, auto-resizes.",
+          "params": [
+            {
+              "name": "value",
+              "type": "String"
+            },
+            {
+              "name": "onValueChange",
+              "type": "(String) -> Unit"
+            },
+            {
+              "name": "modifier",
+              "type": "Modifier",
+              "default": "Modifier"
+            },
+            {
+              "name": "placeholder",
+              "type": "String",
+              "default": "\"\""
+            },
+            {
+              "name": "enabled",
+              "type": "Boolean",
+              "default": "true"
+            },
+            {
+              "name": "minLines",
+              "type": "Int",
+              "default": "2"
+            },
+            {
+              "name": "maxLines",
+              "type": "Int",
+              "default": "Int.MAX_VALUE"
+            }
+          ],
+          "examples": [],
+          "enums": []
         },
         {
           "name": "KInputGroupButton",
@@ -1803,7 +2482,8 @@
               "language": "kotlin",
               "code": "KInputGroupAddon(align = KInputGroupAlign.InlineEnd) {\n    KInputGroupButton(onClick = { clear() }) {\n        Icon(Icons.Default.Clear, contentDescription = \"Clear\")\n    }\n}"
             }
-          ]
+          ],
+          "enums": []
         },
         {
           "name": "KInputGroupText",
@@ -1826,7 +2506,22 @@
               "language": "kotlin",
               "code": "KInputGroupAddon(align = KInputGroupAlign.InlineStart) {\n    KInputGroupText(\"https://\")\n}"
             }
-          ]
+          ],
+          "enums": []
+        },
+        {
+          "name": "KInputGroupScope",
+          "signature": "class KInputGroupScope(focusRequester: FocusRequester)",
+          "summary": "Receiver for [KInputGroup] content, exposing the internal focus requester.",
+          "kdoc": "Receiver for [KInputGroup] content, exposing the internal focus requester.",
+          "params": [
+            {
+              "name": "focusRequester",
+              "type": "FocusRequester"
+            }
+          ],
+          "examples": [],
+          "enums": []
         }
       ]
     },
@@ -1834,6 +2529,7 @@
       "id": "KInputOtp",
       "title": "KInputOtp",
       "primary": "KInputOtp",
+      "packagePath": "components",
       "summary": "Shadcn/ui-style OTP / PIN input.",
       "tags": [
         "forms",
@@ -1893,7 +2589,8 @@
               "language": "kotlin",
               "code": "var pin by remember { mutableStateOf(\"\") }\n\nKInputOtp(\n    value        = pin,\n    onValueChange = { pin = it },\n    length       = 6\n)\n\n// With separator after position 3 (0-indexed)\nKInputOtp(\n    value         = pin,\n    onValueChange = { pin = it },\n    length        = 6,\n    separatorAt   = setOf(2)\n)"
             }
-          ]
+          ],
+          "enums": []
         },
         {
           "name": "KInputOtpGroup",
@@ -1911,7 +2608,8 @@
               "type": "@Composable RowScope.() -> Unit"
             }
           ],
-          "examples": []
+          "examples": [],
+          "enums": []
         }
       ]
     },
@@ -1919,6 +2617,7 @@
       "id": "KLabel",
       "title": "KLabel",
       "primary": "KLabel",
+      "packagePath": "components",
       "summary": "Shadcn/ui-style Label.",
       "tags": [
         "ui"
@@ -1961,334 +2660,8 @@
               "language": "kotlin",
               "code": "KLabel(\"Email address\")\nKLabel(\"Password\", disabled = true)"
             }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "KMaskInput",
-      "title": "KMaskInput",
-      "primary": "KMaskInput",
-      "summary": "Shadcn/ui-style masked input field.",
-      "tags": [
-        "forms"
-      ],
-      "sourcePath": "core/src/androidMain/kotlin/dev/kindling/core/components/MaskInput.kt",
-      "api": [
-        {
-          "name": "KMaskInput",
-          "signature": "fun KMaskInput(value: String, onValueChange: (String) -> Unit, modifier: Modifier = Modifier, mask: KMaskPattern? = null, customPattern: String? = null, allowLetters: Boolean = mask?.keyboardType == KeyboardType.Text, placeholder: String = mask?.placeholder ?: customPattern?.replace('#', '0') ?: \"\", enabled: Boolean = true, isError: Boolean = false, keyboardActions: KeyboardActions = KeyboardActions.Default)",
-          "summary": "Shadcn/ui-style masked input field.",
-          "kdoc": "Shadcn/ui-style masked input field.\n\nApplies a `#`-placeholder [mask] pattern on every keystroke, keeping the\nunderlying value as raw digits/characters.  Mirrors the behaviour of\n`mask-input.tsx` (MaskInput component).\n\nFor currency and percentage use [KCurrencyInput] and [KPercentageInput]\nhelpers below — they handle the decimal formatting separately.\n\n```kotlin\nvar phone by remember { mutableStateOf(\"\") }\n\nKMaskInput(\n    value         = phone,\n    onValueChange = { phone = it },        // raw digits\n    mask          = KMaskPattern.Phone,\n    placeholder   = \"(555) 000-0000\"\n)\n\n// Custom pattern\nKMaskInput(\n    value         = value,\n    onValueChange = { value = it },\n    customPattern = \"##-##-####\"\n)\n```\n\n@param value           Raw (unmasked) value — digits for numeric masks.\n@param onValueChange   Called with the new raw value on each keystroke.\n@param mask            Named mask preset; ignored when [customPattern] is set.\n@param customPattern   Custom `#`-placeholder pattern (overrides [mask]).\n@param allowLetters    Set `true` for alphanumeric masks (e.g. license plate).\n@param placeholder     Hint text shown when empty.\n@param enabled         Whether the field is editable.\n@param isError         Applies error styling.\n@param modifier        Applied to the underlying [KInput].",
-          "params": [
-            {
-              "name": "value",
-              "type": "String",
-              "description": "Raw (unmasked) value — digits for numeric masks."
-            },
-            {
-              "name": "onValueChange",
-              "type": "(String) -> Unit",
-              "description": "Called with the new raw value on each keystroke."
-            },
-            {
-              "name": "modifier",
-              "type": "Modifier",
-              "default": "Modifier",
-              "description": "Applied to the underlying [KInput]."
-            },
-            {
-              "name": "mask",
-              "type": "KMaskPattern?",
-              "default": "null",
-              "description": "Named mask preset; ignored when [customPattern] is set."
-            },
-            {
-              "name": "customPattern",
-              "type": "String?",
-              "default": "null",
-              "description": "Custom `#`-placeholder pattern (overrides [mask])."
-            },
-            {
-              "name": "allowLetters",
-              "type": "Boolean",
-              "default": "mask?.keyboardType == KeyboardType.Text",
-              "description": "Set `true` for alphanumeric masks (e.g. license plate)."
-            },
-            {
-              "name": "placeholder",
-              "type": "String",
-              "default": "mask?.placeholder ?: customPattern?.replace('#', '0') ?: \"\"",
-              "description": "Hint text shown when empty."
-            },
-            {
-              "name": "enabled",
-              "type": "Boolean",
-              "default": "true",
-              "description": "Whether the field is editable."
-            },
-            {
-              "name": "isError",
-              "type": "Boolean",
-              "default": "false",
-              "description": "Applies error styling."
-            },
-            {
-              "name": "keyboardActions",
-              "type": "KeyboardActions",
-              "default": "KeyboardActions.Default"
-            }
           ],
-          "examples": [
-            {
-              "language": "kotlin",
-              "code": "var phone by remember { mutableStateOf(\"\") }\n\nKMaskInput(\n    value         = phone,\n    onValueChange = { phone = it },        // raw digits\n    mask          = KMaskPattern.Phone,\n    placeholder   = \"(555) 000-0000\"\n)\n\n// Custom pattern\nKMaskInput(\n    value         = value,\n    onValueChange = { value = it },\n    customPattern = \"##-##-####\"\n)"
-            }
-          ]
-        },
-        {
-          "name": "KPhoneInput",
-          "signature": "fun KPhoneInput(value: String, onValueChange: (String) -> Unit, modifier: Modifier = Modifier, placeholder: String = \"(555) 000-0000\", enabled: Boolean = true, isError: Boolean = false)",
-          "summary": "Phone number input — formats as `(###) ###-####`.",
-          "kdoc": "Phone number input — formats as `(###) ###-####`.",
-          "params": [
-            {
-              "name": "value",
-              "type": "String"
-            },
-            {
-              "name": "onValueChange",
-              "type": "(String) -> Unit"
-            },
-            {
-              "name": "modifier",
-              "type": "Modifier",
-              "default": "Modifier"
-            },
-            {
-              "name": "placeholder",
-              "type": "String",
-              "default": "\"(555) 000-0000\""
-            },
-            {
-              "name": "enabled",
-              "type": "Boolean",
-              "default": "true"
-            },
-            {
-              "name": "isError",
-              "type": "Boolean",
-              "default": "false"
-            }
-          ],
-          "examples": []
-        },
-        {
-          "name": "KSsnInput",
-          "signature": "fun KSsnInput(value: String, onValueChange: (String) -> Unit, modifier: Modifier = Modifier, enabled: Boolean = true, isError: Boolean = false)",
-          "summary": "US SSN input — formats as `###-##-####`.",
-          "kdoc": "US SSN input — formats as `###-##-####`.",
-          "params": [
-            {
-              "name": "value",
-              "type": "String"
-            },
-            {
-              "name": "onValueChange",
-              "type": "(String) -> Unit"
-            },
-            {
-              "name": "modifier",
-              "type": "Modifier",
-              "default": "Modifier"
-            },
-            {
-              "name": "enabled",
-              "type": "Boolean",
-              "default": "true"
-            },
-            {
-              "name": "isError",
-              "type": "Boolean",
-              "default": "false"
-            }
-          ],
-          "examples": []
-        },
-        {
-          "name": "KDateMaskInput",
-          "signature": "fun KDateMaskInput(value: String, onValueChange: (String) -> Unit, modifier: Modifier = Modifier, enabled: Boolean = true, isError: Boolean = false)",
-          "summary": "Date input — formats as `MM/DD/YYYY`.",
-          "kdoc": "Date input — formats as `MM/DD/YYYY`.",
-          "params": [
-            {
-              "name": "value",
-              "type": "String"
-            },
-            {
-              "name": "onValueChange",
-              "type": "(String) -> Unit"
-            },
-            {
-              "name": "modifier",
-              "type": "Modifier",
-              "default": "Modifier"
-            },
-            {
-              "name": "enabled",
-              "type": "Boolean",
-              "default": "true"
-            },
-            {
-              "name": "isError",
-              "type": "Boolean",
-              "default": "false"
-            }
-          ],
-          "examples": []
-        },
-        {
-          "name": "KCreditCardInput",
-          "signature": "fun KCreditCardInput(value: String, onValueChange: (String) -> Unit, modifier: Modifier = Modifier, enabled: Boolean = true, isError: Boolean = false)",
-          "summary": "Credit-card input — formats as `#### #### #### ####`.",
-          "kdoc": "Credit-card input — formats as `#### #### #### ####`.",
-          "params": [
-            {
-              "name": "value",
-              "type": "String"
-            },
-            {
-              "name": "onValueChange",
-              "type": "(String) -> Unit"
-            },
-            {
-              "name": "modifier",
-              "type": "Modifier",
-              "default": "Modifier"
-            },
-            {
-              "name": "enabled",
-              "type": "Boolean",
-              "default": "true"
-            },
-            {
-              "name": "isError",
-              "type": "Boolean",
-              "default": "false"
-            }
-          ],
-          "examples": []
-        },
-        {
-          "name": "KEinInput",
-          "signature": "fun KEinInput(value: String, onValueChange: (String) -> Unit, modifier: Modifier = Modifier, enabled: Boolean = true, isError: Boolean = false)",
-          "summary": "EIN input — formats as `##-#######`.",
-          "kdoc": "EIN input — formats as `##-#######`.",
-          "params": [
-            {
-              "name": "value",
-              "type": "String"
-            },
-            {
-              "name": "onValueChange",
-              "type": "(String) -> Unit"
-            },
-            {
-              "name": "modifier",
-              "type": "Modifier",
-              "default": "Modifier"
-            },
-            {
-              "name": "enabled",
-              "type": "Boolean",
-              "default": "true"
-            },
-            {
-              "name": "isError",
-              "type": "Boolean",
-              "default": "false"
-            }
-          ],
-          "examples": []
-        },
-        {
-          "name": "KCurrencyInput",
-          "signature": "fun KCurrencyInput(value: String, onValueChange: (String) -> Unit, modifier: Modifier = Modifier, currencySymbol: String = \"$\", locale: java.util.Locale = java.util.Locale.getDefault(), enabled: Boolean = true, isError: Boolean = false, placeholder: String = \"${currencySymbol}0.00\")",
-          "summary": "Currency input field.",
-          "kdoc": "Currency input field.\n\nFormats the raw numeric string with thousand separators and two decimal\nplaces using [java.text.NumberFormat] for the given [locale].\n\nThe [onValueChange] callback receives the raw numeric string (digits + optional decimal point).",
-          "params": [
-            {
-              "name": "value",
-              "type": "String"
-            },
-            {
-              "name": "onValueChange",
-              "type": "(String) -> Unit"
-            },
-            {
-              "name": "modifier",
-              "type": "Modifier",
-              "default": "Modifier"
-            },
-            {
-              "name": "currencySymbol",
-              "type": "String",
-              "default": "\"$\""
-            },
-            {
-              "name": "locale",
-              "type": "java.util.Locale",
-              "default": "java.util.Locale.getDefault()"
-            },
-            {
-              "name": "enabled",
-              "type": "Boolean",
-              "default": "true"
-            },
-            {
-              "name": "isError",
-              "type": "Boolean",
-              "default": "false"
-            },
-            {
-              "name": "placeholder",
-              "type": "String",
-              "default": "\"${currencySymbol}0.00\""
-            }
-          ],
-          "examples": []
-        },
-        {
-          "name": "KPercentageInput",
-          "signature": "fun KPercentageInput(value: String, onValueChange: (String) -> Unit, modifier: Modifier = Modifier, enabled: Boolean = true, isError: Boolean = false)",
-          "summary": "Percentage input — appends `%` to the display value.",
-          "kdoc": "Percentage input — appends `%` to the display value.",
-          "params": [
-            {
-              "name": "value",
-              "type": "String"
-            },
-            {
-              "name": "onValueChange",
-              "type": "(String) -> Unit"
-            },
-            {
-              "name": "modifier",
-              "type": "Modifier",
-              "default": "Modifier"
-            },
-            {
-              "name": "enabled",
-              "type": "Boolean",
-              "default": "true"
-            },
-            {
-              "name": "isError",
-              "type": "Boolean",
-              "default": "false"
-            }
-          ],
-          "examples": []
+          "enums": []
         }
       ]
     },
@@ -2296,6 +2669,7 @@
       "id": "KPagination",
       "title": "KPagination",
       "primary": "KPagination",
+      "packagePath": "components",
       "summary": "Shadcn/ui-style Pagination.",
       "tags": [
         "navigation"
@@ -2341,7 +2715,8 @@
               "language": "kotlin",
               "code": "var page by remember { mutableStateOf(1) }\nKPagination(currentPage = page, totalPages = 20, onPageChange = { page = it })"
             }
-          ]
+          ],
+          "enums": []
         }
       ]
     },
@@ -2349,6 +2724,7 @@
       "id": "KPopover",
       "title": "KPopover",
       "primary": "KPopover",
+      "packagePath": "components",
       "summary": "Shadcn/ui-style Popover with two display modes:",
       "tags": [
         "overlay"
@@ -2357,7 +2733,7 @@
       "api": [
         {
           "name": "KPopover",
-          "signature": "fun KPopover(open: Boolean, onDismiss: () -> Unit, trigger: @Composable () -> Unit, modifier: Modifier = Modifier, // ── Inline mode ─────────────────────────── side: KPopoverSide = KPopoverSide.Bottom, align: KPopoverAlign = KPopoverAlign.Center, sideOffset: Dp = 4.dp, // ── Overlay mode ────────────────────────── overlayZone: KPopoverOverlayPosition? = null, // ── Shared ──────────────────────────────── dismissOnClickOutside: Boolean = true, content: @Composable ColumnScope.() -> Unit)",
+          "signature": "fun KPopover(open: Boolean, onDismiss: () -> Unit, trigger: @Composable () -> Unit, modifier: Modifier = Modifier, side: KPopoverSide = KPopoverSide.Bottom, align: KPopoverAlign = KPopoverAlign.Center, sideOffset: Dp = 4.dp, overlayZone: KPopoverOverlayPosition? = null, dismissOnClickOutside: Boolean = true, content: @Composable ColumnScope.() -> Unit)",
           "summary": "Shadcn/ui-style Popover with two display modes:",
           "kdoc": "Shadcn/ui-style Popover with two display modes:\n\n**Inline mode** (default — [overlayZone] = null):\nThe panel is positioned adjacent to [trigger], clamped so it never escapes\nthe measured root bounds. [side] and [align] control placement.\n\n**Overlay mode** ([overlayZone] is not null):\nThe panel fills a full-screen scrim and is placed at [overlayZone] inside\nit (center, bottom-sheet, drawer, …). Useful for modal-style popovers.\n\nIn both modes, [dismissOnClickOutside] = `true` (default) closes the panel\nwhen the user taps outside the panel area.\n\n```kotlin\n// Inline popover\nvar open by remember { mutableStateOf(false) }\nKPopover(\n    open      = open,\n    onDismiss = { open = false },\n    trigger   = { KButton(\"Open\", onClick = { open = !open }) }\n) {\n    KPopoverTitle(\"Hello\")\n}\n\n// Bottom-sheet style overlay\nKPopover(\n    open        = open,\n    onDismiss   = { open = false },\n    overlayZone = KPopoverOverlayPosition.BottomSheet,\n    trigger     = { KButton(\"Sheet\", onClick = { open = !open }) }\n) {\n    Text(\"Sheet content\")\n}\n```",
           "params": [
@@ -2379,14 +2755,33 @@
               "default": "Modifier"
             },
             {
-              "name": "// ── Inline mode ───────────────────────────\n    side",
+              "name": "side",
               "type": "KPopoverSide",
-              "default": "KPopoverSide.Bottom"
+              "default": "KPopoverSide.Bottom",
+              "enum": {
+                "name": "KPopoverSide",
+                "values": [
+                  "Top",
+                  "Bottom",
+                  "Left",
+                  "Right"
+                ],
+                "summary": "Which side of the trigger the inline panel appears on."
+              }
             },
             {
               "name": "align",
               "type": "KPopoverAlign",
-              "default": "KPopoverAlign.Center"
+              "default": "KPopoverAlign.Center",
+              "enum": {
+                "name": "KPopoverAlign",
+                "values": [
+                  "Start",
+                  "Center",
+                  "End"
+                ],
+                "summary": "Alignment of the panel along the cross-axis of the trigger."
+              }
             },
             {
               "name": "sideOffset",
@@ -2394,12 +2789,23 @@
               "default": "4.dp"
             },
             {
-              "name": "// ── Overlay mode ──────────────────────────\n    overlayZone",
+              "name": "overlayZone",
               "type": "KPopoverOverlayPosition?",
-              "default": "null"
+              "default": "null",
+              "enum": {
+                "name": "KPopoverOverlayPosition",
+                "values": [
+                  "Center",
+                  "BottomSheet",
+                  "TopSheet",
+                  "StartDrawer",
+                  "EndDrawer"
+                ],
+                "summary": "When [KPopover] is in overlay mode ([overlayZone] is not null), this controls where on screen the panel is placed."
+              }
             },
             {
-              "name": "// ── Shared ────────────────────────────────\n    dismissOnClickOutside",
+              "name": "dismissOnClickOutside",
               "type": "Boolean",
               "default": "true"
             },
@@ -2413,85 +2819,8 @@
               "language": "kotlin",
               "code": "// Inline popover\nvar open by remember { mutableStateOf(false) }\nKPopover(\n    open      = open,\n    onDismiss = { open = false },\n    trigger   = { KButton(\"Open\", onClick = { open = !open }) }\n) {\n    KPopoverTitle(\"Hello\")\n}\n\n// Bottom-sheet style overlay\nKPopover(\n    open        = open,\n    onDismiss   = { open = false },\n    overlayZone = KPopoverOverlayPosition.BottomSheet,\n    trigger     = { KButton(\"Sheet\", onClick = { open = !open }) }\n) {\n    Text(\"Sheet content\")\n}"
             }
-          ]
-        },
-        {
-          "name": "KPopoverInline",
-          "signature": "fun KPopoverInline(open: Boolean, onDismiss: () -> Unit, trigger: @Composable () -> Unit, side: KPopoverSide, align: KPopoverAlign, sideOffset: Dp, dismissOnClickOutside: Boolean, modifier: Modifier, content: @Composable ColumnScope.() -> Unit)",
-          "params": [
-            {
-              "name": "open",
-              "type": "Boolean"
-            },
-            {
-              "name": "onDismiss",
-              "type": "() -> Unit"
-            },
-            {
-              "name": "trigger",
-              "type": "@Composable () -> Unit"
-            },
-            {
-              "name": "side",
-              "type": "KPopoverSide"
-            },
-            {
-              "name": "align",
-              "type": "KPopoverAlign"
-            },
-            {
-              "name": "sideOffset",
-              "type": "Dp"
-            },
-            {
-              "name": "dismissOnClickOutside",
-              "type": "Boolean"
-            },
-            {
-              "name": "modifier",
-              "type": "Modifier"
-            },
-            {
-              "name": "content",
-              "type": "@Composable ColumnScope.() -> Unit"
-            }
           ],
-          "examples": []
-        },
-        {
-          "name": "KPopoverOverlay",
-          "signature": "fun KPopoverOverlay(open: Boolean, onDismiss: () -> Unit, position: KPopoverOverlayPosition, dismissOnClickOutside: Boolean, trigger: @Composable () -> Unit, modifier: Modifier, content: @Composable ColumnScope.() -> Unit)",
-          "params": [
-            {
-              "name": "open",
-              "type": "Boolean"
-            },
-            {
-              "name": "onDismiss",
-              "type": "() -> Unit"
-            },
-            {
-              "name": "position",
-              "type": "KPopoverOverlayPosition"
-            },
-            {
-              "name": "dismissOnClickOutside",
-              "type": "Boolean"
-            },
-            {
-              "name": "trigger",
-              "type": "@Composable () -> Unit"
-            },
-            {
-              "name": "modifier",
-              "type": "Modifier"
-            },
-            {
-              "name": "content",
-              "type": "@Composable ColumnScope.() -> Unit"
-            }
-          ],
-          "examples": []
+          "enums": []
         },
         {
           "name": "KPopoverHeader",
@@ -2509,7 +2838,8 @@
               "type": "@Composable ColumnScope.() -> Unit"
             }
           ],
-          "examples": []
+          "examples": [],
+          "enums": []
         },
         {
           "name": "KPopoverTitle",
@@ -2527,7 +2857,8 @@
               "default": "Modifier"
             }
           ],
-          "examples": []
+          "examples": [],
+          "enums": []
         },
         {
           "name": "KPopoverDescription",
@@ -2545,43 +2876,8 @@
               "default": "Modifier"
             }
           ],
-          "examples": []
-        }
-      ]
-    },
-    {
-      "id": "KSkeleton",
-      "title": "KSkeleton",
-      "primary": "KSkeleton",
-      "summary": "Shadcn/ui-style Skeleton — shimmering loading placeholder.",
-      "tags": [
-        "loading"
-      ],
-      "sourcePath": "core/src/androidMain/kotlin/dev/kindling/core/components/Skeleton.kt",
-      "api": [
-        {
-          "name": "KSkeleton",
-          "signature": "fun KSkeleton(modifier: Modifier = Modifier, shape: Shape = RoundedCornerShape(4.dp),)",
-          "summary": "Shadcn/ui-style Skeleton — shimmering loading placeholder.",
-          "kdoc": "Shadcn/ui-style Skeleton — shimmering loading placeholder.\n\n```kotlin\nKSkeleton(modifier = Modifier.fillMaxWidth().height(20.dp))\nKSkeleton(modifier = Modifier.size(40.dp), shape = CircleShape)\n```",
-          "params": [
-            {
-              "name": "modifier",
-              "type": "Modifier",
-              "default": "Modifier"
-            },
-            {
-              "name": "shape",
-              "type": "Shape",
-              "default": "RoundedCornerShape(4.dp)"
-            }
-          ],
-          "examples": [
-            {
-              "language": "kotlin",
-              "code": "KSkeleton(modifier = Modifier.fillMaxWidth().height(20.dp))\nKSkeleton(modifier = Modifier.size(40.dp), shape = CircleShape)"
-            }
-          ]
+          "examples": [],
+          "enums": []
         }
       ]
     },
@@ -2589,6 +2885,7 @@
       "id": "KSpinner",
       "title": "KSpinner",
       "primary": "KSpinner",
+      "packagePath": "components",
       "summary": "Shadcn/ui-style Spinner — smooth rotating arc.",
       "tags": [
         "loading"
@@ -2597,7 +2894,7 @@
       "api": [
         {
           "name": "KSpinner",
-          "signature": "fun KSpinner(modifier: Modifier = Modifier, size: KSpinnerSize = KSpinnerSize.Default, color: Color = MaterialTheme.colorScheme.primary, trackColor: Color = color.copy(alpha = 0.15f), label: String? = null,)",
+          "signature": "fun KSpinner(modifier: Modifier = Modifier, size: KSpinnerSize = KSpinnerSize.Default, color: Color = MaterialTheme.colorScheme.primary, trackColor: Color = color.copy(alpha = 0.15f), label: String? = null)",
           "summary": "Shadcn/ui-style Spinner — smooth rotating arc.",
           "kdoc": "Shadcn/ui-style Spinner — smooth rotating arc.\n\n```kotlin\nKSpinner()\nKSpinner(size = KSpinnerSize.Lg, label = \"Loading…\")\n```",
           "params": [
@@ -2609,7 +2906,17 @@
             {
               "name": "size",
               "type": "KSpinnerSize",
-              "default": "KSpinnerSize.Default"
+              "default": "KSpinnerSize.Default",
+              "enum": {
+                "name": "KSpinnerSize",
+                "values": [
+                  "Sm",
+                  "Default",
+                  "Lg",
+                  "Xl"
+                ],
+                "summary": "Spinner sizing preset."
+              }
             },
             {
               "name": "color",
@@ -2632,11 +2939,12 @@
               "language": "kotlin",
               "code": "KSpinner()\nKSpinner(size = KSpinnerSize.Lg, label = \"Loading…\")"
             }
-          ]
+          ],
+          "enums": []
         },
         {
           "name": "KSpinnerOverlay",
-          "signature": "fun KSpinnerOverlay(modifier: Modifier = Modifier.fillMaxSize(), size: KSpinnerSize = KSpinnerSize.Lg, label: String? = null,)",
+          "signature": "fun KSpinnerOverlay(modifier: Modifier = Modifier.fillMaxSize(), size: KSpinnerSize = KSpinnerSize.Lg, label: String? = null)",
           "summary": "Centred spinner that fills its parent — useful as a screen-level loading state.",
           "kdoc": "Centred spinner that fills its parent — useful as a screen-level loading state.\n\n```kotlin\nif (isLoading) KSpinnerOverlay()\n```",
           "params": [
@@ -2648,7 +2956,17 @@
             {
               "name": "size",
               "type": "KSpinnerSize",
-              "default": "KSpinnerSize.Lg"
+              "default": "KSpinnerSize.Lg",
+              "enum": {
+                "name": "KSpinnerSize",
+                "values": [
+                  "Sm",
+                  "Default",
+                  "Lg",
+                  "Xl"
+                ],
+                "summary": "Spinner sizing preset."
+              }
             },
             {
               "name": "label",
@@ -2661,7 +2979,8 @@
               "language": "kotlin",
               "code": "if (isLoading) KSpinnerOverlay()"
             }
-          ]
+          ],
+          "enums": []
         }
       ]
     },
@@ -2669,6 +2988,7 @@
       "id": "KStepper",
       "title": "KStepper",
       "primary": "KStepper",
+      "packagePath": "components",
       "summary": "Shadcn/ui-style multi-step progress indicator.",
       "tags": [
         "navigation"
@@ -2697,7 +3017,15 @@
             {
               "name": "orientation",
               "type": "KStepperOrientation",
-              "default": "KStepperOrientation.Horizontal"
+              "default": "KStepperOrientation.Horizontal",
+              "enum": {
+                "name": "KStepperOrientation",
+                "values": [
+                  "Horizontal",
+                  "Vertical"
+                ],
+                "summary": "Stepper orientation."
+              }
             },
             {
               "name": "onStepClick",
@@ -2710,7 +3038,58 @@
               "language": "kotlin",
               "code": "var step by remember { mutableStateOf(0) }\nKStepper(steps = steps, currentStep = step)\nKButton(\"Next\", onClick = { step++ })"
             }
-          ]
+          ],
+          "enums": []
+        }
+      ]
+    },
+    {
+      "id": "KTableColumn",
+      "title": "KTableColumn",
+      "primary": "KTableColumn",
+      "packagePath": "components",
+      "summary": "Describes one column in a [KDataTable].",
+      "tags": [
+        "data"
+      ],
+      "sourcePath": "core/src/androidMain/kotlin/dev/kindling/core/components/Datatable.kt",
+      "api": [
+        {
+          "name": "KTableColumn",
+          "signature": "data class KTableColumn<T>(key: String, header: String, weight: Float = 1f, sortable: Boolean = false, cell: @Composable RowScope.(row: T) -> Unit)",
+          "summary": "Describes one column in a [KDataTable].",
+          "kdoc": "Describes one column in a [KDataTable].\n\n@param key Unique key used for sorting.\n@param header Column header label.\n@param weight Flex weight.\n@param sortable Whether the header shows a sort toggle.\n@param cell Composable that renders a single cell.",
+          "params": [
+            {
+              "name": "key",
+              "type": "String",
+              "description": "Unique key used for sorting."
+            },
+            {
+              "name": "header",
+              "type": "String",
+              "description": "Column header label."
+            },
+            {
+              "name": "weight",
+              "type": "Float",
+              "default": "1f",
+              "description": "Flex weight."
+            },
+            {
+              "name": "sortable",
+              "type": "Boolean",
+              "default": "false",
+              "description": "Whether the header shows a sort toggle."
+            },
+            {
+              "name": "cell",
+              "type": "@Composable RowScope.(row: T) -> Unit",
+              "description": "Composable that renders a single cell."
+            }
+          ],
+          "examples": [],
+          "enums": []
         }
       ]
     },
@@ -2718,6 +3097,7 @@
       "id": "KTextarea",
       "title": "KTextarea",
       "primary": "KTextarea",
+      "packagePath": "components",
       "summary": "Shadcn/ui-style Textarea.",
       "tags": [
         "forms"
@@ -2794,7 +3174,8 @@
               "language": "kotlin",
               "code": "var message by remember { mutableStateOf(\"\") }\n\nKTextarea(\n    value         = message,\n    onValueChange = { message = it },\n    placeholder   = \"Type your message here.\"\n)"
             }
-          ]
+          ],
+          "enums": []
         }
       ]
     },
@@ -2802,6 +3183,7 @@
       "id": "KToasterHost",
       "title": "KToasterHost",
       "primary": "KToasterHost",
+      "packagePath": "components",
       "summary": "Place **once** at the root of your composable tree.",
       "tags": [
         "feedback"
@@ -2830,7 +3212,8 @@
               "language": "kotlin",
               "code": "Box(Modifier.fillMaxSize()) {\n    // … your NavHost / Scaffold …\n    KToasterHost()\n}"
             }
-          ]
+          ],
+          "enums": []
         }
       ]
     }
