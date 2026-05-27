@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import type { ModuleDoc, ModuleName } from '../types'
+import type { EnumDoc, ModuleDoc, ModuleName } from '../types'
 import type { Route } from '../lib/useHashRoute'
 import { CodeBlock } from './CodeBlock'
 import './page.css'
@@ -13,6 +13,21 @@ function moduleLabel(module: ModuleName) {
 function githubBlobUrl(sourcePath?: string) {
   if (!sourcePath) return undefined
   return `https://github.com/ClementBobin/Kindling/blob/main/${sourcePath}`
+}
+
+function collectEnums(entry: { params: { enum?: EnumDoc }[]; enums?: EnumDoc[] }): EnumDoc[] {
+  const out: EnumDoc[] = []
+  const seen = new Set<string>()
+  const add = (e: EnumDoc | undefined) => {
+    if (!e) return
+    if (seen.has(e.name)) return
+    seen.add(e.name)
+    out.push(e)
+  }
+
+  for (const p of entry.params) add(p.enum)
+  for (const e of entry.enums ?? []) add(e)
+  return out
 }
 
 export function PageView(props: { route: Route; modules: ModuleDoc[]; onNavigate: (next: Route) => void }) {
@@ -241,8 +256,10 @@ function DocPageView(props: { module: ModuleDoc; pageId: string }) {
         </header>
 
         <section className="section">
-          {page.api.map((a) => (
-            <div key={a.name} className="apiBlock">
+          {page.api.map((a, idx) => {
+            const enums = collectEnums(a)
+            return (
+            <div key={a.name} className={idx === 0 ? 'apiBlock' : 'apiBlock apiBlockSep'}>
               <h2 id={`api-${a.name}`} className="apiTitle">
                 {a.name}
               </h2>
@@ -250,45 +267,89 @@ function DocPageView(props: { module: ModuleDoc; pageId: string }) {
               {a.summary ? <p className="apiSummary">{a.summary}</p> : null}
 
               {a.params.length ? (
-                <div className="tableWrap">
-                  <table className="table">
-                    <thead>
-                      <tr>
-                        <th>Prop</th>
-                        <th>Type</th>
-                        <th>Default</th>
-                        <th>Description</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {a.params.map((p) => (
-                        <tr key={p.name}>
-                          <td>
-                            <code>{p.name}</code>
-                          </td>
-                          <td>
-                            <code>{p.type}</code>
-                          </td>
-                          <td>{p.default ? <code>{p.default}</code> : <span className="muted">—</span>}</td>
-                          <td className="cellDesc">{p.description ?? <span className="muted">—</span>}</td>
+                <div className="subSection">
+                  <h3 className="subTitle">Props</h3>
+                  <div className="tableWrap">
+                    <table className="table">
+                      <thead>
+                        <tr>
+                          <th>Prop</th>
+                          <th>Type</th>
+                          <th>Default</th>
+                          <th>Description</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody>
+                        {a.params.map((p) => (
+                          <tr key={p.name}>
+                            <td>
+                              <code>{p.name}</code>
+                            </td>
+                            <td>
+                              <code>{p.type}</code>
+                            </td>
+                            <td>{p.default ? <code>{p.default}</code> : <span className="muted">—</span>}</td>
+                            <td className="cellDesc">{p.description ?? <span className="muted">—</span>}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              ) : null}
+
+              {enums.length ? (
+                <div className="subSection">
+                  <h3 className="subTitle">Enums</h3>
+                  <div className="tableWrap">
+                    <table className="table">
+                      <thead>
+                        <tr>
+                          <th>Enum</th>
+                          <th>Values</th>
+                          <th>Description</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {enums.map((e) => (
+                          <tr key={e.name}>
+                            <td>
+                              <code>{e.name}</code>
+                            </td>
+                            <td className="cellValues">
+                              {e.values.length ? (
+                                <span className="valuesWrap">
+                                  {e.values.map((v) => (
+                                    <code key={v}>{v}</code>
+                                  ))}
+                                </span>
+                              ) : (
+                                <span className="muted">—</span>
+                              )}
+                            </td>
+                            <td className="cellDesc">{e.summary ?? <span className="muted">—</span>}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               ) : null}
 
               {a.examples.length ? (
-                <div className="examples">
-                  {a.examples.map((ex, idx) => (
-                    <div key={idx} className="example">
-                      <CodeBlock language={ex.language ?? 'kotlin'} code={ex.code} />
-                    </div>
-                  ))}
+                <div className="subSection">
+                  <h3 className="subTitle">Examples</h3>
+                  <div className="examples">
+                    {a.examples.map((ex, idx) => (
+                      <div key={idx} className="example">
+                        <CodeBlock language={ex.language ?? 'kotlin'} code={ex.code} />
+                      </div>
+                    ))}
+                  </div>
                 </div>
               ) : null}
             </div>
-          ))}
+          )})}
         </section>
       </div>
 

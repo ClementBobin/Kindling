@@ -54,7 +54,8 @@
               "language": "kotlin",
               "code": "KScreen(\n    viewModel = homeViewModel,\n    navController = navController,\n    onEvent = { _, _, event ->\n        when(event) {\n            is HomeEvent.ShowSnackbar -> {\n                snackbarHostState.showSnackbar(event.message)\n            }\n        }\n    }\n) { state, viewModel ->\n\n    HomeScreenContent(\n        state = state,\n        onRefresh = viewModel::refresh\n    )\n}"
             }
-          ]
+          ],
+          "enums": []
         }
       ]
     },
@@ -94,7 +95,8 @@
               "language": "kotlin",
               "code": "class HomeViewModel(\n    private val repository: ItemRepository\n) : KViewModel<HomeState, HomeEvent>(HomeState()) {\n\n    init {\n        loadItems()\n    }\n\n    private fun loadItems() {\n        fetchData(\n            source = { repository.getItems() },\n            onResult = { result ->\n                result\n                    .onSuccess { items ->\n                        updateState { copy(items = items, isLoading = false) }\n                    }\n                    .onFailure { error ->\n                        sendEvent(HomeEvent.ShowMessage(error.message ?: \"Unknown error\"))\n                    }\n            }\n        )\n    }\n}"
             }
-          ]
+          ],
+          "enums": []
         }
       ]
     },
@@ -138,7 +140,8 @@
               "language": "kotlin",
               "code": "navController.navigate(Screen.Home)"
             }
-          ]
+          ],
+          "enums": []
         },
         {
           "name": "NavController.popBackTo",
@@ -163,7 +166,8 @@
               "language": "kotlin",
               "code": "navController.popBackTo(Screen.Login)\n\nnavController.popBackTo(\n    destination = Screen.Splash,\n    inclusive = true\n)"
             }
-          ]
+          ],
+          "enums": []
         },
         {
           "name": "KNavHost",
@@ -198,7 +202,8 @@
               "language": "kotlin",
               "code": "@Composable\nfun AppNavigation(navController: NavHostController) {\n    KNavHost(\n        navController = navController,\n        startDestination = Screen.Splash\n    ) {\n\n        composable(Screen.Splash) {\n            SplashScreen(navController)\n        }\n\n        composable(Screen.Home) {\n            HomeScreen(navController)\n        }\n    }\n}"
             }
-          ]
+          ],
+          "enums": []
         },
         {
           "name": "Destination",
@@ -211,7 +216,8 @@
               "language": "kotlin",
               "code": "sealed class Screen(\n    override val route: String\n) : Destination {\n\n    data object Splash : Screen(\"splash\")\n    data object Home : Screen(\"home\")\n\n    data object Profile : Screen(\"profile/{userId}\") {\n        override val arguments = listOf(\n            navArgument(\"userId\") {\n                type = NavType.StringType\n            }\n        )\n    }\n}"
             }
-          ]
+          ],
+          "enums": []
         }
       ]
     }

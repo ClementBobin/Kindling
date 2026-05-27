@@ -32,7 +32,7 @@ function stripKdoc(kdocBlock) {
 }
 
 function parseKdoc(kdocBlock) {
-  if (!kdocBlock) return { raw: undefined, summary: undefined, paramDocs: {}, examples: [] }
+  if (!kdocBlock) return { raw: undefined, summary: undefined, paramDocs: {}, enumDocs: {}, examples: [] }
 
   const raw = stripKdoc(kdocBlock)
   const lines = raw.split('\n')
@@ -45,18 +45,34 @@ function parseKdoc(kdocBlock) {
   const summary = summaryLines.length ? summaryLines.join(' ') : undefined
 
   const paramDocs = {}
+  const enumDocs = {}
   for (let index = 0; index < lines.length; index += 1) {
     const line = lines[index]
-    const match = line.match(/^@param\s+([A-Za-z0-9_]+)\s+(.*)$/)
-    if (!match) continue
+    const paramMatch = line.match(/^@param\s+([A-Za-z0-9_]+)\s+(.*)$/)
+    const propMatch = line.match(/^@property\s+([A-Za-z0-9_]+)\s+(.*)$/)
+    const enumMatch = line.match(/^@enum\s+([A-Za-z0-9_]+)(?:\s+(.*))?$/)
 
-    const name = match[1]
-    let desc = match[2]?.trim() ?? ''
-    while (index + 1 < lines.length && lines[index + 1].match(/^\s{2,}\S/)) {
-      index += 1
-      desc += ` ${lines[index].trim()}`
+    if (paramMatch || propMatch) {
+      const match = paramMatch ?? propMatch
+      const name = match[1]
+      let desc = match[2]?.trim() ?? ''
+      while (index + 1 < lines.length && lines[index + 1].match(/^\s{2,}\S/)) {
+        index += 1
+        desc += ` ${lines[index].trim()}`
+      }
+      paramDocs[name] = desc.trim()
+      continue
     }
-    paramDocs[name] = desc.trim()
+
+    if (enumMatch) {
+      const name = enumMatch[1]
+      let desc = enumMatch[2]?.trim() ?? ''
+      while (index + 1 < lines.length && lines[index + 1].match(/^\s{2,}\S/)) {
+        index += 1
+        desc += ` ${lines[index].trim()}`
+      }
+      enumDocs[name] = desc.trim()
+    }
   }
 
   const examples = []
@@ -68,7 +84,7 @@ function parseKdoc(kdocBlock) {
     examples.push({ language, code })
   }
 
-  return { raw, summary, paramDocs, examples }
+  return { raw, summary, paramDocs, enumDocs, examples }
 }
 
 function extractKdocBefore(source, index) {
@@ -198,9 +214,13 @@ function splitTypeAndDefault(typeAndDefault) {
   return { type: typeAndDefault.trim(), defaultValue: undefined }
 }
 
+function stripKotlinComments(source) {
+  return source.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '')
+}
+
 function parseParams(paramsText, paramDocs) {
   const params = []
-  const parts = splitTopLevel(paramsText, ',')
+  const parts = splitTopLevel(stripKotlinComments(paramsText), ',')
   for (const part of parts) {
     const raw = part.trim()
     if (!raw) continue
@@ -233,6 +253,114 @@ function parseParams(paramsText, paramDocs) {
   return params
 }
 
+function parseEnumValues(enumText) {
+  if (!enumText) return []
+  const cleaned = enumText.replace(/\.\s*$/, '').trim()
+  if (!cleaned) return []
+  const parts = cleaned.includes('|') ? cleaned.split('|') : cleaned.split(',')
+  if (parts.length > 1) return parts.map((p) => p.trim()).filter(Boolean)
+  return cleaned
+    .split(/\s+/)
+    .map((p) => p.trim())
+    .filter(Boolean)
+}
+
+function findMatchingBrace(source, openBraceIndex) {
+  let depth = 0
+  for (let index = openBraceIndex; index < source.length; index += 1) {
+    const ch = source[index]
+    if (ch === '{') depth += 1
+    else if (ch === '}') {
+      depth -= 1
+      if (depth === 0) return index
+    }
+  }
+  return -1
+}
+
+function findTopLevelSemicolon(source) {
+  let angle = 0
+  let paren = 0
+  let square = 0
+  let brace = 0
+  for (let index = 0; index < source.length; index += 1) {
+    const ch = source[index]
+    if (ch === '<') angle += 1
+    else if (ch === '>') angle = Math.max(0, angle - 1)
+    else if (ch === '(') paren += 1
+    else if (ch === ')') paren = Math.max(0, paren - 1)
+    else if (ch === '[') square += 1
+    else if (ch === ']') square = Math.max(0, square - 1)
+    else if (ch === '{') brace += 1
+    else if (ch === '}') brace = Math.max(0, brace - 1)
+
+    if (ch === ';' && angle === 0 && paren === 0 && square === 0 && brace === 0) return index
+  }
+  return -1
+}
+
+function extractEnumDocsFromSource(source, enumsByName) {
+  const enumRegex = /\benum\s+class\s+([A-Za-z0-9_]+)/g
+  for (const match of source.matchAll(enumRegex)) {
+    const name = match[1]
+    if (enumsByName.has(name)) continue
+
+    const enumStart = match.index
+    const lineStart = Math.max(0, source.lastIndexOf('\n', enumStart - 1) + 1)
+    const prefix = source.slice(lineStart, enumStart)
+    if (prefix.includes('private')) continue
+
+    const openBraceIndex = source.indexOf('{', enumStart)
+    if (openBraceIndex === -1) continue
+    const closeBraceIndex = findMatchingBrace(source, openBraceIndex)
+    if (closeBraceIndex === -1) continue
+
+    const kdocBlock = extractKdocBeforeKotlinDecl(source, enumStart)
+    const kdoc = parseKdoc(kdocBlock)
+
+    const body = source.slice(openBraceIndex + 1, closeBraceIndex)
+    const semicolonIndex = findTopLevelSemicolon(body)
+    const constantsPart = (semicolonIndex === -1 ? body : body.slice(0, semicolonIndex))
+      .replace(/\/\/.*$/gm, '')
+      .replace(/\/\*[\s\S]*?\*\//g, '')
+
+    const constants = splitTopLevel(constantsPart, ',')
+      .map((c) => c.trim())
+      .filter(Boolean)
+      .map((c) => {
+        let cleaned = c.replace(/^(@\w+\s+)*/, '').trim()
+        const m = cleaned.match(/^([A-Za-z_][A-Za-z0-9_]*)/)
+        return m ? m[1] : undefined
+      })
+      .filter(Boolean)
+
+    if (constants.length === 0) continue
+    enumsByName.set(name, { name, values: constants, summary: kdoc.summary })
+  }
+}
+
+function inferParamEnum(param, kdocEnums, enumsByName) {
+  const explicit = kdocEnums?.[param.name]
+  const typeName = param.type.replace(/\?$/, '').split('<', 1)[0].trim().split('.').at(-1)
+  const byType = typeName ? enumsByName.get(typeName) : undefined
+
+  if (explicit) {
+    const values = parseEnumValues(explicit)
+    const name = byType?.name ?? typeName ?? param.name
+    return {
+      name,
+      values: values.length ? values : (byType?.values ?? []),
+      summary: byType?.summary,
+    }
+  }
+
+  if (byType) {
+    return { name: byType.name, values: byType.values, summary: byType.summary }
+  }
+
+  return undefined
+}
+
 function inferTags(fileName, primarySymbol) {
   const name = primarySymbol ?? fileName
   const tags = new Set()
@@ -259,7 +387,7 @@ function inferTags(fileName, primarySymbol) {
 }
 
 function normalizeParamsText(paramsText) {
-  const parts = splitTopLevel(paramsText, ',')
+  const parts = splitTopLevel(stripKotlinComments(paramsText), ',')
   const normalized = []
   for (const part of parts) {
     const raw = part.trim()
@@ -309,7 +437,7 @@ function apiNameFor(receiver, shortName) {
   return shortName
 }
 
-function scanTopLevelApi(source) {
+function scanTopLevelApi(source, enumsByName = new Map()) {
   const entries = []
 
   const funKeywordRegex = /\bfun\b/g
@@ -345,7 +473,10 @@ function scanTopLevelApi(source) {
 
     const kdoc = parseKdoc(kdocBlock)
     const paramsText = source.slice(openParenIndex + 1, closeParenIndex)
-    const params = parseParams(paramsText, kdoc.paramDocs)
+    const params = parseParams(paramsText, kdoc.paramDocs).map((p) => ({
+      ...p,
+      enum: inferParamEnum(p, kdoc.enumDocs, enumsByName),
+    }))
     const header = source.slice(funStart, openParenIndex).replace(/\s+/g, ' ').trim()
     const signature = `${header}(${normalizeParamsText(paramsText)})${extractReturnTypeAfter(source, closeParenIndex)}`
 
@@ -359,6 +490,14 @@ function scanTopLevelApi(source) {
         kdoc: kdoc.raw,
         params,
         examples: kdoc.examples,
+        enums: Object.entries(kdoc.enumDocs ?? {})
+          .map(([enumName, rawValues]) => {
+            const known = enumsByName.get(enumName)
+            const values = rawValues ? parseEnumValues(rawValues) : (known?.values ?? [])
+            if (!values.length) return undefined
+            return { name: enumName, values, summary: known?.summary }
+          })
+          .filter(Boolean),
       },
     })
   }
@@ -387,7 +526,10 @@ function scanTopLevelApi(source) {
       const closeParenIndex = findMatchingParen(source, openParenIndex)
       if (closeParenIndex !== -1) {
         const paramsText = source.slice(openParenIndex + 1, closeParenIndex)
-        const params = parseParams(paramsText, kdoc.paramDocs)
+        const params = parseParams(paramsText, kdoc.paramDocs).map((p) => ({
+          ...p,
+          enum: inferParamEnum(p, kdoc.enumDocs, enumsByName),
+        }))
         signature = `${extractLineModifiers(source, typeStart)}class ${name}${match[3] ?? ''}(${normalizeParamsText(paramsText)})`.replace(
           /\s+/g,
           ' ',
@@ -402,6 +544,14 @@ function scanTopLevelApi(source) {
             kdoc: kdoc.raw,
             params,
             examples: kdoc.examples,
+            enums: Object.entries(kdoc.enumDocs ?? {})
+              .map(([enumName, rawValues]) => {
+                const known = enumsByName.get(enumName)
+                const values = rawValues ? parseEnumValues(rawValues) : (known?.values ?? [])
+                if (!values.length) return undefined
+                return { name: enumName, values, summary: known?.summary }
+              })
+              .filter(Boolean),
           },
         })
         continue
@@ -418,6 +568,14 @@ function scanTopLevelApi(source) {
         kdoc: kdoc.raw,
         params: [],
         examples: kdoc.examples,
+        enums: Object.entries(kdoc.enumDocs ?? {})
+          .map(([enumName, rawValues]) => {
+            const known = enumsByName.get(enumName)
+            const values = rawValues ? parseEnumValues(rawValues) : (known?.values ?? [])
+            if (!values.length) return undefined
+            return { name: enumName, values, summary: known?.summary }
+          })
+          .filter(Boolean),
       },
     })
   }
@@ -427,14 +585,19 @@ function scanTopLevelApi(source) {
 
 async function generateCore() {
   const entries = await readdir(componentsDir)
-  const files = entries
-    .filter((name) => name.endsWith('.kt'))
-    .filter((name) => name !== 'global.kt' && name !== 'Global.kt')
-    .sort((a, b) => a.localeCompare(b))
+  const allFiles = entries.filter((name) => name.endsWith('.kt')).sort((a, b) => a.localeCompare(b))
+  const docFiles = allFiles.filter((name) => name !== 'global.kt' && name !== 'Global.kt')
+
+  const enumsByName = new Map()
+  for (const file of allFiles) {
+    const filePath = path.join(componentsDir, file)
+    const source = await readFile(filePath, 'utf8')
+    extractEnumDocsFromSource(source, enumsByName)
+  }
 
   const pages = []
 
-  for (const file of files) {
+  for (const file of docFiles) {
     const filePath = path.join(componentsDir, file)
     const source = await readFile(filePath, 'utf8')
 
@@ -451,8 +614,11 @@ async function generateCore() {
       const kdocBlock = extractKdocBeforeKotlinDecl(source, funStart)
       const kdoc = parseKdoc(kdocBlock)
       const paramsText = source.slice(openParenIndex + 1, closeParenIndex)
-      const params = parseParams(paramsText, kdoc.paramDocs)
-      const signature = `fun ${name}(${paramsText.replace(/\s+/g, ' ').trim()})`
+      const params = parseParams(paramsText, kdoc.paramDocs).map((p) => ({
+        ...p,
+        enum: inferParamEnum(p, kdoc.enumDocs, enumsByName),
+      }))
+      const signature = `fun ${name}(${normalizeParamsText(paramsText)})`
 
       api.push({
         name,
@@ -461,6 +627,14 @@ async function generateCore() {
         kdoc: kdoc.raw,
         params,
         examples: kdoc.examples,
+        enums: Object.entries(kdoc.enumDocs ?? {})
+          .map(([enumName, rawValues]) => {
+            const known = enumsByName.get(enumName)
+            const values = rawValues ? parseEnumValues(rawValues) : (known?.values ?? [])
+            if (!values.length) return undefined
+            return { name: enumName, values, summary: known?.summary }
+          })
+          .filter(Boolean),
       })
     }
 
@@ -496,10 +670,16 @@ async function generateUtils() {
   const utilsDir = path.join(repoRoot, 'utils', 'src', 'main', 'kotlin', 'dev', 'kindling', 'library', 'utils')
   const files = [path.join(utilsDir, 'Debouncer.kt'), path.join(utilsDir, 'PublicApi.kt')]
 
+  const enumsByName = new Map()
+  for (const filePath of files) {
+    const source = await readFile(filePath, 'utf8')
+    extractEnumDocsFromSource(source, enumsByName)
+  }
+
   const allEntries = []
   for (const filePath of files) {
     const source = await readFile(filePath, 'utf8')
-    for (const e of scanTopLevelApi(source)) {
+    for (const e of scanTopLevelApi(source, enumsByName)) {
       allEntries.push({
         ...e,
         sourcePath: path.relative(repoRoot, filePath).replaceAll(path.sep, '/'),
@@ -579,20 +759,26 @@ async function generateCompose() {
   const kViewModelPath = path.join(composeDir, 'KViewModel.kt')
   const kScreenPath = path.join(composeDir, 'KScreen.kt')
 
+  const enumsByName = new Map()
+  for (const filePath of [typedNavPath, kViewModelPath, kScreenPath]) {
+    const source = await readFile(filePath, 'utf8')
+    extractEnumDocsFromSource(source, enumsByName)
+  }
+
   const typedNavSource = await readFile(typedNavPath, 'utf8')
-  const typedNavEntries = scanTopLevelApi(typedNavSource)
+  const typedNavEntries = scanTopLevelApi(typedNavSource, enumsByName)
   const typedNavAllow = new Set(['Destination', 'KNavHost', 'NavController.navigate', 'NavController.popBackTo'])
   const typedNavApi = typedNavEntries
     .filter((e) => typedNavAllow.has(e.api.name))
     .map((e) => e.api)
 
   const kViewModelSource = await readFile(kViewModelPath, 'utf8')
-  const kViewModelApi = scanTopLevelApi(kViewModelSource)
+  const kViewModelApi = scanTopLevelApi(kViewModelSource, enumsByName)
     .filter((e) => e.api.name === 'KViewModel' && e.kind === 'class')
     .map((e) => e.api)
 
   const kScreenSource = await readFile(kScreenPath, 'utf8')
-  const kScreenApi = scanTopLevelApi(kScreenSource)
+  const kScreenApi = scanTopLevelApi(kScreenSource, enumsByName)
     .filter((e) => e.api.name === 'KScreen')
     .map((e) => e.api)
 

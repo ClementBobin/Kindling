@@ -10,6 +10,13 @@ export type ApiParam = {
   default?: string
   description?: string
   isVararg?: boolean
+  enum?: EnumDoc
+}
+
+export type EnumDoc = {
+  name: string
+  values: string[]
+  summary?: string
 }
 
 export type ApiEntry = {
@@ -19,6 +26,7 @@ export type ApiEntry = {
   kdoc?: string
   params: ApiParam[]
   examples: CodeBlock[]
+  enums?: EnumDoc[]
 }
 
 export type DocPage = {
@@ -40,4 +48,3 @@ export type ModuleDoc = {
   description: string
   pages: DocPage[]
 }
-

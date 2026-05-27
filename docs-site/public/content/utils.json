@@ -48,7 +48,8 @@
               "language": "kotlin",
               "code": "val debouncer = Debouncer<String>(scope = viewModelScope)\ndebouncer.onDebounced { query -> viewModel.search(query) }\n// then in UI:\ndebouncer.emit(searchText)"
             }
-          ]
+          ],
+          "enums": []
         },
         {
           "name": "KDebounce",
@@ -80,7 +81,8 @@
               "language": "kotlin",
               "code": "private val searchDebouncer = KDebounce(viewModelScope, 300.milliseconds) { q -> search(q) }\n// in UI: onValueChange = { searchDebouncer.emit(it) }"
             }
-          ]
+          ],
+          "enums": []
         }
       ]
     },
@@ -111,7 +113,8 @@
               "language": "kotlin",
               "code": "searchFlow.kDebounceLeading(300.milliseconds).collect { query -> search(query) }"
             }
-          ]
+          ],
+          "enums": []
         },
         {
           "name": "kThrottleFirst",
@@ -129,7 +132,8 @@
               "language": "kotlin",
               "code": "clickFlow.kThrottleFirst(500.milliseconds).collect { handleClick() }"
             }
-          ]
+          ],
+          "enums": []
         }
       ]
     },
@@ -165,7 +169,8 @@
               "language": "kotlin",
               "code": "val throttler = Throttler<ClickEvent>(scope = viewModelScope, period = 500.milliseconds)\nthrottler.onThrottled { event -> handleClick(event) }\n// in UI:\nthrottler.emit(ClickEvent)"
             }
-          ]
+          ],
+          "enums": []
         },
         {
           "name": "KThrottle",
@@ -192,7 +197,8 @@
               "language": "kotlin",
               "code": "private val clickThrottler = KThrottle(viewModelScope, 500.milliseconds) { handleClick() }"
             }
-          ]
+          ],
+          "enums": []
         }
       ]
     }
