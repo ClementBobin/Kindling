@@ -23,6 +23,12 @@ const outPaths = {
   compose: path.join(repoRoot, 'docs-site', 'public', 'content', 'compose.json'),
 }
 
+function stripKotlinComments(source) {
+  return source
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/\/\/.*$/gm, '')
+}
+
 function stripKdoc(kdocBlock) {
   return kdocBlock
     .split('\n')

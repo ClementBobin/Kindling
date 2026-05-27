@@ -250,42 +250,70 @@ function DocPageView(props: { module: ModuleDoc; pageId: string }) {
               {a.summary ? <p className="apiSummary">{a.summary}</p> : null}
 
               {a.params.length ? (
-                <div className="tableWrap">
-                  <table className="table">
-                    <thead>
-                      <tr>
-                        <th>Prop</th>
-                        <th>Type</th>
-                        <th>Default</th>
-                        <th>Description</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {a.params.map((p) => (
-                        <tr key={p.name}>
-                          <td>
-                            <code>{p.name}</code>
-                          </td>
-                          <td>
-                            <code>{p.type}</code>
-                          </td>
-                          <td>{p.default ? <code>{p.default}</code> : <span className="muted">—</span>}</td>
-                          <td className="cellDesc">{p.description ?? <span className="muted">—</span>}</td>
+                <>
+                  <h3 className="apiSectionTitle">Props</h3>
+                  <div className="tableWrap">
+                    <table className="table">
+                      <thead>
+                        <tr>
+                          <th>Prop</th>
+                          <th>Type</th>
+                          <th>Default</th>
+                          <th>Description</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                      </thead>
+                      <tbody>
+                        {a.params.map((p) => (
+                          <tr key={p.name}>
+                            <td>
+                              <code>{p.name}</code>
+                            </td>
+                            <td>
+                              <code>{p.type}</code>
+                            </td>
+                            <td>{p.default ? <code>{p.default}</code> : <span className="muted">—</span>}</td>
+                            <td className="cellDesc">{p.description ?? <span className="muted">—</span>}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </>
+              ) : null}
+
+              {a.enums?.length ? (
+                <>
+                  <h3 className="apiSectionTitle">Enums</h3>
+                  <div className="enumGrid">
+                    {a.enums.map((en) => (
+                      <div key={en.name} className="enumRow">
+                        <div className="enumName">
+                          <code>{en.name}</code>
+                        </div>
+                        <div className="enumValues">
+                          {en.values.map((v) => (
+                            <code key={v} className="enumValue">
+                              {v}
+                            </code>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </>
               ) : null}
 
               {a.examples.length ? (
-                <div className="examples">
-                  {a.examples.map((ex, idx) => (
-                    <div key={idx} className="example">
-                      <CodeBlock language={ex.language ?? 'kotlin'} code={ex.code} />
-                    </div>
-                  ))}
-                </div>
+                <>
+                  <h3 className="apiSectionTitle">Examples</h3>
+                  <div className="examples">
+                    {a.examples.map((ex, idx) => (
+                      <div key={idx} className="example">
+                        <CodeBlock language={ex.language ?? 'kotlin'} code={ex.code} />
+                      </div>
+                    ))}
+                  </div>
+                </>
               ) : null}
             </div>
           ))}

@@ -306,8 +306,13 @@ h2 {
 }
 
 .apiBlock {
-  margin-top: 22px;
   padding-top: 10px;
+}
+
+.apiBlock + .apiBlock {
+  margin-top: 26px;
+  padding-top: 26px;
+  border-top: 1px solid var(--border);
 }
 
 .apiTitle {
@@ -315,6 +320,15 @@ h2 {
   font-size: 22px;
   margin: 0 0 10px;
   scroll-margin-top: 18px;
+}
+
+.apiSectionTitle {
+  margin: 14px 0 8px;
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 
 .apiSummary {
@@ -366,6 +380,48 @@ h2 {
 
 .muted {
   color: var(--muted);
+}
+
+.enumGrid {
+  margin-top: 12px;
+  display: grid;
+  gap: 10px;
+}
+
+.enumRow {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 10px 12px;
+  background: color-mix(in oklab, var(--panel) 88%, var(--bg));
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 12px;
+  align-items: start;
+}
+
+@media (max-width: 720px) {
+  .enumRow {
+    grid-template-columns: 1fr;
+  }
+}
+
+.enumName code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+  font-size: 12px;
+}
+
+.enumValues {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.enumValue {
+  padding: 4px 8px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in oklab, var(--border) 70%, transparent);
+  background: color-mix(in oklab, var(--bg) 70%, var(--panel));
+  font-size: 12px;
 }
 
 .examples {
