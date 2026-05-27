@@ -1,26 +1,58 @@
-import { readdir, readFile, writeFile } from 'node:fs/promises'
+import { readdir, readFile, stat, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const repoRoot = path.resolve(__dirname, '..', '..')
 
-const componentsDir = path.join(
-  repoRoot,
-  'core',
-  'src',
-  'androidMain',
-  'kotlin',
-  'dev',
-  'kindling',
-  'core',
-  'components',
-)
+const coreRootDir = path.join(repoRoot, 'core', 'src', 'androidMain', 'kotlin', 'dev', 'kindling', 'core')
 
 const outPaths = {
   core: path.join(repoRoot, 'docs-site', 'public', 'content', 'core.json'),
   utils: path.join(repoRoot, 'docs-site', 'public', 'content', 'utils.json'),
   compose: path.join(repoRoot, 'docs-site', 'public', 'content', 'compose.json'),
+}
+
+async function isDirectory(dirPath) {
+  try {
+    const s = await stat(dirPath)
+    return s.isDirectory()
+  } catch {
+    return false
+  }
+}
+
+async function firstExistingDir(candidates) {
+  for (const dirPath of candidates) {
+    if (await isDirectory(dirPath)) return dirPath
+  }
+  return undefined
+}
+
+async function listKotlinFiles(rootDir) {
+  const out = []
+  const stack = [rootDir]
+  while (stack.length) {
+    const dirPath = stack.pop()
+    const entries = await readdir(dirPath, { withFileTypes: true })
+    for (const e of entries) {
+      const fullPath = path.join(dirPath, e.name)
+      if (e.isDirectory()) stack.push(fullPath)
+      else if (e.isFile() && e.name.endsWith('.kt')) out.push(fullPath)
+    }
+  }
+  return out.sort((a, b) => a.localeCompare(b))
+}
+
+function dedupeByLowercasePath(filePaths) {
+  const byLower = new Map()
+  for (const p of filePaths) {
+    const key = p.toLowerCase()
+    const existing = byLower.get(key)
+    if (!existing) byLower.set(key, p)
+    else if (path.basename(p) === 'Global.kt') byLower.set(key, p)
+  }
+  return [...byLower.values()].sort((a, b) => a.localeCompare(b))
 }
 
 function stripKdoc(kdocBlock) {
@@ -386,6 +418,56 @@ function inferTags(fileName, primarySymbol) {
   return [...tags].sort()
 }
 
+function pageIdSuffixForFile(filePath) {
+  const rel = path.relative(repoRoot, filePath).replaceAll(path.sep, '/').replace(/\.kt$/, '')
+  return rel.replaceAll('/', '__')
+}
+
+function toPageIdUnique(idCandidate, suffix, usedIds) {
+  let id = idCandidate
+  if (!usedIds.has(id)) {
+    usedIds.add(id)
+    return id
+  }
+  id = `${idCandidate}@${suffix}`
+  if (!usedIds.has(id)) {
+    usedIds.add(id)
+    return id
+  }
+  let index = 2
+  while (usedIds.has(`${idCandidate}@${suffix}#${index}`)) index += 1
+  id = `${idCandidate}@${suffix}#${index}`
+  usedIds.add(id)
+  return id
+}
+
+async function pagesFromKotlinFiles(module, filePaths, enumsByName) {
+  const usedIds = new Set()
+  const pages = []
+
+  for (const filePath of filePaths) {
+    const source = await readFile(filePath, 'utf8')
+    const entries = scanTopLevelApi(source, enumsByName)
+    const api = entries.map((e) => e.api).filter(Boolean)
+    if (api.length === 0) continue
+
+    const primary = api[0]?.name ?? path.basename(filePath, '.kt')
+    const id = toPageIdUnique(primary, pageIdSuffixForFile(filePath), usedIds)
+
+    pages.push({
+      id,
+      title: primary,
+      primary,
+      summary: api[0]?.summary,
+      tags: module === 'core' ? inferTags(path.basename(filePath, '.kt'), primary) : [],
+      sourcePath: path.relative(repoRoot, filePath).replaceAll(path.sep, '/'),
+      api,
+    })
+  }
+
+  return pages.sort((a, b) => a.title.localeCompare(b.title))
+}
+
 function normalizeParamsText(paramsText) {
   const parts = splitTopLevel(stripKotlinComments(paramsText), ',')
   const normalized = []
@@ -584,74 +666,25 @@ function scanTopLevelApi(source, enumsByName = new Map()) {
 }
 
 async function generateCore() {
-  const entries = await readdir(componentsDir)
-  const allFiles = entries.filter((name) => name.endsWith('.kt')).sort((a, b) => a.localeCompare(b))
-  const docFiles = allFiles.filter((name) => name !== 'global.kt' && name !== 'Global.kt')
+  const coreDir = await firstExistingDir([coreRootDir])
+  if (!coreDir) throw new Error(`Core docs dir not found: ${coreRootDir}`)
+
+  const allFiles = dedupeByLowercasePath(await listKotlinFiles(coreDir))
 
   const enumsByName = new Map()
-  for (const file of allFiles) {
-    const filePath = path.join(componentsDir, file)
+  for (const filePath of allFiles) {
     const source = await readFile(filePath, 'utf8')
     extractEnumDocsFromSource(source, enumsByName)
   }
 
-  const pages = []
-
-  for (const file of docFiles) {
-    const filePath = path.join(componentsDir, file)
-    const source = await readFile(filePath, 'utf8')
-
-    const api = []
-    const funRegex = /(^|\s)fun\s+(K[A-Za-z0-9_]+)\s*\(/g
-    for (const match of source.matchAll(funRegex)) {
-      const name = match[2]
-      const funStart = match.index + match[0].lastIndexOf('fun')
-      const openParenIndex = source.indexOf('(', funStart)
-      if (openParenIndex === -1) continue
-      const closeParenIndex = findMatchingParen(source, openParenIndex)
-      if (closeParenIndex === -1) continue
-
-      const kdocBlock = extractKdocBeforeKotlinDecl(source, funStart)
-      const kdoc = parseKdoc(kdocBlock)
-      const paramsText = source.slice(openParenIndex + 1, closeParenIndex)
-      const params = parseParams(paramsText, kdoc.paramDocs).map((p) => ({
-        ...p,
-        enum: inferParamEnum(p, kdoc.enumDocs, enumsByName),
-      }))
-      const signature = `fun ${name}(${normalizeParamsText(paramsText)})`
-
-      api.push({
-        name,
-        signature,
-        summary: kdoc.summary,
-        kdoc: kdoc.raw,
-        params,
-        examples: kdoc.examples,
-        enums: Object.entries(kdoc.enumDocs ?? {})
-          .map(([enumName, rawValues]) => {
-            const known = enumsByName.get(enumName)
-            const values = rawValues ? parseEnumValues(rawValues) : (known?.values ?? [])
-            if (!values.length) return undefined
-            return { name: enumName, values, summary: known?.summary }
-          })
-          .filter(Boolean),
-      })
-    }
-
-    if (api.length === 0) continue
-
-    const primary = api[0].name
-    const title = primary
-    pages.push({
-      id: primary,
-      title,
-      primary,
-      summary: api[0].summary,
-      tags: inferTags(file.replace(/\.kt$/, ''), primary),
-      sourcePath: path.relative(repoRoot, filePath).replaceAll(path.sep, '/'),
-      api,
-    })
-  }
+  const pages = await pagesFromKotlinFiles(
+    'core',
+    allFiles.filter((p) => {
+      const base = path.basename(p)
+      return base !== 'global.kt' && base !== 'Global.kt'
+    }),
+    enumsByName,
+  )
 
   const doc = {
     module: 'core',
@@ -659,7 +692,7 @@ async function generateCore() {
     artifact: 'io.github.clementbobin.kindling:core',
     description:
       'Shadcn/ui-style Jetpack Compose UI components, fully theme-aware via Material3.',
-    pages: pages.sort((a, b) => a.title.localeCompare(b.title)),
+    pages,
   }
 
   await writeFile(outPaths.core, JSON.stringify(doc, null, 2) + '\n', 'utf8')
@@ -667,85 +700,27 @@ async function generateCore() {
 }
 
 async function generateUtils() {
-  const utilsDir = path.join(repoRoot, 'utils', 'src', 'main', 'kotlin', 'dev', 'kindling', 'library', 'utils')
-  const files = [path.join(utilsDir, 'Debouncer.kt'), path.join(utilsDir, 'PublicApi.kt')]
+  const utilsDir = await firstExistingDir([
+    path.join(repoRoot, 'utils', 'src', 'main', 'kotlin', 'dev', 'kindling', 'utils'),
+    path.join(repoRoot, 'utils', 'src', 'main', 'kotlin', 'dev', 'kindling', 'library', 'utils'),
+  ])
+  if (!utilsDir) throw new Error('Utils docs dir not found under utils/src/main/kotlin/dev/kindling/(utils|library/utils)')
 
+  const allFiles = dedupeByLowercasePath(await listKotlinFiles(utilsDir))
   const enumsByName = new Map()
-  for (const filePath of files) {
+  for (const filePath of allFiles) {
     const source = await readFile(filePath, 'utf8')
     extractEnumDocsFromSource(source, enumsByName)
   }
 
-  const allEntries = []
-  for (const filePath of files) {
-    const source = await readFile(filePath, 'utf8')
-    for (const e of scanTopLevelApi(source, enumsByName)) {
-      allEntries.push({
-        ...e,
-        sourcePath: path.relative(repoRoot, filePath).replaceAll(path.sep, '/'),
-      })
-    }
-  }
-
-  const byName = new Map()
-  for (const entry of allEntries) {
-    if (!byName.has(entry.api.name)) byName.set(entry.api.name, entry)
-  }
-
-  const pick = (name) => {
-    const found = byName.get(name)
-    if (!found) return undefined
-    return {
-      ...found.api,
-      name: found.api.name,
-    }
-  }
-
-  const debouncerApi = [pick('Debouncer'), pick('KDebounce')].filter(Boolean)
-  const throttlerApi = [pick('Throttler'), pick('KThrottle')].filter(Boolean)
-  const flowApi = [pick('kDebounceLeading'), pick('kThrottleFirst')].filter(Boolean)
-
-  const pages = []
-  if (debouncerApi.length) {
-    pages.push({
-      id: 'Debouncer',
-      title: 'Debouncer',
-      primary: 'Debouncer',
-      summary: debouncerApi[0].summary,
-      tags: ['coroutines', 'flow'],
-      sourcePath: byName.get('Debouncer')?.sourcePath,
-      api: debouncerApi,
-    })
-  }
-  if (throttlerApi.length) {
-    pages.push({
-      id: 'Throttler',
-      title: 'Throttler',
-      primary: 'Throttler',
-      summary: throttlerApi[0].summary,
-      tags: ['coroutines', 'flow'],
-      sourcePath: byName.get('Throttler')?.sourcePath,
-      api: throttlerApi,
-    })
-  }
-  if (flowApi.length) {
-    pages.push({
-      id: 'FlowExtensions',
-      title: 'Flow extensions',
-      primary: 'Flow',
-      summary: flowApi[0].summary,
-      tags: ['coroutines', 'flow'],
-      sourcePath: byName.get('kDebounceLeading')?.sourcePath,
-      api: flowApi,
-    })
-  }
+  const pages = await pagesFromKotlinFiles('utils', allFiles, enumsByName)
 
   const doc = {
     module: 'utils',
     title: 'Utils',
     artifact: 'io.github.clementbobin.kindling:utils',
     description: 'Coroutine utilities for debouncing, throttling, and Flow helpers.',
-    pages: pages.sort((a, b) => a.title.localeCompare(b.title)),
+    pages,
   }
 
   await writeFile(outPaths.utils, JSON.stringify(doc, null, 2) + '\n', 'utf8')
@@ -753,76 +728,26 @@ async function generateUtils() {
 }
 
 async function generateCompose() {
-  const composeDir = path.join(repoRoot, 'compose', 'src', 'main', 'kotlin', 'dev', 'kindling', 'compose')
+  const composeDir = await firstExistingDir([
+    path.join(repoRoot, 'compose', 'src', 'main', 'kotlin', 'dev', 'kindling', 'compose'),
+  ])
+  if (!composeDir) throw new Error('Compose docs dir not found under compose/src/main/kotlin/dev/kindling/compose')
 
-  const typedNavPath = path.join(composeDir, 'Destination.kt')
-  const kViewModelPath = path.join(composeDir, 'KViewModel.kt')
-  const kScreenPath = path.join(composeDir, 'KScreen.kt')
-
+  const allFiles = dedupeByLowercasePath(await listKotlinFiles(composeDir))
   const enumsByName = new Map()
-  for (const filePath of [typedNavPath, kViewModelPath, kScreenPath]) {
+  for (const filePath of allFiles) {
     const source = await readFile(filePath, 'utf8')
     extractEnumDocsFromSource(source, enumsByName)
   }
 
-  const typedNavSource = await readFile(typedNavPath, 'utf8')
-  const typedNavEntries = scanTopLevelApi(typedNavSource, enumsByName)
-  const typedNavAllow = new Set(['Destination', 'KNavHost', 'NavController.navigate', 'NavController.popBackTo'])
-  const typedNavApi = typedNavEntries
-    .filter((e) => typedNavAllow.has(e.api.name))
-    .map((e) => e.api)
-
-  const kViewModelSource = await readFile(kViewModelPath, 'utf8')
-  const kViewModelApi = scanTopLevelApi(kViewModelSource, enumsByName)
-    .filter((e) => e.api.name === 'KViewModel' && e.kind === 'class')
-    .map((e) => e.api)
-
-  const kScreenSource = await readFile(kScreenPath, 'utf8')
-  const kScreenApi = scanTopLevelApi(kScreenSource, enumsByName)
-    .filter((e) => e.api.name === 'KScreen')
-    .map((e) => e.api)
-
-  const pages = []
-  if (typedNavApi.length) {
-    pages.push({
-      id: 'TypedNavigation',
-      title: 'Typed navigation',
-      primary: 'Destination',
-      summary: typedNavApi[0].summary,
-      tags: ['navigation', 'compose'],
-      sourcePath: path.relative(repoRoot, typedNavPath).replaceAll(path.sep, '/'),
-      api: typedNavApi,
-    })
-  }
-  if (kViewModelApi.length) {
-    pages.push({
-      id: 'KViewModel',
-      title: 'KViewModel',
-      primary: 'KViewModel',
-      summary: kViewModelApi[0].summary,
-      tags: ['architecture', 'compose'],
-      sourcePath: path.relative(repoRoot, kViewModelPath).replaceAll(path.sep, '/'),
-      api: kViewModelApi,
-    })
-  }
-  if (kScreenApi.length) {
-    pages.push({
-      id: 'KScreen',
-      title: 'KScreen',
-      primary: 'KScreen',
-      summary: kScreenApi[0].summary,
-      tags: ['architecture', 'compose'],
-      sourcePath: path.relative(repoRoot, kScreenPath).replaceAll(path.sep, '/'),
-      api: kScreenApi,
-    })
-  }
+  const pages = await pagesFromKotlinFiles('compose', allFiles, enumsByName)
 
   const doc = {
     module: 'compose',
     title: 'Compose',
     artifact: 'io.github.clementbobin.kindling:compose',
     description: 'Typed navigation helpers and a structured ViewModel base for Compose apps.',
-    pages: pages.sort((a, b) => a.title.localeCompare(b.title)),
+    pages,
   }
 
   await writeFile(outPaths.compose, JSON.stringify(doc, null, 2) + '\n', 'utf8')

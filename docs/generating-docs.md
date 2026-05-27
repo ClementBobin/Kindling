@@ -20,6 +20,12 @@ This writes:
 
 The generator is `docs-site/scripts/generate-core-docs.mjs`.
 
+It auto-detects Kotlin sources by scanning these folders recursively for `*.kt`:
+
+- `core/src/androidMain/kotlin/dev/kindling/core/`
+- `utils/src/main/kotlin/dev/kindling/utils/` (fallback: `utils/src/main/kotlin/dev/kindling/library/utils/`)
+- `compose/src/main/kotlin/dev/kindling/compose/`
+
 For each documented API, it extracts:
 
 - **Props**: parameters + constructor properties.
@@ -38,4 +44,3 @@ Everything shown on the docs site comes from KDoc:
 - Add extra prose after the first paragraph to expand the summary.
 - Add more fenced code blocks to add more examples.
 - Add or refine `@param`, `@property`, and `@enum` entries to improve the generated tables.
-
