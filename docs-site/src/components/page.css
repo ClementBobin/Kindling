@@ -204,7 +204,8 @@ h2 {
   color: var(--muted);
   font-size: 12px;
   align-items: center;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  overflow: hidden;
 }
 
 .sep {

@@ -50,9 +50,35 @@ function EllipsisCrumb(props: { items: CrumbItem[] }) {
 
 function Breadcrumbs(props: { items: CrumbItem[] }) {
   const items = props.items
-  if (items.length <= 3) {
+  const ref = useRef<HTMLDivElement | null>(null)
+  const [overflowCollapsed, setOverflowCollapsed] = useState(false)
+  const labelsKey = useMemo(() => items.map((i) => i.label).join('|'), [items])
+  const collapsed = items.length > 3 || overflowCollapsed
+
+  useEffect(() => {
+    if (items.length > 3) return
+    const el = ref.current
+    if (!el) return
+
+    const raf = requestAnimationFrame(() => {
+      const needsCollapse = el.scrollWidth > el.clientWidth + 1
+      setOverflowCollapsed(needsCollapse)
+    })
+
+    const ro = new ResizeObserver(() => {
+      const needsCollapse = el.scrollWidth > el.clientWidth + 1
+      setOverflowCollapsed(needsCollapse)
+    })
+    ro.observe(el)
+    return () => {
+      cancelAnimationFrame(raf)
+      ro.disconnect()
+    }
+  }, [items.length, labelsKey])
+
+  if (!collapsed) {
     return (
-      <div className="crumbs">
+      <div className="crumbs" ref={ref}>
         {items.map((c, idx) => (
           <span key={`${c.label}:${idx}`} className="crumbWrap">
             {idx > 0 ? <span className="sep">/</span> : null}
@@ -74,7 +100,7 @@ function Breadcrumbs(props: { items: CrumbItem[] }) {
   const hidden = items.slice(1, -1)
 
   return (
-    <div className="crumbs">
+    <div className="crumbs" ref={ref}>
       <span className="crumbWrap">
         {first.onClick ? (
           <button type="button" className="crumbButton" onClick={first.onClick}>
