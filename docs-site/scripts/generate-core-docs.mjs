@@ -441,7 +441,13 @@ function toPageIdUnique(idCandidate, suffix, usedIds) {
   return id
 }
 
-async function pagesFromKotlinFiles(module, filePaths, enumsByName) {
+function packagePathFromFile(rootDir, filePath) {
+  const rel = path.relative(rootDir, filePath).replaceAll(path.sep, '/')
+  const dir = path.posix.dirname(rel)
+  return dir === '.' ? '' : dir
+}
+
+async function pagesFromKotlinFiles(module, rootDir, filePaths, enumsByName) {
   const usedIds = new Set()
   const pages = []
 
@@ -453,11 +459,13 @@ async function pagesFromKotlinFiles(module, filePaths, enumsByName) {
 
     const primary = api[0]?.name ?? path.basename(filePath, '.kt')
     const id = toPageIdUnique(primary, pageIdSuffixForFile(filePath), usedIds)
+    const packagePath = packagePathFromFile(rootDir, filePath)
 
     pages.push({
       id,
       title: primary,
       primary,
+      packagePath: packagePath || undefined,
       summary: api[0]?.summary,
       tags: module === 'core' ? inferTags(path.basename(filePath, '.kt'), primary) : [],
       sourcePath: path.relative(repoRoot, filePath).replaceAll(path.sep, '/'),
@@ -679,6 +687,7 @@ async function generateCore() {
 
   const pages = await pagesFromKotlinFiles(
     'core',
+    coreDir,
     allFiles.filter((p) => {
       const base = path.basename(p)
       return base !== 'global.kt' && base !== 'Global.kt'
@@ -713,7 +722,7 @@ async function generateUtils() {
     extractEnumDocsFromSource(source, enumsByName)
   }
 
-  const pages = await pagesFromKotlinFiles('utils', allFiles, enumsByName)
+  const pages = await pagesFromKotlinFiles('utils', utilsDir, allFiles, enumsByName)
 
   const doc = {
     module: 'utils',
@@ -740,7 +749,7 @@ async function generateCompose() {
     extractEnumDocsFromSource(source, enumsByName)
   }
 
-  const pages = await pagesFromKotlinFiles('compose', allFiles, enumsByName)
+  const pages = await pagesFromKotlinFiles('compose', composeDir, allFiles, enumsByName)
 
   const doc = {
     module: 'compose',

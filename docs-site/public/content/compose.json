@@ -211,6 +211,7 @@
       "id": "setState",
       "title": "setState",
       "primary": "setState",
+      "packagePath": "experimental",
       "summary": "Updates the current state using a reducer function.",
       "tags": [],
       "sourcePath": "compose/src/main/kotlin/dev/kindling/compose/experimental/KMviViewModel.kt",

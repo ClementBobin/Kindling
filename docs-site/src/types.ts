@@ -33,6 +33,7 @@ export type DocPage = {
   id: string
   title: string
   primary: string
+  packagePath?: string
   summary?: string
   tags: string[]
   sourcePath?: string

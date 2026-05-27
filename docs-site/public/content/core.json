@@ -8,6 +8,7 @@
       "id": "applyKMask",
       "title": "applyKMask",
       "primary": "applyKMask",
+      "packagePath": "components",
       "summary": "Strips non-digit (or non-alphanumeric for text-pattern masks) characters from [raw], then applies the `#`-based [pattern].",
       "tags": [
         "forms"
@@ -403,6 +404,7 @@
       "id": "KAlertDialog",
       "title": "KAlertDialog",
       "primary": "KAlertDialog",
+      "packagePath": "components",
       "summary": "Shadcn/ui-style AlertDialog — confirmation / destructive actions.",
       "tags": [
         "overlay"
@@ -546,6 +548,7 @@
       "id": "KAspectRatio",
       "title": "KAspectRatio",
       "primary": "KAspectRatio",
+      "packagePath": "components",
       "summary": "Constrains its content to a given aspect ratio.",
       "tags": [
         "layout"
@@ -590,6 +593,7 @@
       "id": "KAvatar",
       "title": "KAvatar",
       "primary": "KAvatar",
+      "packagePath": "components",
       "summary": "Shadcn/ui-style Avatar.",
       "tags": [
         "identity"
@@ -735,6 +739,7 @@
       "id": "KButton",
       "title": "KButton",
       "primary": "KButton",
+      "packagePath": "components",
       "summary": "Shadcn/ui-style Button for Jetpack Compose.",
       "tags": [
         "actions"
@@ -887,6 +892,7 @@
       "id": "KCalendar",
       "title": "KCalendar",
       "primary": "KCalendar",
+      "packagePath": "components",
       "summary": "Shadcn/ui-style Calendar component.",
       "tags": [
         "date"
@@ -1127,6 +1133,7 @@
       "id": "KCardHeader",
       "title": "KCardHeader",
       "primary": "KCardHeader",
+      "packagePath": "components",
       "summary": "Header section with an optional trailing [action] slot (top-right).",
       "tags": [
         "layout"
@@ -1278,6 +1285,7 @@
       "id": "KCarousel",
       "title": "KCarousel",
       "primary": "KCarousel",
+      "packagePath": "components",
       "summary": "Shadcn/ui-style Carousel backed by [HorizontalPager] / [VerticalPager].",
       "tags": [
         "media"
@@ -1459,6 +1467,7 @@
       "id": "KCenteredBox",
       "title": "KCenteredBox",
       "primary": "KCenteredBox",
+      "packagePath": "components",
       "summary": "Fills its parent and centres content.",
       "tags": [
         "ui"
@@ -1524,6 +1533,7 @@
       "id": "KCombobox",
       "title": "KCombobox",
       "primary": "KCombobox",
+      "packagePath": "components",
       "summary": "Shadcn/ui-style searchable Combobox compatible with both Android Compose and JetBrains Compose Multiplatform.",
       "tags": [
         "select"
@@ -1748,6 +1758,7 @@
       "id": "KDatePicker",
       "title": "KDatePicker",
       "primary": "KDatePicker",
+      "packagePath": "components",
       "summary": "Shadcn/ui-style DatePicker. Requires API 26+ (java.time).",
       "tags": [
         "date"
@@ -1813,6 +1824,7 @@
       "id": "KDirectionProvider",
       "title": "KDirectionProvider",
       "primary": "KDirectionProvider",
+      "packagePath": "components",
       "summary": "Overrides [LocalLayoutDirection] for the subtree.",
       "tags": [
         "i18n"
@@ -1872,6 +1884,7 @@
       "id": "KEmpty",
       "title": "KEmpty",
       "primary": "KEmpty",
+      "packagePath": "components",
       "summary": "Shadcn/ui-style Empty state root.",
       "tags": [
         "empty-state"
@@ -2006,6 +2019,7 @@
       "id": "kindlingShimmerBrush",
       "title": "kindlingShimmerBrush",
       "primary": "kindlingShimmerBrush",
+      "packagePath": "components",
       "summary": "Returns a moving shimmer [Brush] from the current Material3 colour scheme. Drop it as a [Modifier.background] to get the skeleton animation on any shape.",
       "tags": [
         "ui"
@@ -2068,6 +2082,7 @@
       "id": "KInput",
       "title": "KInput",
       "primary": "KInput",
+      "packagePath": "components",
       "summary": "Shadcn/ui-style Input field.",
       "tags": [
         "forms"
@@ -2250,6 +2265,7 @@
       "id": "KInputGroup",
       "title": "KInputGroup",
       "primary": "KInputGroup",
+      "packagePath": "components",
       "summary": "Shadcn/ui-style InputGroup — a bordered container that composes an input control with inline or block addons (icons, text, buttons).",
       "tags": [
         "forms"
@@ -2513,6 +2529,7 @@
       "id": "KInputOtp",
       "title": "KInputOtp",
       "primary": "KInputOtp",
+      "packagePath": "components",
       "summary": "Shadcn/ui-style OTP / PIN input.",
       "tags": [
         "forms",
@@ -2600,6 +2617,7 @@
       "id": "KLabel",
       "title": "KLabel",
       "primary": "KLabel",
+      "packagePath": "components",
       "summary": "Shadcn/ui-style Label.",
       "tags": [
         "ui"
@@ -2651,6 +2669,7 @@
       "id": "KPagination",
       "title": "KPagination",
       "primary": "KPagination",
+      "packagePath": "components",
       "summary": "Shadcn/ui-style Pagination.",
       "tags": [
         "navigation"
@@ -2705,6 +2724,7 @@
       "id": "KPopover",
       "title": "KPopover",
       "primary": "KPopover",
+      "packagePath": "components",
       "summary": "Shadcn/ui-style Popover with two display modes:",
       "tags": [
         "overlay"
@@ -2865,6 +2885,7 @@
       "id": "KSpinner",
       "title": "KSpinner",
       "primary": "KSpinner",
+      "packagePath": "components",
       "summary": "Shadcn/ui-style Spinner — smooth rotating arc.",
       "tags": [
         "loading"
@@ -2967,6 +2988,7 @@
       "id": "KStepper",
       "title": "KStepper",
       "primary": "KStepper",
+      "packagePath": "components",
       "summary": "Shadcn/ui-style multi-step progress indicator.",
       "tags": [
         "navigation"
@@ -3025,6 +3047,7 @@
       "id": "KTableColumn",
       "title": "KTableColumn",
       "primary": "KTableColumn",
+      "packagePath": "components",
       "summary": "Describes one column in a [KDataTable].",
       "tags": [
         "data"
@@ -3074,6 +3097,7 @@
       "id": "KTextarea",
       "title": "KTextarea",
       "primary": "KTextarea",
+      "packagePath": "components",
       "summary": "Shadcn/ui-style Textarea.",
       "tags": [
         "forms"
@@ -3159,6 +3183,7 @@
       "id": "KToasterHost",
       "title": "KToasterHost",
       "primary": "KToasterHost",
+      "packagePath": "components",
       "summary": "Place **once** at the root of your composable tree.",
       "tags": [
         "feedback"
