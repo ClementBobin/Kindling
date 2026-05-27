@@ -29,7 +29,7 @@ enum class KInputGroupAlign { InlineStart, InlineEnd, BlockStart, BlockEnd }
 //  Scope
 // ─────────────────────────────────────────────
 
-class KInputGroupScope internal constructor(
+open class KInputGroupScope internal constructor(
     internal val focusRequester: FocusRequester
 )
 

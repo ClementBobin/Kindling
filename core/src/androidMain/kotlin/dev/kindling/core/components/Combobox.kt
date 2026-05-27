@@ -731,8 +731,7 @@ fun ComboboxChipsInput(
         singleLine    = true,
         textStyle     = LocalTextStyle.current.copy(fontSize = 13.sp, color = cs.onBackground),
         modifier      = modifier
-            .widthIn(min = 64.dp)
-            .weight(1f, fill = false),
+            .widthIn(min = 64.dp),
         decorationBox = { inner ->
             if (state.query.isEmpty()) {
                 Text(placeholder, fontSize = 13.sp, color = cs.onSurface.copy(.5f))

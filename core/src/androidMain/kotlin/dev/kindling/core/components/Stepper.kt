@@ -21,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.launch
 
 // ─────────────────────────────────────────────
 //  Stepper state  (useStepper hook)
@@ -228,9 +229,9 @@ fun RowScope.StepperItem(
 
     CompositionLocalProvider(LocalStepperItemValue provides value) {
         Row(
-            modifier          = modifier.weight(if (isLast) 0f else 1f, fill = !isLast),
+            modifier = if (isLast) modifier else modifier.weight(1f),
             verticalAlignment = Alignment.CenterVertically,
-            content           = content
+            content = content
         )
     }
 }
@@ -441,7 +442,7 @@ fun StepperContent(
  * Mirrors `StepperPrev`.
  *
  * ```kotlin
- * StepperPrev { onClick -> KButton("Back", onClick = onClick) }
+ * StepperPrev { KButton("Back", onClick = onClick) }
  * ```
  */
 @Composable
@@ -451,7 +452,7 @@ fun StepperPrev(
 ) {
     val state = useStepper()
     val scope = rememberCoroutineScope()
-    content(onClick = {
+    content({
         if (state.canGoPrev) {
             scope.launch {
                 val prev = state.steps[state.currentIndex - 1]
@@ -471,7 +472,7 @@ fun StepperPrev(
  * Mirrors `StepperNext`.
  *
  * ```kotlin
- * StepperNext { onClick -> KButton("Continue", onClick = onClick) }
+ * StepperNext { KButton("Continue", onClick = onClick) }
  * ```
  */
 @Composable
@@ -481,7 +482,7 @@ fun StepperNext(
 ) {
     val state = useStepper()
     val scope = rememberCoroutineScope()
-    content(onClick = {
+    content({
         if (state.canGoNext) {
             scope.launch {
                 val next = state.steps[state.currentIndex + 1]
