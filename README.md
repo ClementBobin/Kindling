@@ -7,6 +7,8 @@
 
 A production-ready Kotlin multi-module component library for Jetpack Compose — shadcn/ui-inspired UI components, typed navigation, a structured ViewModel base, and coroutine utilities, all fully theme-aware via Material3.
 
+Docs site: https://clementbobin.github.io/Kindling/
+
 ---
 
 ## Modules
