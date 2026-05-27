@@ -2,7 +2,7 @@ name: Docs (GitHub Pages)
 
 on:
   push:
-    branches: [main]
+    branches: [codex/docs-vitejs-github-pages]
   workflow_dispatch:
 
 permissions:
