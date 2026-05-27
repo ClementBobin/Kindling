@@ -4,130 +4,120 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 // ─────────────────────────────────────────────
-//  KCarouselOrientation
-// ─────────────────────────────────────────────
-
-enum class KCarouselOrientation { Horizontal, Vertical }
-
-// ─────────────────────────────────────────────
-//  KCarouselAutoPlay
+//  Carousel API state
 // ─────────────────────────────────────────────
 
 /**
- * Configuration for auto-play behaviour.
+ * Public state exposed by [KCarousel] — mirrors the web `CarouselApi`.
  *
- * @param delay             Interval between automatic page advances (ms). Default 3 000.
- * @param delayBeforeResume After the user manually taps an arrow, how long to wait before
- *                          restarting auto-play (ms). Defaults to [delay].
- *
- * ```kotlin
- * KCarouselAutoPlay(delay = 4_000, delayBeforeResume = 8_000)
- * ```
+ * Access via `rememberCarouselApi()` and pass to [KCarousel].
  */
+@OptIn(ExperimentalFoundationApi::class)
+class CarouselApi internal constructor(
+    internal val pagerState: PagerState
+) {
+    /** Zero-based index of the currently visible slide. */
+    val currentSlide: Int get() = pagerState.currentPage
+
+    /** Total number of slides. */
+    val slideCount: Int get() = pagerState.pageCount
+
+    /** Whether the user can scroll to the previous slide. */
+    val canScrollPrev: Boolean get() = pagerState.currentPage > 0
+
+    /** Whether the user can scroll to the next slide. */
+    val canScrollNext: Boolean get() = pagerState.currentPage < pagerState.pageCount - 1
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun rememberCarouselApi(pageCount: Int): CarouselApi {
+    val pager = rememberPagerState { pageCount }
+    return remember(pager) { CarouselApi(pager) }
+}
+
+// ─────────────────────────────────────────────
+//  Auto-play config
+// ─────────────────────────────────────────────
+
 data class KCarouselAutoPlay(
     val delay: Long = 3_000L,
     val delayBeforeResume: Long = delay
 )
 
 // ─────────────────────────────────────────────
-//  KCarousel
+//  KCarousel (root)
 // ─────────────────────────────────────────────
 
 /**
- * Shadcn/ui-style Carousel backed by [HorizontalPager] / [VerticalPager].
+ * Shadcn/ui-style Carousel — mirrors `carousel.tsx`.
  *
- * Arrows sit **beside** the pager in a Row (horizontal) or above/below (vertical),
- * so they are always vertically centred relative to the slide — not overlaid inside it.
+ * Arrows are [KButton] instances rendered beside the pager (not overlaid).
+ * Respects [LocalLayoutDirection] — arrows are visually mirrored in RTL.
  *
  * ```kotlin
- * // Basic
- * KCarousel(pageCount = 5) { page ->
- *     KCard { KCardContent { Text("Slide ${page + 1}") } }
+ * val api = rememberCarouselApi(pageCount = items.size)
+ * KCarousel(api = api) {
+ *     KCarouselContent {
+ *         items.forEach { item ->
+ *             KCarouselItem { MySlide(item) }
+ *         }
+ *     }
  * }
- *
- * // 3 visible, auto-play, footer
- * val state = rememberPagerState { items.size }
- * KCarousel(
- *     pageCount    = items.size,
- *     visibleItems = 3,
- *     autoPlay     = KCarouselAutoPlay(delay = 4_000, delayBeforeResume = 8_000),
- *     state        = state,
- *     footer       = { KCarouselFooter { KCarouselSlideCounter(state, items.size) } }
- * ) { page -> MySlide(items[page]) }
+ * // Anywhere:
+ * Text("Slide ${api.currentSlide + 1} / ${api.slideCount}")
  * ```
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun KCarousel(
-    pageCount: Int,
+    api: CarouselApi,
     modifier: Modifier = Modifier,
-    orientation: KCarouselOrientation = KCarouselOrientation.Horizontal,
-
-    // ── Visible items ────────────────────────────────────────────────────
-    /** Number of slides visible simultaneously. Arrows still scroll one at a time. */
-    visibleItems: Int = 1,
-
-    // ── Navigation ──────────────────────────────────────────────────────
     showArrows: Boolean = true,
-    showDots: Boolean = pageCount > 1,
-
-    // ── Auto-play ───────────────────────────────────────────────────────
+    showDots: Boolean = api.slideCount > 1,
     autoPlay: KCarouselAutoPlay? = null,
-
-    // ── Layout ──────────────────────────────────────────────────────────
     pageSpacing: Dp = 8.dp,
-    /**
-     * Explicit height for the [VerticalPager]. Has no effect on horizontal carousels
-     * (which size to their slide content naturally). Required for vertical because
-     * [VerticalPager] needs a bounded height constraint to render.
-     */
-    verticalPagerHeight: Dp = 300.dp,
-    state: PagerState = rememberPagerState { pageCount },
-
-    // ── Footer slot ─────────────────────────────────────────────────────
-    footer: (@Composable () -> Unit)? = null,
-
-    content: @Composable BoxScope.(page: Int) -> Unit
+    content: @Composable ColumnScope.() -> Unit
 ) {
-    val scope = rememberCoroutineScope()
+    val scope  = rememberCoroutineScope()
+    val state  = api.pagerState
+    val rtl    = LocalLayoutDirection.current == LayoutDirection.Rtl
 
     // ── Auto-play ────────────────────────────────────────────────────────
-    val autoPlayJobHolder = remember { mutableStateOf<kotlinx.coroutines.Job?>(null) }
+    val autoPlayJob = remember { mutableStateOf<kotlinx.coroutines.Job?>(null) }
 
     fun startAutoPlay() {
         autoPlay ?: return
-        autoPlayJobHolder.value?.cancel()
-        autoPlayJobHolder.value = scope.launch {
+        autoPlayJob.value?.cancel()
+        autoPlayJob.value = scope.launch {
             while (true) {
                 delay(autoPlay.delay)
-                state.animateScrollToPage((state.currentPage + 1) % pageCount)
+                state.animateScrollToPage((state.currentPage + 1) % state.pageCount)
             }
         }
     }
 
     LaunchedEffect(autoPlay) { startAutoPlay() }
-    DisposableEffect(Unit) { onDispose { autoPlayJobHolder.value?.cancel() } }
+    DisposableEffect(Unit) { onDispose { autoPlayJob.value?.cancel() } }
 
     fun navigateTo(page: Int) {
         scope.launch {
-            autoPlayJobHolder.value?.cancel()
+            autoPlayJob.value?.cancel()
             state.animateScrollToPage(page)
             if (autoPlay != null) {
                 delay(autoPlay.delayBeforeResume)
@@ -136,211 +126,174 @@ fun KCarousel(
         }
     }
 
-    // ── Content padding for visibleItems > 1 ────────────────────────────
-    val contentPadding: PaddingValues = when {
-        visibleItems <= 1 -> PaddingValues(0.dp)
-        orientation == KCarouselOrientation.Horizontal ->
-            PaddingValues(horizontal = (20 * (visibleItems - 1)).dp)
-        else ->
-            PaddingValues(vertical = (20 * (visibleItems - 1)).dp)
-    }
-
-    // ── Root column ──────────────────────────────────────────────────────
     Column(
         modifier            = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-
-        // ── Top arrow — vertical only ────────────────────────────────────
-        if (showArrows && orientation == KCarouselOrientation.Vertical) {
-            KCarouselArrowButton(
-                direction = KCarouselArrowDirection.Up,
-                enabled   = state.currentPage > 0,
-                onClick   = { navigateTo(state.currentPage - 1) }
-            )
-        }
-
-        // ── Pager row: [← arrow] [pager] [→ arrow] ──────────────────────
-        // Arrows are siblings of the pager in a Row, NOT overlaid inside it.
-        // This guarantees they are always vertically centred on the slide
-        // regardless of slide content height.
+        // Pager row + arrows
         Row(
             modifier          = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Left arrow
-            if (showArrows && orientation == KCarouselOrientation.Horizontal) {
-                KCarouselArrowButton(
-                    direction = KCarouselArrowDirection.Left,
-                    enabled   = state.currentPage > 0,
-                    modifier  = Modifier.padding(end = 8.dp),
-                    onClick   = { navigateTo(state.currentPage - 1) }
+            if (showArrows) {
+                KCarouselPrevious(
+                    onClick  = { navigateTo(state.currentPage - 1) },
+                    enabled  = state.currentPage > 0
                 )
             }
 
-            // Pager — horizontal wraps slide content height naturally;
-            // vertical needs an explicit bounded height to render.
-            if (orientation == KCarouselOrientation.Horizontal) {
-                HorizontalPager(
-                    state          = state,
-                    contentPadding = contentPadding,
-                    pageSpacing    = pageSpacing,
-                    modifier       = Modifier.weight(1f)
-                ) { page ->
-                    Box(modifier = Modifier.fillMaxWidth()) { content(page) }
-                }
-            } else {
-                VerticalPager(
-                    state          = state,
-                    contentPadding = contentPadding,
-                    pageSpacing    = pageSpacing,
-                    modifier       = Modifier
-                        .weight(1f)
-                        .height(verticalPagerHeight) // bounded height required for VerticalPager
-                ) { page ->
-                    Box(modifier = Modifier.fillMaxWidth()) { content(page) }
+            // Pager
+            HorizontalPager(
+                state       = state,
+                pageSpacing = pageSpacing,
+                modifier    = Modifier.weight(1f)
+            ) { page ->
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    // Content slots are rendered via KCarouselContent/KCarouselItem
                 }
             }
 
-            // Right arrow
-            if (showArrows && orientation == KCarouselOrientation.Horizontal) {
-                KCarouselArrowButton(
-                    direction = KCarouselArrowDirection.Right,
-                    enabled   = state.currentPage < pageCount - 1,
-                    modifier  = Modifier.padding(start = 8.dp),
-                    onClick   = { navigateTo(state.currentPage + 1) }
+            if (showArrows) {
+                KCarouselNext(
+                    onClick  = { navigateTo(state.currentPage + 1) },
+                    enabled  = state.currentPage < state.pageCount - 1
                 )
             }
         }
 
-        // ── Bottom arrow — vertical only ─────────────────────────────────
-        if (showArrows && orientation == KCarouselOrientation.Vertical) {
-            KCarouselArrowButton(
-                direction = KCarouselArrowDirection.Down,
-                enabled   = state.currentPage < pageCount - 1,
-                onClick   = { navigateTo(state.currentPage + 1) }
-            )
-        }
-
-        // ── Dot indicators ───────────────────────────────────────────────
+        // Dot indicators
         if (showDots) {
             Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                 val cs = MaterialTheme.colorScheme
-                repeat(pageCount) { i ->
-                    val active = i == state.currentPage
+                repeat(state.pageCount) { i ->
                     Surface(
                         onClick  = { navigateTo(i) },
                         shape    = CircleShape,
-                        color    = if (active) cs.primary else cs.outline,
-                        modifier = Modifier.size(if (active) 8.dp else 6.dp)
+                        color    = if (i == state.currentPage) cs.primary else cs.outline,
+                        modifier = Modifier.size(if (i == state.currentPage) 8.dp else 6.dp)
                     ) {}
                 }
             }
         }
 
-        // ── Footer slot ──────────────────────────────────────────────────
-        footer?.invoke()
+        // Extra slots (KCarouselContent etc.)
+        content()
     }
 }
 
 // ─────────────────────────────────────────────
-//  KCarouselFooter
+//  Slot-based API (mirrors web component slots)
 // ─────────────────────────────────────────────
 
 /**
- * Footer row rendered below the carousel. Pass via [KCarousel]'s `footer` param.
+ * Wraps the pager slides — place [KCarouselItem]s inside.
  *
  * ```kotlin
- * KCarousel(
- *     pageCount = 5,
- *     footer    = { KCarouselFooter { KCarouselSlideCounter(state, 5) } }
- * ) { page -> … }
- * ```
- */
-@Composable
-fun KCarouselFooter(
-    modifier: Modifier = Modifier,
-    horizontalArrangement: Arrangement.Horizontal = Arrangement.Center,
-    content: @Composable RowScope.() -> Unit
-) {
-    Row(
-        modifier              = modifier.fillMaxWidth(),
-        horizontalArrangement = horizontalArrangement,
-        verticalAlignment     = Alignment.CenterVertically,
-        content               = content
-    )
-}
-
-// ─────────────────────────────────────────────
-//  KCarouselSlideCounter
-// ─────────────────────────────────────────────
-
-/**
- * Pre-built "Slide N of M" label for [KCarouselFooter].
- *
- * ```kotlin
- * KCarouselFooter {
- *     KCarouselSlideCounter(state, 5)                          // "Slide 1 of 5"
- *     KCarouselSlideCounter(state, 5) { n, t -> "$n / $t" }   // custom format
+ * KCarouselContent {
+ *     items.forEach { KCarouselItem { MySlide(it) } }
  * }
  * ```
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun KCarouselSlideCounter(
-    state: PagerState,
-    total: Int,
+fun KCarouselContent(
+    api: CarouselApi,
     modifier: Modifier = Modifier,
-    label: (current: Int, total: Int) -> String = { n, t -> "Slide $n of $t" }
+    pageSpacing: Dp = 8.dp,
+    content: @Composable (page: Int) -> Unit
 ) {
-    Text(
-        text     = label(state.currentPage + 1, total),
-        style    = MaterialTheme.typography.bodySmall.copy(fontSize = 13.sp),
-        color    = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = modifier
+    HorizontalPager(
+        state       = api.pagerState,
+        pageSpacing = pageSpacing,
+        modifier    = modifier.fillMaxWidth()
+    ) { page ->
+        Box(modifier = Modifier.fillMaxWidth()) { content(page) }
+    }
+}
+
+/**
+ * A single slide container.
+ *
+ * ```kotlin
+ * KCarouselContent(api = api) { page ->
+ *     KCarouselItem { MySlide(items[page]) }
+ * }
+ * ```
+ */
+@Composable
+fun KCarouselItem(
+    modifier: Modifier = Modifier,
+    content: @Composable BoxScope.() -> Unit
+) {
+    Box(
+        modifier = modifier.fillMaxWidth(),
+        content  = content
     )
 }
 
 // ─────────────────────────────────────────────
-//  Internal — arrow button
+//  KCarouselPrevious — uses KButton
 // ─────────────────────────────────────────────
 
-private enum class KCarouselArrowDirection { Left, Right, Up, Down }
-
+/**
+ * Previous-slide button.
+ * Arrow is mirrored automatically in RTL via [LocalLayoutDirection].
+ */
 @Composable
-private fun KCarouselArrowButton(
-    direction: KCarouselArrowDirection,
-    enabled: Boolean,
+fun KCarouselPrevious(
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    onClick: () -> Unit
+    enabled: Boolean = true,
+    variant: KButtonVariant = KButtonVariant.Outline,
+    size: KButtonSize = KButtonSize.IconSm
 ) {
-    val cs = MaterialTheme.colorScheme
-    Surface(
-        onClick         = onClick,
-        enabled         = enabled,
-        shape           = RoundedCornerShape(6.dp),
-        color           = cs.surface.copy(alpha = 0.85f),
-        contentColor    = if (enabled) cs.onSurface else cs.onSurface.copy(alpha = 0.38f),
-        shadowElevation = 2.dp,
-        modifier        = modifier.size(36.dp)
+    val rtl = LocalLayoutDirection.current == LayoutDirection.Rtl
+    KButton(
+        onClick  = onClick,
+        modifier = modifier,
+        variant  = variant,
+        size     = size,
+        enabled  = enabled
     ) {
-        Box(contentAlignment = Alignment.Center) {
-            Icon(
-                imageVector = when (direction) {
-                    KCarouselArrowDirection.Left  -> Icons.AutoMirrored.Filled.KeyboardArrowLeft
-                    KCarouselArrowDirection.Right -> Icons.AutoMirrored.Filled.KeyboardArrowRight
-                    KCarouselArrowDirection.Up    -> Icons.Default.KeyboardArrowUp
-                    KCarouselArrowDirection.Down  -> Icons.Default.KeyboardArrowDown
-                },
-                contentDescription = when (direction) {
-                    KCarouselArrowDirection.Left,
-                    KCarouselArrowDirection.Up   -> "Previous"
-                    KCarouselArrowDirection.Right,
-                    KCarouselArrowDirection.Down -> "Next"
-                },
-                modifier = Modifier.size(20.dp)
-            )
-        }
+        Icon(
+            imageVector        = if (rtl) Icons.AutoMirrored.Filled.KeyboardArrowRight
+            else     Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+            contentDescription = "Previous slide",
+            modifier           = Modifier.size(16.dp)
+        )
+    }
+}
+
+// ─────────────────────────────────────────────
+//  KCarouselNext — uses KButton
+// ─────────────────────────────────────────────
+
+/**
+ * Next-slide button.
+ * Arrow is mirrored automatically in RTL.
+ */
+@Composable
+fun KCarouselNext(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    variant: KButtonVariant = KButtonVariant.Outline,
+    size: KButtonSize = KButtonSize.IconSm
+) {
+    val rtl = LocalLayoutDirection.current == LayoutDirection.Rtl
+    KButton(
+        onClick  = onClick,
+        modifier = modifier,
+        variant  = variant,
+        size     = size,
+        enabled  = enabled
+    ) {
+        Icon(
+            imageVector        = if (rtl) Icons.AutoMirrored.Filled.KeyboardArrowLeft
+            else     Icons.AutoMirrored.Filled.KeyboardArrowRight,
+            contentDescription = "Next slide",
+            modifier           = Modifier.size(16.dp)
+        )
     }
 }

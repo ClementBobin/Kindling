@@ -10,8 +10,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -31,43 +33,18 @@ private data class ButtonColors(
 private fun resolveColors(variant: KButtonVariant): ButtonColors {
     val cs = MaterialTheme.colorScheme
     return when (variant) {
-        KButtonVariant.Default -> ButtonColors(
-            container         = cs.primary,
-            content           = cs.onPrimary,
-            disabledContainer = cs.onSurface.copy(alpha = 0.12f),
-            disabledContent   = cs.onSurface.copy(alpha = 0.38f)
-        )
-        KButtonVariant.Destructive -> ButtonColors(
-            container         = cs.error,
-            content           = cs.onError,
-            disabledContainer = cs.onSurface.copy(alpha = 0.12f),
-            disabledContent   = cs.onSurface.copy(alpha = 0.38f)
-        )
-        KButtonVariant.Outline -> ButtonColors(
-            container         = Color.Transparent,
-            content           = cs.onBackground,
-            disabledContainer = Color.Transparent,
-            disabledContent   = cs.onSurface.copy(alpha = 0.38f),
-            border            = cs.outline
-        )
-        KButtonVariant.Secondary -> ButtonColors(
-            container         = cs.secondaryContainer,
-            content           = cs.onSecondaryContainer,
-            disabledContainer = cs.onSurface.copy(alpha = 0.12f),
-            disabledContent   = cs.onSurface.copy(alpha = 0.38f)
-        )
-        KButtonVariant.Ghost -> ButtonColors(
-            container         = Color.Transparent,
-            content           = cs.onBackground,
-            disabledContainer = Color.Transparent,
-            disabledContent   = cs.onSurface.copy(alpha = 0.38f)
-        )
-        KButtonVariant.Link -> ButtonColors(
-            container         = Color.Transparent,
-            content           = cs.primary,
-            disabledContainer = Color.Transparent,
-            disabledContent   = cs.onSurface.copy(alpha = 0.38f)
-        )
+        KButtonVariant.Default     -> ButtonColors(cs.primary, cs.onPrimary,
+            cs.onSurface.copy(.12f), cs.onSurface.copy(.38f))
+        KButtonVariant.Destructive -> ButtonColors(cs.error.copy(.1f), cs.error,
+            cs.onSurface.copy(.12f), cs.onSurface.copy(.38f))
+        KButtonVariant.Outline     -> ButtonColors(Color.Transparent, cs.onBackground,
+            Color.Transparent, cs.onSurface.copy(.38f), border = cs.outline)
+        KButtonVariant.Secondary   -> ButtonColors(cs.secondaryContainer, cs.onSecondaryContainer,
+            cs.onSurface.copy(.12f), cs.onSurface.copy(.38f))
+        KButtonVariant.Ghost       -> ButtonColors(Color.Transparent, cs.onBackground,
+            Color.Transparent, cs.onSurface.copy(.38f))
+        KButtonVariant.Link        -> ButtonColors(Color.Transparent, cs.primary,
+            Color.Transparent, cs.onSurface.copy(.38f))
     }
 }
 
@@ -76,31 +53,35 @@ private data class ButtonDimensions(
     val horizontalPadding: Dp,
     val verticalPadding: Dp,
     val fontSize: Float,
-    val width: Dp? = null
+    val iconSize: Dp,
+    val fixedWidth: Dp? = null
 )
 
 private fun resolveDimensions(size: KButtonSize) = when (size) {
-    KButtonSize.Default -> ButtonDimensions(36.dp, 16.dp, 8.dp, 14f)
-    KButtonSize.Sm      -> ButtonDimensions(32.dp, 12.dp, 6.dp, 12f)
-    KButtonSize.Lg      -> ButtonDimensions(40.dp, 32.dp, 8.dp, 14f)
-    KButtonSize.Icon    -> ButtonDimensions(36.dp, 0.dp, 0.dp, 14f, width = 36.dp)
+    KButtonSize.Default -> ButtonDimensions(32.dp, 10.dp, 0.dp, 14f, 16.dp)
+    KButtonSize.Xs      -> ButtonDimensions(24.dp, 8.dp,  0.dp, 12f, 12.dp)
+    KButtonSize.Sm      -> ButtonDimensions(28.dp, 10.dp, 0.dp, 12.8f, 14.dp)
+    KButtonSize.Lg      -> ButtonDimensions(36.dp, 10.dp, 0.dp, 14f, 16.dp)
+    KButtonSize.Icon    -> ButtonDimensions(32.dp, 0.dp,  0.dp, 14f, 16.dp, fixedWidth = 32.dp)
+    KButtonSize.IconXs  -> ButtonDimensions(24.dp, 0.dp,  0.dp, 12f, 12.dp, fixedWidth = 24.dp)
+    KButtonSize.IconSm  -> ButtonDimensions(28.dp, 0.dp,  0.dp, 12f, 14.dp, fixedWidth = 28.dp)
+    KButtonSize.IconLg  -> ButtonDimensions(36.dp, 0.dp,  0.dp, 14f, 16.dp, fixedWidth = 36.dp)
 }
 
 // ─────────────────────────────────────────────
-//  Main composable
+//  KButton
 // ─────────────────────────────────────────────
 
 /**
- * Shadcn/ui-style Button for Jetpack Compose.
+ * Shadcn/ui-style Button.
  *
- * Colours are resolved entirely from [MaterialTheme.colorScheme], so this
- * component works with any light or dark colour scheme out of the box.
+ * Respects [LocalLayoutDirection] automatically — icon/content order is
+ * never reversed programmatically; rely on Compose's RTL mirroring.
  *
  * ```kotlin
- * KButton(onClick = { }) { Text("Click me") }
- * KButton(onClick = { }, variant = KButtonVariant.Outline) { Text("Outlined") }
- * KButton(onClick = { }, variant = KButtonVariant.Destructive) { Text("Delete") }
- * KButton(onClick = { }, size = KButtonSize.Icon) { Icon(Icons.Default.Add, null) }
+ * KButton(onClick = {}) { Text("Save") }
+ * KButton(onClick = {}, variant = KButtonVariant.Outline, size = KButtonSize.Sm) { Text("Cancel") }
+ * KButton(onClick = {}, size = KButtonSize.Icon) { Icon(Icons.Default.Add, null) }
  * ```
  */
 @Composable
@@ -116,28 +97,30 @@ fun KButton(
 ) {
     val colors = resolveColors(variant)
     val dims   = resolveDimensions(size)
-    val shape  = RoundedCornerShape(6.dp)
+    val shape  = RoundedCornerShape(8.dp)
 
     val border: BorderStroke? = when {
         colors.border != null && enabled  -> BorderStroke(1.dp, colors.border)
-        colors.border != null && !enabled -> BorderStroke(1.dp, colors.border.copy(alpha = 0.38f))
+        colors.border != null && !enabled -> BorderStroke(1.dp, colors.border.copy(alpha = .38f))
         else -> null
     }
 
     val containerColor = if (enabled) colors.container else colors.disabledContainer
     val contentColor   = if (enabled) colors.content   else colors.disabledContent
 
-    val sizeModifier = if (dims.width != null) modifier.size(dims.width, dims.height)
-                       else modifier.height(dims.height)
+    val sizeMod = if (dims.fixedWidth != null)
+        modifier.size(dims.fixedWidth, dims.height)
+    else
+        modifier.height(dims.height)
 
     Surface(
-        onClick          = { if (enabled && !isLoading) onClick() },
-        modifier         = sizeModifier,
-        enabled          = enabled && !isLoading,
-        shape            = shape,
-        color            = containerColor,
-        contentColor     = contentColor,
-        border           = border,
+        onClick           = { if (enabled && !isLoading) onClick() },
+        modifier          = sizeMod,
+        enabled           = enabled && !isLoading,
+        shape             = shape,
+        color             = containerColor,
+        contentColor      = contentColor,
+        border            = border,
         interactionSource = interactionSource
     ) {
         Row(
@@ -147,7 +130,7 @@ fun KButton(
         ) {
             if (isLoading) {
                 CircularProgressIndicator(
-                    modifier    = Modifier.size(16.dp),
+                    modifier    = Modifier.size(dims.iconSize),
                     color       = contentColor,
                     strokeWidth = 2.dp
                 )
@@ -163,7 +146,7 @@ fun KButton(
     }
 }
 
-/** Convenience overload that accepts a plain text label. */
+/** Convenience overload accepting a plain text label. */
 @Composable
 fun KButton(
     text: String,
@@ -174,12 +157,5 @@ fun KButton(
     enabled: Boolean = true,
     isLoading: Boolean = false
 ) {
-    KButton(
-        onClick   = onClick,
-        modifier  = modifier,
-        variant   = variant,
-        size      = size,
-        enabled   = enabled,
-        isLoading = isLoading
-    ) { Text(text) }
+    KButton(onClick, modifier, variant, size, enabled, isLoading) { Text(text) }
 }

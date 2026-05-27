@@ -1,77 +1,156 @@
 package dev.kindling.core
 
-import dev.kindling.core.components.KAvatarData
-import dev.kindling.core.components.KAvatarSize
-import dev.kindling.core.components.KButtonSize
-import dev.kindling.core.components.KButtonVariant
-import dev.kindling.core.components.KCalendarMode
-import dev.kindling.core.components.KCardSize
-import dev.kindling.core.components.KCarouselOrientation
-import dev.kindling.core.components.KComboboxItem
-import dev.kindling.core.components.KDateRange
-import dev.kindling.core.components.KInputGroupAlign
-import dev.kindling.core.components.KMaskPattern
-import dev.kindling.core.components.KPopoverAlign
-import dev.kindling.core.components.KPopoverSide
-import dev.kindling.core.components.KSelectSize
-import dev.kindling.core.components.KSortDirection
-import dev.kindling.core.components.KSpinnerSize
-import dev.kindling.core.components.KStep
-import dev.kindling.core.components.KStepState
-import dev.kindling.core.components.KStepperOrientation
-import dev.kindling.core.components.KToastData
-import dev.kindling.core.components.KToastType
+import dev.kindling.core.components.*
 
 /**
  * Public API entrypoint package for Kindling core module.
  *
- * Every component type is re-exported via a `typealias` so callers
- * can import from this single surface rather than from internal packages.
+ * Every component type and state class is re-exported via a `typealias` so
+ * callers can import from this single surface rather than from internal packages.
  */
 object KindlingCoreApi
 
-// ── Existing types ────────────────────────────────────────────────────────────
+// ── Button ────────────────────────────────────────────────────────────────────
 
-typealias ButtonSize         = KButtonSize
-typealias ButtonVariant      = KButtonVariant
-typealias CarouselOrientation = KCarouselOrientation
-typealias ComboboxItem       = KComboboxItem
-typealias SortDirection      = KSortDirection
-typealias SpinnerSize        = KSpinnerSize
-typealias Step               = KStep
-typealias StepState          = KStepState
-typealias StepperOrientation = KStepperOrientation
-typealias ToastData          = KToastData
-typealias ToastType          = KToastType
+/** @see KButtonSize */
+typealias ButtonSize = KButtonSize
 
-// ── New types (added with the full component set) ─────────────────────────────
+/** @see KButtonVariant */
+typealias ButtonVariant = KButtonVariant
+
+// ── Badge ─────────────────────────────────────────────────────────────────────
+
+/** @see KBadgeVariant */
+typealias BadgeVariant = KBadgeVariant
+
+// ── Avatar ────────────────────────────────────────────────────────────────────
 
 /** @see KAvatarSize */
-typealias AvatarSize         = KAvatarSize
+typealias AvatarSize = KAvatarSize
 
-/** @see KAvatarData */
-typealias AvatarData         = KAvatarData
+// ── Calendar ──────────────────────────────────────────────────────────────────
 
 /** @see KCalendarMode */
-typealias CalendarMode       = KCalendarMode
+typealias CalendarMode = KCalendarMode
+
+/** @see KCalendarCaptionLayout */
+typealias CalendarCaptionLayout = KCalendarCaptionLayout
+
+/** @see KCalendarLocale */
+typealias CalendarLocale = KCalendarLocale
+
+/** @see KCalendarPreset */
+typealias CalendarPreset = KCalendarPreset
+
+/** @see KCalendarDayContent */
+typealias CalendarDayContent = KCalendarDayContent
 
 /** @see KDateRange */
-typealias DateRange          = KDateRange
+typealias DateRange = KDateRange
+
+/** @see CalMonth */
+typealias CalendarMonth = CalMonth
+
+// ── Card ──────────────────────────────────────────────────────────────────────
 
 /** @see KCardSize */
-typealias CardSize           = KCardSize
+typealias CardSize = KCardSize
+
+// ── Carousel ──────────────────────────────────────────────────────────────────
+
+/** @see KCarouselAutoPlay */
+typealias CarouselAutoPlay = KCarouselAutoPlay
+
+/** @see CarouselApi */
+typealias KCarouselApi = CarouselApi
+
+// ── Combobox ──────────────────────────────────────────────────────────────────
+
+/** @see KComboboxItem */
+typealias ComboboxItem = KComboboxItem
+
+/** @see KComboboxGroup */
+typealias ComboboxGroup = KComboboxGroup
+
+/** @see ComboboxState */
+typealias KComboboxState = ComboboxState
+
+// ── DataTable ─────────────────────────────────────────────────────────────────
+
+/** @see KTableColumn */
+typealias TableColumn<T> = KTableColumn<T>
+
+/** @see KSortDirection */
+typealias SortDirection = KSortDirection
+
+// ── Dialog ────────────────────────────────────────────────────────────────────
+
+/** @see DialogScope */
+typealias KDialogScope = DialogScope
+
+// ── Direction ────────────────────────────────────────────────────────────────
+
+/** @see KLayoutDirection */
+typealias LayoutDirectionKind = KLayoutDirection
+
+// ── Empty state ───────────────────────────────────────────────────────────────
+
+/** @see KEmptyMediaVariant */
+typealias EmptyMediaVariant = KEmptyMediaVariant
+
+// ── InputGroup ────────────────────────────────────────────────────────────────
 
 /** @see KInputGroupAlign */
-typealias InputGroupAlign    = KInputGroupAlign
+typealias InputGroupAlign = KInputGroupAlign
+
+// ── InputOTP ──────────────────────────────────────────────────────────────────
+
+/** @see InputOTPState */
+typealias KInputOTPState = InputOTPState
+
+/** @see InputOTPSlotState */
+typealias KInputOTPSlotState = InputOTPSlotState
+
+// ── MaskInput ─────────────────────────────────────────────────────────────────
 
 /** @see KMaskPattern */
-typealias MaskPattern        = KMaskPattern
+typealias MaskPattern = KMaskPattern
+
+// ── Popover ───────────────────────────────────────────────────────────────────
 
 /** @see KPopoverSide */
-typealias PopoverSide        = KPopoverSide
+typealias PopoverSide = KPopoverSide
 
 /** @see KPopoverAlign */
-typealias PopoverAlign       = KPopoverAlign
+typealias PopoverAlign = KPopoverAlign
 
-/** @see KSelectSize */
-typealias SelectSize         = KSelectSize
+/** @see KPopoverOverlayPosition */
+typealias PopoverOverlayPosition = KPopoverOverlayPosition
+
+// ── Spinner ───────────────────────────────────────────────────────────────────
+
+/** @see KSpinnerSize */
+typealias SpinnerSize = KSpinnerSize
+
+/** @see KStepState */
+typealias StepState = KStepState
+
+/** @see KStepperOrientation */
+typealias StepperOrientation = KStepperOrientation
+
+/** @see KNavigationDirection */
+typealias NavigationDirection = KNavigationDirection
+
+/** @see KActivationMode */
+typealias ActivationMode = KActivationMode
+
+/** @see StepperState */
+typealias KStepperState = StepperState
+
+// ── Toast ─────────────────────────────────────────────────────────────────────
+
+/** @see KToastData */
+typealias ToastData = KToastData
+
+/** @see KToastType */
+typealias ToastType = KToastType

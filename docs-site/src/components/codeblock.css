@@ -1,0 +1,30 @@
+.codeblock {
+  margin: 0;
+  padding: 14px 14px;
+  border: 1px solid color-mix(in oklab, var(--border) 65%, transparent);
+  background: linear-gradient(180deg, var(--panel), color-mix(in oklab, var(--panel) 75%, var(--bg)));
+  border-radius: 12px;
+  overflow: auto;
+  font-size: 12.5px;
+  line-height: 1.55;
+}
+
+.codeblock code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+  color: var(--fg);
+  white-space: pre;
+}
+
+.codeblock[data-language]:not([data-language=''])::before {
+  content: attr(data-language);
+  display: inline-block;
+  margin: 0 0 10px 0;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  color: color-mix(in oklab, var(--fg) 70%, var(--muted));
+  background: color-mix(in oklab, var(--bg) 55%, var(--panel));
+  border: 1px solid color-mix(in oklab, var(--border) 60%, transparent);
+}
+

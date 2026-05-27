@@ -7,25 +7,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
 /**
- * Constrains its content to a given aspect ratio.
- *
- * Mirrors the shadcn/ui `AspectRatio` component backed by Radix UI.
- * Fills available width and sets height via [ratio].
+ * Constrains its content to a given aspect ratio — mirrors shadcn/ui `AspectRatio`.
  *
  * ```kotlin
  * KAspectRatio(ratio = 16f / 9f) {
- *     Image(
- *         painter = painterResource(R.drawable.hero),
- *         contentDescription = null,
- *         contentScale = ContentScale.Crop,
- *         modifier = Modifier.fillMaxSize()
- *     )
+ *     Image(painter = …, contentDescription = null, modifier = Modifier.fillMaxSize())
  * }
  * ```
  *
- * @param ratio  Width-to-height ratio (e.g. `16f / 9f`, `1f`, `4f / 3f`).
- * @param modifier Optional modifier applied to the outer [Box].
- * @param content  The composable content to render inside the constrained area.
+ * @param ratio   Width-to-height ratio, e.g. `16f / 9f`, `4f / 3f`, `1f`.
+ * @param modifier Applied to the outer [Box].
+ * @param content  Content to render inside the constrained area.
  */
 @Composable
 fun KAspectRatio(

@@ -1,67 +1,51 @@
 package dev.kindling.core.components
 
-/**
- * Button visual style.
- */
+// ─────────────────────────────────────────────
+//  Button
+// ─────────────────────────────────────────────
+
 enum class KButtonVariant { Default, Destructive, Outline, Secondary, Ghost, Link }
+enum class KButtonSize    { Default, Xs, Sm, Lg, Icon, IconXs, IconSm, IconLg }
 
-/**
- * Button sizing preset.
- */
-enum class KButtonSize { Default, Sm, Lg, Icon }
+// ─────────────────────────────────────────────
+//  Badge
+// ─────────────────────────────────────────────
 
-/**
- * Spinner sizing preset.
- */
+enum class KBadgeVariant { Default, Secondary, Destructive, Outline, Ghost, Link }
+
+// ─────────────────────────────────────────────
+//  Avatar
+// ─────────────────────────────────────────────
+
+enum class KAvatarSize { Sm, Default, Lg }
+
+// ─────────────────────────────────────────────
+//  Spinner
+// ─────────────────────────────────────────────
+
 enum class KSpinnerSize { Sm, Default, Lg, Xl }
 
-/**
- * Step progress state.
- */
-enum class KStepState { Upcoming, Current, Completed, Error }
+// ─────────────────────────────────────────────
+//  Stepper
+// ─────────────────────────────────────────────
 
-/**
- * Stepper orientation.
- */
+enum class KStepState       { Inactive, Active, Completed, Error }
 enum class KStepperOrientation { Horizontal, Vertical }
+enum class KActivationMode  { Automatic, Manual }
+enum class KNavigationDirection { Next, Prev }
 
-/**
- * Sort direction used by table headers.
- */
+// ─────────────────────────────────────────────
+//  Sort (DataTable)
+// ─────────────────────────────────────────────
+
 enum class KSortDirection { Asc, Desc, None }
 
-/**
- * Empty-state media variant.
- */
-enum class KEmptyMediaVariant { Icon, Image, Avatar }
+// ─────────────────────────────────────────────
+//  Toast
+// ─────────────────────────────────────────────
 
-/**
- * Toast type.
- */
 enum class KToastType { Default, Success, Error, Warning, Info }
 
-/**
- * Select / combobox trigger size — matches the `size` prop on SelectTrigger.
- */
-enum class KSelectSize { Default, Sm }
-
-/**
- * Avatar size presets — `sm` = 24 dp, `default` = 32 dp, `lg` = 40 dp.
- * Declared here for public API symmetry; impl lives in Avatar.kt.
- */
-// KAvatarSize is declared in Avatar.kt
-
-/**
- * Toast payload.
- *
- * @property id Unique identifier.
- * @property message Main toast message.
- * @property description Optional secondary text.
- * @property type Semantic toast style.
- * @property actionLabel Optional action label.
- * @property onAction Optional action callback.
- * @property durationMs Auto-dismiss delay in milliseconds.
- */
 data class KToastData(
     val id: Long = System.currentTimeMillis(),
     val message: String,
@@ -71,3 +55,31 @@ data class KToastData(
     val onAction: (() -> Unit)? = null,
     val durationMs: Long = 4_000L
 )
+
+// ─────────────────────────────────────────────
+//  Empty state
+// ─────────────────────────────────────────────
+
+enum class KEmptyMediaVariant { Icon, Image, Avatar }
+
+// ─────────────────────────────────────────────
+//  Calendar
+// ─────────────────────────────────────────────
+
+enum class KCalendarCaptionLayout { Label, Dropdown }
+
+sealed interface KCalendarMode {
+    object Single : KCalendarMode
+    object Range  : KCalendarMode
+}
+
+data class KDateRange(
+    val from: java.time.LocalDate? = null,
+    val to:   java.time.LocalDate? = null
+)
+
+// ─────────────────────────────────────────────
+//  Direction (RTL/LTR)
+// ─────────────────────────────────────────────
+
+enum class KLayoutDirection { Ltr, Rtl }
