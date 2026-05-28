@@ -29,7 +29,7 @@ import kotlinx.coroutines.flow.asStateFlow
  */
 class CircularBuffer<T>(
     val capacity: Int,
-    initialItems: List<T> = emptyList(),
+    private val initialItems: List<T> = emptyList(), 
 ) {
     init { require(capacity >= 1) { "capacity must be at least 1" } }
 
