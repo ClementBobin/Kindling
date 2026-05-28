@@ -110,24 +110,17 @@ class MutexGuard {
  * ```
  */
 class SingleFlight<T> {
-
     private val mutex = Mutex()
-    private var inFlight: kotlinx.coroutines.Deferred<T>? = null
+    private var inFlight: Deferred<T>? = null
 
-    /**
-     * Returns the result of [block], sharing an in-flight execution with any
-     * other concurrent callers.
-     */
     suspend fun get(block: suspend () -> T): T {
-        // Fast path — already in flight
         mutex.lock()
         inFlight?.let { deferred ->
             mutex.unlock()
             return deferred.await()
         }
 
-        // Start a new execution
-        val deferred = kotlinx.coroutines.coroutineScope {
+        val deferred = coroutineScope {
             async { block() }
         }.also { inFlight = it }
         mutex.unlock()
@@ -138,12 +131,4 @@ class SingleFlight<T> {
             mutex.withLock { if (inFlight === deferred) inFlight = null }
         }
     }
-
-    // Helper alias so we can call async {} inside a non-CoroutineScope context
-    @Suppress("NOTHING_TO_INLINE")
-    private inline fun <R> async(noinline block: suspend () -> R) =
-        kotlinx.coroutines.GlobalScope.async(
-            kotlinx.coroutines.Dispatchers.Unconfined,
-            start = kotlinx.coroutines.CoroutineStart.LAZY,
-        ) { block() }
 }
