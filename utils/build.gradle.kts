@@ -11,16 +11,6 @@ kotlin {
     jvmToolchain(17)
 }
 
-configurations.all {
-    exclude(group = "org.jetbrains.compose.runtime")
-    exclude(group = "org.jetbrains.compose.ui")
-    exclude(group = "org.jetbrains.compose.foundation")
-    exclude(group = "org.jetbrains.compose.material")
-    exclude(group = "org.jetbrains.compose.animation")
-    exclude(group = "androidx.compose.runtime", module = "runtime")
-    exclude(group = "androidx.compose.ui", module = "ui-tooling-preview")
-}
-
 dependencies {
     implementation(kotlin("stdlib"))
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.coroutines}")
