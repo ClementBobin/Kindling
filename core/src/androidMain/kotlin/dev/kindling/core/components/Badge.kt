@@ -32,30 +32,21 @@ fun KBadge(
     variant: KBadgeVariant = KBadgeVariant.Default,
     content: @Composable RowScope.() -> Unit
 ) {
-    val cs = MaterialTheme.colorScheme
-
-    data class BadgeColors(val bg: Color, val fg: Color, val border: Color?)
-
-    val colors = when (variant) {
-        KBadgeVariant.Default     -> BadgeColors(cs.primary, cs.onPrimary, null)
-        KBadgeVariant.Secondary   -> BadgeColors(cs.secondaryContainer, cs.onSecondaryContainer, null)
-        KBadgeVariant.Destructive -> BadgeColors(cs.error.copy(.1f), cs.error, null)
-        KBadgeVariant.Outline     -> BadgeColors(Color.Transparent, cs.onSurface, cs.outline)
-        KBadgeVariant.Ghost       -> BadgeColors(Color.Transparent, cs.onSurface, null)
-        KBadgeVariant.Link        -> BadgeColors(Color.Transparent, cs.primary, null)
-    }
+    val bg     = variant.bg()
+    val fg     = variant.fg()
+    val border = variant.border()
 
     Surface(
         modifier     = modifier,
         shape        = RoundedCornerShape(percent = 50),
-        color        = colors.bg,
-        contentColor = colors.fg,
-        border       = if (colors.border != null)
-            androidx.compose.foundation.BorderStroke(1.dp, colors.border)
+        color        = bg,
+        contentColor = fg,
+        border       = if (border != null)
+            androidx.compose.foundation.BorderStroke(1.dp, border)
         else null
     ) {
         Row(
-            modifier          = Modifier
+            modifier = Modifier
                 .height(20.dp)
                 .padding(horizontal = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -68,5 +59,46 @@ fun KBadge(
                 )
             ) { content() }
         }
+    }
+}
+
+// Replace the existing KBadgeVariant enum/sealed class with this
+data class KBadgeVariant(
+    val bg: @Composable () -> Color,
+    val fg: @Composable () -> Color,
+    val border: @Composable () -> Color? = { null }
+) {
+    companion object {
+        val Default: KBadgeVariant
+            @Composable get() = KBadgeVariant(
+                bg = { MaterialTheme.colorScheme.primary },
+                fg = { MaterialTheme.colorScheme.onPrimary }
+            )
+        val Secondary: KBadgeVariant
+            @Composable get() = KBadgeVariant(
+                bg = { MaterialTheme.colorScheme.secondaryContainer },
+                fg = { MaterialTheme.colorScheme.onSecondaryContainer }
+            )
+        val Destructive: KBadgeVariant
+            @Composable get() = KBadgeVariant(
+                bg = { MaterialTheme.colorScheme.error.copy(.1f) },
+                fg = { MaterialTheme.colorScheme.error }
+            )
+        val Outline: KBadgeVariant
+            @Composable get() = KBadgeVariant(
+                bg = { Color.Transparent },
+                fg = { MaterialTheme.colorScheme.onSurface },
+                border = { MaterialTheme.colorScheme.outline }
+            )
+        val Ghost: KBadgeVariant
+            @Composable get() = KBadgeVariant(
+                bg = { Color.Transparent },
+                fg = { MaterialTheme.colorScheme.onSurface }
+            )
+        val Link: KBadgeVariant
+            @Composable get() = KBadgeVariant(
+                bg = { Color.Transparent },
+                fg = { MaterialTheme.colorScheme.primary }
+            )
     }
 }
