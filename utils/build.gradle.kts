@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
     kotlin("jvm")
     id("dokka-convention")
@@ -11,6 +9,16 @@ version = Versions.libraryVersion
 
 kotlin {
     jvmToolchain(17)
+}
+
+configurations.all {
+    exclude(group = "org.jetbrains.compose.runtime")
+    exclude(group = "org.jetbrains.compose.ui")
+    exclude(group = "org.jetbrains.compose.foundation")
+    exclude(group = "org.jetbrains.compose.material")
+    exclude(group = "org.jetbrains.compose.animation")
+    exclude(group = "androidx.compose.runtime", module = "runtime")
+    exclude(group = "androidx.compose.ui", module = "ui-tooling-preview")
 }
 
 dependencies {
