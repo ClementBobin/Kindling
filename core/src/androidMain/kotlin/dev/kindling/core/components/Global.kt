@@ -8,12 +8,6 @@ enum class KButtonVariant { Default, Destructive, Outline, Secondary, Ghost, Lin
 enum class KButtonSize    { Default, Xs, Sm, Lg, Icon, IconXs, IconSm, IconLg }
 
 // ─────────────────────────────────────────────
-//  Badge
-// ─────────────────────────────────────────────
-
-enum class KBadgeVariant { Default, Secondary, Destructive, Outline, Ghost, Link }
-
-// ─────────────────────────────────────────────
 //  Avatar
 // ─────────────────────────────────────────────
 
