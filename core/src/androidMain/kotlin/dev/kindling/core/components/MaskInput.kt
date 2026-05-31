@@ -110,7 +110,8 @@ fun fromUnmaskedIndex(masked: String, pattern: String, unmaskedIndex: Int): Int 
 enum class KMaskPattern(
     val pattern: String,
     val placeholder: String = "",
-    val keyboardType: KeyboardType = KeyboardType.Number
+    val keyboardType: KeyboardType = KeyboardType.Number,
+    val withoutMask: Boolean = false
 ) {
     Phone("(###) ###-####",           "(555) 000-0000"),
     Ssn("###-##-####",                "000-00-0000"),
@@ -123,9 +124,12 @@ enum class KMaskPattern(
     Ein("##-#######",                 "00-0000000"),
     Isbn("###-#-###-#####-#",         "000-0-000-00000-0"),
     LicensePlate("###-###",           "AAA-000", KeyboardType.Text),
-    MacAddress("##:##:##:##:##:##",   "00:00:00:00:00:00", KeyboardType.Text)
+    MacAddress("##:##:##:##:##:##",   "00:00:00:00:00:00", KeyboardType.Text),
+    Email("", "name@example.com",     KeyboardType.Email, withoutMask = true),
+    Uri("", "https://",               KeyboardType.Uri,   withoutMask = true),
+    Number("", "",                    KeyboardType.Number, withoutMask = true),
+    Decimal("", "0.00",               KeyboardType.Decimal, withoutMask = true),
 }
-
 // ─────────────────────────────────────────────
 //  MaskInput
 // ─────────────────────────────────────────────
@@ -172,7 +176,7 @@ fun MaskInput(
     mask: KMaskPattern? = null,
     customPattern: String? = null,
     allowLetters: Boolean = mask?.keyboardType == KeyboardType.Text,
-    withoutMask: Boolean = false,
+    withoutMask: Boolean = mask?.withoutMask ?: false,
     placeholder: String = mask?.placeholder
         ?: customPattern?.replace('#', '0')
         ?: "",
