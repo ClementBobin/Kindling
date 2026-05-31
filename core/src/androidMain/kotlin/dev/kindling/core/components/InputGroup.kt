@@ -1,8 +1,6 @@
 package dev.kindling.core.components
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -13,11 +11,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.kindling.core.theme.LocalKindlingShapes
+import dev.kindling.core.theme.kindlingShadowNone
+import dev.kindling.core.theme.kindlingClipNone
 
 // ─────────────────────────────────────────────
 //  Alignment
@@ -42,7 +42,7 @@ open class KInputGroupScope internal constructor(
  *
  * A single shared border wraps the field and any inline/block addons.
  * Highlights the border on focus; applies error styling when [isError] = true.
- * Respects [LocalLayoutDirection] for RTL.
+ * Respects [androidx.compose.ui.platform.LocalLayoutDirection] for RTL.
  *
  * ```kotlin
  * InputGroup {
@@ -57,9 +57,9 @@ open class KInputGroupScope internal constructor(
 fun InputGroup(
     modifier: Modifier = Modifier,
     isError: Boolean = false,
-    enabled: Boolean = true,
     content: @Composable KInputGroupScope.() -> Unit
 ) {
+    val shape = LocalKindlingShapes.current.radiusXl
     val cs             = MaterialTheme.colorScheme
     val focusRequester = remember { FocusRequester() }
     val scope          = remember(focusRequester) { KInputGroupScope(focusRequester) }
@@ -75,7 +75,7 @@ fun InputGroup(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .border(borderWidth, borderColor, RoundedCornerShape(8.dp))
+            .border(borderWidth, borderColor, shape)
             // Propagate focus state from child fields via Modifier.onFocusChanged
             // is not straightforward at the column level; we track it in the
             // InputGroupInput slot below.
@@ -99,8 +99,8 @@ fun InputGroup(
  */
 @Composable
 fun KInputGroupScope.InputGroupAddon(
-    align: KInputGroupAlign = KInputGroupAlign.InlineStart,
     modifier: Modifier = Modifier,
+    align: KInputGroupAlign = KInputGroupAlign.InlineStart,
     content: @Composable () -> Unit
 ) {
     val cs = MaterialTheme.colorScheme
@@ -133,7 +133,7 @@ fun KInputGroupScope.InputGroupButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     variant: KButtonVariant = KButtonVariant.Ghost,
-    size: KButtonSize = KButtonSize.IconXs,
+    size: KButtonSize = KButtonSize.Xs,
     enabled: Boolean = true,
     content: @Composable RowScope.() -> Unit
 ) {
@@ -195,6 +195,8 @@ fun KInputGroupScope.InputGroupInput(
         onValueChange        = onValueChange,
         modifier             = modifier
             .fillMaxWidth()
+            .kindlingShadowNone()
+            .kindlingClipNone()
             .focusRequester(focusRequester)
             .defaultMinSize(minHeight = 32.dp),
         enabled              = enabled,
@@ -254,7 +256,8 @@ fun KInputGroupScope.InputGroupTextarea(
         modifier        = modifier
             .fillMaxWidth()
             .focusRequester(focusRequester)
-            .defaultMinSize(minHeight = 64.dp),
+            .defaultMinSize(minHeight = 64.dp)
+            .kindlingClipNone(),
         enabled         = enabled,
         singleLine      = false,
         minLines        = minLines,

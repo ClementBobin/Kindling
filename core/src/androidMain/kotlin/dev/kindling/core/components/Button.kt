@@ -13,7 +13,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.LayoutDirection
+import dev.kindling.core.theme.LocalKindlingShapes
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -57,6 +57,7 @@ private data class ButtonDimensions(
     val fixedWidth: Dp? = null
 )
 
+// Note: shape need to change based on size .
 private fun resolveDimensions(size: KButtonSize) = when (size) {
     KButtonSize.Default -> ButtonDimensions(32.dp, 10.dp, 0.dp, 14f, 16.dp)
     KButtonSize.Xs      -> ButtonDimensions(24.dp, 8.dp,  0.dp, 12f, 12.dp)
@@ -66,6 +67,21 @@ private fun resolveDimensions(size: KButtonSize) = when (size) {
     KButtonSize.IconXs  -> ButtonDimensions(24.dp, 0.dp,  0.dp, 12f, 12.dp, fixedWidth = 24.dp)
     KButtonSize.IconSm  -> ButtonDimensions(28.dp, 0.dp,  0.dp, 12f, 14.dp, fixedWidth = 28.dp)
     KButtonSize.IconLg  -> ButtonDimensions(36.dp, 0.dp,  0.dp, 14f, 16.dp, fixedWidth = 36.dp)
+}
+
+@Composable
+private fun resolveShape(size: KButtonSize): androidx.compose.ui.graphics.Shape {
+    val shapes = LocalKindlingShapes.current
+    return when (size) {
+        KButtonSize.Xs, KButtonSize.IconXs ->
+            // min(radiusMd, 10dp)
+            RoundedCornerShape(minOf(shapes.roundedMd, 10.dp))
+        KButtonSize.Sm, KButtonSize.IconSm ->
+            // min(radiusMd, 12dp)
+            RoundedCornerShape(minOf(shapes.roundedMd, 12.dp))
+        else ->
+            shapes.radiusLg
+    }
 }
 
 // ─────────────────────────────────────────────
@@ -97,7 +113,7 @@ fun KButton(
 ) {
     val colors = resolveColors(variant)
     val dims   = resolveDimensions(size)
-    val shape  = RoundedCornerShape(8.dp)
+    val shape = resolveShape(size)
 
     val border: BorderStroke? = when {
         colors.border != null && enabled  -> BorderStroke(1.dp, colors.border)

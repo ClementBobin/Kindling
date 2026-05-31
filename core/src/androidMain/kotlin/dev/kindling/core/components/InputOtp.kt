@@ -25,6 +25,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.kindling.core.theme.LocalKindlingShapes
 
 // ─────────────────────────────────────────────
 //  InputOTP state
@@ -97,10 +98,10 @@ fun InputOTP(
     state: InputOTPState,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    isError: Boolean = false,
     content: @Composable RowScope.() -> Unit
 ) {
     val focusRequester = remember { FocusRequester() }
+    val shape = LocalKindlingShapes.current.radiusLg
 
     // Hidden backing text field
     BasicTextField(
@@ -122,6 +123,7 @@ fun InputOTP(
             .size(1.dp)
             .focusRequester(focusRequester)
             .onFocusChanged { state.focused = it.isFocused }
+            .clip(shape)
     )
 
     // Visual row
@@ -195,6 +197,7 @@ fun RowScope.InputOTPSlot(
     val cs           = MaterialTheme.colorScheme
     val slotState    = state.slots.getOrNull(index) ?: return
     val focusRequest = LocalOTPFocusRequester.current
+    val rounded       = LocalKindlingShapes.current.roundedLg
 
     val borderColor = when {
         slotState.isActive -> cs.primary
@@ -203,10 +206,10 @@ fun RowScope.InputOTPSlot(
     val borderWidth = if (slotState.isActive) 2.dp else 1.dp
 
     val shape = RoundedCornerShape(
-        topStart    = if (isFirst) 6.dp else 0.dp,
-        bottomStart = if (isFirst) 6.dp else 0.dp,
-        topEnd      = if (isLast)  6.dp else 0.dp,
-        bottomEnd   = if (isLast)  6.dp else 0.dp
+        topStart    = if (isFirst) rounded else 0.dp,
+        bottomStart = if (isFirst) rounded else 0.dp,
+        topEnd      = if (isLast)  rounded else 0.dp,
+        bottomEnd   = if (isLast)  rounded else 0.dp
     )
 
     Box(

@@ -13,12 +13,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import dev.kindling.core.theme.LocalKindlingShapes
 
 // ─────────────────────────────────────────────
 //  Internal state holder
@@ -145,6 +145,7 @@ fun DialogContent(
     properties: DialogProperties = DialogProperties(usePlatformDefaultWidth = false),
     content: @Composable ColumnScope.() -> Unit
 ) {
+    val shape = LocalKindlingShapes.current.radiusXl
     if (!open) return
 
     Dialog(
@@ -160,7 +161,7 @@ fun DialogContent(
                 modifier = modifier
                     .fillMaxWidth(0.92f)
                     .wrapContentHeight()
-                    .clip(RoundedCornerShape(12.dp))
+                    .clip(shape)
                     .background(MaterialTheme.colorScheme.surface)
                     .padding(16.dp)
             ) {
@@ -247,8 +248,9 @@ fun DialogFooter(
     onDismiss: (() -> Unit)? = null,
     content: @Composable RowScope.() -> Unit
 ) {
+    val rounded = LocalKindlingShapes.current.roundedXl
     val cs = MaterialTheme.colorScheme
-    Column(modifier = modifier.fillMaxWidth()) {
+    Column(modifier = modifier.fillMaxWidth().clip(RoundedCornerShape(bottomStart = rounded, bottomEnd = rounded))) {
         HorizontalDivider(color = cs.outlineVariant, thickness = 0.5.dp)
         Row(
             modifier              = Modifier

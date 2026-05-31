@@ -10,7 +10,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
@@ -86,9 +85,9 @@ fun KAvatar(
  */
 @Composable
 fun BoxScope.KAvatarImage(
+    modifier: Modifier = Modifier,
     painter: Painter?,
-    contentDescription: String? = null,
-    modifier: Modifier = Modifier
+    contentDescription: String? = null
 ) {
     if (painter == null) return
     androidx.compose.foundation.Image(
@@ -114,8 +113,8 @@ fun BoxScope.KAvatarImage(
  */
 @Composable
 fun BoxScope.KAvatarFallback(
-    size: KAvatarSize = KAvatarSize.Default,
     modifier: Modifier = Modifier,
+    size: KAvatarSize = KAvatarSize.Default,
     initials: String? = null,
     content: (@Composable () -> Unit)? = null
 ) {
@@ -154,8 +153,8 @@ fun BoxScope.KAvatarFallback(
  */
 @Composable
 fun BoxScope.KAvatarBadge(
-    size: KAvatarSize = KAvatarSize.Default,
     modifier: Modifier = Modifier,
+    size: KAvatarSize = KAvatarSize.Default,
     content: (@Composable BoxScope.() -> Unit)? = null
 ) {
     val cs = MaterialTheme.colorScheme
@@ -191,7 +190,7 @@ fun BoxScope.KAvatarBadge(
 @Composable
 fun KAvatarGroup(
     modifier: Modifier = Modifier,
-    size: KAvatarSize = KAvatarSize.Default,
+    //size: KAvatarSize = KAvatarSize.Default,
     overlap: Dp = 8.dp,
     content: @Composable RowScope.() -> Unit
 ) {

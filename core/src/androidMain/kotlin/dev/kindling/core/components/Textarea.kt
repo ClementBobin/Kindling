@@ -7,17 +7,19 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.kindling.core.theme.LocalKindlingShapes
 
 /**
  * Shadcn/ui-style Textarea — mirrors `textarea.tsx`.
  *
- * Respects [LocalLayoutDirection] for RTL text alignment automatically.
+ * Respects [androidx.compose.ui.platform.LocalLayoutDirection] for RTL text alignment automatically.
  *
  * ```kotlin
  * var message by remember { mutableStateOf("") }
@@ -45,13 +47,15 @@ fun Textarea(
     keyboardActions: KeyboardActions = KeyboardActions.Default
 ) {
     val cs = MaterialTheme.colorScheme
+    val shape = LocalKindlingShapes.current.radiusLg
 
     OutlinedTextField(
         value           = value,
         onValueChange   = onValueChange,
         modifier        = modifier
             .fillMaxWidth()
-            .defaultMinSize(minHeight = 64.dp),
+            .defaultMinSize(minHeight = 64.dp)
+            .clip(shape),
         enabled         = enabled,
         isError         = isError,
         singleLine      = false,

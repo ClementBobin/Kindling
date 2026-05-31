@@ -25,6 +25,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import dev.kindling.core.theme.LocalKindlingShapes
+import dev.kindling.core.theme.kindlingShadowMd
 import kotlin.math.roundToInt
 
 // ─────────────────────────────────────────────
@@ -152,6 +154,7 @@ private fun KPopoverInline(
     content: @Composable ColumnScope.() -> Unit
 ) {
     val cs      = MaterialTheme.colorScheme
+    val shape = LocalKindlingShapes.current.radiusLg
     val density = LocalDensity.current
 
     var triggerW  by remember { mutableStateOf(0) }
@@ -265,10 +268,10 @@ private fun KPopoverInline(
                         panelW = coords.size.width
                         panelH = coords.size.height
                     }
-                    .shadow(4.dp, RoundedCornerShape(8.dp))
-                    .clip(RoundedCornerShape(8.dp))
+                    .kindlingShadowMd(shape)
+                    .clip(shape)
                     .background(cs.surface)
-                    .border(1.dp, cs.outline.copy(alpha = 0.4f), RoundedCornerShape(8.dp))
+                    .border(1.dp, cs.outline.copy(alpha = 0.4f), shape)
                     .padding(horizontal = 12.dp, vertical = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(4.dp),
                 content             = content

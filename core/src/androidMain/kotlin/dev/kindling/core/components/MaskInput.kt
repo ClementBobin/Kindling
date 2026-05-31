@@ -6,8 +6,11 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import dev.kindling.core.theme.LocalKindlingShapes
+import dev.kindling.core.theme.kindlingShadowXs
 
 // ─────────────────────────────────────────────
 //  Public mask helpers  (mirror mask-input.tsx exports)
@@ -193,6 +196,7 @@ fun MaskInput(
     val isValid = mask?.validate?.invoke(value) != false
     val autoError = autoValidate && touched && value.isNotEmpty() && !isValid
     val interactionSource = remember { MutableInteractionSource() }
+    val shape = LocalKindlingShapes.current.radiusMd
 
     LaunchedEffect(interactionSource) {
         interactionSource.interactions.collect { interaction ->
@@ -221,7 +225,9 @@ fun MaskInput(
             else applyMask(raw, pattern, allowLetters)
             onValueChange(masked)
         },
-        modifier          = modifier,
+        modifier = modifier
+            .kindlingShadowXs(shape)
+            .clip(shape),
         placeholder       = placeholder,
         enabled           = enabled,
         isError           = isError || autoError,

@@ -1,7 +1,6 @@
 package dev.kindling.core.components
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -10,6 +9,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.kindling.core.theme.LocalKindlingShapes
 
 // ─────────────────────────────────────────────
 //  KBadge
@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.sp
 /**
  * Shadcn/ui-style Badge — mirrors `badge.tsx`.
  *
- * Respects [LocalLayoutDirection] automatically via Compose RTL support.
+ * Respects [androidx.compose.ui.platform.LocalLayoutDirection] automatically via Compose RTL support.
  *
  * ```kotlin
  * KBadge { Text("New") }
@@ -35,10 +35,11 @@ fun KBadge(
     val bg     = variant.bg()
     val fg     = variant.fg()
     val border = variant.border()
+    val shape  = LocalKindlingShapes.current.radius4xl
 
     Surface(
         modifier     = modifier,
-        shape        = RoundedCornerShape(percent = 50),
+        shape        = shape,
         color        = bg,
         contentColor = fg,
         border       = if (border != null)

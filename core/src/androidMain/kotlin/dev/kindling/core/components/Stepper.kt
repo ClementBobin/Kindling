@@ -7,7 +7,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.*
@@ -18,9 +17,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.kindling.core.theme.LocalKindlingShapes
 import kotlinx.coroutines.launch
 
 // ─────────────────────────────────────────────
@@ -159,7 +158,7 @@ fun Stepper(
     orientation: KStepperOrientation = KStepperOrientation.Horizontal,
     disabled: Boolean = false,
     nonInteractive: Boolean = false,
-    loop: Boolean = false,
+    //loop: Boolean = false,
     content: @Composable ColumnScope.() -> Unit
 ) {
     CompositionLocalProvider(
@@ -194,7 +193,7 @@ fun StepperList(
     modifier: Modifier = Modifier,
     content: @Composable RowScope.() -> Unit
 ) {
-    val orientation = LocalStepperOrientation.current
+    //val orientation = LocalStepperOrientation.current
     Row(
         modifier          = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
@@ -224,7 +223,7 @@ fun RowScope.StepperItem(
     content: @Composable RowScope.() -> Unit
 ) {
     val state    = useStepper()
-    val dsState  = if (completed == true) KStepState.Completed else state.dataState(value)
+    //val dsState  = if (completed == true) KStepState.Completed else state.dataState(value)
     val isLast   = state.steps.lastOrNull() == value
 
     CompositionLocalProvider(LocalStepperItemValue provides value) {
@@ -248,6 +247,7 @@ fun RowScope.StepperItem(
 @Composable
 fun StepperTrigger(
     modifier: Modifier = Modifier,
+    hasLabel: Boolean = false,
     content: @Composable RowScope.() -> Unit
 ) {
     val state          = useStepper()
@@ -256,9 +256,17 @@ fun StepperTrigger(
     val disabled       = LocalStepperDisabled.current
     val scope          = rememberCoroutineScope()
 
+    // Mirrors: not-has-data-[slot=description]:rounded-full
+    //          not-has-data-[slot=title]:rounded-full
+    // → circle when no title AND no description, rounded-md otherwise
+    val shape = if (hasLabel)
+        LocalKindlingShapes.current.radiusMd
+    else
+        CircleShape
+
     Row(
         modifier = modifier
-            .clip(RoundedCornerShape(6.dp))
+            .clip(shape)
             .then(
                 if (!nonInteractive && !disabled && itemValue.isNotEmpty())
                     Modifier.clickable {
@@ -447,7 +455,7 @@ fun StepperContent(
  */
 @Composable
 fun StepperPrev(
-    modifier: Modifier = Modifier,
+    //modifier: Modifier = Modifier,
     content: @Composable (onClick: () -> Unit) -> Unit
 ) {
     val state = useStepper()
@@ -477,7 +485,7 @@ fun StepperPrev(
  */
 @Composable
 fun StepperNext(
-    modifier: Modifier = Modifier,
+    //modifier: Modifier = Modifier,
     content: @Composable (onClick: () -> Unit) -> Unit
 ) {
     val state = useStepper()

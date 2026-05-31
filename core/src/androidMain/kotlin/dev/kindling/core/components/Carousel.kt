@@ -11,6 +11,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
@@ -96,7 +97,7 @@ fun KCarousel(
 ) {
     val scope  = rememberCoroutineScope()
     val state  = api.pagerState
-    val rtl    = LocalLayoutDirection.current == LayoutDirection.Rtl
+    //val rtl    = LocalLayoutDirection.current == LayoutDirection.Rtl
 
     // ── Auto-play ────────────────────────────────────────────────────────
     val autoPlayJob = remember { mutableStateOf<kotlinx.coroutines.Job?>(null) }
@@ -141,17 +142,6 @@ fun KCarousel(
                     onClick  = { navigateTo(state.currentPage - 1) },
                     enabled  = state.currentPage > 0
                 )
-            }
-
-            // Pager
-            HorizontalPager(
-                state       = state,
-                pageSpacing = pageSpacing,
-                modifier    = Modifier.weight(1f)
-            ) { page ->
-                Box(modifier = Modifier.fillMaxWidth()) {
-                    // Content slots are rendered via KCarouselContent/KCarouselItem
-                }
             }
 
             if (showArrows) {
@@ -251,7 +241,7 @@ fun KCarouselPrevious(
     val rtl = LocalLayoutDirection.current == LayoutDirection.Rtl
     KButton(
         onClick  = onClick,
-        modifier = modifier,
+        modifier = modifier.clip(CircleShape),
         variant  = variant,
         size     = size,
         enabled  = enabled
@@ -284,7 +274,7 @@ fun KCarouselNext(
     val rtl = LocalLayoutDirection.current == LayoutDirection.Rtl
     KButton(
         onClick  = onClick,
-        modifier = modifier,
+        modifier = modifier.clip(CircleShape),
         variant  = variant,
         size     = size,
         enabled  = enabled

@@ -3,12 +3,11 @@ package dev.kindling.sample
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Email
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -191,7 +190,7 @@ private fun AvatarSection() {
         }
 
         SubLabel("AvatarGroup — Lg size, custom overlap")
-        KAvatarGroup(size = KAvatarSize.Lg, overlap = 12.dp) {
+        KAvatarGroup(overlap = 12.dp) {
             KAvatar(size = KAvatarSize.Lg) { KAvatarFallback(size = KAvatarSize.Lg, initials = "AA") }
             KAvatar(size = KAvatarSize.Lg) { KAvatarFallback(size = KAvatarSize.Lg, initials = "BB") }
             KAvatar(size = KAvatarSize.Lg) { KAvatarFallback(size = KAvatarSize.Lg, initials = "CC") }
@@ -497,7 +496,7 @@ private fun ComboboxSection() {
 
         SubLabel("Trigger + search — nothing selected")
         val state1 = rememberComboboxState(onSelect = {})
-        Combobox(state = state1) {
+        Combobox() {
             ComboboxTrigger(state = state1)
             ComboboxContent(state = state1) {
                 ComboboxList {
@@ -514,7 +513,7 @@ private fun ComboboxSection() {
 
         SubLabel("Pre-selected item")
         val state2 = rememberComboboxState(selected = frameworks[1], onSelect = {})
-        Combobox(state = state2) {
+        Combobox() {
             ComboboxTrigger(state = state2)
             ComboboxContent(state = state2) {
                 ComboboxList {
@@ -525,7 +524,7 @@ private fun ComboboxSection() {
 
         SubLabel("Input with search field + clear button")
         val state3 = rememberComboboxState(onSelect = {})
-        Combobox(state = state3) {
+        Combobox() {
             ComboboxInput(state = state3, placeholder = "Search frameworks…", showClear = true)
             ComboboxContent(state = state3) {
                 ComboboxList {
@@ -539,7 +538,7 @@ private fun ComboboxSection() {
 
         SubLabel("Multiple selection (chips)")
         val state4 = rememberComboboxState(multiple = true, onSelectMultiple = {})
-        Combobox(state = state4) {
+        Combobox() {
             ComboboxInput(state = state4, placeholder = "Select frameworks…")
             ComboboxContent(state = state4) {
                 ComboboxList {
@@ -562,7 +561,7 @@ private fun ComboboxSection() {
             KComboboxGroup("agnostic", "Framework-agnostic"),
         )
         val state5 = rememberComboboxState(onSelect = {})
-        Combobox(state = state5) {
+        Combobox() {
             ComboboxTrigger(state = state5)
             ComboboxContent(state = state5) {
                 ComboboxList {
@@ -573,7 +572,7 @@ private fun ComboboxSection() {
 
         SubLabel("Disabled trigger")
         val stateDisabled = rememberComboboxState(onSelect = {})
-        Combobox(state = stateDisabled) {
+        Combobox() {
             ComboboxTrigger(state = stateDisabled, enabled = false)
         }
     }
@@ -966,7 +965,7 @@ private fun InputGroupSection() {
         }
 
         SubLabel("Disabled")
-        InputGroup(enabled = false) {
+        InputGroup() {
             InputGroupAddon(align = KInputGroupAlign.InlineStart) { InputGroupText("https://") }
             InputGroupInput(value = "example.com", onValueChange = {}, enabled = false)
         }
@@ -1282,7 +1281,7 @@ private fun SkeletonSection() {
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Skeleton(modifier = Modifier.size(48.dp), shape = CircleShape)
+            Skeleton(modifier = Modifier.size(48.dp))
             Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 Skeleton(modifier = Modifier.width(120.dp).height(14.dp))
                 Skeleton(modifier = Modifier.width(80.dp).height(12.dp))
@@ -1295,7 +1294,6 @@ private fun SkeletonSection() {
         SubLabel("Custom shape — pill")
         Skeleton(
             modifier = Modifier.width(80.dp).height(24.dp),
-            shape    = androidx.compose.foundation.shape.RoundedCornerShape(percent = 50)
         )
 
         SubLabel("Shimmer brush directly")
