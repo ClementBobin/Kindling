@@ -178,20 +178,20 @@ fun MaskInput(
     modifier: Modifier = Modifier,
     mask: KMaskPattern? = null,
     customPattern: String? = null,
-    allowLetters: Boolean = mask?.keyboardType == KeyboardType.Text,
+    allowLetters: Boolean = mask?.keyboardType == KeyboardType.Text && mask.withoutMask.not(),
     withoutMask: Boolean = mask?.withoutMask ?: false,
     placeholder: String = mask?.placeholder
         ?: customPattern?.replace('#', '0')
         ?: "",
     enabled: Boolean = true,
     isError: Boolean = false,
+    autoValidate: Boolean = true,
     keyboardActions: KeyboardActions = KeyboardActions.Default
 ) {
     val pattern = customPattern ?: mask?.pattern ?: ""
 
-    // auto-error: true when field has been touched and value fails validation
     var touched by remember { mutableStateOf(false) }
-    val autoError = touched && value.isNotEmpty() && mask?.validate?.invoke(value) == false
+    val autoError = autoValidate && touched && value.isNotEmpty() && mask?.validate?.invoke(value) == false
     val interactionSource = remember { MutableInteractionSource() }
 
     LaunchedEffect(interactionSource) {
@@ -208,7 +208,8 @@ fun MaskInput(
     KInput(
         value         = displayValue,
         onValueChange = { typed ->
-            val raw    = getUnmaskedValue(typed, allowLetters)
+            val raw    = if (withoutMask || pattern.isEmpty()) typed
+            else getUnmaskedValue(typed, allowLetters)
             val masked = if (withoutMask || pattern.isEmpty()) raw
             else applyMask(raw, pattern, allowLetters)
             onValueChange(masked)
