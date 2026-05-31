@@ -9,6 +9,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -17,11 +18,12 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.kindling.core.theme.LocalKindlingShapes
 
 /**
  * Shadcn/ui-style Input — mirrors `input.tsx`.
  *
- * Respects [LocalLayoutDirection] via Compose RTL support.
+ * Respects [androidx.compose.ui.platform.LocalLayoutDirection] via Compose RTL support.
  *
  * ```kotlin
  * var value by remember { mutableStateOf("") }
@@ -49,13 +51,15 @@ fun KInput(
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() }
 ) {
     val cs = MaterialTheme.colorScheme
+    val shape = LocalKindlingShapes.current.radiusLg
 
     OutlinedTextField(
         value                = value,
         onValueChange        = onValueChange,
         modifier             = modifier
             .fillMaxWidth()
-            .defaultMinSize(minHeight = 32.dp),
+            .defaultMinSize(minHeight = 32.dp)
+            .clip(shape),
         enabled              = enabled,
         isError              = isError,
         singleLine           = singleLine,

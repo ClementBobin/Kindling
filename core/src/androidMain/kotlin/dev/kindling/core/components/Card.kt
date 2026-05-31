@@ -11,9 +11,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.kindling.core.theme.LocalKindlingShapes
 
 // ─────────────────────────────────────────────
 //  KCard
@@ -39,13 +39,14 @@ fun KCard(
     image: Painter? = null,
     content: @Composable ColumnScope.() -> Unit
 ) {
-    val corner  = 12.dp
     val vPad    = if (size == KCardSize.Sm) 12.dp else 16.dp
     val gap     = if (size == KCardSize.Sm) 8.dp  else 12.dp
+    val shape  = LocalKindlingShapes.current.radiusXl
+    val rounded = LocalKindlingShapes.current.roundedXl
 
     Surface(
         modifier        = modifier,
-        shape           = RoundedCornerShape(corner),
+        shape           = shape,
         color           = MaterialTheme.colorScheme.surface,
         tonalElevation  = 0.dp,
         shadowElevation = 4.dp
@@ -59,7 +60,7 @@ fun KCard(
                     modifier           = Modifier
                         .fillMaxWidth()
                         .height(200.dp)
-                        .clip(RoundedCornerShape(topStart = corner, topEnd = corner))
+                        .clip(RoundedCornerShape(topStart = rounded, topEnd = rounded))
                 )
             }
             Column(
@@ -85,8 +86,9 @@ fun KCardHeader(
     action: (@Composable () -> Unit)? = null,
     content: @Composable ColumnScope.() -> Unit
 ) {
+    val rounded = LocalKindlingShapes.current.roundedXl
     Row(
-        modifier              = modifier.fillMaxWidth().padding(horizontal = 16.dp),
+        modifier              = modifier.fillMaxWidth().padding(horizontal = 16.dp).clip(RoundedCornerShape(topStart = rounded)),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment     = Alignment.Top
     ) {
@@ -177,9 +179,10 @@ fun KCardFooter(
     horizontalArrangement: Arrangement.Horizontal = Arrangement.spacedBy(8.dp),
     content: @Composable RowScope.() -> Unit
 ) {
+    val rounded = LocalKindlingShapes.current.roundedXl
     HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant, thickness = 0.5.dp)
     Row(
-        modifier              = modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
+        modifier              = modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp).clip(RoundedCornerShape(topEnd = rounded)),
         horizontalArrangement = horizontalArrangement,
         verticalAlignment     = Alignment.CenterVertically,
         content               = content

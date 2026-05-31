@@ -231,7 +231,7 @@ private fun ToastAnimatedItem(toast: KToastData, onClose: () -> Unit) {
     ) {
         Toast(
             data    = toast,
-            onClose = { visible = false; onClose() }
+            onClose = { onClose() }
         )
     }
 }
