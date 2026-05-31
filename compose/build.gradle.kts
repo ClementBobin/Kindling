@@ -13,7 +13,7 @@ version = Versions.libraryVersion
 
 android {
     namespace  = "dev.kindling.compose"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 26
