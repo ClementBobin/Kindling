@@ -187,14 +187,19 @@ fun MaskInput(
     enabled: Boolean = true,
     isError: Boolean = false,
     autoValidate: Boolean = true,
+    customValidate: ((String) -> Boolean)? = null,
     onValidationChange: ((Boolean) -> Unit)? = null,
     keyboardActions: KeyboardActions = KeyboardActions.Default
 ) {
     val pattern = customPattern ?: mask?.pattern ?: ""
 
     var touched by remember { mutableStateOf(false) }
-    val isValid = mask?.validate?.invoke(value) != false
+
+    // Use customValidate if provided, otherwise fall back to mask.validate
+    val validator = customValidate ?: mask?.validate
+    val isValid = validator?.invoke(value) != false
     val autoError = autoValidate && touched && value.isNotEmpty() && !isValid
+
     val interactionSource = remember { MutableInteractionSource() }
     val shape = LocalKindlingShapes.current.radiusMd
 
@@ -204,9 +209,8 @@ fun MaskInput(
         }
     }
 
-    // fire onValidationChange whenever validity changes
     LaunchedEffect(value, touched) {
-        if (mask?.validate != null && (touched || value.isNotEmpty())) {
+        if (validator != null && (touched || value.isNotEmpty())) {
             onValidationChange?.invoke(isValid)
         }
     }
@@ -225,7 +229,7 @@ fun MaskInput(
             else applyMask(raw, pattern, allowLetters)
             onValueChange(masked)
         },
-        modifier = modifier
+        modifier          = modifier
             .kindlingShadowXs(shape)
             .clip(shape),
         placeholder       = placeholder,
