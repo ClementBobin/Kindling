@@ -180,23 +180,30 @@ fun MaskInput(
     customPattern: String? = null,
     allowLetters: Boolean = mask?.keyboardType == KeyboardType.Text && mask.withoutMask.not(),
     withoutMask: Boolean = mask?.withoutMask ?: false,
-    placeholder: String = mask?.placeholder
-        ?: customPattern?.replace('#', '0')
-        ?: "",
+    placeholder: String = mask?.placeholder ?: customPattern?.replace('#', '0') ?: "",
     enabled: Boolean = true,
     isError: Boolean = false,
     autoValidate: Boolean = true,
+    onValidationChange: ((Boolean) -> Unit)? = null,
     keyboardActions: KeyboardActions = KeyboardActions.Default
 ) {
     val pattern = customPattern ?: mask?.pattern ?: ""
 
     var touched by remember { mutableStateOf(false) }
-    val autoError = autoValidate && touched && value.isNotEmpty() && mask?.validate?.invoke(value) == false
+    val isValid = mask?.validate?.invoke(value) != false
+    val autoError = autoValidate && touched && value.isNotEmpty() && !isValid
     val interactionSource = remember { MutableInteractionSource() }
 
     LaunchedEffect(interactionSource) {
         interactionSource.interactions.collect { interaction ->
             if (interaction is FocusInteraction.Unfocus) touched = true
+        }
+    }
+
+    // fire onValidationChange whenever validity changes
+    LaunchedEffect(value, touched) {
+        if (mask?.validate != null && (touched || value.isNotEmpty())) {
+            onValidationChange?.invoke(isValid)
         }
     }
 
@@ -233,37 +240,37 @@ fun MaskInput(
 // ─────────────────────────────────────────────
 
 @Composable fun PhoneInput(value: String, onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier, enabled: Boolean = true, isError: Boolean = false) =
-    MaskInput(value, onValueChange, modifier, KMaskPattern.Phone, enabled = enabled, isError = isError)
+    modifier: Modifier = Modifier, enabled: Boolean = true, isError: Boolean = false, onValidationChange: ((Boolean) -> Unit)? = null) =
+    MaskInput(value, onValueChange, modifier, KMaskPattern.Phone, enabled = enabled, isError = isError, onValidationChange = onValidationChange)
 
 @Composable fun SsnInput(value: String, onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier, enabled: Boolean = true, isError: Boolean = false) =
-    MaskInput(value, onValueChange, modifier, KMaskPattern.Ssn, enabled = enabled, isError = isError)
+    modifier: Modifier = Modifier, enabled: Boolean = true, isError: Boolean = false, onValidationChange: ((Boolean) -> Unit)? = null) =
+    MaskInput(value, onValueChange, modifier, KMaskPattern.Ssn, enabled = enabled, isError = isError, onValidationChange = onValidationChange)
 
 @Composable fun DateMaskInput(value: String, onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier, enabled: Boolean = true, isError: Boolean = false) =
-    MaskInput(value, onValueChange, modifier, KMaskPattern.Date, enabled = enabled, isError = isError)
+    modifier: Modifier = Modifier, enabled: Boolean = true, isError: Boolean = false, onValidationChange: ((Boolean) -> Unit)? = null) =
+    MaskInput(value, onValueChange, modifier, KMaskPattern.Date, enabled = enabled, isError = isError, onValidationChange = onValidationChange)
 
 @Composable fun CreditCardInput(value: String, onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier, enabled: Boolean = true, isError: Boolean = false) =
-    MaskInput(value, onValueChange, modifier, KMaskPattern.CreditCard, enabled = enabled, isError = isError)
+    modifier: Modifier = Modifier, enabled: Boolean = true, isError: Boolean = false, onValidationChange: ((Boolean) -> Unit)? = null) =
+    MaskInput(value, onValueChange, modifier, KMaskPattern.CreditCard, enabled = enabled, isError = isError, onValidationChange = onValidationChange)
 
 @Composable fun EinInput(value: String, onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier, enabled: Boolean = true, isError: Boolean = false) =
-    MaskInput(value, onValueChange, modifier, KMaskPattern.Ein, enabled = enabled, isError = isError)
+    modifier: Modifier = Modifier, enabled: Boolean = true, isError: Boolean = false, onValidationChange: ((Boolean) -> Unit)? = null) =
+    MaskInput(value, onValueChange, modifier, KMaskPattern.Ein, enabled = enabled, isError = isError, onValidationChange = onValidationChange)
 
 @Composable fun EmailInput(value: String, onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier, enabled: Boolean = true, isError: Boolean = false) =
-    MaskInput(value, onValueChange, modifier, KMaskPattern.Email, enabled = enabled, isError = isError)
+    modifier: Modifier = Modifier, enabled: Boolean = true, isError: Boolean = false, onValidationChange: ((Boolean) -> Unit)? = null) =
+    MaskInput(value, onValueChange, modifier, KMaskPattern.Email, enabled = enabled, isError = isError, onValidationChange = onValidationChange)
 
 @Composable fun UriInput(value: String, onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier, enabled: Boolean = true, isError: Boolean = false) =
-    MaskInput(value, onValueChange, modifier, KMaskPattern.Uri, enabled = enabled, isError = isError)
+    modifier: Modifier = Modifier, enabled: Boolean = true, isError: Boolean = false, onValidationChange: ((Boolean) -> Unit)? = null) =
+    MaskInput(value, onValueChange, modifier, KMaskPattern.Uri, enabled = enabled, isError = isError, onValidationChange = onValidationChange)
 
 @Composable fun NumberInput(value: String, onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier, enabled: Boolean = true, isError: Boolean = false) =
-    MaskInput(value, onValueChange, modifier, KMaskPattern.Number, enabled = enabled, isError = isError)
+    modifier: Modifier = Modifier, enabled: Boolean = true, isError: Boolean = false, onValidationChange: ((Boolean) -> Unit)? = null) =
+    MaskInput(value, onValueChange, modifier, KMaskPattern.Number, enabled = enabled, isError = isError, onValidationChange = onValidationChange)
 
 @Composable fun DecimalInput(value: String, onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier, enabled: Boolean = true, isError: Boolean = false) =
-    MaskInput(value, onValueChange, modifier, KMaskPattern.Decimal, enabled = enabled, isError = isError)
+    modifier: Modifier = Modifier, enabled: Boolean = true, isError: Boolean = false, onValidationChange: ((Boolean) -> Unit)? = null) =
+    MaskInput(value, onValueChange, modifier, KMaskPattern.Decimal, enabled = enabled, isError = isError, onValidationChange = onValidationChange)
