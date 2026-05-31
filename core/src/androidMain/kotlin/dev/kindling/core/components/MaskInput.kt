@@ -1,5 +1,7 @@
 package dev.kindling.core.components
 
+import androidx.compose.foundation.interaction.FocusInteraction
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.*
@@ -110,22 +112,27 @@ fun fromUnmaskedIndex(masked: String, pattern: String, unmaskedIndex: Int): Int 
 enum class KMaskPattern(
     val pattern: String,
     val placeholder: String = "",
-    val keyboardType: KeyboardType = KeyboardType.Number
+    val keyboardType: KeyboardType = KeyboardType.Number,
+    val withoutMask: Boolean = false,
+    val validate: ((String) -> Boolean)? = null
 ) {
-    Phone("(###) ###-####",           "(555) 000-0000"),
-    Ssn("###-##-####",                "000-00-0000"),
-    Date("##/##/####",                "MM/DD/YYYY"),
-    Time("##:##",                     "HH:MM"),
-    CreditCard("#### #### #### ####", "0000 0000 0000 0000"),
-    CreditCardExpiry("##/##",         "MM/YY"),
-    ZipCode("#####",                  "00000"),
-    ZipCodeExtended("#####-####",     "00000-0000"),
-    Ein("##-#######",                 "00-0000000"),
-    Isbn("###-#-###-#####-#",         "000-0-000-00000-0"),
-    LicensePlate("###-###",           "AAA-000", KeyboardType.Text),
-    MacAddress("##:##:##:##:##:##",   "00:00:00:00:00:00", KeyboardType.Text)
+    Phone("(###) ###-####",           "(555) 000-0000",    validate = { getUnmaskedValue(it).length == 10 }),
+    Ssn("###-##-####",                "000-00-0000",       validate = { getUnmaskedValue(it).length == 9 }),
+    Date("##/##/####",                "MM/DD/YYYY",        validate = { getUnmaskedValue(it).length == 8 }),
+    Time("##:##",                     "HH:MM",             validate = { getUnmaskedValue(it).length == 4 }),
+    CreditCard("#### #### #### ####", "0000 0000 0000 0000", validate = { getUnmaskedValue(it).length == 16 }),
+    CreditCardExpiry("##/##",         "MM/YY",             validate = { getUnmaskedValue(it).length == 4 }),
+    ZipCode("#####",                  "00000",             validate = { getUnmaskedValue(it).length == 5 }),
+    ZipCodeExtended("#####-####",     "00000-0000",        validate = { getUnmaskedValue(it).length == 9 }),
+    Ein("##-#######",                 "00-0000000",        validate = { getUnmaskedValue(it).length == 9 }),
+    Isbn("###-#-###-#####-#",         "000-0-000-00000-0", validate = { getUnmaskedValue(it).length == 13 }),
+    LicensePlate("###-###",           "AAA-000", KeyboardType.Text, validate = { getUnmaskedValue(it, allowLetters = true).length == 6 }),
+    MacAddress("##:##:##:##:##:##",   "00:00:00:00:00:00", KeyboardType.Text, validate = { getUnmaskedValue(it, allowLetters = true).length == 12 }),
+    Email("", "name@example.com",     KeyboardType.Email,   withoutMask = true, validate = { android.util.Patterns.EMAIL_ADDRESS.matcher(it).matches() }),
+    Uri("", "https://",               KeyboardType.Uri,     withoutMask = true, validate = { android.util.Patterns.WEB_URL.matcher(it).matches() }),
+    Number("", "",                    KeyboardType.Number,  withoutMask = true, validate = { it.toDoubleOrNull() != null }),
+    Decimal("", "0.00",               KeyboardType.Decimal, withoutMask = true, validate = { it.toDoubleOrNull() != null }),
 }
-
 // ─────────────────────────────────────────────
 //  MaskInput
 // ─────────────────────────────────────────────
@@ -172,7 +179,7 @@ fun MaskInput(
     mask: KMaskPattern? = null,
     customPattern: String? = null,
     allowLetters: Boolean = mask?.keyboardType == KeyboardType.Text,
-    withoutMask: Boolean = false,
+    withoutMask: Boolean = mask?.withoutMask ?: false,
     placeholder: String = mask?.placeholder
         ?: customPattern?.replace('#', '0')
         ?: "",
@@ -181,6 +188,17 @@ fun MaskInput(
     keyboardActions: KeyboardActions = KeyboardActions.Default
 ) {
     val pattern = customPattern ?: mask?.pattern ?: ""
+
+    // auto-error: true when field has been touched and value fails validation
+    var touched by remember { mutableStateOf(false) }
+    val autoError = touched && value.isNotEmpty() && mask?.validate?.invoke(value) == false
+    val interactionSource = remember { MutableInteractionSource() }
+
+    LaunchedEffect(interactionSource) {
+        interactionSource.interactions.collect { interaction ->
+            if (interaction is FocusInteraction.Unfocus) touched = true
+        }
+    }
 
     val displayValue = remember(value, pattern, withoutMask) {
         if (withoutMask || pattern.isEmpty()) value
@@ -192,19 +210,20 @@ fun MaskInput(
         onValueChange = { typed ->
             val raw    = getUnmaskedValue(typed, allowLetters)
             val masked = if (withoutMask || pattern.isEmpty()) raw
-                         else applyMask(raw, pattern, allowLetters)
+            else applyMask(raw, pattern, allowLetters)
             onValueChange(masked)
         },
-        modifier        = modifier,
-        placeholder     = placeholder,
-        enabled         = enabled,
-        isError         = isError,
-        keyboardOptions = KeyboardOptions(
+        modifier          = modifier,
+        placeholder       = placeholder,
+        enabled           = enabled,
+        isError           = isError || autoError,
+        interactionSource = interactionSource,
+        keyboardOptions   = KeyboardOptions(
             keyboardType = mask?.keyboardType
                 ?: if (allowLetters) KeyboardType.Text else KeyboardType.Number,
             imeAction    = ImeAction.Done
         ),
-        keyboardActions = keyboardActions
+        keyboardActions   = keyboardActions
     )
 }
 
@@ -231,3 +250,19 @@ fun MaskInput(
 @Composable fun EinInput(value: String, onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier, enabled: Boolean = true, isError: Boolean = false) =
     MaskInput(value, onValueChange, modifier, KMaskPattern.Ein, enabled = enabled, isError = isError)
+
+@Composable fun EmailInput(value: String, onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier, enabled: Boolean = true, isError: Boolean = false) =
+    MaskInput(value, onValueChange, modifier, KMaskPattern.Email, enabled = enabled, isError = isError)
+
+@Composable fun UriInput(value: String, onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier, enabled: Boolean = true, isError: Boolean = false) =
+    MaskInput(value, onValueChange, modifier, KMaskPattern.Uri, enabled = enabled, isError = isError)
+
+@Composable fun NumberInput(value: String, onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier, enabled: Boolean = true, isError: Boolean = false) =
+    MaskInput(value, onValueChange, modifier, KMaskPattern.Number, enabled = enabled, isError = isError)
+
+@Composable fun DecimalInput(value: String, onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier, enabled: Boolean = true, isError: Boolean = false) =
+    MaskInput(value, onValueChange, modifier, KMaskPattern.Decimal, enabled = enabled, isError = isError)
