@@ -11,60 +11,137 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 
 /**
- * A generic screen composable that handles common screen functionality for ViewModel-based screens.
+ * Legacy lifecycle-aware screen wrapper for [KViewModel]-driven Composables.
  *
- * This composable provides a standardized way to handle state observation, event collection,
- * back navigation, and focus management across all screens in the application.
+ * `Screen` is the original screen wrapper in the Kindling hierarchy. It centralises
+ * the boilerplate every screen needs:
  *
- * @param State The type of UI state managed by the ViewModel
- * @param VM The type of ViewModel that extends [KViewModel]<State>
- * @param viewModel The ViewModel instance that manages the screen's state and logic
- * @param navController The NavController for handling navigation between screens
- * @param onBack Optional callback for handling back button presses. If null, back press is disabled.
- * @param onEvent Callback for handling custom events emitted by the ViewModel
- * @param content The main composable content of the screen that receives state and ViewModel
+ * - **State collection** via [collectAsState]
+ * - **One-shot event dispatch** — [Destination] events trigger automatic
+ *   navigation; all other events are forwarded to [onEvent]
+ * - **Back press handling** with optional focus clearing
+ *
+ * ---
+ *
+ * ## When to use
+ *
+ * | Screen wrapper | Use when |
+ * |---|---|
+ * | `Screen` ← you are here | ViewModel extends [KViewModel] (Application + Koin) |
+ * | [SimpleScreen][dev.kindling.compose.legacy.SimpleScreen] | ViewModel extends [KSimpleViewModel][dev.kindling.compose.legacy.KSimpleViewModel] |
+ * | [KScreen][dev.kindling.compose.KScreen] | ViewModel extends the two-param [KViewModel][dev.kindling.compose.KViewModel] |
+ *
+ * ---
+ *
+ * ## Lifecycle awareness
+ *
+ * > **Note:** This wrapper uses [collectAsState] rather than `collectAsStateWithLifecycle`.
+ * > State collection therefore continues while the app is in the background.
+ * > Prefer [KScreen][dev.kindling.compose.KScreen] for new screens where
+ * > lifecycle-safe collection is desired.
+ *
+ * ---
+ *
+ * ## Basic usage
+ *
+ * ```kotlin
+ * @Composable
+ * fun ProfileScreen(
+ *     viewModel: ProfileViewModel,
+ *     navController: NavController
+ * ) {
+ *     Screen(
+ *         viewModel = viewModel,
+ *         navController = navController,
+ *         onEvent = { _, _, event ->
+ *             when (event) {
+ *                 is ProfileEvent.ShowToast ->
+ *                     Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
+ *                 else -> Unit
+ *             }
+ *         }
+ *     ) { state, vm ->
+ *         ProfileContent(
+ *             state = state,
+ *             onSave = vm::save
+ *         )
+ *     }
+ * }
+ * ```
+ *
+ * ---
+ *
+ * ## Navigation
+ *
+ * Any event that implements [Destination] is intercepted and forwarded directly
+ * to the [NavController] — no extra handling needed in [onEvent]:
+ *
+ * ```kotlin
+ * // In your ViewModel:
+ * sendEvent(AppScreen.Home)           // ← automatically navigated by Screen
+ * sendEvent(ProfileEvent.ShowToast()) // ← forwarded to onEvent
+ * ```
+ *
+ * ---
+ *
+ * ## Back handling
+ *
+ * Supply [onBack] to intercept the system back press. Focus is cleared
+ * automatically before the callback fires, dismissing any open keyboard:
+ *
+ * ```kotlin
+ * Screen(
+ *     viewModel = viewModel,
+ *     navController = navController,
+ *     onBack = { state, vm ->
+ *         if (state.hasUnsavedChanges) vm.showDiscardDialog()
+ *         else navController.popBackStack()
+ *     }
+ * ) { state, vm -> ... }
+ * ```
+ *
+ * If [onBack] is `null` (the default), the system back press is not intercepted
+ * and default navigation behaviour applies.
+ *
+ * ---
+ *
+ * @param State UI state type produced by [viewModel].
+ * @param VM ViewModel type, must extend [KViewModel]<[State]>.
+ * @param viewModel The [KViewModel] driving this screen.
+ * @param navController [NavController] used for automatic [Destination] navigation.
+ * @param onBack Optional back press handler. Receives the latest state and ViewModel.
+ *   Pass `null` to leave the system back behaviour unchanged.
+ * @param onEvent Handler for non-navigation events emitted by [viewModel].
+ *   Receives the latest state, the ViewModel, and the raw event object.
+ *   Defaults to a no-op.
+ * @param content Main screen content. Receives the latest [State] and [viewModel].
  *
  * @see KViewModel
- * @see NavController
- * @see BackHandler
- * @see LaunchedEffect
- *
- * @sample
- * Screen(
- *     viewModel = myViewModel,
- *     navController = navController
- * ) { state, viewModel ->
- *     MyScreenContent(
- *         state = state,
- *         onAction = { viewModel.handleAction(it) }
- *     )
- * }
- *
+ * @see dev.kindling.compose.KScreen
+ * @see dev.kindling.compose.legacy.SimpleScreen
+ * @see Destination
  */
 @Composable
-fun <State, VM: KViewModel<State>> Screen(
+fun <State, VM : KViewModel<State>> KScreen(
     viewModel: VM,
     navController: NavController,
     onBack: ((state: State, viewModel: VM) -> Unit)? = null,
-    onEvent: (state: State, viewModel: VM, event: Any) -> Unit = { _, _, _ ->  },
+    onEvent: (state: State, viewModel: VM, event: Any) -> Unit = { _, _, _ -> },
     content: @Composable (state: State, viewModel: VM) -> Unit
 ) {
-
-    // Observing the state from the view model.
     val state by viewModel.state.collectAsState()
 
     val focusManager = LocalFocusManager.current
 
-    // Handle back press event.
-    if (onBack != null)
+    if (onBack != null) {
         BackHandler(
             onBack = {
                 focusManager.clearFocus()
                 onBack(state, viewModel)
             }
         )
+    }
 
-    // Collect events emitted by the ViewModel.
     LaunchedEffect(viewModel) {
         viewModel.events
             .onEach { event ->
@@ -74,5 +151,4 @@ fun <State, VM: KViewModel<State>> Screen(
     }
 
     content(state, viewModel)
-
 }

@@ -16,98 +16,200 @@ import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 
 /**
- * A base ViewModel class that provides common functionality for state management and data handling.
+ * Legacy base ViewModel for Kindling applications that require [AndroidViewModel]
+ * or [KoinComponent] integration.
  *
- * This class extends [AndroidViewModel] and implements [KoinComponent] for dependency injection.
- * It provides a structured approach to managing UI state, events, and asynchronous data operations.
+ * `KViewModel` is the original single-type-parameter tier of the Kindling ViewModel
+ * hierarchy. It provides state management, one-shot events, and async helpers while
+ * remaining compatible with Koin's `by inject()` delegation and the [Application] context.
  *
- * @param State The type of the UI state managed by this ViewModel
- * @param initialState The initial state when the ViewModel is created
- * @param application The application context
+ * ---
  *
- * @property state The current UI state as a [StateFlow] for observing state changes
- * @property events A flow of one-time events that should be handled by the UI
+ * ## When to use which ViewModel
  *
- * @see AndroidViewModel
- * @see KoinComponent
- * @see StateFlow
- * @see Channel
+ * | Scenario | Recommended base |
+ * |---|---|
+ * | Needs [Application] context or Koin `by inject()` | `KViewModel` ← you are here |
+ * | Simple screen, no framework coupling needed | [KSimpleViewModel][dev.kindling.compose.legacy.KSimpleViewModel] |
+ * | Feature screen with a typed event contract | [KViewModel][dev.kindling.compose.KViewModel] (two-param) |
+ * | Strict unidirectional MVI flow | [KMviViewModel][dev.kindling.compose.experimental.KMviViewModel] |
  *
- * @sample
- * // Example usage:
- * class MyViewModel(application: Application) : ViewModel<MyState>(
- *     initialState = MyState(),
+ * ---
+ *
+ * ## Tradeoffs
+ *
+ * - ✅ Full Koin `by inject()` support via [KoinComponent]
+ * - ✅ Access to [Application] context via `getApplication()`
+ * - ❌ Events are typed as [Any] — no compile-time exhaustiveness checking
+ * - ❌ Requires an [Application] reference at construction time
+ * - ❌ Harder to unit-test due to [AndroidViewModel] dependency
+ *
+ * ---
+ *
+ * ## Basic usage
+ *
+ * ```kotlin
+ * data class ProfileState(
+ *     val isLoading: Boolean = true,
+ *     val name: String = ""
+ * )
+ *
+ * sealed interface ProfileEvent {
+ *     data class ShowToast(val message: String) : ProfileEvent
+ * }
+ *
+ * class ProfileViewModel(
+ *     application: Application
+ * ) : KViewModel<ProfileState>(
+ *     initialState = ProfileState(),
  *     application = application
  * ) {
- *     fun loadData() {
+ *     private val repo: ProfileRepository by inject()
+ *
+ *     init { loadProfile() }
+ *
+ *     private fun loadProfile() {
  *         fetchData(
- *             source = { repository.getData() },
+ *             source = { repo.getProfile() },
  *             onResult = { result ->
- *                 result.onSuccess { data ->
- *                     updateState { copy(data = data) }
- *                 }.onFailure { error ->
- *                     sendEvent(ErrorEvent(error.message))
+ *                 result
+ *                     .onSuccess { profile ->
+ *                         updateState { copy(name = profile.name, isLoading = false) }
+ *                     }
+ *                     .onFailure {
+ *                         sendEvent(ProfileEvent.ShowToast("Failed to load profile"))
+ *                     }
+ *             }
+ *         )
+ *     }
+ * }
+ * ```
+ *
+ * ---
+ *
+ * ## Live data collection
+ *
+ * ```kotlin
+ * class FeedViewModel(
+ *     application: Application
+ * ) : KViewModel<FeedState>(FeedState(), application) {
+ *     private val repo: FeedRepository by inject()
+ *
+ *     init {
+ *         collectData(
+ *             source = { repo.observeFeed() },
+ *             onResult = { result ->
+ *                 result.onSuccess { items ->
+ *                     updateState { copy(items = items) }
  *                 }
  *             }
  *         )
  *     }
  * }
+ * ```
+ *
+ * @param State The UI state type. Prefer immutable data classes with default values.
+ * @param initialState The state emitted immediately to all collectors on subscription.
+ * @param application The [Application] instance, forwarded to [AndroidViewModel].
+ *
+ * @see AndroidViewModel
+ * @see KoinComponent
+ * @see KScreen
+ * @see dev.kindling.compose.legacy.KSimpleViewModel
+ * @see dev.kindling.compose.KViewModel
  */
-open class KViewModel<State>(initialState: State, application: Application): AndroidViewModel(application),
-    KoinComponent {
+open class KViewModel<State>(
+    initialState: State,
+    application: Application
+) : AndroidViewModel(application), KoinComponent {
 
-    /**
-     * Private mutable state flow that holds the current UI state.
-     */
+    // ─────────────────────────────────────────────────────────────
+    // STATE
+    // ─────────────────────────────────────────────────────────────
+
     private val _state = MutableStateFlow(initialState)
 
     /**
-     * Public immutable state flow that exposes the current UI state.
-     * Use this to observe state changes in Composables or Activities/Fragments.
+     * Observable UI state stream.
+     *
+     * Always holds the latest state and replays it immediately to new collectors.
+     *
+     * Collect this in a [KScreen] or directly in a Composable:
+     *
+     * ```kotlin
+     * val state by viewModel.state.collectAsStateWithLifecycle()
+     * ```
      */
     val state: StateFlow<State>
         get() = _state
 
     /**
-     * Private channel for sending one-time events to the UI.
-     */
-    private val _events = Channel<Any>(Channel.BUFFERED)
-
-    /**
-     * Public flow of events that should be handled by the UI.
-     * These are typically one-time events like navigation commands, toast messages, or dialogs.
-     */
-    val events: Flow<Any>
-        get() = _events.receiveAsFlow()
-
-    /**
-     * Updates the current state using a transformation function.
+     * Applies a reducer function to the current state and emits the result atomically.
      *
-     * This method provides a safe way to update the state by applying a transformation
-     * function to the current state. The update is performed atomically.
+     * The receiver of [block] is the current state, allowing `copy(...)` calls
+     * directly on data classes:
      *
-     * @param block A lambda that takes the current state and returns a new state
+     * ```kotlin
+     * updateState { copy(isLoading = false, items = newItems) }
+     * ```
      *
-     * @sample
-     * // Update state example:
-     * updateState { copy(isLoading = true, data = emptyList()) }
+     * @param block Reducer that transforms the current state into a new state.
      */
     protected fun updateState(block: State.() -> State) {
         _state.update { block.invoke(it) }
     }
 
+    // ─────────────────────────────────────────────────────────────
+    // EVENTS
+    // ─────────────────────────────────────────────────────────────
+
+    private val _events = Channel<Any>(Channel.BUFFERED)
+
     /**
-     * Sends a one-time event to the UI layer.
+     * One-shot UI event stream.
      *
-     * Events are useful for actions that should be handled once, such as showing
-     * a snackbar, navigating to another screen, or displaying a dialog.
+     * Events are buffered and delivered in order. Each emission is consumed once,
+     * making this suitable for side-effects such as:
+     * - Snackbar messages
+     * - Toast notifications
+     * - Dialog triggers
+     * - Navigation (via [Destination])
      *
-     * @param obj The event object to send to the UI
+     * Collect this inside [KScreen] or a `LaunchedEffect`:
      *
-     * @sample
-     * // Send event example:
-     * sendEvent(NavigationEvent.Destination.Home)
-     * sendEvent(MessageEvent("Data loaded successfully"))
+     * ```kotlin
+     * LaunchedEffect(viewModel) {
+     *     viewModel.events.collect { event ->
+     *         when (event) {
+     *             is ProfileEvent.ShowToast -> { ... }
+     *             else -> Unit
+     *         }
+     *     }
+     * }
+     * ```
+     *
+     * > **Note:** Because events are typed as [Any], `when` expressions require
+     * > an `else` branch. Prefer [dev.kindling.compose.KViewModel] (two-param) if
+     * > exhaustive event handling matters for your screen.
+     */
+    val events: Flow<Any>
+        get() = _events.receiveAsFlow()
+
+    /**
+     * Enqueues a one-time event for the UI layer to consume.
+     *
+     * Safe to call from any thread or coroutine context. Events are buffered
+     * and delivered in emission order.
+     *
+     * ```kotlin
+     * sendEvent(ProfileEvent.ShowToast("Profile saved"))
+     *
+     * // Navigation events are intercepted automatically by Screen:
+     * sendEvent(Screen.Home)
+     * ```
+     *
+     * @param obj The event object to deliver. Can be any type, including a
+     *   [Destination] for automatic navigation handling in [KScreen].
      */
     protected fun sendEvent(obj: Any) {
         viewModelScope.launch {
@@ -115,30 +217,36 @@ open class KViewModel<State>(initialState: State, application: Application): And
         }
     }
 
+    // ─────────────────────────────────────────────────────────────
+    // ASYNC HELPERS
+    // ─────────────────────────────────────────────────────────────
+
     /**
-     * Collects data from a flow and handles the results on the appropriate dispatchers.
+     * Collects a [Flow] returned by [source] on `Dispatchers.IO` and delivers
+     * each [Result] to [onResult] on `Dispatchers.Main`.
      *
-     * This method automatically handles the coroutine context switching:
-     * - Collection happens on IO dispatcher for background work
-     * - Results are delivered on Main dispatcher for UI updates
-     * - Errors are caught and delivered as [Result.failure]
+     * Errors are caught and forwarded as [Result.failure] — the ViewModel
+     * scope is never cancelled by a failing source.
      *
-     * @param T The type of data being collected
-     * @param source A suspending function that returns a flow to collect from
-     * @param onResult A callback function that receives the result of the collection
-     *
-     * @sample
-     * // Collect data example:
+     * ```kotlin
      * collectData(
-     *     source = { repository.getLiveData() },
+     *     source = { repository.observeMessages() },
      *     onResult = { result ->
-     *         result.onSuccess { data ->
-     *             updateState { copy(items = data) }
-     *         }.onFailure { error ->
-     *             sendEvent(ErrorEvent("Failed to load data: ${error.message}"))
-     *         }
+     *         result
+     *             .onSuccess { messages ->
+     *                 updateState { copy(messages = messages) }
+     *             }
+     *             .onFailure { error ->
+     *                 sendEvent(MessagesEvent.ShowError(error.message ?: ""))
+     *             }
      *     }
      * )
+     * ```
+     *
+     * @param T The type of values emitted by the flow.
+     * @param source Suspending factory returning the [Flow] to collect, executed on IO.
+     * @param onResult Callback receiving a [Result] for each emission or terminal error,
+     *   always invoked on the Main dispatcher.
      */
     fun <T> collectData(
         source: suspend () -> Flow<T>,
@@ -160,30 +268,32 @@ open class KViewModel<State>(initialState: State, application: Application): And
     }
 
     /**
-     * Fetches data from a suspending function and handles the results on the appropriate dispatchers.
+     * Executes a suspending [source] on `Dispatchers.IO` and delivers the
+     * [Result] to [onResult] on `Dispatchers.Main`.
      *
-     * This method automatically handles the coroutine context switching:
-     * - Execution happens on IO dispatcher for background work
-     * - Results are delivered on Main dispatcher for UI updates
-     * - Errors are caught and delivered as [Result.failure]
+     * Errors are caught and forwarded as [Result.failure] — the ViewModel
+     * scope is never cancelled by a failing source.
      *
-     * @param T The type of data being fetched
-     * @param source A suspending function that returns the data to fetch
-     * @param onResult A callback function that receives the result of the operation
-     *
-     * @sample
-     * // Fetch data example:
+     * ```kotlin
      * fetchData(
-     *     source = { repository.fetchUserData() },
+     *     source = { repository.getUser(userId) },
      *     onResult = { result ->
-     *         result.onSuccess { user ->
-     *             updateState { copy(user = user, isLoading = false) }
-     *         }.onFailure { error ->
-     *             updateState { copy(isLoading = false) }
-     *             sendEvent(ErrorEvent("User data load failed"))
-     *         }
+     *         result
+     *             .onSuccess { user ->
+     *                 updateState { copy(user = user, isLoading = false) }
+     *             }
+     *             .onFailure { error ->
+     *                 updateState { copy(isLoading = false) }
+     *                 sendEvent(ProfileEvent.ShowToast("Failed to load user"))
+     *             }
      *     }
      * )
+     * ```
+     *
+     * @param T The type of data returned by [source].
+     * @param source Suspending function executed on the IO dispatcher.
+     * @param onResult Callback receiving a [Result] wrapping the value or error,
+     *   always invoked on the Main dispatcher.
      */
     fun <T> fetchData(
         source: suspend () -> T,
