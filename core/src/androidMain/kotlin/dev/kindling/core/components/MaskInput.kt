@@ -251,6 +251,10 @@ fun MaskInput(
     modifier: Modifier = Modifier, enabled: Boolean = true, isError: Boolean = false) =
     MaskInput(value, onValueChange, modifier, KMaskPattern.Ein, enabled = enabled, isError = isError)
 
+@Composable fun EmailInput(value: String, onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier, enabled: Boolean = true, isError: Boolean = false) =
+    MaskInput(value, onValueChange, modifier, KMaskPattern.Email, enabled = enabled, isError = isError)
+
 @Composable fun UriInput(value: String, onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier, enabled: Boolean = true, isError: Boolean = false) =
     MaskInput(value, onValueChange, modifier, KMaskPattern.Uri, enabled = enabled, isError = isError)
