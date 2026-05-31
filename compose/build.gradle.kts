@@ -41,11 +41,12 @@ dependencies {
 
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.runtime:runtime")
-    implementation("androidx.activity:activity-compose:1.10.1")
+    implementation("androidx.activity:activity-compose:${Versions.compose}")
     implementation("androidx.navigation:navigation-compose:${Versions.navigationCompose}")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:${Versions.lifecycle}")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:${Versions.lifecycle}")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.coroutines}")
+    implementation("io.insert-koin:koin-androidx-compose:${Versions.koin}")
     implementation(kotlin("stdlib"))
 
     testImplementation(kotlin("test"))

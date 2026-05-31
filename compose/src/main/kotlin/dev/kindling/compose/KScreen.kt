@@ -3,97 +3,76 @@ package dev.kindling.compose
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.onEach
 
 /**
- * Generic screen wrapper for ViewModel-driven Compose screens.
+ * A generic screen composable that handles common screen functionality for ViewModel-based screens.
  *
- * `KScreen` centralizes common screen responsibilities:
+ * This composable provides a standardized way to handle state observation, event collection,
+ * back navigation, and focus management across all screens in the application.
  *
- * - Lifecycle-aware state collection
- * - One-shot event handling
- * - Explicit navigation processing
- * - Back press handling
- * - Focus clearing on navigation/back actions
+ * @param State The type of UI state managed by the ViewModel
+ * @param VM The type of ViewModel that extends [KViewModel]<State>
+ * @param viewModel The ViewModel instance that manages the screen's state and logic
+ * @param navController The NavController for handling navigation between screens
+ * @param onBack Optional callback for handling back button presses. If null, back press is disabled.
+ * @param onEvent Callback for handling custom events emitted by the ViewModel
+ * @param content The main composable content of the screen that receives state and ViewModel
  *
- * This keeps feature screens lightweight and consistent across projects.
+ * @see KViewModel
+ * @see NavController
+ * @see BackHandler
+ * @see LaunchedEffect
  *
- * ## Example
- *
- * ```kotlin
- * KScreen(
- *     viewModel = homeViewModel,
- *     navController = navController,
- *     onEvent = { _, _, event ->
- *         when(event) {
- *             is HomeEvent.ShowSnackbar -> {
- *                 snackbarHostState.showSnackbar(event.message)
- *             }
- *         }
- *     }
+ * @sample
+ * Screen(
+ *     viewModel = myViewModel,
+ *     navController = navController
  * ) { state, viewModel ->
- *
- *     HomeScreenContent(
+ *     MyScreenContent(
  *         state = state,
- *         onRefresh = viewModel::refresh
+ *         onAction = { viewModel.handleAction(it) }
  *     )
  * }
- * ```
  *
- * @param State UI state type.
- * @param Event One-shot event type.
- * @param VM ViewModel implementation.
- * @param viewModel ViewModel driving the screen.
- * @param navController Compose navigation controller.
- * @param onBack Optional back press callback.
- * @param onEvent Optional custom event handler.
- * @param content Main screen content.
  */
 @Composable
-fun <State, Event, VM : KViewModel<State, Event>> KScreen(
+fun <State, VM: KViewModel<State>> Screen(
     viewModel: VM,
     navController: NavController,
     onBack: ((state: State, viewModel: VM) -> Unit)? = null,
-    onEvent: suspend (state: State, viewModel: VM, event: Event) -> Unit = { _, _, _ -> },
+    onEvent: (state: State, viewModel: VM, event: Any) -> Unit = { _, _, _ ->  },
     content: @Composable (state: State, viewModel: VM) -> Unit
 ) {
-    val state by viewModel.state.collectAsStateWithLifecycle()
 
-    val currentState by rememberUpdatedState(state)
+    // Observing the state from the view model.
+    val state by viewModel.state.collectAsState()
 
     val focusManager = LocalFocusManager.current
 
-    // Handle back press.
-    if (onBack != null) {
-        BackHandler {
-            focusManager.clearFocus()
-            onBack(currentState, viewModel)
-        }
-    }
-
-    // Collect events.
-    LaunchedEffect(viewModel) {
-        viewModel.events.collect { event ->
-
-            when (event) {
-                is NavigationEvent -> {
-                    navController.navigate(
-                        destination = event.destination,
-                        navOptions = event.navOptions,
-                        navigatorExtras = event.navigatorExtras
-                    )
-                }
-
-                else -> {
-                    onEvent(currentState, viewModel, event)
-                }
+    // Handle back press event.
+    if (onBack != null)
+        BackHandler(
+            onBack = {
+                focusManager.clearFocus()
+                onBack(state, viewModel)
             }
-        }
+        )
+
+    // Collect events emitted by the ViewModel.
+    LaunchedEffect(viewModel) {
+        viewModel.events
+            .onEach { event ->
+                if (event is Destination) navController.navigate(destination = event)
+                else onEvent(state, viewModel, event)
+            }.collect()
     }
 
-    content(currentState, viewModel)
+    content(state, viewModel)
+
 }

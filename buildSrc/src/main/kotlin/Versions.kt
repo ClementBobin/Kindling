@@ -3,12 +3,14 @@ object Versions {
     const val jvmTarget         = "17"
     const val group             = "io.github.clementbobin.kindling"
     const val dokka             = "2.2.0"
-    const val junit5            = "5.11.4"
-    const val coroutines        = "1.10.2"
-    const val compose           = "1.7.3"
+    const val junit5            = "6.1.0"
+    const val coroutines        = "1.11.0"
+    const val jetbrainCompose   = "1.7.3"
+    const val compose           = "1.13.0"
     const val mavenPublish      = "0.36.0"
-    const val navigationCompose = "2.9.0"
-    const val lifecycle         = "2.9.0"
+    const val navigationCompose = "2.9.8"
+    const val lifecycle         = "2.10.0"
+    const val koin              = "4.2.1"
 
     /**
      * Resolved at configuration time from the RELEASE_VERSION environment
