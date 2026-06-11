@@ -1,24 +1,14 @@
 plugins {
     id("com.android.application")
-    kotlin("android")
     kotlin("plugin.compose")
 }
 
-android {
-    namespace = "dev.kindling.sample"
-    compileSdk = 36
+kotlin {
+    jvmToolchain(17)
 
-    defaultConfig {
-        minSdk = 26
-    }
-
-    buildFeatures {
-        compose = true
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+    android {
+        namespace = "${Versions.group}.sample"
+        compileSdk { version = release(36) }
     }
 }
 
