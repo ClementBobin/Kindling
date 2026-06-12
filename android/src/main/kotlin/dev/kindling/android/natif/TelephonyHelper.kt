@@ -93,7 +93,6 @@ class TelephonyHelper(context: Context) {
         return when (type) {
             TelephonyManager.NETWORK_TYPE_GPRS,
             TelephonyManager.NETWORK_TYPE_EDGE,
-            TelephonyManager.NETWORK_TYPE_CDMA,
             TelephonyManager.NETWORK_TYPE_GSM    -> NetworkType.Gsm
             TelephonyManager.NETWORK_TYPE_UMTS,
             TelephonyManager.NETWORK_TYPE_HSDPA,
@@ -101,6 +100,7 @@ class TelephonyHelper(context: Context) {
             TelephonyManager.NETWORK_TYPE_HSPA   -> NetworkType.Gsm
             TelephonyManager.NETWORK_TYPE_LTE    -> NetworkType.Lte
             TelephonyManager.NETWORK_TYPE_NR     -> NetworkType.Nr5G
+            TelephonyManager.NETWORK_TYPE_CDMA,
             TelephonyManager.NETWORK_TYPE_EVDO_0,
             TelephonyManager.NETWORK_TYPE_EVDO_A -> NetworkType.Cdma
             else                                 -> NetworkType.Unknown

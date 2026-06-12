@@ -106,9 +106,13 @@ class BrightnessHelper(context: Context) {
     /**
      * Applique [level] au niveau système.
      * Pré-condition : [canWriteSettings] == true.
+     * [BrightnessLevel.System] est réservé à la fenêtre — utilisez [resetWindowBrightness].
      */
     @RequiresApi(Build.VERSION_CODES.M)
     fun setSystemBrightness(context: Context, level: BrightnessLevel) {
+        require(level.value >= 0f) {
+            "BrightnessLevel.System is window-only; do not call setSystemBrightness with it — use resetWindowBrightness instead"
+        }
         require(canWriteSettings(context)) {
             "WRITE_SETTINGS permission required — call openWriteSettingsScreen first"
         }

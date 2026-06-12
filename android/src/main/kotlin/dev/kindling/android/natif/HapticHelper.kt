@@ -1,6 +1,5 @@
 package dev.kindling.android.natif
 
-import android.content.Context
 import android.os.Build
 import android.view.HapticFeedbackConstants
 import android.view.View
@@ -75,7 +74,7 @@ data class HapticEffect(val constant: Int) {
  *
  * Enregistrement Koin :
  * ```kotlin
- * single { HapticHelper(androidContext()) }
+ * single { HapticHelper() }
  * ```
  *
  * Utilisation (Compose — récupérer la view racine) :
@@ -86,21 +85,22 @@ data class HapticEffect(val constant: Int) {
  *
  * La vue doit avoir `android:hapticFeedbackEnabled="true"` (défaut système).
  */
-class HapticHelper(context: Context) {
-
-    internal val context = context.applicationContext
+class HapticHelper {
 
     // ── Public API ────────────────────────────────────────────────────────────
 
     /**
      * Joue l'[effect] sur la [view] fournie.
-     * Nécessite que la view soit attachée à la fenêtre.
+     *
+     * @param ignoreViewSetting `true` (défaut) → joue le feedback même si la view
+     *   a désactivé le haptic via `android:hapticFeedbackEnabled="false"`.
+     *   Passer `false` pour respecter les préférences utilisateur et système
+     *   (recommandé pour les feedbacks discrets comme [HapticEffect.Tick] ou
+     *   [HapticEffect.TextHandleMove]).
      */
-    fun perform(view: View, effect: HapticEffect) {
-        view.performHapticFeedback(
-            effect.constant,
-            HapticFeedbackConstants.FLAG_IGNORE_VIEW_SETTING
-        )
+    fun perform(view: View, effect: HapticEffect, ignoreViewSetting: Boolean = true) {
+        val flags = if (ignoreViewSetting) HapticFeedbackConstants.FLAG_IGNORE_VIEW_SETTING else 0
+        view.performHapticFeedback(effect.constant, flags)
     }
 
     // ── Convenience shorthands ────────────────────────────────────────────────
@@ -109,8 +109,8 @@ class HapticHelper(context: Context) {
     fun longPress(view: View)      = perform(view, HapticEffect.LongPress)
     fun doubleClick(view: View)    = perform(view, HapticEffect.DoubleClick)
     fun heavyClick(view: View)     = perform(view, HapticEffect.HeavyClick)
-    fun tick(view: View)           = perform(view, HapticEffect.Tick)
+    fun tick(view: View)           = perform(view, HapticEffect.Tick,           ignoreViewSetting = false)
     fun confirm(view: View)        = perform(view, HapticEffect.Confirm)
     fun reject(view: View)         = perform(view, HapticEffect.Reject)
-    fun textHandleMove(view: View) = perform(view, HapticEffect.TextHandleMove)
+    fun textHandleMove(view: View) = perform(view, HapticEffect.TextHandleMove, ignoreViewSetting = false)
 }

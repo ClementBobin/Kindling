@@ -82,13 +82,17 @@ class ConnectivityHelper(context: Context) {
         else                                                  -> NetworkTransport.Other
     }
 
+    /** `true` if [caps] represents a usable internet connection (internet + validated). */
+    private fun NetworkCapabilities.isUsable(): Boolean =
+        hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
+                hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
+
     // ── Synchronous ───────────────────────────────────────────────────────────
 
     /** `true` si une connexion réseau validée est disponible. */
     @RequiresPermission(android.Manifest.permission.ACCESS_NETWORK_STATE)
     fun isOnline(): Boolean =
-        activeCapabilities()
-            ?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
+        activeCapabilities()?.isUsable() == true
 
     @RequiresPermission(android.Manifest.permission.ACCESS_NETWORK_STATE)
     private fun isOnlineLegacy(): Boolean =
@@ -97,7 +101,7 @@ class ConnectivityHelper(context: Context) {
     /** Transport actif, ou `null` si hors ligne. */
     @RequiresPermission(android.Manifest.permission.ACCESS_NETWORK_STATE)
     fun currentTransport(): NetworkTransport? =
-        activeCapabilities()?.resolveTransport()
+        activeCapabilities()?.takeIf { it.isUsable() }?.resolveTransport()
 
     // ── Reactive ──────────────────────────────────────────────────────────────
 
@@ -119,8 +123,17 @@ class ConnectivityHelper(context: Context) {
                 trySend(NetworkStatus.Available(transport))
             }
 
+            @RequiresPermission(Manifest.permission.ACCESS_NETWORK_STATE)
             override fun onLost(network: Network) {
-                trySend(NetworkStatus.Unavailable)
+                // Only emit Unavailable if no other validated network remains.
+                val current = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    manager.activeNetwork?.let { manager.getNetworkCapabilities(it) }
+                } else null
+                if (current?.isUsable() == true) {
+                    trySend(NetworkStatus.Available(current.resolveTransport()))
+                } else {
+                    trySend(NetworkStatus.Unavailable)
+                }
             }
 
             override fun onLosing(network: Network, maxMsToLive: Int) {
@@ -140,7 +153,7 @@ class ConnectivityHelper(context: Context) {
 
         // Émet l'état courant immédiatement
         val current = activeCapabilities()
-        if (current?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true) {
+        if (current?.isUsable() == true) {
             trySend(NetworkStatus.Available(current.resolveTransport()))
         } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M && isOnlineLegacy()) {
             trySend(NetworkStatus.Available(NetworkTransport.Other))

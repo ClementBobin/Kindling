@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.PowerManager
 import android.provider.Settings
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.net.toUri
 
@@ -87,11 +88,19 @@ class PowerHelper(context: Context) {
     /**
      * Acquiert un [PowerManager.WakeLock] selon [config].
      * Penser à appeler [release] pour éviter les fuites.
+     *
+     * Quand [WakeLockConfig.timeoutMs] vaut `0`, le lock est acquis sans timeout
+     * (contrat de [WakeLockConfig.partialCpu] avec `timeoutMs = 0`).
+     * Pour tout autre valeur positive, le timeout est transmis au système.
      */
     fun acquire(config: WakeLockConfig): PowerManager.WakeLock {
         val lock = powerManager.newWakeLock(config.levelAndFlags, config.tag)
-        // Toujours passer un timeout : fallback 10 min si non spécifié
-        lock.acquire(if (config.timeoutMs > 0L) config.timeoutMs else 10 * 60 * 1000L)
+        if (config.timeoutMs > 0L) {
+            lock.acquire(config.timeoutMs)
+        } else {
+            @Suppress("DEPRECATION")
+            lock.acquire(10*60*1000L /*10 minutes*/)
+        }
         return lock
     }
 
@@ -129,24 +138,47 @@ class PowerHelper(context: Context) {
     /**
      * Ouvre le dialogue système pour demander l'exemption d'optimisation batterie.
      * Requiert `REQUEST_IGNORE_BATTERY_OPTIMIZATIONS` dans le manifest.
+     *
+     * Retourne `false` si l'intent ne peut pas être résolu (ROM custom, profil géré).
      */
     @RequiresApi(Build.VERSION_CODES.M)
-    fun requestIgnoreBatteryOptimizations(context: Context) {
+    fun requestIgnoreBatteryOptimizations(context: Context): Boolean {
         val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
             data = "package:${context.packageName}".toUri()
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         }
-        context.startActivity(intent)
+        return if (intent.resolveActivity(context.packageManager) != null) {
+            context.startActivity(intent)
+            true
+        } else {
+            Log.w(TAG, "ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS non résolu sur cet appareil")
+            false
+        }
     }
 
-    /** Ouvre les réglages d'optimisation batterie. */
-    fun openBatterySettings(context: Context) {
+    /**
+     * Ouvre les réglages d'optimisation batterie.
+     *
+     * Retourne `false` si l'intent ne peut pas être résolu (ROM custom, profil géré).
+     */
+    fun openBatterySettings(context: Context): Boolean {
         val intent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
         } else {
             // Fallback : réglages généraux de la batterie
             Intent(Intent.ACTION_POWER_USAGE_SUMMARY)
+        }.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+
+        return if (intent.resolveActivity(context.packageManager) != null) {
+            context.startActivity(intent)
+            true
+        } else {
+            Log.w(TAG, "Intent réglages batterie non résolu sur cet appareil")
+            false
         }
-        context.startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+    }
+
+    companion object {
+        private const val TAG = "PowerHelper"
     }
 }

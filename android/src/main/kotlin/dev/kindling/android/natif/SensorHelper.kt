@@ -150,7 +150,12 @@ class SensorHelper(context: Context) {
             override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {}
         }
 
-        sensorManager.registerListener(listener, sensor, config.samplingUs)
+        val registered = sensorManager.registerListener(listener, sensor, config.samplingUs)
+        if (!registered) {
+            sensorManager.unregisterListener(listener)
+            close(IllegalStateException("Failed to register listener for sensor ${config.sensorType}"))
+            return@callbackFlow
+        }
         awaitClose { sensorManager.unregisterListener(listener) }
     }
 

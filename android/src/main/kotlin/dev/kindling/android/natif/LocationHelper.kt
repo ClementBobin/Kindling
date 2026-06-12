@@ -163,6 +163,10 @@ class LocationHelper(context: Context) {
             }
 
             fusedClient.requestLocationUpdates(request, callback, Looper.getMainLooper())
+                .addOnFailureListener { e ->
+                    fusedClient.removeLocationUpdates(callback)
+                    close(e)
+                }
 
             awaitClose { fusedClient.removeLocationUpdates(callback) }
         }

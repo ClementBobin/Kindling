@@ -138,14 +138,12 @@ class DownloadHelper(context: Context) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 setRequiresCharging(false)
             }
+            // Restreindre au Wi-Fi si demandé ; setAllowedOverMetered contrôle
+            // l'accès réseau mesuré indépendamment du type de réseau autorisé.
             if (config.requiresWifi) {
                 setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI)
-            } else if (!config.allowMetered) {
-                setAllowedNetworkTypes(
-                    DownloadManager.Request.NETWORK_WIFI or
-                            DownloadManager.Request.NETWORK_MOBILE
-                )
             }
+            setAllowedOverMetered(config.allowMetered)
         }
         return downloadManager.enqueue(request)
     }
@@ -184,8 +182,19 @@ class DownloadHelper(context: Context) {
     /**
      * Flow émettant le [DownloadStatus] final (Success ou Failed) pour l'[id] donné.
      * Se ferme automatiquement après émission.
+     *
+     * Si le téléchargement est déjà terminé au moment de la souscription, le
+     * statut est émis immédiatement sans enregistrer de BroadcastReceiver.
      */
     fun completionFlow(id: Long): Flow<DownloadStatus> = callbackFlow {
+        // Vérification eagée : le téléchargement peut avoir fini avant la souscription.
+        val existing = getStatus(id)
+        if (existing is DownloadStatus.Success || existing is DownloadStatus.Failed) {
+            trySend(existing)
+            close()
+            return@callbackFlow
+        }
+
         val receiver = object : BroadcastReceiver() {
             override fun onReceive(ctx: Context, intent: Intent) {
                 val completedId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)

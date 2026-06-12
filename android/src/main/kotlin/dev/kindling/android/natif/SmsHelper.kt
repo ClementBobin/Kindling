@@ -1,10 +1,12 @@
 package dev.kindling.android.natif
 
 import android.Manifest
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.telephony.SmsManager
+import android.util.Log
 import androidx.annotation.RequiresPermission
 import androidx.core.net.toUri
 
@@ -58,7 +60,7 @@ data class SmsConfig(
  * Utilisation :
  * ```kotlin
  * // Ouvrir le composeur (pas de permission)
- * smsHelper.openComposer(context, SmsConfig.simple("+33612345678", "Bonjour !"))
+ * smsHelper.openComposer(SmsConfig.simple("+33612345678", "Bonjour !"))
  *
  * // Envoi direct (SEND_SMS requis)
  * smsHelper.send(SmsConfig.otp("+33612345678", "849201"))
@@ -66,21 +68,25 @@ data class SmsConfig(
  */
 class SmsHelper(context: Context) {
 
-    internal val appContext   = context.applicationContext
+    internal val appContext = context.applicationContext
 
     // ── Send direct ───────────────────────────────────────────────────────────
 
     /**
      * Envoie le SMS décrit par [config] directement, sans UI.
      * Requiert `SEND_SMS`.
+     * @throws IllegalStateException si le [SmsManager] système est indisponible.
      */
     @RequiresPermission(Manifest.permission.SEND_SMS)
     fun send(config: SmsConfig) {
-        val manager = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        val manager: SmsManager? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             appContext.getSystemService(SmsManager::class.java)
         } else {
+            @Suppress("DEPRECATION")
             SmsManager.getDefault()
         }
+
+        checkNotNull(manager) { "SmsManager unavailable on this device" }
 
         if (config.split) {
             val parts = manager.divideMessage(config.body)
@@ -98,18 +104,23 @@ class SmsHelper(context: Context) {
 
     /**
      * Ouvre l'app SMS par défaut avec le numéro et le corps pré-remplis.
-     * Aucune permission requise.
+     * Aucune permission requise. Si aucune app SMS n'est disponible,
+     * attrape [ActivityNotFoundException] et journalise l'erreur sans planter.
      */
-    fun openComposer(context: Context, config: SmsConfig) {
+    fun openComposer(config: SmsConfig) {
         val intent = Intent(Intent.ACTION_SENDTO).apply {
             data = "smsto:${config.to}".toUri()
             putExtra("sms_body", config.body)
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         }
-        context.startActivity(intent)
+        try {
+            appContext.startActivity(intent)
+        } catch (_: ActivityNotFoundException) {
+            Log.w("SmsHelper", "No SMS app available to handle ACTION_SENDTO")
+        }
     }
 
     /** Ouvre le composeur avec un numéro uniquement. */
-    fun openComposer(context: Context, phoneNumber: String) =
-        openComposer(context, SmsConfig.simple(phoneNumber, ""))
+    fun openComposer(phoneNumber: String) =
+        openComposer(SmsConfig.simple(phoneNumber, ""))
 }

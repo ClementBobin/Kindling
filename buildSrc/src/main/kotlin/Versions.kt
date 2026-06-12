@@ -12,6 +12,14 @@ object Versions {
     const val lifecycle         = "2.10.0"
     const val koin              = "4.2.1"
 
+    // AndroidX / Google
+    const val annotationJvm          = "1.10.0"
+    const val core                   = "1.15.0"
+    const val fragmentKtx            = "1.6.2"
+    const val camera                 = "1.6.1"
+    const val playServicesLocation   = "21.3.0"
+    const val biometric              = "1.1.0"
+
     /**
      * Resolved at configuration time from the RELEASE_VERSION environment
      * variable (set by the publish workflow from the Git tag), or falls back

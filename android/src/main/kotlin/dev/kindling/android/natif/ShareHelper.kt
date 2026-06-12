@@ -1,5 +1,6 @@
 package dev.kindling.android.natif
 
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -26,7 +27,7 @@ import java.io.File
  *     text      = "Voici ma capture d'écran",
  *     fileUri   = uri
  * )
- * shareHelper.share(context, content)
+ * shareHelper.share(content)
  * ```
  */
 data class ShareContent(
@@ -69,15 +70,15 @@ data class ShareContent(
  *
  * Utilisation :
  * ```kotlin
- * shareHelper.share(context, ShareContent.text("Découvrez Kindling !"))
- * shareHelper.share(context, ShareContent.url("https://github.com/ClementBobin/Kindling"))
+ * shareHelper.share(ShareContent.text("Découvrez Kindling !"))
+ * shareHelper.share(ShareContent.url("https://github.com/ClementBobin/Kindling"))
  *
  * // Partager un fichier
- * val uri = shareHelper.getFileUri(context, file, "com.example.app.fileprovider")
- * shareHelper.share(context, ShareContent.file(uri, "image/png"))
+ * val uri = shareHelper.getFileUri(file, "com.example.app.fileprovider")
+ * shareHelper.share(ShareContent.file(uri, "image/png"))
  *
  * // Ouvrir directement dans une app spécifique
- * shareHelper.shareToApp(context, ShareContent.text("hello"), "com.whatsapp")
+ * shareHelper.shareToApp(ShareContent.text("hello"), "com.whatsapp")
  * ```
  */
 class ShareHelper(context: Context) {
@@ -87,24 +88,28 @@ class ShareHelper(context: Context) {
     // ── Share ─────────────────────────────────────────────────────────────────
 
     /** Ouvre le sélecteur de partage système. */
-    fun share(context: Context, content: ShareContent) {
-        val intent = content.toIntent()
-        context.startActivity(
-            Intent.createChooser(intent, content.chooserTitle)
+    fun share(content: ShareContent) {
+        appContext.startActivity(
+            Intent.createChooser(content.toIntent(), content.chooserTitle)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         )
     }
 
     /**
      * Partage directement vers une app spécifique (par package).
-     * Si l'app n'est pas installée, ouvre le sélecteur standard.
+     * Tente de lancer l'intent explicitement ; si l'app n'est pas installée ou
+     * n'est pas visible (Android 11+), attrape [ActivityNotFoundException] et
+     * ouvre le sélecteur standard à la place.
      */
-    fun shareToApp(context: Context, content: ShareContent, targetPackage: String) {
-        val intent = content.toIntent().apply { setPackage(targetPackage) }
-        if (intent.resolveActivity(context.packageManager) != null) {
-            context.startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
-        } else {
-            share(context, content)
+    fun shareToApp(content: ShareContent, targetPackage: String) {
+        val intent = content.toIntent().apply {
+            setPackage(targetPackage)
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+        try {
+            appContext.startActivity(intent)
+        } catch (_: ActivityNotFoundException) {
+            share(content)
         }
     }
 
@@ -114,8 +119,8 @@ class ShareHelper(context: Context) {
      * Convertit un [File] en [Uri] partageable via FileProvider.
      * [authority] doit correspondre à l'authority déclarée dans le manifest.
      */
-    fun getFileUri(context: Context, file: File, authority: String): Uri =
-        FileProvider.getUriForFile(context, authority, file)
+    fun getFileUri(file: File, authority: String): Uri =
+        FileProvider.getUriForFile(appContext, authority, file)
 
     // ── Internal ──────────────────────────────────────────────────────────────
 

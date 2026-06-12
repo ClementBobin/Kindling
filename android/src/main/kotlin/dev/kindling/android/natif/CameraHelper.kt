@@ -14,6 +14,8 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import java.io.File
 import java.util.concurrent.Executor
+import kotlin.coroutines.resume
+import kotlinx.coroutines.suspendCancellableCoroutine
 
 // ─────────────────────────────────────────────
 //  CameraConfig
@@ -89,6 +91,9 @@ sealed class CaptureResult {
  *         is CaptureResult.Error   -> showError(result.message)
  *     }
  * }
+ *
+ * // Vérifier la disponibilité (suspend — appeler depuis une coroutine)
+ * val hasBack = cameraHelper.hasCamera(context, CameraSelector.LENS_FACING_BACK)
  *
  * // Libérer en onDestroy
  * cameraHelper.release()
@@ -173,9 +178,24 @@ class CameraHelper(context: Context) {
 
     // ── Availability ──────────────────────────────────────────────────────────
 
-    fun hasCamera(context: Context, lensFacing: Int = CameraSelector.LENS_FACING_BACK): Boolean =
-        ProcessCameraProvider.getInstance(context).get()
-            .hasCamera(CameraSelector.Builder().requireLensFacing(lensFacing).build())
+    /**
+     * Returns `true` if a camera with [lensFacing] is available.
+     * Must be called from a coroutine; returns `false` on any provider failure.
+     */
+    suspend fun hasCamera(
+        context: Context,
+        lensFacing: Int = CameraSelector.LENS_FACING_BACK
+    ): Boolean = suspendCancellableCoroutine { cont ->
+        val future = ProcessCameraProvider.getInstance(context)
+        future.addListener({
+            val result = runCatching {
+                future.get().hasCamera(
+                    CameraSelector.Builder().requireLensFacing(lensFacing).build()
+                )
+            }.getOrDefault(false)
+            cont.resume(result)
+        }, ContextCompat.getMainExecutor(context))
+    }
 
     // ── Lifecycle ─────────────────────────────────────────────────────────────
 

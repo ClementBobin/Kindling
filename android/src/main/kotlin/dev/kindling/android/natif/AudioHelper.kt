@@ -12,13 +12,6 @@ import android.media.SoundPool
 /**
  * Décrit un son système sémantique à jouer via [SoundPool].
  *
- * Presets mappés sur les sons système Android :
- * - [SoundAsset.Click]        → clic UI léger
- * - [SoundAsset.KeyPress]     → touche clavier
- * - [SoundAsset.Delete]       → suppression clavier
- * - [SoundAsset.Return]       → validation clavier
- * - [SoundAsset.FocusNav]     → navigation focus
- *
  * Son personnalisé (raw resource) :
  * ```kotlin
  * val asset = SoundAsset(resId = R.raw.my_sound, volume = 0.8f)
@@ -35,11 +28,21 @@ data class SoundAsset(
     val volume: Float   = 1f,
     val rate: Float     = 1f,
     val priority: Int   = 1
-) {
+)
+
+/**
+ * Effet sonore système joué via [AudioManager.playSoundEffect] —
+ * pas de chargement SoundPool requis.
+ *
+ * Presets mappés sur les sons système Android :
+ * - [SystemFxAsset.Click]        → clic UI léger
+ * - [SystemFxAsset.KeyPress]     → touche clavier
+ * - [SystemFxAsset.Delete]       → suppression clavier
+ * - [SystemFxAsset.Return]       → validation clavier
+ * - [SystemFxAsset.FocusNav]     → navigation focus
+ */
+data class SystemFxAsset(val fx: Int, val volume: Float = 1f) {
     companion object {
-        // Les sons système Android sont dans android.R.raw — on utilise les
-        // AudioManager.FX_* constants qui ne nécessitent pas de resource ID.
-        // Les presets ci-dessous utilisent des effets FX standard.
         val Click     = SystemFxAsset(AudioManager.FX_KEY_CLICK)
         val KeyPress  = SystemFxAsset(AudioManager.FX_KEYPRESS_STANDARD)
         val Delete    = SystemFxAsset(AudioManager.FX_KEYPRESS_DELETE)
@@ -47,12 +50,6 @@ data class SoundAsset(
         val FocusNav  = SystemFxAsset(AudioManager.FX_FOCUS_NAVIGATION_UP)
     }
 }
-
-/**
- * Effet sonore système joué via [AudioManager.playSoundEffect] —
- * pas de chargement SoundPool requis.
- */
-data class SystemFxAsset(val fx: Int, val volume: Float = 1f)
 
 // ─────────────────────────────────────────────
 //  AudioHelper
@@ -73,8 +70,8 @@ data class SystemFxAsset(val fx: Int, val volume: Float = 1f)
  * Utilisation :
  * ```kotlin
  * // Effets système (presets)
- * audioHelper.play(SoundAsset.Click)
- * audioHelper.play(SoundAsset.KeyPress)
+ * audioHelper.play(SystemFxAsset.Click)
+ * audioHelper.play(SystemFxAsset.KeyPress)
  *
  * // Son custom (raw resource)
  * audioHelper.play(SoundAsset(R.raw.success_chime, volume = 0.7f))
@@ -86,9 +83,14 @@ data class SystemFxAsset(val fx: Int, val volume: Float = 1f)
 class AudioHelper(context: Context) {
 
     internal val appContext   = context.applicationContext
-    internal val audioManager = appContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+    internal val audioManager: AudioManager =
+        appContext.getSystemService(Context.AUDIO_SERVICE) as? AudioManager
+            ?: throw IllegalStateException("AudioManager not available")
 
-    private val pool: SoundPool by lazy {
+    // Nullable so release() can check initialization without forcing construction.
+    private var pool: SoundPool? = null
+
+    private fun getOrCreatePool(): SoundPool = pool ?: run {
         val attrs = AudioAttributes.Builder()
             .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
             .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
@@ -97,9 +99,11 @@ class AudioHelper(context: Context) {
             .setMaxStreams(4)
             .setAudioAttributes(attrs)
             .build()
+            .also { pool = it }
     }
 
-    // resId → soundPoolId
+    // resId → soundPoolId; synchronized block ensures each resId is loaded
+    // exactly once even under concurrent access (API 21-safe).
     private val loadedSounds = mutableMapOf<Int, Int>()
 
     // ── Public API ────────────────────────────────────────────────────────────
@@ -114,12 +118,14 @@ class AudioHelper(context: Context) {
      * Le son est chargé de façon lazy et mis en cache pour les lectures suivantes.
      */
     fun play(asset: SoundAsset) {
-        val soundId = loadedSounds.getOrPut(asset.resId) {
-            pool.load(appContext, asset.resId, asset.priority)
+        val soundId = synchronized(loadedSounds) {
+            loadedSounds.getOrPut(asset.resId) {
+                getOrCreatePool().load(appContext, asset.resId, asset.priority)
+            }
         }
         // SoundPool may not have finished loading yet — listener would be
         // cleaner but adds complexity; for UI sounds the delay is imperceptible.
-        pool.play(
+        getOrCreatePool().play(
             soundId,
             asset.volume, asset.volume,
             asset.priority,
@@ -130,19 +136,18 @@ class AudioHelper(context: Context) {
 
     // ── Convenience shorthands ────────────────────────────────────────────────
 
-    fun click()    = play(SoundAsset.Click)
-    fun keyPress() = play(SoundAsset.KeyPress)
-    fun delete()   = play(SoundAsset.Delete)
-    fun returnKey()= play(SoundAsset.Return)
-    fun focusNav() = play(SoundAsset.FocusNav)
+    fun click()    = play(SystemFxAsset.Click)
+    fun keyPress() = play(SystemFxAsset.KeyPress)
+    fun delete()   = play(SystemFxAsset.Delete)
+    fun returnKey()= play(SystemFxAsset.Return)
+    fun focusNav() = play(SystemFxAsset.FocusNav)
 
     // ── Lifecycle ─────────────────────────────────────────────────────────────
 
     /** Libère le [SoundPool]. Appeler depuis `onDestroy` ou un scope Koin approprié. */
     fun release() {
-        if (loadedSounds.isNotEmpty()) {
-            pool.release()
-            loadedSounds.clear()
-        }
+        pool?.release()
+        pool = null
+        synchronized(loadedSounds) { loadedSounds.clear() }
     }
 }

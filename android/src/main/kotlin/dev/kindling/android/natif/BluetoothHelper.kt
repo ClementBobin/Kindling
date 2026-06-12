@@ -14,6 +14,7 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.launch
 
 // ─────────────────────────────────────────────
 //  BluetoothState
@@ -148,16 +149,17 @@ class BluetoothHelper(context: Context) {
                 }
             }
 
-            val filter = IntentFilter(BluetoothDevice.ACTION_FOUND)
-            appContext.registerReceiver(receiver, filter)
+            appContext.registerReceiver(receiver, IntentFilter(BluetoothDevice.ACTION_FOUND))
             adapter?.startDiscovery()
 
-            // Auto-cancel after duration
-            kotlinx.coroutines.delay(config.durationMs)
-            adapter?.cancelDiscovery()
-            close()
+            val timeoutJob = launch {
+                kotlinx.coroutines.delay(config.durationMs)
+                adapter?.cancelDiscovery()
+                close()
+            }
 
             awaitClose {
+                timeoutJob.cancel()
                 adapter?.cancelDiscovery()
                 appContext.unregisterReceiver(receiver)
             }

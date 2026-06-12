@@ -55,7 +55,8 @@ data class ClipboardContent(
 class ClipboardHelper(context: Context) {
 
     internal val clipboard =
-        context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        context.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
+            ?: throw IllegalStateException("ClipboardManager not available")
 
     // ── Public API ────────────────────────────────────────────────────────────
 
@@ -71,12 +72,15 @@ class ClipboardHelper(context: Context) {
      * Lit le texte courant du presse-papiers.
      * Retourne `null` si vide, non-texte, ou accès refusé (API 29+ background).
      */
-    fun paste(): String? =
+    fun paste(): String? = try {
         clipboard.primaryClip
             ?.takeIf { it.itemCount > 0 }
             ?.getItemAt(0)
             ?.text
             ?.toString()
+    } catch (_: SecurityException) {
+        null
+    }
 
     /** Vide le presse-papiers (API 28+, no-op sur les versions antérieures). */
     fun clear() {

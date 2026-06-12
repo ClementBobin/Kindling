@@ -138,7 +138,7 @@ class BatteryHelper(context: Context) {
     private fun Intent.toBatteryStatus(): BatteryStatus? {
         val rawLevel  = getIntExtra(BatteryManager.EXTRA_LEVEL, -1)
         val scale     = getIntExtra(BatteryManager.EXTRA_SCALE, -1)
-        if (rawLevel == -1 || scale == -1) return null
+        if (rawLevel == -1 || scale <= 0) return null
 
         val level     = (rawLevel * 100 / scale.toFloat()).toInt()
         val status    = getIntExtra(BatteryManager.EXTRA_STATUS, -1)

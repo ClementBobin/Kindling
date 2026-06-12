@@ -119,10 +119,13 @@ data class VibrationPattern(
 class VibrationHelper(context: Context) {
 
     internal val vibrator: Vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-        val manager = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+        val manager = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as? VibratorManager
+            ?: throw IllegalStateException("VibratorManager unavailable on API ${Build.VERSION.SDK_INT}")
         manager.defaultVibrator
     } else {
-        context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        @Suppress("DEPRECATION")
+        context.getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
+            ?: throw IllegalStateException("Vibrator service unavailable on this device")
     }
 
     // ── Public API ────────────────────────────────────────────────────────────
@@ -167,6 +170,7 @@ class VibrationHelper(context: Context) {
             }
             vibrator.vibrate(effect)
         } else {
+            @Suppress("DEPRECATION")
             vibrator.vibrate(fallbackMs)
         }
     }

@@ -63,7 +63,11 @@ class AccountHelper(context: Context) {
      */
     @RequiresPermission(Manifest.permission.GET_ACCOUNTS)
     fun getAccounts(config: AccountConfig): List<Account> =
-        accountManager.getAccountsByType(config.accountType).toList()
+        try {
+            accountManager.getAccountsByType(config.accountType).toList()
+        } catch (_: SecurityException) {
+            emptyList()
+        }
 
     /**
      * Retourne le premier compte trouvé, ou `null`.

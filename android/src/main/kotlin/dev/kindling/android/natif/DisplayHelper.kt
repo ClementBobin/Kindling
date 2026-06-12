@@ -8,10 +8,6 @@ import android.util.DisplayMetrics
 import android.view.Display
 import android.view.WindowManager
 
-// ─────────────────────────────────────────────
-//  DisplayInfo
-// ─────────────────────────────────────────────
-
 /**
  * Informations sur l'écran principal.
  *
@@ -32,10 +28,8 @@ data class DisplayInfo(
 ) {
     val widthDp: Float  get() = widthPx  / density
     val heightDp: Float get() = heightPx / density
-
     val isPortrait:  Boolean get() = orientation == Configuration.ORIENTATION_PORTRAIT
     val isLandscape: Boolean get() = orientation == Configuration.ORIENTATION_LANDSCAPE
-
     val densityBucket: String get() = when {
         densityDpi <= 120 -> "ldpi"
         densityDpi <= 160 -> "mdpi"
@@ -45,10 +39,6 @@ data class DisplayInfo(
         else              -> "xxxhdpi"
     }
 }
-
-// ─────────────────────────────────────────────
-//  DisplayHelper
-// ─────────────────────────────────────────────
 
 /**
  * Helper d'affichage centralisé.
@@ -83,13 +73,20 @@ class DisplayHelper(context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             val bounds  = windowManager.currentWindowMetrics.bounds
             val display = displayManager.getDisplay(Display.DEFAULT_DISPLAY)
-            display.getMetrics(metrics)
+                ?: displayManager.displays.firstOrNull()
+            if (display != null) {
+                display.getMetrics(metrics)
+            } else {
+                // Écran momentanément indisponible (cast, détachement OEM) :
+                // on replie sur les métriques système qui restent valides.
+                metrics.setTo(android.content.res.Resources.getSystem().displayMetrics)
+            }
             return DisplayInfo(
                 widthPx     = bounds.width(),
                 heightPx    = bounds.height(),
                 densityDpi  = metrics.densityDpi,
                 density     = metrics.density,
-                refreshRate = display.refreshRate,
+                refreshRate = display?.refreshRate ?: FALLBACK_REFRESH_RATE,
                 orientation = appContext.resources.configuration.orientation
             )
         } else {
@@ -121,7 +118,6 @@ class DisplayHelper(context: Context) {
     fun spToPx(sp: Float): Float {
         val config = appContext.resources.configuration
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            // API 34+ : fontScale est dans la configuration
             sp * appContext.resources.displayMetrics.density * config.fontScale
         } else {
             sp * appContext.resources.displayMetrics.scaledDensity
@@ -133,16 +129,24 @@ class DisplayHelper(context: Context) {
     fun getSupportedRefreshRates(): FloatArray {
         val display = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             displayManager.getDisplay(Display.DEFAULT_DISPLAY)
+                ?: displayManager.displays.firstOrNull()
         } else {
+            @Suppress("DEPRECATION")
             windowManager.defaultDisplay
-        }
+        } ?: return floatArrayOf(FALLBACK_REFRESH_RATE)
 
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             display.supportedModes.map { it.refreshRate }.toFloatArray()
+                .takeIf { it.isNotEmpty() } ?: floatArrayOf(FALLBACK_REFRESH_RATE)
         } else {
             floatArrayOf(display.refreshRate)
         }
     }
 
     fun getCurrentRefreshRate(): Float = getDisplayInfo().refreshRate
+
+    companion object {
+        /** Fréquence de repli quand l'écran est temporairement indisponible. */
+        private const val FALLBACK_REFRESH_RATE = 60f
+    }
 }

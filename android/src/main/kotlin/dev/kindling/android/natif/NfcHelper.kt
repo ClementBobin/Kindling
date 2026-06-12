@@ -148,33 +148,46 @@ class NfcHelper(context: Context) {
 
     /**
      * Écrit un message texte NDEF sur le [tag].
-     * Retourne `true` si l'écriture a réussi.
+     * Retourne `true` si l'écriture a réussi, `false` si le tag n'est pas NDEF,
+     * n'est pas accessible en écriture, ou si une erreur survient.
      */
     fun writeText(tag: Tag, text: String, languageCode: String = "en"): Boolean = runCatching {
-        val record = NdefRecord.createTextRecord(languageCode, text)
-        val message = NdefMessage(arrayOf(record))
-        Ndef.get(tag)?.use { ndef ->
-            ndef.connect()
-            ndef.writeNdefMessage(message)
-        }
-        true
+        val record  = NdefRecord.createTextRecord(languageCode, text)
+        writeNdefMessage(tag, NdefMessage(arrayOf(record)))
     }.getOrDefault(false)
 
     /**
      * Écrit une URI NDEF sur le [tag].
-     * Retourne `true` si l'écriture a réussi.
+     * Retourne `true` si l'écriture a réussi, `false` si le tag n'est pas NDEF,
+     * n'est pas accessible en écriture, ou si une erreur survient.
      */
     fun writeUri(tag: Tag, uri: String): Boolean = runCatching {
         val record = NdefRecord.createUri(uri.toUri())
-        val message = NdefMessage(arrayOf(record))
-        Ndef.get(tag)?.use { ndef ->
-            ndef.connect()
-            ndef.writeNdefMessage(message)
-        }
-        true
+        writeNdefMessage(tag, NdefMessage(arrayOf(record)))
     }.getOrDefault(false)
 
     // ── Internal ──────────────────────────────────────────────────────────────
+
+    /**
+     * Obtient un handle [Ndef] sur [tag], vérifie qu'il est accessible en
+     * écriture, puis écrit [message].
+     *
+     * Retourne `false` sans exception si :
+     * - le tag ne supporte pas NDEF ([Ndef.get] retourne `null`)
+     * - le tag est en lecture seule ([Ndef.isWritable] == `false`)
+     *
+     * Toute autre erreur I/O est laissée remonter pour être capturée par le
+     * `runCatching` de l'appelant.
+     */
+    private fun writeNdefMessage(tag: Tag, message: NdefMessage): Boolean {
+        val ndef = Ndef.get(tag) ?: return false
+        return ndef.use { n ->
+            if (!n.isWritable) return false
+            n.connect()
+            n.writeNdefMessage(message)
+            true
+        }
+    }
 
     private fun Tag.toResult(): NfcTagResult = runCatching {
         val ndef = Ndef.get(this) ?: return NfcTagResult.RawTag(this)

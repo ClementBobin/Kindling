@@ -70,9 +70,15 @@ class ThermalHelper(context: Context) {
         else
             ThermalStatus.Unknown
 
-    fun isThrottling(): Boolean = getStatus().ordinal >= ThermalStatus.Light.ordinal
+    fun isThrottling(): Boolean = when (getStatus()) {
+        ThermalStatus.Unknown, ThermalStatus.None -> false
+        else -> true
+    }
 
-    fun isCritical(): Boolean = getStatus().ordinal >= ThermalStatus.Critical.ordinal
+    fun isCritical(): Boolean = when (getStatus()) {
+        ThermalStatus.Critical, ThermalStatus.Emergency, ThermalStatus.Shutdown -> true
+        else -> false
+    }
 
     // ── Reactive flow ─────────────────────────────────────────────────────────
 

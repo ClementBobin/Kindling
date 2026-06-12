@@ -157,7 +157,8 @@ class WifiHelper(context: Context) {
      */
     @RequiresPermission(allOf = [
         Manifest.permission.ACCESS_WIFI_STATE,
-        Manifest.permission.ACCESS_FINE_LOCATION
+        Manifest.permission.ACCESS_FINE_LOCATION,
+        Manifest.permission.CHANGE_WIFI_STATE
     ])
     fun scanFlow(): Flow<List<ScanResult>> = callbackFlow {
         val receiver = object : BroadcastReceiver() {
@@ -169,7 +170,14 @@ class WifiHelper(context: Context) {
             }
         }
         appContext.registerReceiver(receiver, IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION))
-        wifiManager.startScan()
+
+        @Suppress("DEPRECATION")
+        if (!wifiManager.startScan()) {
+            appContext.unregisterReceiver(receiver)
+            close(IllegalStateException("WifiManager.startScan() failed — throttled or unavailable"))
+            return@callbackFlow
+        }
+
         awaitClose { appContext.unregisterReceiver(receiver) }
     }
 }

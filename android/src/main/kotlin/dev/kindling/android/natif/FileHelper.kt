@@ -96,6 +96,10 @@ class FileHelper(context: Context) {
     /**
      * Crée un fichier dans MediaStore et écrit via [block].
      * Retourne l'[Uri] du fichier créé, ou `null` en cas d'erreur.
+     *
+     * La ligne MediaStore est supprimée automatiquement si le flux ne peut pas
+     * être ouvert ou si [block] lève une exception, évitant toute ligne orpheline.
+     * IS_PENDING n'est remis à 0 qu'après une écriture réussie.
      */
     fun saveToMediaStore(
         context: Context,
@@ -103,7 +107,7 @@ class FileHelper(context: Context) {
         mimeType: String,
         destination: FileDestination,
         block: (OutputStream) -> Unit
-    ): Uri? = runCatching {
+    ): Uri? {
         val values = ContentValues().apply {
             put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
             put(MediaStore.MediaColumns.MIME_TYPE, mimeType)
@@ -116,15 +120,28 @@ class FileHelper(context: Context) {
         val resolver = context.contentResolver
         val uri = resolver.insert(destination.collection, values) ?: return null
 
-        resolver.openOutputStream(uri)?.use(block)
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            values.clear()
-            values.put(MediaStore.MediaColumns.IS_PENDING, 0)
-            resolver.update(uri, values, null, null)
+        try {
+            val stream = resolver.openOutputStream(uri)
+                ?: run {
+                    resolver.delete(uri, null, null)
+                    return null
+                }
+            stream.use(block)
+        } catch (t: Throwable) {
+            // Écriture échouée ou stream fermé anormalement : supprime la ligne orpheline.
+            resolver.delete(uri, null, null)
+            return null
         }
-        uri
-    }.getOrNull()
+
+        // Écriture réussie : rendre le fichier visible.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val pending = ContentValues().apply {
+                put(MediaStore.MediaColumns.IS_PENDING, 0)
+            }
+            resolver.update(uri, pending, null, null)
+        }
+        return uri
+    }
 
     // ── Read ──────────────────────────────────────────────────────────────────
 

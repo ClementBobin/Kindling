@@ -1,6 +1,5 @@
 package dev.kindling.android.natif
 
-import android.content.Context
 import android.os.Build
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
@@ -67,27 +66,48 @@ data class EncryptedData(val ciphertext: String, val iv: String)
  *
  * Enregistrement Koin :
  * ```kotlin
- * single { KeystoreHelper(androidContext()) }
+ * single { KeystoreHelper() }
  * ```
  *
- * Utilisation :
+ * ## Clés sans biométrie
  * ```kotlin
  * val config = KeystoreConfig.default("user_token")
- *
- * // Chiffrer
  * val encrypted = keystoreHelper.encrypt(config, "mon_token_secret")
+ * val plain     = keystoreHelper.decrypt(config, encrypted)
+ * ```
  *
- * // Déchiffrer
- * val plain = keystoreHelper.decrypt(config, encrypted)
+ * ## Clés protégées par biométrie
+ * Les clés [KeystoreConfig.biometricProtected] requièrent un [Cipher] déjà
+ * authentifié via `BiometricPrompt.CryptoObject` — un appel direct à
+ * [encrypt]/[decrypt] lèverait une [android.security.keystore.UserNotAuthenticatedException].
  *
- * // Supprimer la clé
- * keystoreHelper.deleteKey(config)
+ * Flux recommandé :
+ * ```kotlin
+ * val config  = KeystoreConfig.biometricProtected("secure_key")
+ * val cipher  = keystoreHelper.createEncryptCipher(config)   // avant la prompt
+ *
+ * // Passer cipher à BiometricPrompt :
+ * biometricPrompt.authenticate(
+ *     BiometricPrompt.CryptoObject(cipher),
+ *     cancellationSignal,
+ *     executor,
+ *     object : BiometricPrompt.AuthenticationCallback() {
+ *         override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+ *             val authenticatedCipher = result.cryptoObject!!.cipher!!
+ *             val encrypted = keystoreHelper.encrypt(authenticatedCipher, "secret")
+ *         }
+ *     }
+ * )
+ *
+ * // Déchiffrement :
+ * val decryptCipher = keystoreHelper.createDecryptCipher(config, encrypted.iv)
+ * biometricPrompt.authenticate(BiometricPrompt.CryptoObject(decryptCipher), ...)
+ * // Dans onAuthenticationSucceeded :
+ * val plain = keystoreHelper.decrypt(result.cryptoObject!!.cipher!!, encrypted)
  * ```
  */
 @RequiresApi(Build.VERSION_CODES.M)
-class KeystoreHelper(context: Context) {
-
-    internal val appContext = context.applicationContext
+class KeystoreHelper {
 
     internal val keystore: KeyStore = KeyStore.getInstance(PROVIDER).apply { load(null) }
 
@@ -110,17 +130,48 @@ class KeystoreHelper(context: Context) {
     fun hasKey(config: KeystoreConfig): Boolean =
         keystore.containsAlias(config.alias)
 
-    // ── Encrypt / Decrypt ─────────────────────────────────────────────────────
+    // ── Cipher factories (biometric flow) ────────────────────────────────────
 
     /**
-     * Chiffre [plaintext] avec la clé identifiée par [config].
-     * Retourne un [EncryptedData] contenant ciphertext + IV, tous deux en Base64.
+     * Crée un [Cipher] initialisé en mode chiffrement pour la clé [config].
+     *
+     * Pour les clés [KeystoreConfig.requireBiometric], ce cipher doit être passé
+     * à `BiometricPrompt.CryptoObject` et authentifié avant utilisation.
+     * Voir la documentation de la classe pour le flux complet.
      */
-    fun encrypt(config: KeystoreConfig, plaintext: String): EncryptedData {
-        val key    = getOrCreateKey(config)
-        val cipher = Cipher.getInstance(TRANSFORMATION)
-        cipher.init(Cipher.ENCRYPT_MODE, key)
+    fun createEncryptCipher(config: KeystoreConfig): Cipher {
+        val key = getOrCreateKey(config)
+        return Cipher.getInstance(TRANSFORMATION).also {
+            it.init(Cipher.ENCRYPT_MODE, key)
+        }
+    }
 
+    /**
+     * Crée un [Cipher] initialisé en mode déchiffrement pour la clé [config],
+     * en utilisant l'IV extrait de [ivBase64].
+     *
+     * Pour les clés [KeystoreConfig.requireBiometric], ce cipher doit être passé
+     * à `BiometricPrompt.CryptoObject` et authentifié avant utilisation.
+     */
+    fun createDecryptCipher(config: KeystoreConfig, ivBase64: String): Cipher {
+        val key     = keystore.getKey(config.alias, null) as? SecretKey
+            ?: error("Clé introuvable pour l'alias '${config.alias}'")
+        val ivBytes = Base64.decode(ivBase64, Base64.NO_WRAP)
+        return Cipher.getInstance(TRANSFORMATION).also {
+            it.init(Cipher.DECRYPT_MODE, key, GCMParameterSpec(GCM_TAG_LENGTH, ivBytes))
+        }
+    }
+
+    // ── Encrypt / Decrypt (cipher pré-authentifié) ───────────────────────────
+
+    /**
+     * Chiffre [plaintext] avec un [Cipher] déjà initialisé (et authentifié si
+     * la clé est biométrique).
+     *
+     * Obtenir le cipher via [createEncryptCipher] puis
+     * `BiometricPrompt.CryptoObject` pour les clés protégées.
+     */
+    fun encrypt(cipher: Cipher, plaintext: String): EncryptedData {
         val cipherBytes = cipher.doFinal(plaintext.toByteArray(Charsets.UTF_8))
         return EncryptedData(
             ciphertext = Base64.encodeToString(cipherBytes, Base64.NO_WRAP),
@@ -129,19 +180,47 @@ class KeystoreHelper(context: Context) {
     }
 
     /**
-     * Déchiffre [data] avec la clé identifiée par [config].
-     * Retourne le texte clair, ou `null` si la clé n'existe pas.
+     * Déchiffre [data] avec un [Cipher] déjà initialisé (et authentifié si
+     * la clé est biométrique).
+     *
+     * Obtenir le cipher via [createDecryptCipher] puis
+     * `BiometricPrompt.CryptoObject` pour les clés protégées.
      */
-    fun decrypt(config: KeystoreConfig, data: EncryptedData): String? {
-        val key = keystore.getKey(config.alias, null) as? SecretKey ?: return null
-
-        val cipher    = Cipher.getInstance(TRANSFORMATION)
-        val ivBytes   = Base64.decode(data.iv, Base64.NO_WRAP)
-        val spec      = GCMParameterSpec(GCM_TAG_LENGTH, ivBytes)
-        cipher.init(Cipher.DECRYPT_MODE, key, spec)
-
+    fun decrypt(cipher: Cipher, data: EncryptedData): String {
         val plainBytes = cipher.doFinal(Base64.decode(data.ciphertext, Base64.NO_WRAP))
         return String(plainBytes, Charsets.UTF_8)
+    }
+
+    // ── Encrypt / Decrypt (clés sans biométrie uniquement) ───────────────────
+
+    /**
+     * Chiffre [plaintext] avec la clé identifiée par [config].
+     *
+     * ⚠️ Ne pas utiliser avec [KeystoreConfig.requireBiometric] = `true` :
+     * utiliser [createEncryptCipher] + `BiometricPrompt.CryptoObject` à la place.
+     */
+    fun encrypt(config: KeystoreConfig, plaintext: String): EncryptedData {
+        require(!config.requireBiometric) {
+            "encrypt(config, …) ne supporte pas les clés biométriques. " +
+                    "Utiliser createEncryptCipher() + BiometricPrompt.CryptoObject."
+        }
+        return encrypt(createEncryptCipher(config), plaintext)
+    }
+
+    /**
+     * Déchiffre [data] avec la clé identifiée par [config].
+     * Retourne `null` si la clé n'existe pas.
+     *
+     * ⚠️ Ne pas utiliser avec [KeystoreConfig.requireBiometric] = `true` :
+     * utiliser [createDecryptCipher] + `BiometricPrompt.CryptoObject` à la place.
+     */
+    fun decrypt(config: KeystoreConfig, data: EncryptedData): String? {
+        require(!config.requireBiometric) {
+            "decrypt(config, …) ne supporte pas les clés biométriques. " +
+                    "Utiliser createDecryptCipher() + BiometricPrompt.CryptoObject."
+        }
+        if (!keystore.containsAlias(config.alias)) return null
+        return decrypt(createDecryptCipher(config, data.iv), data)
     }
 
     // ── Internal ──────────────────────────────────────────────────────────────

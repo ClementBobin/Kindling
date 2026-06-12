@@ -1,8 +1,6 @@
 package dev.kindling.android.natif
 
 import android.content.Context
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricManager.Authenticators
 import androidx.biometric.BiometricPrompt
@@ -185,8 +183,7 @@ class BiometricHelper(context: Context) {
 
         val executor = ContextCompat.getMainExecutor(activity)
 
-        val callback = @RequiresApi(Build.VERSION_CODES.P)
-        object : BiometricPrompt.AuthenticationCallback() {
+        val callback = object : BiometricPrompt.AuthenticationCallback() {
             override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                 onResult(BiometricResult.Success)
             }

@@ -59,14 +59,14 @@ data class PermissionRequest(val permissions: List<String>) {
         val Internet      = PermissionRequest(android.Manifest.permission.INTERNET)
 
         val Notifications = PermissionRequest(
-            if (android.os.Build.VERSION.SDK_INT >= 33)
+            if (Build.VERSION.SDK_INT >= 33)
                 android.Manifest.permission.POST_NOTIFICATIONS
             else
                 android.Manifest.permission.INTERNET // normal perm, always granted — placeholder
         )
 
         val Bluetooth = PermissionRequest(
-            *if (android.os.Build.VERSION.SDK_INT >= 31) arrayOf(
+            *if (Build.VERSION.SDK_INT >= 31) arrayOf(
                 android.Manifest.permission.BLUETOOTH_SCAN,
                 android.Manifest.permission.BLUETOOTH_CONNECT
             ) else arrayOf(
@@ -97,7 +97,7 @@ data class PermissionRequest(val permissions: List<String>) {
  *     results.forEach { (permission, status) -> /* … */ }
  * }
  *
- * // Déclenchement :
+ * // Déclenchement — le callback est toujours invoqué, même si tout est déjà accordé :
  * permissionHelper.request(PermissionRequest.Camera, launcher)
  * ```
  *
@@ -162,17 +162,30 @@ class PermissionHelper(context: Context) {
 
     /**
      * Déclenche la demande pour le [request] via le [launcher] fourni.
-     * Les permissions déjà accordées sont filtrées automatiquement.
+     * Les permissions déjà accordées sont filtrées et ne déclenchent pas de dialogue.
+     *
+     * Si toutes les permissions sont déjà accordées, [onAllGranted] est invoqué
+     * synchroniquement et [launcher] n'est pas déclenché — garantissant que
+     * l'appelant reçoit toujours un résultat sans déclencher de dialogue inutile.
+     *
+     * @param onAllGranted Callback invoqué synchroniquement quand aucune permission
+     *   n'est à demander. Optionnel ; si `null`, la fonction retourne silencieusement
+     *   (comportement identique à l'ancien code).
      */
     fun request(
         request: PermissionRequest,
-        launcher: ActivityResultLauncher<Array<String>>
+        launcher: ActivityResultLauncher<Array<String>>,
+        onAllGranted: (() -> Unit)? = null
     ) {
         val pending = request.permissions.filter {
             ContextCompat.checkSelfPermission(appContext, it) !=
                     PackageManager.PERMISSION_GRANTED
         }
-        if (pending.isNotEmpty()) launcher.launch(pending.toTypedArray())
+        if (pending.isNotEmpty()) {
+            launcher.launch(pending.toTypedArray())
+        } else {
+            onAllGranted?.invoke()
+        }
     }
 
     // ── Settings redirect ─────────────────────────────────────────────────────

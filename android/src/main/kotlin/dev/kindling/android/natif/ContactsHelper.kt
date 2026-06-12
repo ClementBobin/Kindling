@@ -118,23 +118,38 @@ class ContactsHelper(context: Context) {
             "${ContactsContract.Contacts.DISPLAY_NAME_PRIMARY} ASC"
         )
 
-        val contacts = mutableListOf<ContactInfo>()
-        cursor?.use { c ->
-            while (c.moveToNext() && contacts.size < query.limit) {
-                val id    = c.getString(c.getColumnIndexOrThrow(ContactsContract.Contacts._ID))
-                val name  = c.getString(c.getColumnIndexOrThrow(ContactsContract.Contacts.DISPLAY_NAME_PRIMARY)) ?: ""
-                val photo = c.getString(c.getColumnIndexOrThrow(ContactsContract.Contacts.PHOTO_URI))
+        // Collecte d'abord tous les IDs + métadonnées de base — O(N) curseur
+        data class RawContact(val id: String, val name: String, val photo: Uri?)
 
-                contacts.add(ContactInfo(
-                    id          = id,
-                    displayName = name,
-                    phones      = queryPhones(id),
-                    emails      = queryEmails(id),
-                    photoUri    = photo?.toUri()
-                ))
+        val rawContacts = mutableListOf<RawContact>()
+        cursor?.use { c ->
+            while (c.moveToNext() && rawContacts.size < query.limit) {
+                rawContacts.add(
+                    RawContact(
+                        id    = c.getString(c.getColumnIndexOrThrow(ContactsContract.Contacts._ID)),
+                        name  = c.getString(c.getColumnIndexOrThrow(ContactsContract.Contacts.DISPLAY_NAME_PRIMARY)) ?: "",
+                        photo = c.getString(c.getColumnIndexOrThrow(ContactsContract.Contacts.PHOTO_URI))?.toUri()
+                    )
+                )
             }
         }
-        return contacts
+
+        if (rawContacts.isEmpty()) return emptyList()
+
+        // Batch : une seule requête phones + une seule requête emails pour tous les IDs
+        val ids = rawContacts.map { it.id }
+        val phonesMap = batchQueryPhones(ids)
+        val emailsMap = batchQueryEmails(ids)
+
+        return rawContacts.map { raw ->
+            ContactInfo(
+                id          = raw.id,
+                displayName = raw.name,
+                phones      = phonesMap[raw.id] ?: emptyList(),
+                emails      = emailsMap[raw.id] ?: emptyList(),
+                photoUri    = raw.photo
+            )
+        }
     }
 
     /** Résout un [Uri] retourné par le sélecteur natif en [ContactInfo]. */
@@ -149,6 +164,7 @@ class ContactsHelper(context: Context) {
             if (!c.moveToFirst()) return null
             val id   = c.getString(c.getColumnIndexOrThrow(ContactsContract.Contacts._ID))
             val name = c.getString(c.getColumnIndexOrThrow(ContactsContract.Contacts.DISPLAY_NAME_PRIMARY)) ?: ""
+            // Contact unique → appels directs acceptables ici (1 contact = 2 requêtes max)
             ContactInfo(id = id, displayName = name, phones = queryPhones(id), emails = queryEmails(id))
         }
     }
@@ -213,7 +229,7 @@ class ContactsHelper(context: Context) {
 
     fun openPicker(launcher: ActivityResultLauncher<Void?>) = launcher.launch(null)
 
-    // ── Internal ──────────────────────────────────────────────────────────────
+    // ── Internal — single-contact (utilisé par resolveContact) ────────────────
 
     private fun queryPhones(contactId: String): List<String> {
         val phones = mutableListOf<String>()
@@ -241,5 +257,78 @@ class ContactsHelper(context: Context) {
                 emails.add(c.getString(c.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Email.ADDRESS)))
         }
         return emails
+    }
+
+    // ── Internal — batch (utilisé par query()) ────────────────────────────────
+
+    /**
+     * Charge tous les téléphones pour une liste d'IDs en une seule requête.
+     * Retourne une map `contactId → List<phoneNumber>`.
+     *
+     * Android limite la taille des clauses `IN` ; on chunk par [BATCH_SIZE]
+     * pour éviter les exceptions SQLite sur les très grandes listes.
+     */
+    private fun batchQueryPhones(ids: List<String>): Map<String, MutableList<String>> {
+        val result = HashMap<String, MutableList<String>>(ids.size)
+        ids.chunked(BATCH_SIZE) { chunk ->
+            val placeholders = chunk.joinToString(",") { "?" }
+            appContext.contentResolver.query(
+                ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                arrayOf(
+                    ContactsContract.CommonDataKinds.Phone.CONTACT_ID,
+                    ContactsContract.CommonDataKinds.Phone.NUMBER
+                ),
+                "${ContactsContract.CommonDataKinds.Phone.CONTACT_ID} IN ($placeholders)",
+                chunk.toTypedArray(),
+                null
+            )?.use { c ->
+                val colId  = c.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.CONTACT_ID)
+                val colNum = c.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER)
+                while (c.moveToNext()) {
+                    val contactId = c.getString(colId)
+                    result.getOrPut(contactId) { mutableListOf() }
+                        .add(c.getString(colNum))
+                }
+            }
+        }
+        return result
+    }
+
+    /**
+     * Charge tous les emails pour une liste d'IDs en une seule requête.
+     * Retourne une map `contactId → List<emailAddress>`.
+     */
+    private fun batchQueryEmails(ids: List<String>): Map<String, MutableList<String>> {
+        val result = HashMap<String, MutableList<String>>(ids.size)
+        ids.chunked(BATCH_SIZE) { chunk ->
+            val placeholders = chunk.joinToString(",") { "?" }
+            appContext.contentResolver.query(
+                ContactsContract.CommonDataKinds.Email.CONTENT_URI,
+                arrayOf(
+                    ContactsContract.CommonDataKinds.Email.CONTACT_ID,
+                    ContactsContract.CommonDataKinds.Email.ADDRESS
+                ),
+                "${ContactsContract.CommonDataKinds.Email.CONTACT_ID} IN ($placeholders)",
+                chunk.toTypedArray(),
+                null
+            )?.use { c ->
+                val colId   = c.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Email.CONTACT_ID)
+                val colAddr = c.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Email.ADDRESS)
+                while (c.moveToNext()) {
+                    val contactId = c.getString(colId)
+                    result.getOrPut(contactId) { mutableListOf() }
+                        .add(c.getString(colAddr))
+                }
+            }
+        }
+        return result
+    }
+
+    companion object {
+        /**
+         * Taille maximale d'un chunk pour les clauses `IN (...)`.
+         * SQLite limite les variables liées à 999 ; on prend une marge confortable.
+         */
+        private const val BATCH_SIZE = 500
     }
 }
