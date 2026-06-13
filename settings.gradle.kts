@@ -19,4 +19,4 @@ dependencyResolutionManagement {
     versionCatalogs { create("libs") }
 }
 
-include(":core", ":utils", ":compose", ":sample")
+include(":core", ":utils", ":compose", ":android", ":sample")
