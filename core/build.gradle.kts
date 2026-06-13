@@ -52,3 +52,36 @@ kotlin {
         }
     }
 }
+
+mavenPublishing {
+    publishToMavenCentral()
+    signAllPublications()
+
+    coordinates(Versions.group, "core", Versions.libraryVersion)
+
+    pom {
+        name.set("core")
+        description.set("Core module for kindling")
+        inceptionYear.set("2026")
+        url.set("https://github.com/ClementBobin/Kindling")
+        licenses {
+            license {
+                name.set("The Apache License, Version 2.0")
+                url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
+                distribution.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
+            }
+        }
+        developers {
+            developer {
+                id.set("clementbobin")
+                name.set("Clement Bobin")
+                url.set("https://github.com/ClementBobin/")
+            }
+        }
+        scm {
+            url.set("https://github.com/ClementBobin/Kindling")
+            connection.set("scm:git:git://github.com/ClementBobin/Kindling.git")
+            developerConnection.set("scm:git:ssh://git@github.com/ClementBobin/Kindling.git")
+        }
+    }
+}
