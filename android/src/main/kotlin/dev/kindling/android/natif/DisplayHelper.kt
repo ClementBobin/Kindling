@@ -118,15 +118,17 @@ class DisplayHelper(context: Context) {
     fun pxToDp(px: Float): Float =
         px / appContext.resources.displayMetrics.density
 
-    fun spToPx(sp: Float): Float {
-        val config = appContext.resources.configuration
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            sp * appContext.resources.displayMetrics.density * config.fontScale
+    fun spToPx(sp: Float): Float =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            android.util.TypedValue.applyDimension(
+                android.util.TypedValue.COMPLEX_UNIT_SP,
+                sp,
+                appContext.resources.displayMetrics
+            )
         } else {
             @Suppress("DEPRECATION")
             sp * appContext.resources.displayMetrics.scaledDensity
         }
-    }
 
     // ── Refresh rate ──────────────────────────────────────────────────────────
 

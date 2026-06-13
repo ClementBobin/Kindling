@@ -18,8 +18,8 @@ import android.view.View
  * - [HapticEffect.Click]        → feedback de clic standard
  * - [HapticEffect.LongPress]    → feedback d'appui long
  * - [HapticEffect.DoubleClick]  → feedback de double-clic (API 27+)
- * - [HapticEffect.HeavyClick]   → clic lourd (API 27+)
- * - [HapticEffect.Tick]         → tick léger (API 27+)
+ * - [HapticEffect.HeavyClick]   → clic lourd (API 23+)
+ * - [HapticEffect.Tick]         → tick léger (API 21+)
  * - [HapticEffect.Confirm]      → confirmation (API 30+)
  * - [HapticEffect.Reject]       → rejet (API 30+)
  * - [HapticEffect.TextHandleMove] → déplacement curseur texte (API 27+)

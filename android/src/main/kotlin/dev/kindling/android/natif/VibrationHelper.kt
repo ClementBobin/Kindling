@@ -40,6 +40,15 @@ data class VibrationPattern(
         require(timings.size == amplitudes.size) {
             "timings and amplitudes must have the same length (got ${timings.size} vs ${amplitudes.size})"
         }
+        require(timings.all { it >= 0L }) {
+            "all timing values must be non-negative"
+        }
+        require(amplitudes.all { it == -1 || it in 0..255 }) {
+            "amplitude values must be -1 (DEFAULT_AMPLITUDE) or in 0..255"
+        }
+        require(fallbackMs > 0) {
+            "fallbackMs must be positive (got $fallbackMs)"
+        }
     }
 
     companion object {
