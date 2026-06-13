@@ -66,7 +66,7 @@ class ConnectivityHelper(context: Context) {
      * Retourne les [NetworkCapabilities] du réseau actif, ou `null`.
      * Guard API 23 intégré : retourne `null` sur API < 23.
      */
-    @RequiresPermission(android.Manifest.permission.ACCESS_NETWORK_STATE)
+    @RequiresPermission(Manifest.permission.ACCESS_NETWORK_STATE)
     private fun activeCapabilities(): NetworkCapabilities? {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             manager.activeNetwork?.let { manager.getNetworkCapabilities(it) }
@@ -85,21 +85,23 @@ class ConnectivityHelper(context: Context) {
     /** `true` if [caps] represents a usable internet connection (internet + validated). */
     private fun NetworkCapabilities.isUsable(): Boolean =
         hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
-                hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
+                (Build.VERSION.SDK_INT < Build.VERSION_CODES.M ||
+                        hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED))
 
     // ── Synchronous ───────────────────────────────────────────────────────────
 
     /** `true` si une connexion réseau validée est disponible. */
-    @RequiresPermission(android.Manifest.permission.ACCESS_NETWORK_STATE)
+    @RequiresPermission(Manifest.permission.ACCESS_NETWORK_STATE)
     fun isOnline(): Boolean =
-        activeCapabilities()?.isUsable() == true
+        activeCapabilities()?.isUsable() == true || isOnlineLegacy()
 
-    @RequiresPermission(android.Manifest.permission.ACCESS_NETWORK_STATE)
+    @Suppress("DEPRECATION")
+    @RequiresPermission(Manifest.permission.ACCESS_NETWORK_STATE)
     private fun isOnlineLegacy(): Boolean =
         manager.activeNetworkInfo?.isConnected == true
 
     /** Transport actif, ou `null` si hors ligne. */
-    @RequiresPermission(android.Manifest.permission.ACCESS_NETWORK_STATE)
+    @RequiresPermission(Manifest.permission.ACCESS_NETWORK_STATE)
     fun currentTransport(): NetworkTransport? =
         activeCapabilities()?.takeIf { it.isUsable() }?.resolveTransport()
 
@@ -113,14 +115,15 @@ class ConnectivityHelper(context: Context) {
      * La permission ACCESS_NETWORK_STATE doit être déclarée dans le Manifest
      * et accordée avant de collecter ce flow.
      */
-    @get:RequiresPermission(android.Manifest.permission.ACCESS_NETWORK_STATE)
+    @get:RequiresPermission(Manifest.permission.ACCESS_NETWORK_STATE)
     val statusFlow: Flow<NetworkStatus> get() = callbackFlow {
         val callback = object : ConnectivityManager.NetworkCallback() {
             @RequiresPermission(Manifest.permission.ACCESS_NETWORK_STATE)
             override fun onAvailable(network: Network) {
                 val caps = manager.getNetworkCapabilities(network)
-                val transport = caps?.resolveTransport() ?: NetworkTransport.Other
-                trySend(NetworkStatus.Available(transport))
+                if (caps?.isUsable() == true) {
+                    trySend(NetworkStatus.Available(caps.resolveTransport()))
+                }
             }
 
             @RequiresPermission(Manifest.permission.ACCESS_NETWORK_STATE)

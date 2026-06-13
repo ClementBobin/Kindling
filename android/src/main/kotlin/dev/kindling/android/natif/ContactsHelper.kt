@@ -156,16 +156,20 @@ class ContactsHelper(context: Context) {
     @RequiresPermission(Manifest.permission.READ_CONTACTS)
     fun resolveContact(context: Context, uri: Uri): ContactInfo? {
         val cursor = context.contentResolver.query(uri,
-            arrayOf(ContactsContract.Contacts._ID, ContactsContract.Contacts.DISPLAY_NAME_PRIMARY),
+            arrayOf(
+                ContactsContract.Contacts._ID,
+                ContactsContract.Contacts.DISPLAY_NAME_PRIMARY,
+                ContactsContract.Contacts.PHOTO_URI
+            ),
             null, null, null
         ) ?: return null
 
         return cursor.use { c ->
             if (!c.moveToFirst()) return null
-            val id   = c.getString(c.getColumnIndexOrThrow(ContactsContract.Contacts._ID))
-            val name = c.getString(c.getColumnIndexOrThrow(ContactsContract.Contacts.DISPLAY_NAME_PRIMARY)) ?: ""
-            // Contact unique → appels directs acceptables ici (1 contact = 2 requêtes max)
-            ContactInfo(id = id, displayName = name, phones = queryPhones(id), emails = queryEmails(id))
+            val id    = c.getString(c.getColumnIndexOrThrow(ContactsContract.Contacts._ID))
+            val name  = c.getString(c.getColumnIndexOrThrow(ContactsContract.Contacts.DISPLAY_NAME_PRIMARY)) ?: ""
+            val photo = c.getString(c.getColumnIndexOrThrow(ContactsContract.Contacts.PHOTO_URI))?.toUri()
+            ContactInfo(id = id, displayName = name, phones = queryPhones(id), emails = queryEmails(id), photoUri = photo)
         }
     }
 

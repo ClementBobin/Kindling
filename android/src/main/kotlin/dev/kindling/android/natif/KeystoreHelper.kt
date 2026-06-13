@@ -10,6 +10,8 @@ import javax.crypto.SecretKey
 import javax.crypto.spec.GCMParameterSpec
 import android.util.Base64
 import androidx.annotation.RequiresApi
+import android.security.keystore.KeyInfo
+import javax.crypto.SecretKeyFactory
 
 // ─────────────────────────────────────────────
 //  KeystoreConfig
@@ -115,7 +117,15 @@ class KeystoreHelper {
 
     /** Génère ou retourne la clé existante pour [config]. */
     fun getOrCreateKey(config: KeystoreConfig): SecretKey {
-        keystore.getKey(config.alias, null)?.let { return it as SecretKey }
+            keystore.getKey(config.alias, null)?.let { existing ->
+                    val secret = existing as SecretKey
+                    val keyInfo = SecretKeyFactory.getInstance(secret.algorithm, PROVIDER)
+                        .getKeySpec(secret, KeyInfo::class.java) as KeyInfo
+                    require(keyInfo.isUserAuthenticationRequired == config.requireBiometric) {
+                            "Key policy mismatch for alias '${config.alias}'. Use a distinct alias or rotate key material."
+                        }
+                    return secret
+                }
         return generateKey(config)
     }
 

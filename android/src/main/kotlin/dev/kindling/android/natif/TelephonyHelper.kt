@@ -88,6 +88,7 @@ class TelephonyHelper(context: Context) {
         val type = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
             telephonyManager.dataNetworkType
         else
+            @Suppress("DEPRECATION")
             telephonyManager.networkType
 
         return when (type) {
@@ -100,8 +101,11 @@ class TelephonyHelper(context: Context) {
             TelephonyManager.NETWORK_TYPE_HSPA   -> NetworkType.Gsm
             TelephonyManager.NETWORK_TYPE_LTE    -> NetworkType.Lte
             TelephonyManager.NETWORK_TYPE_NR     -> NetworkType.Nr5G
+            @Suppress("DEPRECATION")
             TelephonyManager.NETWORK_TYPE_CDMA,
+            @Suppress("DEPRECATION")
             TelephonyManager.NETWORK_TYPE_EVDO_0,
+            @Suppress("DEPRECATION")
             TelephonyManager.NETWORK_TYPE_EVDO_A -> NetworkType.Cdma
             else                                 -> NetworkType.Unknown
         }

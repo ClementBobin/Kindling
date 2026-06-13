@@ -1,8 +1,8 @@
 package dev.kindling.android.natif
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.os.Build
@@ -32,7 +32,7 @@ data class NotificationChannelConfig(
     val id: String,
     val name: String,
     val description: String = "",
-    val importance: Int     = NotificationManager.IMPORTANCE_DEFAULT
+    val importance: Int     = 3
 )
 
 // ─────────────────────────────────────────────
@@ -67,7 +67,7 @@ data class NotificationConfig(
     val channelId: String,
     val title: String,
     val body: String,
-    @DrawableRes val smallIcon: Int,
+    val smallIcon: Int,
     val priority: Int           = NotificationCompat.PRIORITY_DEFAULT,
     val autoCancel: Boolean     = true,
     val contentIntent: PendingIntent? = null,
@@ -164,6 +164,7 @@ class NotificationHelper(context: Context) {
      */
     fun registerChannel(config: NotificationChannelConfig) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            @SuppressLint("WrongConstant")
             val channel = NotificationChannel(
                 config.id,
                 config.name,

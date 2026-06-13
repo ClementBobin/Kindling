@@ -58,19 +58,18 @@ data class PermissionRequest(val permissions: List<String>) {
         val Vibrate       = PermissionRequest(android.Manifest.permission.VIBRATE)
         val Internet      = PermissionRequest(android.Manifest.permission.INTERNET)
 
-        val Notifications = PermissionRequest(
-            if (Build.VERSION.SDK_INT >= 33)
-                android.Manifest.permission.POST_NOTIFICATIONS
-            else
-                android.Manifest.permission.INTERNET // normal perm, always granted — placeholder
-        )
+        val Notifications = if (Build.VERSION.SDK_INT >= 33)
+            PermissionRequest(android.Manifest.permission.POST_NOTIFICATIONS)
+        else
+            PermissionRequest(emptyList())
 
         val Bluetooth = PermissionRequest(
             *if (Build.VERSION.SDK_INT >= 31) arrayOf(
                 android.Manifest.permission.BLUETOOTH_SCAN,
                 android.Manifest.permission.BLUETOOTH_CONNECT
             ) else arrayOf(
-                android.Manifest.permission.BLUETOOTH
+                android.Manifest.permission.BLUETOOTH,
+                android.Manifest.permission.BLUETOOTH_ADMIN
             )
         )
     }
@@ -175,7 +174,7 @@ class PermissionHelper(context: Context) {
     fun request(
         request: PermissionRequest,
         launcher: ActivityResultLauncher<Array<String>>,
-        onAllGranted: (() -> Unit)? = null
+        onAllGranted: () -> Unit = {}
     ) {
         val pending = request.permissions.filter {
             ContextCompat.checkSelfPermission(appContext, it) !=
@@ -184,7 +183,7 @@ class PermissionHelper(context: Context) {
         if (pending.isNotEmpty()) {
             launcher.launch(pending.toTypedArray())
         } else {
-            onAllGranted?.invoke()
+            onAllGranted()
         }
     }
 

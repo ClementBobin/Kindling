@@ -38,12 +38,12 @@ data class HapticEffect(val constant: Int) {
             if (Build.VERSION.SDK_INT >= 27) HapticFeedbackConstants.VIRTUAL_KEY_RELEASE
             else HapticFeedbackConstants.VIRTUAL_KEY
         )
-        val HeavyClick      = HapticEffect(
-            if (Build.VERSION.SDK_INT >= 27) HapticFeedbackConstants.CONTEXT_CLICK
+        val HeavyClick = HapticEffect(
+            if (Build.VERSION.SDK_INT >= 23) HapticFeedbackConstants.CONTEXT_CLICK
             else HapticFeedbackConstants.VIRTUAL_KEY
         )
-        val Tick            = HapticEffect(
-            if (Build.VERSION.SDK_INT >= 27) HapticFeedbackConstants.CLOCK_TICK
+        val Tick = HapticEffect(
+            if (Build.VERSION.SDK_INT >= 21) HapticFeedbackConstants.CLOCK_TICK
             else HapticFeedbackConstants.VIRTUAL_KEY
         )
         val Confirm         = HapticEffect(

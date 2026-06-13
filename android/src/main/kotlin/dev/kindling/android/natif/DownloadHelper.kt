@@ -117,8 +117,9 @@ sealed class DownloadStatus {
 class DownloadHelper(context: Context) {
 
     internal val appContext       = context.applicationContext
-    internal val downloadManager  =
-        appContext.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+    internal val downloadManager: DownloadManager =
+        appContext.getSystemService(Context.DOWNLOAD_SERVICE) as? DownloadManager
+            ?: throw IllegalStateException("DownloadManager unavailable on this device")
 
     // ── Enqueue ───────────────────────────────────────────────────────────────
 

@@ -36,6 +36,12 @@ data class VibrationPattern(
     val amplitudes: IntArray,
     val fallbackMs: Long
 ) {
+    init {
+        require(timings.size == amplitudes.size) {
+            "timings and amplitudes must have the same length (got ${timings.size} vs ${amplitudes.size})"
+        }
+    }
+
     companion object {
         /** Double impulsion courte/forte — erreur serveur (5xx) ou réseau. */
         val Error = VibrationPattern(

@@ -132,13 +132,19 @@ class BluetoothHelper(context: Context) {
     // ── Discovery flow ────────────────────────────────────────────────────────
 
     @RequiresPermission(
-        anyOf = [Manifest.permission.BLUETOOTH_SCAN, Manifest.permission.BLUETOOTH_ADMIN]
+        anyOf = [
+            Manifest.permission.BLUETOOTH_SCAN,
+            Manifest.permission.BLUETOOTH_ADMIN,
+            Manifest.permission.BLUETOOTH,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ]
     )
     fun scanFlow(config: BluetoothScanConfig = BluetoothScanConfig.Default): Flow<BluetoothDevice> =
         callbackFlow {
             val receiver = object : BroadcastReceiver() {
                 override fun onReceive(context: Context, intent: Intent) {
                     if (intent.action == BluetoothDevice.ACTION_FOUND) {
+                        @Suppress("DEPRECATION")
                         val device: BluetoothDevice? =
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
                                 intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE, BluetoothDevice::class.java)

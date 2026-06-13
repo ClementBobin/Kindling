@@ -75,6 +75,7 @@ class DisplayHelper(context: Context) {
             val display = displayManager.getDisplay(Display.DEFAULT_DISPLAY)
                 ?: displayManager.displays.firstOrNull()
             if (display != null) {
+                @Suppress("DEPRECATION")
                 display.getMetrics(metrics)
             } else {
                 // Écran momentanément indisponible (cast, détachement OEM) :
@@ -90,7 +91,9 @@ class DisplayHelper(context: Context) {
                 orientation = appContext.resources.configuration.orientation
             )
         } else {
+            @Suppress("DEPRECATION")
             val display = windowManager.defaultDisplay
+            @Suppress("DEPRECATION")
             display.getRealMetrics(metrics)
             return DisplayInfo(
                 widthPx     = metrics.widthPixels,
@@ -120,6 +123,7 @@ class DisplayHelper(context: Context) {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             sp * appContext.resources.displayMetrics.density * config.fontScale
         } else {
+            @Suppress("DEPRECATION")
             sp * appContext.resources.displayMetrics.scaledDensity
         }
     }
