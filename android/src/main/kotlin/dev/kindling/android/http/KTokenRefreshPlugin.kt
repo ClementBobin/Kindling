@@ -1,0 +1,64 @@
+package dev.kindling.android.http
+
+import dev.kindling.utils.SingleFlight
+import io.ktor.client.plugins.api.Send
+import io.ktor.client.plugins.api.createClientPlugin
+import io.ktor.client.request.HttpRequestBuilder
+import io.ktor.client.statement.request
+import io.ktor.http.HttpStatusCode
+
+// SingleFlight from kindling-utils deduplicates concurrent refresh calls:
+// if multiple 401s arrive simultaneously, only one refresh is executed and
+// all callers share the same result.
+private val refreshFlight = SingleFlight<Boolean>()
+
+/**
+ * Ktor client plugin that intercepts 401 responses on protected routes and
+ * automatically attempts a token refresh before retrying the original request.
+ *
+ * Concurrency is handled by [SingleFlight] from `kindling-utils`:
+ * multiple simultaneous 401s trigger exactly one refresh call — all waiters
+ * share the result rather than stampeding the refresh endpoint.
+ *
+ * Flow triggered on 401 outside [authPaths]:
+ * ```
+ * SingleFlight.get {
+ *     refresher.shouldRefresh() == false → return false
+ *     refresher.refresh()
+ *         ├─ true  → tokens saved → return true
+ *         └─ false → refresher.onRefreshFailed() → return false
+ * }
+ * ├─ true  → applyToken(request) → retry
+ * └─ false → propagate original 401
+ * ```
+ */
+internal fun createTokenRefreshPlugin(
+    refresher: KTokenRefresher,
+    authPaths: List<String>,
+) = createClientPlugin("KTokenRefresh") {
+
+    if (refresher is KDefaultTokenRefresher) {
+        refresher.httpClient = client
+    }
+
+    on(Send) { request ->
+        val originalCall = proceed(request)
+
+        if (originalCall.response.status != HttpStatusCode.Unauthorized) return@on originalCall
+        val path = originalCall.response.request.url.encodedPath
+        if (authPaths.any { path.endsWith(it) }) return@on originalCall
+        if (!refresher.shouldRefresh()) return@on originalCall
+
+        // SingleFlight: only one coroutine refreshes; others await the shared result
+        val refreshed = refreshFlight.get {
+            runCatching { refresher.refresh() }
+                .getOrElse { false }
+                .also { success -> if (!success) refresher.onRefreshFailed() }
+        }
+        if (!refreshed) return@on originalCall
+
+        val retryRequest = HttpRequestBuilder().takeFrom(request)
+        refresher.applyToken(retryRequest)
+        proceed(retryRequest)
+    }
+}
