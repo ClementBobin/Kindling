@@ -48,6 +48,13 @@ class KDefaultTokenRefresher(
         !getRefreshToken().isNullOrBlank()
 
     override suspend fun refresh(): Boolean {
+        if (!::httpClient.isInitialized) {
+            throw IllegalStateException(
+                "KDefaultTokenRefresher: httpClient is not initialized. " +
+                "Ensure this refresher is used within a KTokenRefreshPlugin (part of buildKHttpClient)."
+            )
+        }
+
         val refreshToken = getRefreshToken() ?: return false
 
         val response = runCatching {

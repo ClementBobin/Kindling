@@ -7,11 +7,6 @@ import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.statement.request
 import io.ktor.http.HttpStatusCode
 
-// SingleFlight from kindling-utils deduplicates concurrent refresh calls:
-// if multiple 401s arrive simultaneously, only one refresh is executed and
-// all callers share the same result.
-private val refreshFlight = SingleFlight<Boolean>()
-
 /**
  * Ktor client plugin that intercepts 401 responses on protected routes and
  * automatically attempts a token refresh before retrying the original request.
@@ -36,6 +31,10 @@ internal fun createTokenRefreshPlugin(
     refresher: KTokenRefresher,
     authPaths: List<String>,
 ) = createClientPlugin("KTokenRefresh") {
+
+    // SingleFlight from kindling-utils deduplicates concurrent refresh calls.
+    // Declared inside the plugin factory so it's scoped to this specific HttpClient instance.
+    val refreshFlight = SingleFlight<Boolean>()
 
     if (refresher is KDefaultTokenRefresher) {
         refresher.httpClient = client

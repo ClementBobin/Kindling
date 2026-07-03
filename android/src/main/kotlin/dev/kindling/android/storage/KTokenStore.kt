@@ -30,12 +30,14 @@ interface KTokenStore {
     suspend fun getRefreshToken(): String?
 
     /**
-     * Persists both tokens atomically (best-effort).
+     * Persists both tokens.
+     *
+     * Passing `null` for a token should remove it from storage.
      *
      * @param accessToken  The new access token.
      * @param refreshToken The new refresh token.
      */
-    suspend fun saveTokens(accessToken: String, refreshToken: String)
+    suspend fun saveTokens(accessToken: String?, refreshToken: String?)
 
     /** Removes all stored tokens. */
     suspend fun clear()

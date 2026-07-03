@@ -21,8 +21,9 @@ import io.ktor.client.request.HttpRequestBuilder
  *        └─ failure → onRefreshFailed()
  * ```
  *
- * Concurrency is handled by Kindling (Mutex) — [refresh] will never be called
- * concurrently from multiple coroutines.
+ * Concurrency is handled by Kindling via `SingleFlight` — if multiple 401s occur
+ * simultaneously, only one [refresh] call is executed and its result is shared
+ * across all callers.
  *
  * Minimal custom implementation:
  * ```kotlin

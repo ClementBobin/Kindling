@@ -141,7 +141,22 @@ private fun HttpClientConfig<*>.configure(config: KHttpConfig) {
     // 3. Logging
     install(Logging) {
         logger = object : Logger {
-            override fun log(message: String) { println("[KHttp] $message") }
+            override fun log(message: String) {
+                val sanitized = sanitize(message)
+                println("[KHttp] $sanitized")
+            }
+
+            private fun sanitize(message: String): String {
+                val sensitiveHeaders = listOf("Authorization", "Cookie", "Set-Cookie")
+                var result = message
+                sensitiveHeaders.forEach { header ->
+                    val regex = Regex("($header: )([^\\r\\n]+)", RegexOption.IGNORE_CASE)
+                    result = result.replace(regex) { match ->
+                        match.groupValues[1] + "***REDACTED***"
+                    }
+                }
+                return result
+            }
         }
         level = config.logLevel
     }

@@ -2,10 +2,20 @@ package dev.kindling.android.http
 
 import dev.kindling.utils.CircularBuffer
 import dev.kindling.utils.KMap
+import io.ktor.client.HttpClient
+import io.ktor.client.call.HttpClientCall
+import io.ktor.client.engine.mock.MockEngine
+import io.ktor.client.engine.mock.respond
 import io.ktor.client.plugins.api.Send
 import io.ktor.client.plugins.api.createClientPlugin
+import io.ktor.client.request.HttpRequestBuilder
+import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
+import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
+import io.ktor.client.request.header
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.headersOf
 
 /**
  * Cache strategy controlling when cached responses are used.
@@ -45,7 +55,12 @@ data class KCacheConfig(
     val maxAgeSeconds: Long           = 300L,
     val maxEntries:    Int            = 100,
     val strategy:      KCacheStrategy = KCacheStrategy.NetworkFirst,
-)
+) {
+    init {
+        require(maxAgeSeconds > 0) { "maxAgeSeconds must be greater than 0" }
+        require(maxEntries > 0) { "maxEntries must be greater than 0" }
+    }
+}
 
 internal data class KCacheEntry(
     val body:      String,
@@ -79,6 +94,18 @@ internal fun createCachePlugin(config: KCacheConfig) =
             store.set(key, KCacheEntry(body))
         }
 
+        suspend fun KCacheEntry.toCall(request: HttpRequestBuilder): HttpClientCall {
+            val mockEngine = MockEngine {
+                respond(
+                    content = body,
+                    status = HttpStatusCode.OK,
+                    headers = headersOf(HttpHeaders.ContentType, "application/json")
+                )
+            }
+            val mockClient = HttpClient(mockEngine)
+            return mockClient.get(request.url.buildString()).call
+        }
+
         on(Send) { request ->
             if (request.method != HttpMethod.Get) return@on proceed(request)
 
@@ -89,12 +116,12 @@ internal fun createCachePlugin(config: KCacheConfig) =
                 KCacheStrategy.NetworkOnly -> proceed(request)
 
                 KCacheStrategy.CacheOnly -> {
-                    cached ?: throw KHttpException.ClientError(504, "Cache miss: $key")
-                    proceed(request)
+                    val entry = cached ?: throw KHttpException.ClientError(504, "Cache miss: $key")
+                    entry.toCall(request)
                 }
 
                 KCacheStrategy.CacheFirst -> {
-                    if (cached != null) return@on proceed(request)
+                    if (cached != null) return@on cached.toCall(request)
                     val call = proceed(request)
                     putCached(key, call.response.bodyAsText())
                     call
@@ -105,7 +132,10 @@ internal fun createCachePlugin(config: KCacheConfig) =
                     if (call != null) {
                         putCached(key, call.response.bodyAsText())
                         call
+                    } else if (cached != null) {
+                        cached.toCall(request)
                     } else {
+                        // Fallback to original network call to propagate error
                         proceed(request)
                     }
                 }

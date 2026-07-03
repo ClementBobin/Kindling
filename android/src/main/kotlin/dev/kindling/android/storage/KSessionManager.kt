@@ -1,5 +1,6 @@
 package dev.kindling.android.storage
 
+import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -7,6 +8,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 /**
  * Generic session manager for token-based authentication.
@@ -50,10 +53,24 @@ class KSessionManager(
     /** Current refresh token. `null` means unauthenticated. */
     val refreshToken: StateFlow<String?> = _refreshToken.asStateFlow()
 
+    private val mutex = Mutex()
+
     init {
         scope.launch {
-            _accessToken.value  = store.getAccessToken()
-            _refreshToken.value = store.getRefreshToken()
+            try {
+                val access  = store.getAccessToken()
+                val refresh = store.getRefreshToken()
+                mutex.withLock {
+                    _accessToken.value  = access
+                    _refreshToken.value = refresh
+                }
+            } catch (e: Exception) {
+                Log.e("KSessionManager", "Failed to load tokens from store", e)
+                mutex.withLock {
+                    _accessToken.value  = null
+                    _refreshToken.value = null
+                }
+            }
         }
     }
 
@@ -61,8 +78,9 @@ class KSessionManager(
      * Persists both tokens and updates the [StateFlow]s.
      *
      * Call after a successful login or token refresh.
+     * Passing `null` for a token will remove it from the store and the in-memory state.
      */
-    suspend fun saveTokens(accessToken: String, refreshToken: String) {
+    suspend fun saveTokens(accessToken: String?, refreshToken: String?) = mutex.withLock {
         store.saveTokens(accessToken, refreshToken)
         _accessToken.value  = accessToken
         _refreshToken.value = refreshToken
@@ -73,7 +91,7 @@ class KSessionManager(
      *
      * Any observer of [accessToken] will react immediately (e.g. navigate to login).
      */
-    suspend fun clearSession() {
+    suspend fun clearSession() = mutex.withLock {
         store.clear()
         _accessToken.value  = null
         _refreshToken.value = null

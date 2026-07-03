@@ -33,7 +33,7 @@ class KInMemoryTokenStore(
     override suspend fun getAccessToken():  String? = accessToken
     override suspend fun getRefreshToken(): String? = refreshToken
 
-    override suspend fun saveTokens(accessToken: String, refreshToken: String) {
+    override suspend fun saveTokens(accessToken: String?, refreshToken: String?) {
         this.accessToken  = accessToken
         this.refreshToken = refreshToken
     }

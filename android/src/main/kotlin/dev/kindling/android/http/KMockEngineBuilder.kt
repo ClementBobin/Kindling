@@ -5,8 +5,11 @@ import io.ktor.client.engine.mock.*
 import io.ktor.http.*
 import io.ktor.http.content.OutgoingContent
 import kotlinx.coroutines.delay
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.serializer
 
 // ── Opt-in annotation ─────────────────────────────────────────────────────────
@@ -227,8 +230,9 @@ fun buildKMockEngine(
                     )
                 },
                 onFailure = { ex ->
+                    val errorJson = JsonObject(mapOf("error" to JsonPrimitive(ex.message ?: "Unknown error")))
                     respond(
-                        content = """{"error":"${ex.message?.replace("\"", "\\\"")}"}""",
+                        content = mockJson.encodeToString(errorJson),
                         status  = HttpStatusCode.InternalServerError,
                         headers = headersOf(HttpHeaders.ContentType, "application/json"),
                     )
@@ -247,13 +251,17 @@ private val mockJson = Json {
 private fun Any?.toJsonString(): String = when (this) {
     null     -> "null"
     is Unit  -> "{}"
-    is String -> this
+    is String -> mockJson.encodeToString(this)
     is List<*> -> {
         val elements: List<JsonElement> = map { item ->
-            mockJson.encodeToJsonElement(
-                mockJson.serializersModule.serializer(item!!::class.java),
-                @Suppress("UNCHECKED_CAST") item
-            )
+            if (item == null) {
+                JsonPrimitive(null as String?)
+            } else {
+                mockJson.encodeToJsonElement(
+                    mockJson.serializersModule.serializer(item::class.java),
+                    @Suppress("UNCHECKED_CAST") item
+                )
+            }
         }
         mockJson.encodeToString(kotlinx.serialization.builtins.ListSerializer(JsonElement.serializer()), elements)
     }

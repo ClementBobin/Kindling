@@ -3,9 +3,12 @@ package dev.kindling.android.storage
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringPreferencesKey
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
+import java.io.IOException
 
 /**
  * [KTokenStore] backed by Jetpack [DataStore].
@@ -38,15 +41,25 @@ class KDataStoreTokenStore(
     private val keyRefresh = stringPreferencesKey(refreshTokenKey)
 
     override suspend fun getAccessToken(): String? =
-        dataStore.data.map { it[keyAccess] }.firstOrNull()
+        dataStore.data
+            .catch { exception ->
+                if (exception is IOException) emit(emptyPreferences()) else throw exception
+            }
+            .map { it[keyAccess] }
+            .firstOrNull()
 
     override suspend fun getRefreshToken(): String? =
-        dataStore.data.map { it[keyRefresh] }.firstOrNull()
+        dataStore.data
+            .catch { exception ->
+                if (exception is IOException) emit(emptyPreferences()) else throw exception
+            }
+            .map { it[keyRefresh] }
+            .firstOrNull()
 
-    override suspend fun saveTokens(accessToken: String, refreshToken: String) {
+    override suspend fun saveTokens(accessToken: String?, refreshToken: String?) {
         dataStore.edit {
-            it[keyAccess]  = accessToken
-            it[keyRefresh] = refreshToken
+            if (accessToken != null) it[keyAccess] = accessToken else it.remove(keyAccess)
+            if (refreshToken != null) it[keyRefresh] = refreshToken else it.remove(keyRefresh)
         }
     }
 

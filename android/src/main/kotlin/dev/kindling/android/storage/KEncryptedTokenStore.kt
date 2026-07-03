@@ -38,9 +38,9 @@ class KEncryptedTokenStore(
     override suspend fun getAccessToken():  String? = getEncrypted(accessTokenKey)
     override suspend fun getRefreshToken(): String? = getEncrypted(refreshTokenKey)
 
-    override suspend fun saveTokens(accessToken: String, refreshToken: String) {
-        saveEncrypted(accessTokenKey, accessToken)
-        saveEncrypted(refreshTokenKey, refreshToken)
+    override suspend fun saveTokens(accessToken: String?, refreshToken: String?) {
+        if (accessToken != null) saveEncrypted(accessTokenKey, accessToken) else removeEncrypted(accessTokenKey)
+        if (refreshToken != null) saveEncrypted(refreshTokenKey, refreshToken) else removeEncrypted(refreshTokenKey)
     }
 
     override suspend fun clear() {
@@ -72,6 +72,13 @@ class KEncryptedTokenStore(
             }
         } catch (e: Exception) {
             // Failed to encrypt or save
+        }
+    }
+
+    private fun removeEncrypted(key: String) {
+        prefs.edit {
+            remove(key)
+            remove("${key}_iv")
         }
     }
 }

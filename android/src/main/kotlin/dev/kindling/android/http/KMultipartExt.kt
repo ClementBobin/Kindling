@@ -1,12 +1,14 @@
 package dev.kindling.android.http
 
 import io.ktor.client.request.HttpRequestBuilder
+import io.ktor.client.request.forms.ChannelProvider
 import io.ktor.client.request.forms.FormBuilder
 import io.ktor.client.request.forms.MultiPartFormDataContent
 import io.ktor.client.request.forms.formData
 import io.ktor.client.request.setBody
 import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
+import io.ktor.util.cio.readChannel
 import java.io.File
 
 /**
@@ -43,7 +45,7 @@ fun FormBuilder.appendFile(
 ) {
     append(
         key      = partName,
-        value    = file.readBytes(),
+        value    = ChannelProvider(size = file.length()) { file.readChannel() },
         headers  = Headers.build {
             append(HttpHeaders.ContentType,        contentType)
             append(HttpHeaders.ContentDisposition, "filename=$fileName")

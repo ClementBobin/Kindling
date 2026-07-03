@@ -41,14 +41,15 @@ class KSessionCookieStorage(
     }
 
     override suspend fun addCookie(requestUrl: Url, cookie: Cookie) {
+        val value = cookie.value.takeIf { it.isNotEmpty() }
         when (cookie.name) {
             accessTokenName  -> session.saveTokens(
-                cookie.value,
-                session.refreshToken.value ?: "",
+                value,
+                session.refreshToken.value,
             )
             refreshTokenName -> session.saveTokens(
-                session.accessToken.value ?: "",
-                cookie.value,
+                session.accessToken.value,
+                value,
             )
         }
     }

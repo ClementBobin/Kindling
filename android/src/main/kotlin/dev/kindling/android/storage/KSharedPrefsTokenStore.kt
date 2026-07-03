@@ -28,10 +28,10 @@ class KSharedPrefsTokenStore(
     override suspend fun getAccessToken():  String? = prefs.getString(accessTokenKey,  null)
     override suspend fun getRefreshToken(): String? = prefs.getString(refreshTokenKey, null)
 
-    override suspend fun saveTokens(accessToken: String, refreshToken: String) {
+    override suspend fun saveTokens(accessToken: String?, refreshToken: String?) {
         prefs.edit {
-            putString(accessTokenKey, accessToken)
-                .putString(refreshTokenKey, refreshToken)
+            if (accessToken != null) putString(accessTokenKey, accessToken) else remove(accessTokenKey)
+            if (refreshToken != null) putString(refreshTokenKey, refreshToken) else remove(refreshTokenKey)
         }
     }
 
