@@ -100,7 +100,7 @@ internal fun createCachePlugin(config: KCacheConfig) =
 
         val mockEngine = MockEngine { req ->
             val key = req.url.toString()
-            val entry = store.get(key)
+            val entry = getCached(key)
             if (entry != null) {
                 respond(
                     content = entry.body,
@@ -139,23 +139,23 @@ internal fun createCachePlugin(config: KCacheConfig) =
                     if (cached != null) return@on forwardToMock(request)
                     val call = proceed(request)
                     putCached(key, call.response.bodyAsText())
-                    call
+                    forwardToMock(request)
                 }
 
                 KCacheStrategy.NetworkFirst -> {
                     val result = runCatching { proceed(request) }
-                    result.onFailure { if (it is CancellationException) throw it }
+                    val exception = result.exceptionOrNull()
+                    if (exception is CancellationException) throw exception
                     
                     val call = result.getOrNull()
 
                     if (call != null) {
                         putCached(key, call.response.bodyAsText())
-                        call
+                        forwardToMock(request)
                     } else if (cached != null) {
                         forwardToMock(request)
                     } else {
-                        // Rethrow the original failure instead of retrying proceed(request)
-                        throw (result.exceptionOrNull() ?: proceed(request)) as Throwable
+                        throw exception!!
                     }
                 }
             }
