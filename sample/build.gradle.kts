@@ -7,8 +7,11 @@ kotlin {
     jvmToolchain(17)
 
     android {
-        namespace = "${Versions.group}.sample"
+        namespace = "dev.kindling.sample"
         compileSdk { version = release(36) }
+        defaultConfig {
+            minSdk = 23
+        }
     }
 }
 
