@@ -155,7 +155,7 @@ internal fun createCachePlugin(config: KCacheConfig) =
                         forwardToMock(request)
                     } else {
                         // Rethrow the original failure instead of retrying proceed(request)
-                        throw result.exceptionOrNull() ?: proceed(request)
+                        throw (result.exceptionOrNull() ?: proceed(request)) as Throwable
                     }
                 }
             }
