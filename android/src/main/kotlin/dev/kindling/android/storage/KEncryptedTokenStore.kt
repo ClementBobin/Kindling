@@ -3,6 +3,7 @@ package dev.kindling.android.storage
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.content.edit
 import dev.kindling.android.natif.EncryptedData
@@ -59,6 +60,7 @@ class KEncryptedTokenStore(
         return try {
             keystoreHelper.decrypt(keyConfig, EncryptedData(ciphertext, iv))
         } catch (e: Exception) {
+            Log.e("KEncryptedTokenStore", "Failed to decrypt $key. Data might be tampered or key invalidated.", e)
             null
         }
     }
@@ -66,12 +68,14 @@ class KEncryptedTokenStore(
     private fun saveEncrypted(key: String, value: String) {
         try {
             val encrypted = keystoreHelper.encrypt(keyConfig, value)
-            prefs.edit {
-                putString(key, encrypted.ciphertext)
-                putString("${key}_iv", encrypted.iv)
+            val success = prefs.edit().putString(key, encrypted.ciphertext)
+                .putString("${key}_iv", encrypted.iv)
+                .commit()
+            if (!success) {
+                Log.e("KEncryptedTokenStore", "Failed to commit encrypted $key to SharedPreferences")
             }
         } catch (e: Exception) {
-            // Failed to encrypt or save
+            Log.e("KEncryptedTokenStore", "Failed to encrypt $key", e)
         }
     }
 

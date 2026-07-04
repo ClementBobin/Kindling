@@ -13,9 +13,10 @@ import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
-import io.ktor.client.request.header
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.headersOf
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
 
 /**
  * Cache strategy controlling when cached responses are used.
@@ -94,15 +95,26 @@ internal fun createCachePlugin(config: KCacheConfig) =
             store.set(key, KCacheEntry(body))
         }
 
-        suspend fun KCacheEntry.toCall(request: HttpRequestBuilder): HttpClientCall {
-            val mockEngine = MockEngine {
+        val mockEngine = MockEngine { req ->
+            val key = req.url.buildString()
+            val entry = store.get(key)
+            if (entry != null) {
                 respond(
-                    content = body,
+                    content = entry.body,
                     status = HttpStatusCode.OK,
                     headers = headersOf(HttpHeaders.ContentType, "application/json")
                 )
+            } else {
+                respond("Cache miss", HttpStatusCode.NotFound)
             }
-            val mockClient = HttpClient(mockEngine)
+        }
+        val mockClient = HttpClient(mockEngine)
+        client.coroutineContext[Job]?.invokeOnCompletion {
+            mockClient.close()
+            mockEngine.close()
+        }
+
+        suspend fun forwardToMock(request: HttpRequestBuilder): HttpClientCall {
             return mockClient.get(request.url.buildString()).call
         }
 
@@ -116,24 +128,27 @@ internal fun createCachePlugin(config: KCacheConfig) =
                 KCacheStrategy.NetworkOnly -> proceed(request)
 
                 KCacheStrategy.CacheOnly -> {
-                    val entry = cached ?: throw KHttpException.ClientError(504, "Cache miss: $key")
-                    entry.toCall(request)
+                    if (cached == null) throw KHttpException.ServerError(504, "Cache miss: $key")
+                    forwardToMock(request)
                 }
 
                 KCacheStrategy.CacheFirst -> {
-                    if (cached != null) return@on cached.toCall(request)
+                    if (cached != null) return@on forwardToMock(request)
                     val call = proceed(request)
                     putCached(key, call.response.bodyAsText())
                     call
                 }
 
                 KCacheStrategy.NetworkFirst -> {
-                    val call = runCatching { proceed(request) }.getOrNull()
+                    val call = runCatching { proceed(request) }
+                        .onFailure { if (it is CancellationException) throw it }
+                        .getOrNull()
+
                     if (call != null) {
                         putCached(key, call.response.bodyAsText())
                         call
                     } else if (cached != null) {
-                        cached.toCall(request)
+                        forwardToMock(request)
                     } else {
                         // Fallback to original network call to propagate error
                         proceed(request)

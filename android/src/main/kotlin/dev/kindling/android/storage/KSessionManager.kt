@@ -1,9 +1,11 @@
 package dev.kindling.android.storage
 
 import android.util.Log
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -42,7 +44,7 @@ import kotlinx.coroutines.sync.withLock
  */
 class KSessionManager(
     private val store: KTokenStore,
-    scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO),
+    private val scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO),
 ) {
     private val _accessToken  = MutableStateFlow<String?>(null)
     private val _refreshToken = MutableStateFlow<String?>(null)
@@ -65,6 +67,7 @@ class KSessionManager(
                     _refreshToken.value = refresh
                 }
             } catch (e: Exception) {
+                if (e is CancellationException) throw e
                 Log.e("KSessionManager", "Failed to load tokens from store", e)
                 mutex.withLock {
                     _accessToken.value  = null
@@ -74,6 +77,12 @@ class KSessionManager(
         }
     }
 
+    private suspend fun performSaveTokens(accessToken: String?, refreshToken: String?) {
+        store.saveTokens(accessToken, refreshToken)
+        _accessToken.value  = accessToken
+        _refreshToken.value = refreshToken
+    }
+
     /**
      * Persists both tokens and updates the [StateFlow]s.
      *
@@ -81,9 +90,23 @@ class KSessionManager(
      * Passing `null` for a token will remove it from the store and the in-memory state.
      */
     suspend fun saveTokens(accessToken: String?, refreshToken: String?) = mutex.withLock {
-        store.saveTokens(accessToken, refreshToken)
-        _accessToken.value  = accessToken
-        _refreshToken.value = refreshToken
+        performSaveTokens(accessToken, refreshToken)
+    }
+
+    /**
+     * Updates only the access token while keeping the refresh token consistent,
+     * ensuring the operation is atomic to avoid lost updates.
+     */
+    suspend fun updateAccessToken(token: String?) = mutex.withLock {
+        performSaveTokens(token, _refreshToken.value)
+    }
+
+    /**
+     * Updates only the refresh token while keeping the access token consistent,
+     * ensuring the operation is atomic to avoid lost updates.
+     */
+    suspend fun updateRefreshToken(token: String?) = mutex.withLock {
+        performSaveTokens(_accessToken.value, token)
     }
 
     /**
@@ -99,4 +122,11 @@ class KSessionManager(
 
     /** Returns `true` if an access token is currently held in memory. */
     fun isAuthenticated(): Boolean = _accessToken.value != null
+
+    /**
+     * Cancels the [CoroutineScope] used by this manager.
+     */
+    fun close() {
+        scope.cancel()
+    }
 }

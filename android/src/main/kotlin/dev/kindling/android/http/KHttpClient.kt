@@ -17,6 +17,7 @@ import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
@@ -142,23 +143,13 @@ private fun HttpClientConfig<*>.configure(config: KHttpConfig) {
     install(Logging) {
         logger = object : Logger {
             override fun log(message: String) {
-                val sanitized = sanitize(message)
-                println("[KHttp] $sanitized")
-            }
-
-            private fun sanitize(message: String): String {
-                val sensitiveHeaders = listOf("Authorization", "Cookie", "Set-Cookie")
-                var result = message
-                sensitiveHeaders.forEach { header ->
-                    val regex = Regex("($header: )([^\\r\\n]+)", RegexOption.IGNORE_CASE)
-                    result = result.replace(regex) { match ->
-                        match.groupValues[1] + "***REDACTED***"
-                    }
-                }
-                return result
+                println("[KHttp] $message")
             }
         }
         level = config.logLevel
+        sanitizeHeader(HttpHeaders.Authorization)
+        sanitizeHeader(HttpHeaders.Cookie)
+        sanitizeHeader(HttpHeaders.SetCookie)
     }
 
     // 4. Response-side hooks (analytics, metrics)

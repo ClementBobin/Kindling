@@ -48,7 +48,7 @@ fun FormBuilder.appendFile(
         value    = ChannelProvider(size = file.length()) { file.readChannel() },
         headers  = Headers.build {
             append(HttpHeaders.ContentType,        contentType)
-            append(HttpHeaders.ContentDisposition, "filename=$fileName")
+            append(HttpHeaders.ContentDisposition, "filename=\"$fileName\"")
         }
     )
 }
@@ -72,7 +72,7 @@ fun FormBuilder.appendBytes(
         value   = bytes,
         headers = Headers.build {
             append(HttpHeaders.ContentType,        contentType)
-            append(HttpHeaders.ContentDisposition, "filename=$fileName")
+            append(HttpHeaders.ContentDisposition, "filename=\"$fileName\"")
         }
     )
 }

@@ -4,8 +4,13 @@ import dev.kindling.utils.SingleFlight
 import io.ktor.client.plugins.api.Send
 import io.ktor.client.plugins.api.createClientPlugin
 import io.ktor.client.request.HttpRequestBuilder
+import io.ktor.client.request.takeFrom
 import io.ktor.client.statement.request
 import io.ktor.http.HttpStatusCode
+import io.ktor.util.AttributeKey
+import kotlinx.coroutines.CancellationException
+
+private val RefreshRetryKey = AttributeKey<Boolean>("KTokenRefreshRetry")
 
 /**
  * Ktor client plugin that intercepts 401 responses on protected routes and
@@ -44,19 +49,30 @@ internal fun createTokenRefreshPlugin(
         val originalCall = proceed(request)
 
         if (originalCall.response.status != HttpStatusCode.Unauthorized) return@on originalCall
+        
+        // Avoid infinite refresh loops if the retried request also returns 401
+        if (request.attributes.contains(RefreshRetryKey)) return@on originalCall
+        
         val path = originalCall.response.request.url.encodedPath
         if (authPaths.any { path.endsWith(it) }) return@on originalCall
         if (!refresher.shouldRefresh()) return@on originalCall
 
         // SingleFlight: only one coroutine refreshes; others await the shared result
-        val refreshed = refreshFlight.get {
-            runCatching { refresher.refresh() }
-                .getOrElse { false }
-                .also { success -> if (!success) refresher.onRefreshFailed() }
+        val refreshed = try {
+            refreshFlight.get {
+                runCatching { refresher.refresh() }
+                    .onFailure { if (it is CancellationException) throw it }
+                    .getOrElse { false }
+                    .also { success -> if (!success) refresher.onRefreshFailed() }
+            }
+        } catch (e: CancellationException) {
+            throw e
         }
+
         if (!refreshed) return@on originalCall
 
         val retryRequest = HttpRequestBuilder().takeFrom(request)
+        retryRequest.attributes.put(RefreshRetryKey, true)
         refresher.applyToken(retryRequest)
         proceed(retryRequest)
     }
