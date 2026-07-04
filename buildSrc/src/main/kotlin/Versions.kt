@@ -11,6 +11,7 @@ object Versions {
     const val navigationCompose = "2.9.8"
     const val lifecycle         = "2.10.0"
     const val koin              = "4.2.1"
+    const val ktor = "2.3.12"
 
     // AndroidX / Google
     const val annotationJvm          = "1.10.0"
