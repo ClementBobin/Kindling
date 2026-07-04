@@ -86,7 +86,7 @@ internal fun createCachePlugin(config: KCacheConfig) =
             return entry
         }
 
-        suspend fun putCached(key: String, body: String) {
+        fun putCached(key: String, body: String) {
             if (store.size >= config.maxEntries) {
                 // Evict the oldest key tracked by the buffer
                 keyBuffer.oldest()?.let { store.remove(it) }
@@ -96,7 +96,7 @@ internal fun createCachePlugin(config: KCacheConfig) =
         }
 
         val mockEngine = MockEngine { req ->
-            val key = req.url.buildString()
+            val key = req.url.toString()
             val entry = store.get(key)
             if (entry != null) {
                 respond(
@@ -115,13 +115,13 @@ internal fun createCachePlugin(config: KCacheConfig) =
         }
 
         suspend fun forwardToMock(request: HttpRequestBuilder): HttpClientCall {
-            return mockClient.get(request.url.buildString()).call
+            return mockClient.get(request.url.toString()).call
         }
 
         on(Send) { request ->
             if (request.method != HttpMethod.Get) return@on proceed(request)
 
-            val key    = request.url.buildString()
+            val key    = request.url.toString()
             val cached = getCached(key)
 
             when (config.strategy) {

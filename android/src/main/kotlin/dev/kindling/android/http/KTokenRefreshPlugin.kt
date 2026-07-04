@@ -4,7 +4,6 @@ import dev.kindling.utils.SingleFlight
 import io.ktor.client.plugins.api.Send
 import io.ktor.client.plugins.api.createClientPlugin
 import io.ktor.client.request.HttpRequestBuilder
-import io.ktor.client.request.takeFrom
 import io.ktor.client.statement.request
 import io.ktor.http.HttpStatusCode
 import io.ktor.util.AttributeKey
