@@ -9,6 +9,8 @@ import androidx.core.content.edit
 import dev.kindling.android.natif.EncryptedData
 import dev.kindling.android.natif.KeystoreConfig
 import dev.kindling.android.natif.KeystoreHelper
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 /**
  * [KTokenStore] backed by standard [SharedPreferences] with manual AES-GCM encryption.
@@ -36,15 +38,20 @@ class KEncryptedTokenStore(
     private val keystoreHelper = KeystoreHelper()
     private val keyConfig      = KeystoreConfig.default("kindling_token_key")
 
-    override suspend fun getAccessToken():  String? = getEncrypted(accessTokenKey)
-    override suspend fun getRefreshToken(): String? = getEncrypted(refreshTokenKey)
+    override suspend fun getAccessToken():  String? = withContext(Dispatchers.IO) {
+        getEncrypted(accessTokenKey)
+    }
 
-    override suspend fun saveTokens(accessToken: String?, refreshToken: String?) {
+    override suspend fun getRefreshToken(): String? = withContext(Dispatchers.IO) {
+        getEncrypted(refreshTokenKey)
+    }
+
+    override suspend fun saveTokens(accessToken: String?, refreshToken: String?) = withContext(Dispatchers.IO) {
         if (accessToken != null) saveEncrypted(accessTokenKey, accessToken) else removeEncrypted(accessTokenKey)
         if (refreshToken != null) saveEncrypted(refreshTokenKey, refreshToken) else removeEncrypted(refreshTokenKey)
     }
 
-    override suspend fun clear() {
+    override suspend fun clear() = withContext(Dispatchers.IO) {
         prefs.edit {
             remove(accessTokenKey)
             remove("${accessTokenKey}_iv")
@@ -68,11 +75,9 @@ class KEncryptedTokenStore(
     private fun saveEncrypted(key: String, value: String) {
         try {
             val encrypted = keystoreHelper.encrypt(keyConfig, value)
-            val success = prefs.edit().putString(key, encrypted.ciphertext)
-                .putString("${key}_iv", encrypted.iv)
-                .commit()
-            if (!success) {
-                Log.e("KEncryptedTokenStore", "Failed to commit encrypted $key to SharedPreferences")
+            prefs.edit {
+                putString(key, encrypted.ciphertext)
+                putString("${key}_iv", encrypted.iv)
             }
         } catch (e: Exception) {
             Log.e("KEncryptedTokenStore", "Failed to encrypt $key", e)

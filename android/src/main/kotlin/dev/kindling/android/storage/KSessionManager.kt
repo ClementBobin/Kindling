@@ -60,14 +60,15 @@ class KSessionManager(
     init {
         scope.launch {
             try {
-                val access  = store.getAccessToken()
-                val refresh = store.getRefreshToken()
                 mutex.withLock {
+                    val access  = store.getAccessToken()
+                    val refresh = store.getRefreshToken()
                     _accessToken.value  = access
                     _refreshToken.value = refresh
                 }
+            } catch (e: CancellationException) {
+                throw e
             } catch (e: Exception) {
-                if (e is CancellationException) throw e
                 Log.e("KSessionManager", "Failed to load tokens from store", e)
                 mutex.withLock {
                     _accessToken.value  = null

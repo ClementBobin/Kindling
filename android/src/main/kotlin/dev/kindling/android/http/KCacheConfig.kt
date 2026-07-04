@@ -17,6 +17,8 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.headersOf
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 /**
  * Cache strategy controlling when cached responses are used.
@@ -75,8 +77,9 @@ internal fun createCachePlugin(config: KCacheConfig) =
         val keyBuffer = CircularBuffer<String>(capacity = config.maxEntries)
         // KMap is the actual store: URL → CacheEntry
         val store     = KMap<String, KCacheEntry>()
+        val mutex     = Mutex()
 
-        fun getCached(key: String): KCacheEntry? {
+        suspend fun getCached(key: String): KCacheEntry? = mutex.withLock {
             val entry = store.get(key) ?: return null
             val ageSeconds = (System.currentTimeMillis() - entry.timestamp) / 1000
             if (ageSeconds > config.maxAgeSeconds) {
@@ -86,7 +89,7 @@ internal fun createCachePlugin(config: KCacheConfig) =
             return entry
         }
 
-        fun putCached(key: String, body: String) {
+        suspend fun putCached(key: String, body: String) = mutex.withLock {
             if (store.size >= config.maxEntries) {
                 // Evict the oldest key tracked by the buffer
                 keyBuffer.oldest()?.let { store.remove(it) }
@@ -140,9 +143,10 @@ internal fun createCachePlugin(config: KCacheConfig) =
                 }
 
                 KCacheStrategy.NetworkFirst -> {
-                    val call = runCatching { proceed(request) }
-                        .onFailure { if (it is CancellationException) throw it }
-                        .getOrNull()
+                    val result = runCatching { proceed(request) }
+                    result.onFailure { if (it is CancellationException) throw it }
+                    
+                    val call = result.getOrNull()
 
                     if (call != null) {
                         putCached(key, call.response.bodyAsText())
@@ -150,8 +154,8 @@ internal fun createCachePlugin(config: KCacheConfig) =
                     } else if (cached != null) {
                         forwardToMock(request)
                     } else {
-                        // Fallback to original network call to propagate error
-                        proceed(request)
+                        // Rethrow the original failure instead of retrying proceed(request)
+                        throw result.exceptionOrNull() ?: proceed(request)
                     }
                 }
             }

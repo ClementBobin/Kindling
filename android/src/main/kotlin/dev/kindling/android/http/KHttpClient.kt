@@ -147,9 +147,11 @@ private fun HttpClientConfig<*>.configure(config: KHttpConfig) {
             }
         }
         level = config.logLevel
-        sanitizeHeader(HttpHeaders.Authorization) { true }
-        sanitizeHeader(HttpHeaders.Cookie) { true }
-        sanitizeHeader(HttpHeaders.SetCookie) { true }
+        sanitizeHeader { header ->
+            header == HttpHeaders.Authorization ||
+                header == HttpHeaders.Cookie ||
+                header == HttpHeaders.SetCookie
+        }
     }
 
     // 4. Response-side hooks (analytics, metrics)
