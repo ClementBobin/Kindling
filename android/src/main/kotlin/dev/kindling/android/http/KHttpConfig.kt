@@ -44,4 +44,10 @@ data class KHttpConfig(
     val tokenRefresher:   KTokenRefresher?         = null,
     val interceptor:      KRequestInterceptor?     = null,
     val cacheConfig:      KCacheConfig?            = null,
-)
+) {
+    init {
+        require(baseUrl.endsWith("/")) {
+            "baseUrl must end with a trailing slash ('/') to ensure correct Ktor path merging. Provided: $baseUrl"
+        }
+    }
+}

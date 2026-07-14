@@ -47,8 +47,8 @@ fun FormBuilder.appendFile(
         key      = partName,
         value    = ChannelProvider(size = file.length()) { file.readChannel() },
         headers  = Headers.build {
-            append(HttpHeaders.ContentType,        contentType)
-            append(HttpHeaders.ContentDisposition, "filename=\"$fileName\"")
+            append(HttpHeaders.ContentType, contentType)
+            append(HttpHeaders.ContentDisposition, "form-data; name=\"$partName\"; filename=\"$fileName\"")
         }
     )
 }
@@ -71,8 +71,8 @@ fun FormBuilder.appendBytes(
         key     = partName,
         value   = bytes,
         headers = Headers.build {
-            append(HttpHeaders.ContentType,        contentType)
-            append(HttpHeaders.ContentDisposition, "filename=\"$fileName\"")
+            append(HttpHeaders.ContentType, contentType)
+            append(HttpHeaders.ContentDisposition, "form-data; name=\"$partName\"; filename=\"$fileName\"")
         }
     )
 }

@@ -59,6 +59,8 @@ class KDefaultTokenRefresher(
 
         val response = runCatching {
             httpClient.post(refreshUrl) {
+                // Mark this request to bypass refresh handling in KTokenRefreshPlugin
+                attributes.put(RefreshRetryKey, true)
                 contentType(ContentType.Application.Json)
                 setBody(RefreshBody(refreshToken))
             }

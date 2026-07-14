@@ -11,6 +11,7 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.serializer
+import java.util.Collections
 
 // ── Opt-in annotation ─────────────────────────────────────────────────────────
 
@@ -27,23 +28,10 @@ annotation class KMockEngineApi
  * Represents a registered mock route handler.
  *
  * @param method    HTTP method (e.g. [HttpMethod.Get], [HttpMethod.Post]).
- * @param path      Route pattern. Supports `:param` segments
- *                  (e.g. `"/products/:id"`).
+ * @param path      Route pattern. Supports `:param` segments (e.g. `"/products/:id"`).
  * @param status    HTTP status code returned on match. Defaults to [HttpStatusCode.OK].
- * @param resolver  Suspend lambda called with:
- *                  - `params` — merged path + query params (path wins on collision)
- *                  - `body`   — raw request body string, or null
- *                  Returns `Any?` serialised to JSON by [buildKMockEngine].
- *                  Return `null` for empty body (e.g. 204 No Content).
- *
- * Example:
- * ```kotlin
- * KMockHandler(
- *     method   = HttpMethod.Get,
- *     path     = "/products/:id",
- *     resolver = { params, _ -> MyFactories.makeProduct(id = params["id"]) }
- * )
- * ```
+ * @param resolver  Suspend lambda called with merged params and body.
+ *                  Returns `Any?` serialised to JSON.
  */
 data class KMockHandler(
     val method: HttpMethod,
@@ -52,66 +40,62 @@ data class KMockHandler(
     val resolver: suspend (params: Map<String, String>, body: String?) -> Any?,
 )
 
+/**
+ * Reified helper to create a [KMockHandler] that captures the return type's serializer.
+ * This avoids reflective lookup and correctly handles generic types in the mock response.
+ */
+@KMockEngineApi
+inline fun <reified T> kMockHandler(
+    method: HttpMethod,
+    path: String,
+    status: HttpStatusCode = HttpStatusCode.OK,
+    noinline resolver: suspend (params: Map<String, String>, body: String?) -> T,
+) = KMockHandler(method, path, status) { params, body ->
+    val result = resolver(params, body)
+    if (result == null || result is Unit) result
+    else mockJson.encodeToJsonElement(mockJson.serializersModule.serializer<T>(), result)
+}
+
 // ── KMockRegistry ─────────────────────────────────────────────────────────────
 
 /**
- * Singleton registry storing all [KMockHandler] entries.
- *
- * Register handlers before the [io.ktor.client.HttpClient] is built (e.g. in `Application.onCreate`
- * or your DI module). The registry is queried on every intercepted request by
- * [buildKMockEngine].
- *
- * Usage:
- * ```kotlin
- * KMockRegistry
- *     .register(KMockHandler(HttpMethod.Get, "/products") { _, _ ->
- *         MyFactories.makeMany(12) { MyFactories.makeProduct() }
- *     })
- *     .register(KMockHandler(HttpMethod.Post, "/auth/login") { _, _ ->
- *         MyFactories.makeAuthResponse()
- *     })
- * ```
+ * Thread-safe singleton registry storing all [KMockHandler] entries.
  */
 object KMockRegistry {
 
-    private val handlers = mutableListOf<KMockHandler>()
+    private val handlers = Collections.synchronizedList(mutableListOf<KMockHandler>())
 
-    // ── Registration ──────────────────────────────────────────────────────────
-
-    /** Registers a single [KMockHandler]. Returns `this` for chaining. */
+    /** Registers a single [KMockHandler]. */
     fun register(handler: KMockHandler): KMockRegistry {
         handlers.add(handler)
         return this
     }
 
-    /** Registers multiple [KMockHandler]s at once. Returns `this` for chaining. */
+    /** Registers multiple [KMockHandler]s at once. */
     fun registerMany(vararg newHandlers: KMockHandler): KMockRegistry {
         handlers.addAll(newHandlers)
         return this
     }
 
-    /** @see registerMany */
+    /** Registers multiple [KMockHandler]s at once. */
     fun registerMany(newHandlers: List<KMockHandler>): KMockRegistry {
         handlers.addAll(newHandlers)
         return this
     }
 
-    /** Removes all registered handlers. Useful between tests. */
+    /** Removes all registered handlers. */
     fun clear(): KMockRegistry {
         handlers.clear()
         return this
     }
 
-    // ── Resolution ────────────────────────────────────────────────────────────
-
     /**
      * Finds the first handler matching [method] and [path].
-     *
-     * @return A [Pair] of the matched [KMockHandler] and extracted path params,
-     *         or `null` if no handler matches.
+     * Matches against a stable snapshot of the handlers list.
      */
     fun resolve(method: HttpMethod, path: String): Pair<KMockHandler, Map<String, String>>? {
-        for (handler in handlers) {
+        val snapshot = synchronized(handlers) { handlers.toList() }
+        for (handler in snapshot) {
             if (handler.method != method) continue
             val params = matchPattern(handler.path, path) ?: continue
             return handler to params
@@ -119,19 +103,11 @@ object KMockRegistry {
         return null
     }
 
-    /** Returns a human-readable list of registered routes (useful for debug logs). */
-    fun listRoutes(): List<String> =
+    /** Returns a list of registered routes for debugging. */
+    fun listRoutes(): List<String> = synchronized(handlers) {
         handlers.map { "${it.method.value.padEnd(7)} ${it.path}" }
+    }
 
-    // ── Internal ──────────────────────────────────────────────────────────────
-
-    /**
-     * Matches a concrete [url] against a [pattern] that may contain `:param` segments.
-     *
-     * @return Extracted path params, or `null` if the pattern does not match.
-     *
-     * Example: `matchPattern("/products/:id", "/products/abc")` → `mapOf("id" to "abc")`
-     */
     private fun matchPattern(pattern: String, url: String): Map<String, String>? {
         val cleanUrl      = url.substringBefore("?")
         val patternParts  = pattern.split("/")
@@ -153,41 +129,6 @@ object KMockRegistry {
 
 // ── buildKMockEngine ──────────────────────────────────────────────────────────
 
-/**
- * Builds a Ktor [MockEngine] backed by [KMockRegistry].
- *
- * Every outgoing request is intercepted:
- * 1. The path is matched against registered handlers (supports `:param` segments).
- * 2. Query parameters are extracted and merged with path params (path wins on collision).
- * 3. The resolver is called; its return value is serialised to JSON.
- * 4. If no handler matches, a `404` is returned with an error body.
- *
- * Requires `io.ktor:ktor-client-mock` in your `debugImplementation` dependencies.
- *
- * @param delayMs       Simulated network latency in milliseconds. Pass `0` to disable.
- * @param apiPrefix     URL prefix stripped before matching (default `"/api"`).
- *                      Set to `""` to disable stripping.
- *
- * Usage:
- * ```kotlin
- * // 1. Register handlers (once, e.g. in Application.onCreate or debug AppModule)
- * KMockRegistry
- *     .register(KMockHandler(HttpMethod.Get, "/products") { _, _ ->
- *         MyFactories.makeMany(12) { MyFactories.makeProduct() }
- *     })
- *     .register(KMockHandler(HttpMethod.Post, "/auth/login") { _, _ ->
- *         MyFactories.makeAuthResponse()
- *     })
- *
- * // 2. Pass the engine to KHttpConfig
- * @OptIn(KMockEngineApi::class)
- * val engine = if (BuildConfig.MOCK_API) buildKMockEngine() else CIO.create()
- *
- * val client = buildKHttpClient(
- *     KHttpConfig(baseUrl = BuildConfig.BASE_URL, engine = engine)
- * )
- * ```
- */
 @KMockEngineApi
 fun buildKMockEngine(
     delayMs: Long   = 300L,
@@ -243,30 +184,21 @@ fun buildKMockEngine(
 
 // ── Internal serialisation ────────────────────────────────────────────────────
 
-private val mockJson = Json {
+val mockJson = Json {
     encodeDefaults    = true
     ignoreUnknownKeys = true
 }
 
 private fun Any?.toJsonString(): String = when (this) {
-    null     -> "null"
-    is Unit  -> "{}"
+    null -> "null"
+    is Unit -> "{}"
     is String -> mockJson.encodeToString(this)
-    is List<*> -> {
-        val elements: List<JsonElement> = map { item ->
-            if (item == null) {
-                JsonPrimitive(null as String?)
-            } else {
-                mockJson.encodeToJsonElement(
-                    mockJson.serializersModule.serializer(item::class.java),
-                    @Suppress("UNCHECKED_CAST") item
-                )
-            }
-        }
-        mockJson.encodeToString(kotlinx.serialization.builtins.ListSerializer(JsonElement.serializer()), elements)
+    is JsonElement -> mockJson.encodeToString(this)
+    else -> {
+        // Fallback for types not wrapped by kMockHandler helper.
+        // Still uses reflective lookup but kMockHandler is the preferred path.
+        @Suppress("UNCHECKED_CAST")
+        val serializer = mockJson.serializersModule.serializer(this::class.java)
+        mockJson.encodeToString(serializer, this)
     }
-    else -> mockJson.encodeToString(
-        mockJson.serializersModule.serializer(this::class.java),
-        @Suppress("UNCHECKED_CAST") this
-    )
 }

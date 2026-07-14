@@ -9,51 +9,33 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
 /**
  * Generic session manager for token-based authentication.
- *
- * Delegates persistence to a [KTokenStore] — swap the implementation freely:
- * - [KSharedPrefsTokenStore]  — cleartext (dev/low-sensitivity)
- * - [KEncryptedTokenStore]    — AES-256 encrypted (production)
- * - [KDataStoreTokenStore]    — Jetpack DataStore
- * - [KInMemoryTokenStore]     — tests / mock
- *
- * Tokens are exposed as [StateFlow]s so any observer (ViewModel, nav graph)
- * reacts automatically on login / logout / refresh.
- *
- * Works with [dev.kindling.android.http.buildKHttpClient] in two ways:
- * - **Bearer / JWT** → `KAuthProvider.Bearer { session.accessToken.value }`
- * - **Cookie**       → `KSessionCookieStorage(session)` as `cookieStorage`
- *
- * Usage:
- * ```kotlin
- * // Production (encrypted)
- * single { KSessionManager(KEncryptedTokenStore(androidContext())) }
- *
- * // Tests
- * val session = KSessionManager(KInMemoryTokenStore())
- * ```
- *
- * @param store  Token persistence backend.
- * @param scope  Coroutine scope used for the initial load. Defaults to a
- *               [SupervisorJob] + [Dispatchers.IO] scope.
  */
 class KSessionManager(
     private val store: KTokenStore,
-    private val scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO),
+    providedScope: CoroutineScope? = null,
 ) {
+    private val isInternalScope = providedScope == null
+    private val scope = providedScope ?: CoroutineScope(SupervisorJob() + Dispatchers.IO)
+
     private val _accessToken  = MutableStateFlow<String?>(null)
     private val _refreshToken = MutableStateFlow<String?>(null)
+    private val _isReady      = MutableStateFlow(false)
 
     /** Current access token. `null` means unauthenticated. */
     val accessToken:  StateFlow<String?> = _accessToken.asStateFlow()
 
     /** Current refresh token. `null` means unauthenticated. */
     val refreshToken: StateFlow<String?> = _refreshToken.asStateFlow()
+
+    /** `true` once tokens have been hydrated from the store. */
+    val isReady: StateFlow<Boolean> = _isReady.asStateFlow()
 
     private val mutex = Mutex()
 
@@ -70,15 +52,18 @@ class KSessionManager(
                 throw e
             } catch (e: Exception) {
                 Log.e("KSessionManager", "Failed to load tokens from store", e)
-                mutex.withLock {
-                    _accessToken.value  = null
-                    _refreshToken.value = null
-                }
+            } finally {
+                _isReady.value = true
             }
         }
     }
 
+    /** Waits until the initial token load is complete. */
+    suspend fun awaitReady() = isReady.first { it }
+
     private suspend fun performSaveTokens(accessToken: String?, refreshToken: String?) {
+        // Save to persistent store first; if it throws (e.g. encryption failure),
+        // we don't update the in-memory state.
         store.saveTokens(accessToken, refreshToken)
         _accessToken.value  = accessToken
         _refreshToken.value = refreshToken
@@ -86,25 +71,20 @@ class KSessionManager(
 
     /**
      * Persists both tokens and updates the [StateFlow]s.
-     *
-     * Call after a successful login or token refresh.
-     * Passing `null` for a token will remove it from the store and the in-memory state.
      */
     suspend fun saveTokens(accessToken: String?, refreshToken: String?) = mutex.withLock {
         performSaveTokens(accessToken, refreshToken)
     }
 
     /**
-     * Updates only the access token while keeping the refresh token consistent,
-     * ensuring the operation is atomic to avoid lost updates.
+     * Updates only the access token while keeping the refresh token consistent.
      */
     suspend fun updateAccessToken(token: String?) = mutex.withLock {
         performSaveTokens(token, _refreshToken.value)
     }
 
     /**
-     * Updates only the refresh token while keeping the access token consistent,
-     * ensuring the operation is atomic to avoid lost updates.
+     * Updates only the refresh token while keeping the access token consistent.
      */
     suspend fun updateRefreshToken(token: String?) = mutex.withLock {
         performSaveTokens(_accessToken.value, token)
@@ -112,8 +92,6 @@ class KSessionManager(
 
     /**
      * Clears all stored tokens and resets the [StateFlow]s to `null`.
-     *
-     * Any observer of [accessToken] will react immediately (e.g. navigate to login).
      */
     suspend fun clearSession() = mutex.withLock {
         store.clear()
@@ -122,12 +100,19 @@ class KSessionManager(
     }
 
     /** Returns `true` if an access token is currently held in memory. */
-    fun isAuthenticated(): Boolean = _accessToken.value != null
+    fun isAuthenticated(): Boolean {
+        if (!_isReady.value) {
+            Log.w("KSessionManager", "isAuthenticated() called before hydration; result may be stale.")
+        }
+        return _accessToken.value != null
+    }
 
     /**
-     * Cancels the [CoroutineScope] used by this manager.
+     * Cancels the [CoroutineScope] used by this manager, if it was created internally.
      */
     fun close() {
-        scope.cancel()
+        if (isInternalScope) {
+            scope.cancel()
+        }
     }
 }

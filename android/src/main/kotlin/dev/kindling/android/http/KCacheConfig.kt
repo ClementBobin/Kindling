@@ -15,6 +15,7 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.headersOf
+import io.ktor.http.isSuccess
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.sync.Mutex
@@ -25,7 +26,7 @@ import kotlinx.coroutines.sync.withLock
  *
  * - [NetworkFirst]  — try network, fall back to cache on failure.
  * - [CacheFirst]    — return cache if fresh, fetch network otherwise.
- * - [CacheOnly]     — always return cache; throw [KHttpException.ClientError] (504) on miss.
+ * - [CacheOnly]     — always return cache; throw [KHttpException.ServerError] (504) on miss.
  * - [NetworkOnly]   — never cache (same as no cache config).
  */
 enum class KCacheStrategy { NetworkFirst, CacheFirst, CacheOnly, NetworkOnly }
@@ -33,7 +34,7 @@ enum class KCacheStrategy { NetworkFirst, CacheFirst, CacheOnly, NetworkOnly }
 /**
  * Configuration for the in-memory HTTP response cache.
  *
- * Only GET requests are cached. Cache keys are the full URL including query parameters.
+ * Only GET requests are cached. Cache keys include the URL and Vary-style headers (Authorization/X-Api-Key).
  *
  * Internally backed by [CircularBuffer] (LRU key eviction) and [KMap] (reactive store),
  * both from `kindling-utils` — no additional dependencies required.
@@ -42,17 +43,6 @@ enum class KCacheStrategy { NetworkFirst, CacheFirst, CacheOnly, NetworkOnly }
  * @param maxEntries     Maximum number of responses kept in memory.
  *                       Oldest entries are evicted when the limit is reached.
  * @param strategy       Cache strategy. See [KCacheStrategy].
- *
- * Usage:
- * ```kotlin
- * KHttpConfig(
- *     cacheConfig = KCacheConfig(
- *         maxAgeSeconds = 300,
- *         maxEntries    = 50,
- *         strategy      = KCacheStrategy.NetworkFirst,
- *     )
- * )
- * ```
  */
 data class KCacheConfig(
     val maxAgeSeconds: Long           = 300L,
@@ -73,33 +63,44 @@ internal data class KCacheEntry(
 internal fun createCachePlugin(config: KCacheConfig) =
     createClientPlugin("KCache") {
 
-        // CircularBuffer tracks insertion order for LRU eviction
         val keyBuffer = CircularBuffer<String>(capacity = config.maxEntries)
-        // KMap is the actual store: URL → CacheEntry
         val store     = KMap<String, KCacheEntry>()
         val mutex     = Mutex()
+
+        fun generateKey(request: HttpRequestBuilder): String {
+            val url = request.url.toString()
+            val auth = request.headers[HttpHeaders.Authorization] ?: ""
+            val apiKey = request.headers["X-Api-Key"] ?: ""
+            return "$url|$auth|$apiKey"
+        }
 
         suspend fun getCached(key: String): KCacheEntry? = mutex.withLock {
             val entry = store.get(key) ?: return null
             val ageSeconds = (System.currentTimeMillis() - entry.timestamp) / 1000
             if (ageSeconds > config.maxAgeSeconds) {
                 store.remove(key)
+                keyBuffer.remove(key)
                 return null
             }
+            // LRU: refresh recency on read
+            keyBuffer.remove(key)
+            keyBuffer.add(key)
             return entry
         }
 
         suspend fun putCached(key: String, body: String) = mutex.withLock {
-            if (store.size >= config.maxEntries) {
-                // Evict the oldest key tracked by the buffer
+            if (store.get(key) == null && store.size >= config.maxEntries) {
                 keyBuffer.oldest()?.let { store.remove(it) }
             }
+            keyBuffer.remove(key)
             keyBuffer.add(key)
             store.set(key, KCacheEntry(body))
         }
 
         val mockEngine = MockEngine { req ->
-            val key = req.url.toString()
+            val auth = req.headers[HttpHeaders.Authorization] ?: ""
+            val apiKey = req.headers["X-Api-Key"] ?: ""
+            val key = "${req.url}|$auth|$apiKey"
             val entry = getCached(key)
             if (entry != null) {
                 respond(
@@ -118,13 +119,39 @@ internal fun createCachePlugin(config: KCacheConfig) =
         }
 
         suspend fun forwardToMock(request: HttpRequestBuilder): HttpClientCall {
-            return mockClient.get(request.url.toString()).call
+            return mockClient.get(request.url.toString()) {
+                headers.appendAll(request.headers.build())
+            }.call
+        }
+
+        suspend fun Send.Sender.handleCacheFirst(request: HttpRequestBuilder, key: String, cached: KCacheEntry?): HttpClientCall {
+            if (cached != null) return forwardToMock(request)
+            val call = proceed(request)
+            if (call.response.status.isSuccess()) {
+                putCached(key, call.response.bodyAsText())
+            }
+            return call
+        }
+
+        suspend fun Send.Sender.handleNetworkFirst(request: HttpRequestBuilder, key: String, cached: KCacheEntry?): HttpClientCall {
+            val result = runCatching { proceed(request) }
+            val exception = result.exceptionOrNull()
+            if (exception is CancellationException) throw exception
+
+            val call = result.getOrNull()
+            if (call != null) {
+                if (call.response.status.isSuccess()) {
+                    putCached(key, call.response.bodyAsText())
+                }
+                return call
+            }
+            return cached?.let { forwardToMock(request) } ?: throw exception!!
         }
 
         on(Send) { request ->
             if (request.method != HttpMethod.Get) return@on proceed(request)
 
-            val key    = request.url.toString()
+            val key    = generateKey(request)
             val cached = getCached(key)
 
             when (config.strategy) {
@@ -135,29 +162,9 @@ internal fun createCachePlugin(config: KCacheConfig) =
                     forwardToMock(request)
                 }
 
-                KCacheStrategy.CacheFirst -> {
-                    if (cached != null) return@on forwardToMock(request)
-                    val call = proceed(request)
-                    putCached(key, call.response.bodyAsText())
-                    forwardToMock(request)
-                }
+                KCacheStrategy.CacheFirst -> handleCacheFirst(request, key, cached)
 
-                KCacheStrategy.NetworkFirst -> {
-                    val result = runCatching { proceed(request) }
-                    val exception = result.exceptionOrNull()
-                    if (exception is CancellationException) throw exception
-                    
-                    val call = result.getOrNull()
-
-                    if (call != null) {
-                        putCached(key, call.response.bodyAsText())
-                        forwardToMock(request)
-                    } else if (cached != null) {
-                        forwardToMock(request)
-                    } else {
-                        throw exception!!
-                    }
-                }
+                KCacheStrategy.NetworkFirst -> handleNetworkFirst(request, key, cached)
             }
         }
     }

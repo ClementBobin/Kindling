@@ -11,6 +11,8 @@ import dev.kindling.android.natif.KeystoreConfig
 import dev.kindling.android.natif.KeystoreHelper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.io.IOException
+import java.security.GeneralSecurityException
 
 /**
  * [KTokenStore] backed by standard [SharedPreferences] with manual AES-GCM encryption.
@@ -66,8 +68,11 @@ class KEncryptedTokenStore(
         
         return try {
             keystoreHelper.decrypt(keyConfig, EncryptedData(ciphertext, iv))
-        } catch (e: Exception) {
+        } catch (e: GeneralSecurityException) {
             Log.e("KEncryptedTokenStore", "Failed to decrypt $key. Data might be tampered or key invalidated.", e)
+            null
+        } catch (e: IOException) {
+            Log.e("KEncryptedTokenStore", "IO failure during decryption of $key", e)
             null
         }
     }
@@ -79,8 +84,9 @@ class KEncryptedTokenStore(
                 putString(key, encrypted.ciphertext)
                 putString("${key}_iv", encrypted.iv)
             }
-        } catch (e: Exception) {
-            Log.e("KEncryptedTokenStore", "Failed to encrypt $key", e)
+        } catch (e: GeneralSecurityException) {
+            // Surface failure to the caller (e.g. KSessionManager)
+            throw IOException("Encryption failed for $key", e)
         }
     }
 

@@ -3,6 +3,8 @@ package dev.kindling.android.storage
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 /**
  * [KTokenStore] backed by plain [SharedPreferences].
@@ -16,29 +18,37 @@ import androidx.core.content.edit
  * @param refreshTokenKey Key used to store the refresh token.
  */
 class KSharedPrefsTokenStore(
-    context: Context,
-    prefsName: String        = "kindling_tokens",
+    private val context: Context,
+    private val prefsName: String        = "kindling_tokens",
     private val accessTokenKey:  String = "access_token",
     private val refreshTokenKey: String = "refresh_token",
 ) : KTokenStore {
 
-    private val prefs: SharedPreferences =
-        context.getSharedPreferences(prefsName, Context.MODE_PRIVATE)
+    private var _prefs: SharedPreferences? = null
 
-    override suspend fun getAccessToken():  String? = prefs.getString(accessTokenKey,  null)
-    override suspend fun getRefreshToken(): String? = prefs.getString(refreshTokenKey, null)
+    private suspend fun getPrefs(): SharedPreferences = withContext(Dispatchers.IO) {
+        _prefs ?: context.getSharedPreferences(prefsName, Context.MODE_PRIVATE).also { _prefs = it }
+    }
 
-    override suspend fun saveTokens(accessToken: String?, refreshToken: String?) {
-        prefs.edit {
+    override suspend fun getAccessToken():  String? = withContext(Dispatchers.IO) {
+        getPrefs().getString(accessTokenKey,  null)
+    }
+
+    override suspend fun getRefreshToken(): String? = withContext(Dispatchers.IO) {
+        getPrefs().getString(refreshTokenKey, null)
+    }
+
+    override suspend fun saveTokens(accessToken: String?, refreshToken: String?) = withContext(Dispatchers.IO) {
+        getPrefs().edit {
             if (accessToken != null) putString(accessTokenKey, accessToken) else remove(accessTokenKey)
             if (refreshToken != null) putString(refreshTokenKey, refreshToken) else remove(refreshTokenKey)
         }
     }
 
-    override suspend fun clear() {
-        prefs.edit {
+    override suspend fun clear() = withContext(Dispatchers.IO) {
+        getPrefs().edit {
             remove(accessTokenKey)
-                .remove(refreshTokenKey)
+            remove(refreshTokenKey)
         }
     }
 }

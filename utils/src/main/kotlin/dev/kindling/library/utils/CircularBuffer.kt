@@ -84,6 +84,9 @@ class CircularBuffer<T>(
     /** Returns a snapshot list ordered oldest → newest. */
     fun toList(): List<T> = _state.value.toList()
 
+    /** remove a single item from the buffer. */
+    fun remove(item: T) { _state.value.remove(item) }
+
     /** Removes all items from the buffer. */
     fun clear() { _state.value = ArrayDeque() }
 
