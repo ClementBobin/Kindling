@@ -1,4 +1,4 @@
-package dev.kindling.android.natif
+package dev.kindling.android.helper.natif
 
 import android.content.ActivityNotFoundException
 import android.content.Context

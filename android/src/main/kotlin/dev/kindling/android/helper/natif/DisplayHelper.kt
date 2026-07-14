@@ -1,4 +1,4 @@
-package dev.kindling.android.natif
+package dev.kindling.android.helper.natif
 
 import android.content.Context
 import android.content.res.Configuration
