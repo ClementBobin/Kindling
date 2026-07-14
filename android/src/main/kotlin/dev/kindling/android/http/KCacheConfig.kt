@@ -145,7 +145,7 @@ internal fun createCachePlugin(config: KCacheConfig) =
                 }
                 return call
             }
-            return cached?.let { forwardToMock(request) } ?: throw exception!!
+            return cached?.let { forwardToMock(request) } ?: throw (exception ?: IllegalStateException("Unknown failure"))
         }
 
         on(Send) { request ->
