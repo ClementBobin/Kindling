@@ -38,6 +38,16 @@ dependencies {
     implementation("androidx.camera:camera-lifecycle:${Versions.camera}")
     implementation("com.google.android.gms:play-services-location:${Versions.playServicesLocation}")
     implementation("androidx.biometric:biometric:${Versions.biometric}")
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
+
+    implementation(project(":utils"))
+
+    implementation("io.ktor:ktor-client-core:${Versions.ktor}")
+    implementation("io.ktor:ktor-client-content-negotiation:${Versions.ktor}")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:${Versions.ktor}")
+    implementation("io.ktor:ktor-client-logging:${Versions.ktor}")
+    implementation("io.ktor:ktor-client-auth:${Versions.ktor}")
+    compileOnly("io.ktor:ktor-client-mock:${Versions.ktor}")
 
     testImplementation(kotlin("test"))
     testImplementation("org.junit.jupiter:junit-jupiter:${Versions.junit5}")
