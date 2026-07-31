@@ -31,6 +31,7 @@ private val RefreshRetryKey = AttributeKey<Boolean>("KTokenRefreshRetry")
  * └─ false → propagate original 401
  * ```
  */
+@OptIn(io.ktor.util.InternalAPI::class)
 internal fun createTokenRefreshPlugin(
     refresher: KTokenRefresher,
     authPaths: List<String>,
