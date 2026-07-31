@@ -57,7 +57,7 @@ internal fun createTokenRefreshPlugin(
 
         if (!refreshed) return@on originalCall
 
-        originalCall.response.content.discard()
+        originalCall.response.content.discard(Long.MAX_VALUE)
 
         val retryRequest = HttpRequestBuilder().takeFrom(request)
         retryRequest.attributes.put(RefreshRetryKey, true)
