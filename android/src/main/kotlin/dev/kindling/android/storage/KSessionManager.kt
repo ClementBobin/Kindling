@@ -79,15 +79,21 @@ class KSessionManager(
     /**
      * Updates only the access token while keeping the refresh token consistent.
      */
-    suspend fun updateAccessToken(token: String?) = mutex.withLock {
-        performSaveTokens(token, _refreshToken.value)
+    suspend fun updateAccessToken(token: String?) {
+        awaitReady()
+        mutex.withLock {
+            performSaveTokens(token, _refreshToken.value)
+        }
     }
 
     /**
      * Updates only the refresh token while keeping the access token consistent.
      */
-    suspend fun updateRefreshToken(token: String?) = mutex.withLock {
-        performSaveTokens(_accessToken.value, token)
+    suspend fun updateRefreshToken(token: String?) {
+        awaitReady()
+        mutex.withLock {
+            performSaveTokens(_accessToken.value, token)
+        }
     }
 
     /**

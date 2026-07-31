@@ -57,9 +57,11 @@ internal fun createTokenRefreshPlugin(
 
         if (!refreshed) return@on originalCall
 
+        originalCall.response.content.discard()
+
         val retryRequest = HttpRequestBuilder().takeFrom(request)
         retryRequest.attributes.put(RefreshRetryKey, true)
-        
+
         // Clear stale Authorization header before applying the new token
         retryRequest.headers.remove(HttpHeaders.Authorization)
         refresher.applyToken(retryRequest)

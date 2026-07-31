@@ -128,7 +128,9 @@ internal fun createCachePlugin(config: KCacheConfig) =
             if (cached != null) return forwardToMock(request)
             val call = proceed(request)
             if (call.response.status.isSuccess()) {
-                putCached(key, call.response.bodyAsText())
+                val body = call.response.bodyAsText()
+                putCached(key, body)
+                return forwardToMock(request)
             }
             return call
         }
@@ -141,7 +143,9 @@ internal fun createCachePlugin(config: KCacheConfig) =
             val call = result.getOrNull()
             if (call != null) {
                 if (call.response.status.isSuccess()) {
-                    putCached(key, call.response.bodyAsText())
+                    val body = call.response.bodyAsText()
+                    putCached(key, body)
+                    return forwardToMock(request)
                 }
                 return call
             }
@@ -158,7 +162,7 @@ internal fun createCachePlugin(config: KCacheConfig) =
                 KCacheStrategy.NetworkOnly -> proceed(request)
 
                 KCacheStrategy.CacheOnly -> {
-                    if (cached == null) throw KHttpException.ServerError(504, "Cache miss: $key")
+                    if (cached == null) throw KHttpException.ServerError(504, "Cache miss")
                     forwardToMock(request)
                 }
 
