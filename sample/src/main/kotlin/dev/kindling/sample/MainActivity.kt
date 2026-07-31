@@ -3,6 +3,7 @@ package dev.kindling.sample
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
@@ -10,20 +11,23 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.ui.Modifier
 import dev.kindling.core.components.Toaster
+import dev.kindling.core.theme.KindlingTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         setContent {
-            MaterialTheme(colorScheme = lightColorScheme()) {
+            KindlingTheme(colorScheme = lightColorScheme()) {
+                MediaPlayerSample()
                 // Toaster must wrap (or sit alongside) the androidMain content
                 // so it can receive and display toasts from anywhere in the tree.
-                Surface(modifier = Modifier.fillMaxSize()) {
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        KindlingCatalog()
-                        Toaster()   // ← renders toasts on top of everything
-                    }
-                }
+                //Surface(modifier = Modifier.fillMaxSize()) {
+                    //Box(modifier = Modifier.fillMaxSize()) {
+                        //KindlingCatalog()
+                        //Toaster()   // ← renders toasts on top of everything
+                    //}
+                //}
             }
         }
     }
