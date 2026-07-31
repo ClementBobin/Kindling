@@ -4,6 +4,7 @@ import dev.kindling.utils.SingleFlight
 import io.ktor.client.plugins.api.Send
 import io.ktor.client.plugins.api.createClientPlugin
 import io.ktor.client.request.HttpRequestBuilder
+import io.ktor.client.statement.discardRemaining
 import io.ktor.client.statement.request
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
@@ -57,7 +58,8 @@ internal fun createTokenRefreshPlugin(
 
         if (!refreshed) return@on originalCall
 
-        originalCall.response.content.discard(Long.MAX_VALUE)
+        // Safely discard the body of the 401 response before retrying
+        originalCall.response.discardRemaining()
 
         val retryRequest = HttpRequestBuilder().takeFrom(request)
         retryRequest.attributes.put(RefreshRetryKey, true)
