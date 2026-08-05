@@ -1,6 +1,6 @@
 plugins {
     id("kindling-android-library")
-    id("dokka-android-convention")
+    id("dokka-convention")
     id("kindling-publish")
 }
 
