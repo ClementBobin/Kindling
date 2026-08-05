@@ -5,7 +5,6 @@ plugins {
     kotlin("plugin.compose")
     id("org.jetbrains.compose")
     id("dokka-convention")
-    id("kindling-android-library")
     id("kindling-publish")
 }
 
