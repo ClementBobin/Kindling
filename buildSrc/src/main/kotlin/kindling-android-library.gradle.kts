@@ -1,39 +1,51 @@
 /**
  * Convention plugin: kindling-android-library
  *
- * Single source of truth for all Android library modules.
- * Namespace is derived automatically from the module name:
- *   :android  → dev.kindling.android
- *   :compose  → dev.kindling.compose
+ * Reacts to whichever Android plugin the module applied — no need to pick
+ * a separate convention plugin per module type:
+ *   - com.android.library                      → pure Android library
+ *   - com.android.kotlin.multiplatform.library → KMP library
  *
- * Modules only override what genuinely differs (e.g. minSdk, buildFeatures).
+ * namespace is always derived from project.name:
+ *   :android → dev.kindling.android
+ *   :core    → dev.kindling.core
  */
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import com.android.build.api.dsl.LibraryExtension
 
-plugins {
-    id("com.android.library")
-}
-
-android {
-    namespace  = "${Versions.group}.${project.name}"
-    compileSdk = 36
-
-    defaultConfig {
-        minSdk = 21
+fun Project.configureSharedKotlin() {
+    kotlin {
+        jvmToolchain(17)
     }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+    tasks.withType<KotlinCompile>().configureEach {
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+        }
     }
 }
 
-kotlin {
-    jvmToolchain(17)
+fun Project.configureAndroidDefaults() {
+    extensions.configure<LibraryExtension> {
+        namespace  = "${Versions.group}.${project.name}"
+        compileSdk = 36
+        defaultConfig {
+            minSdk = 21
+        }
+    }
 }
 
-tasks.withType<KotlinCompile>().configureEach {
-    compilerOptions {
-        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+pluginManager.withPlugin("com.android.library") {
+    configureAndroidDefaults()
+    extensions.configure<LibraryExtension> {
+        compileOptions {
+            sourceCompatibility = JavaVersion.VERSION_17
+            targetCompatibility = JavaVersion.VERSION_17
+        }
     }
+    configureSharedKotlin()
+}
+
+pluginManager.withPlugin("com.android.kotlin.multiplatform.library") {
+    configureAndroidDefaults()
+    configureSharedKotlin()
 }

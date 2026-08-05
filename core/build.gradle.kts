@@ -1,7 +1,8 @@
 plugins {
+    id("com.android.library")
+    id("com.android.kotlin.multiplatform.library")
     kotlin("multiplatform")
     kotlin("plugin.compose")
-    id("com.android.kotlin.multiplatform.library")
     id("org.jetbrains.compose")
     id("dokka-convention")
     id("kindling-android-library")
