@@ -19,4 +19,7 @@ dependencyResolutionManagement {
     versionCatalogs { create("libs") }
 }
 
-include(":core", ":utils", ":compose", ":android", ":sample")
+include(":core", ":utils", ":compose", ":android")
+if (System.getenv("JITPACK") == null) {
+    include(":sample")
+}
