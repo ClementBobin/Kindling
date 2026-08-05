@@ -492,16 +492,6 @@ Branch naming: `feat/<short-description>` · `fix/<short-description>` · `chore
 
 ---
 
-## Publishing
-
-Releases are published automatically to Maven Central when a GitHub release is created (via the `publish.yml` workflow). The Git tag (e.g. `0.3.0` or `v0.3.0`) sets the artifact version.
-
-Required repository secrets: `MAVEN_CENTRAL_USERNAME`, `MAVEN_CENTRAL_PASSWORD`, `SIGNING_KEY_ID`, `SIGNING_PASSWORD`, `GPG_KEY_CONTENTS`.
-
-`:core` and `:utils` are additionally available on JitPack as a fallback (built from the `jitpack.yml` at the repo root). `:compose` is Android-only and distributed exclusively through Maven Central.
-
----
-
 ## License
 
 Licensed under the [Apache License 2.0](LICENSE).
