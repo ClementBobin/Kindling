@@ -40,7 +40,7 @@ enum class KPopoverSide { Top, Bottom, Left, Right }
 enum class KPopoverAlign { Start, Center, End }
 
 /**
- * When [KPopover] is in overlay mode ([overlayZone] is not null), this
+ * When [KPopover] is in overlay mode (`overlayZone` is not null), this
  * controls where on screen the panel is placed.
  */
 enum class KPopoverOverlayPosition {
@@ -63,12 +63,12 @@ enum class KPopoverOverlayPosition {
 /**
  * Shadcn/ui-style Popover with two display modes:
  *
- * **Inline mode** (default — [overlayZone] = null):
+ * **Inline mode** (default — `overlayZone` = null):
  * The panel is positioned adjacent to [trigger], clamped so it never escapes
  * the measured root bounds. [side] and [align] control placement.
  *
- * **Overlay mode** ([overlayZone] is not null):
- * The panel fills a full-screen scrim and is placed at [overlayZone] inside
+ * **Overlay mode** (`overlayZone` is not null):
+ * The panel fills a full-screen scrim and is placed at `overlayZone` inside
  * it (center, bottom-sheet, drawer, …). Useful for modal-style popovers.
  *
  * In both modes, [dismissOnClickOutside] = `true` (default) closes the panel
