@@ -55,7 +55,9 @@ dependencies {
 
 mavenPublishing {
     publishToMavenCentral()
-    signAllPublications()
+    if (System.getenv("JITPACK") == null) {
+        signAllPublications()
+    }
 
     coordinates(Versions.group, "android", Versions.libraryVersion)
 
