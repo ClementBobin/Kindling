@@ -1,8 +1,7 @@
 /**
  * Convention plugin: kindling-android-library
  *
- * Reacts to whichever Android plugin the module applied — no need to pick
- * a separate convention plugin per module type:
+ * Reacts to whichever Android plugin the module applied:
  *   - com.android.library                      → pure Android library
  *   - com.android.kotlin.multiplatform.library → KMP library
  *
@@ -12,11 +11,10 @@
  */
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import com.android.build.api.dsl.LibraryExtension
+import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 
 fun Project.configureSharedKotlin() {
-    kotlin {
-        jvmToolchain(17)
-    }
+    extensions.findByType<KotlinProjectExtension>()?.jvmToolchain(17)
     tasks.withType<KotlinCompile>().configureEach {
         compilerOptions {
             jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
