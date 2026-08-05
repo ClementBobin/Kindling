@@ -23,7 +23,7 @@ jobs:
         # workflow (e.g. "v0.2.0" or "0.2.0") — the leading "v" is stripped
         # inside Versions.kt.
         # :sample is a local Android app — excluded explicitly.
-        run: ./gradlew :core:publishToMavenCentral :utils:publishToMavenCentral :compose:publishToMavenCentral :android:publishToMavenCentral --no-configuration-cache
+        run: ./gradlew publishToMavenCentral --no-configuration-cache
         env:
           RELEASE_VERSION: ${{ github.event.release.tag_name }}
           ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
