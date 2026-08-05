@@ -60,7 +60,9 @@ dependencies {
 
 mavenPublishing {
     publishToMavenCentral()
-    signAllPublications()
+    if (System.getenv("JITPACK") == null) {
+        signAllPublications()
+    }
 
     coordinates(Versions.group, "compose", Versions.libraryVersion)
 
