@@ -49,6 +49,7 @@ fun KPreviewScreen(
         colorScheme = colorScheme,
         typography  = typography,
         shapes      = shapes,
-        content     = { Surface(content = content) }
-    )
+    ) {
+        Surface(content = content)
+    }
 }
