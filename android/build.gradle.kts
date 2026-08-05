@@ -1,7 +1,6 @@
 plugins {
-    id("com.android.library")
     id("kindling-android-library")
-    id("dokka-convention")
+    id("dokka-android-convention")
     id("kindling-publish")
 }
 
@@ -20,6 +19,7 @@ dependencies {
     implementation("com.google.android.gms:play-services-location:${Versions.playServicesLocation}")
     implementation("androidx.biometric:biometric:${Versions.biometric}")
     implementation("androidx.datastore:datastore-preferences:1.1.1")
+    implementation("androidx.work:work-runtime-ktx:2.9.1")
     implementation("io.ktor:ktor-client-core:${Versions.ktor}")
     implementation("io.ktor:ktor-client-content-negotiation:${Versions.ktor}")
     implementation("io.ktor:ktor-serialization-kotlinx-json:${Versions.ktor}")
