@@ -1,6 +1,7 @@
 # Kindling
 
 [![CI](https://github.com/ClementBobin/Kindling/actions/workflows/ci.yml/badge.svg)](https://github.com/ClementBobin/Kindling/actions/workflows/ci.yml)
+[![](https://jitpack.io/v/ClementBobin/Kindling.svg)](https://jitpack.io/#ClementBobin/Kindling)
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.clementbobin.kindling/core)](https://central.sonatype.com/search?q=io.github.clementbobin.kindling)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
