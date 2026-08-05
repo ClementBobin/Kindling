@@ -15,7 +15,7 @@ plugins {
 }
 
 android {
-    namespace  = "dev.kindling.${project.name}"
+    namespace  = "${Versions.group}.${project.name}"
     compileSdk = 36
 
     defaultConfig {

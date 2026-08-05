@@ -15,9 +15,6 @@ plugins {
     id("com.vanniktech.maven.publish")
 }
 
-group   = Versions.group
-version = Versions.libraryVersion
-
 afterEvaluate {
     val pomDescription = project.extra
         .takeIf { it.has("pomDescription") }
