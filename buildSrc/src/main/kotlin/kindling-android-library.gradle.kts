@@ -22,19 +22,12 @@ fun Project.configureSharedKotlin() {
     }
 }
 
-fun Project.configureAndroidDefaults() {
+// Pure Android library: com.android.library exposes LibraryExtension
+pluginManager.withPlugin("com.android.library") {
     extensions.configure<LibraryExtension> {
         namespace  = "${Versions.group}.${project.name}"
         compileSdk = 36
-        defaultConfig {
-            minSdk = 21
-        }
-    }
-}
-
-pluginManager.withPlugin("com.android.library") {
-    configureAndroidDefaults()
-    extensions.configure<LibraryExtension> {
+        defaultConfig { minSdk = 21 }
         compileOptions {
             sourceCompatibility = JavaVersion.VERSION_17
             targetCompatibility = JavaVersion.VERSION_17
@@ -43,7 +36,8 @@ pluginManager.withPlugin("com.android.library") {
     configureSharedKotlin()
 }
 
+// KMP library: com.android.kotlin.multiplatform.library uses its own DSL
+// namespace/compileSdk are set inside kotlin { android { } } in the module itself
 pluginManager.withPlugin("com.android.kotlin.multiplatform.library") {
-    configureAndroidDefaults()
     configureSharedKotlin()
 }

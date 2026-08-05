@@ -11,6 +11,11 @@ plugins {
 kotlin {
     jvm("desktop")
 
+    android {
+        namespace = "${Versions.group}.${project.name}"
+        compileSdk { version = release(36) }
+    }
+
     sourceSets {
         val commonMain by getting {
             dependencies {
