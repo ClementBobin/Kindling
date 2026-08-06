@@ -77,7 +77,7 @@ object InsertionSort {
     }
 
     /**
-     * Sorts the subarray `array[left..right]` in-place using the given comparator.
+     * Sorts the subarray `array[left.right]` in-place using the given comparator.
      *
      * Used internally by [IntroSort], [TimSort], and [BlockSort] to handle
      * small partitions without allocating a new array.
@@ -100,7 +100,7 @@ object InsertionSort {
     }
 
     /**
-     * Sorts the subarray `array[left..right]` in-place.
+     * Sorts the subarray `array[left.right]` in-place.
      *
      * Used internally by [IntroSort] to handle small [IntArray] partitions
      * without allocating a new array.

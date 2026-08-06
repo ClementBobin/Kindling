@@ -6,7 +6,7 @@ package dev.kindling.library.utils.method.sort
  * Uses binary search to find the insertion position,
  * reducing comparisons compared to normal insertion sort.
  */
-object BinaryInsertion {
+object BinaryInsertionSort {
 
     /**
      * Sorts the array in ascending natural order.

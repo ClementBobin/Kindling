@@ -67,7 +67,7 @@ object MergeSort {
     }
 
     /**
-     * Merges two adjacent sorted subarrays [low..mid] and [mid+1..high].
+     * Merges two adjacent sorted subarrays [low.mid] and [mid+1.high].
      * Used internally by TimSort.
      */
     internal fun <T> merge(array: Array<T>, low: Int, mid: Int, high: Int, comparator: Comparator<T>) {

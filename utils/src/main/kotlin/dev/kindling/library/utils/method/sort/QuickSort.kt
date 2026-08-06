@@ -60,7 +60,7 @@ object QuickSort {
     }
 
     /**
-     * Partitions `array[low..high]` around a median-of-three pivot and
+     * Partitions `array[low.high]` around a median-of-three pivot and
      * returns the final index of the pivot element.
      *
      * Exposed as `internal` so [IntroSort] can reuse this partitioning
@@ -92,7 +92,7 @@ object QuickSort {
     }
 
     /**
-     * Partitions `array[low..high]` around a median-of-three pivot using
+     * Partitions `array[low.high]` around a median-of-three pivot using
      * the given comparator, and returns the final index of the pivot element.
      *
      * Exposed as `internal` so [IntroSort] can reuse this partitioning
