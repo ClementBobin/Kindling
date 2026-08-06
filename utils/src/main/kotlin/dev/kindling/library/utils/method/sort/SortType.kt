@@ -8,11 +8,11 @@
  * Typical usage:
  * ```kotlin
  * val array = intArrayOf(5, 3, 1, 4, 2)
- * SortType.INTRO.sort(array)
+ * Sorter.sort(array, SortType.INTRO)
  *
  * val strings = arrayOf("banana", "apple", "cherry")
- * SortType.MERGE.sort(strings)
- * SortType.MERGE.sort(strings, compareByDescending { it })
+ * Sorter.sort(strings, SortType.INTRO)
+ * Sorter.sort(strings, SortType.MERGE, compareByDescending { it.name })
  * ```
  */
 enum class SortType {
@@ -235,59 +235,5 @@ enum class SortType {
      * Included for educational / humour purposes only.
      * **Do not use on arrays larger than ~8 elements.**
      */
-    BOGO;
-
-    /**
-     * Sorts [array] in ascending natural order using this algorithm.
-     *
-     * [COUNTING] and [PIGEONHOLE] only support [IntArray] input and will
-     * throw [UnsupportedOperationException] if called with a typed array.
-     *
-     * @param array array to sort
-     * @throws UnsupportedOperationException if this algorithm does not support `Array<T>`
-     */
-    fun <T : Comparable<T>> sort(array: Array<T>) {
-        sort(array, naturalOrder())
-    }
-
-    /**
-     * Sorts [array] using the given [comparator].
-     *
-     * [COUNTING] and [PIGEONHOLE] only support [IntArray] input and will
-     * throw [UnsupportedOperationException] if called with a typed array.
-     *
-     * @param array      array to sort
-     * @param comparator comparator to determine order
-     * @throws UnsupportedOperationException if this algorithm does not support `Array<T>`
-     */
-    fun <T> sort(array: Array<T>, comparator: Comparator<T>) {
-        when (this) {
-            BUBBLE            -> BubbleSort.sort(array, comparator)
-            RECURSIVE_BUBBLE  -> RecursiveBubbleSort.sort(array, comparator)
-            COCKTAIL          -> CocktailSort.sort(array, comparator)
-            COMB              -> CombSort.sort(array, comparator)
-            GNOME             -> GnomeSort.sort(array, comparator)
-            SELECTION         -> SelectionSort.sort(array, comparator)
-            CYCLE             -> CycleSort.sort(array, comparator)
-            TOURNAMENT        -> TournamentSort.sort(array, comparator)
-            INSERTION         -> InsertionSort.sort(array, comparator)
-            BINARY_INSERTION  -> BinaryInsertion.sort(array, comparator)
-            SHELL             -> ShellSort.sort(array, comparator)
-            MERGE             -> MergeSort.sort(array, comparator)
-            TIM               -> TimSort.sort(array, comparator)
-            BLOCK             -> BlockSort.sort(array, comparator)
-            QUICK             -> QuickSort.sort(array, comparator)
-            QUICK_ITERATIVE   -> QuickSortIterative.sort(array, comparator)
-            THREE_WAY_QUICK   -> ThreeWayQuickSort.sort(array, comparator)
-            INTRO             -> IntroSort.sort(array, comparator)
-            HEAP              -> HeapSort.sort(array, comparator)
-            RADIX             -> RadixSort.sort(array, comparator)
-            BUCKET            -> BucketSort.sort(array, comparator)
-            STALIN            -> StalinSort.sort(array, comparator)
-            BOGO              -> BogoSort.sort(array, comparator)
-            COUNTING, PIGEONHOLE -> throw UnsupportedOperationException(
-                "$name only supports IntArray input — use sort(IntArray) instead."
-            )
-        }
-    }
+    BOGO
 }
