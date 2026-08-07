@@ -3,6 +3,9 @@ on:
   release:
     types: [released, prereleased]
 
+permissions:
+  contents: read
+
 jobs:
   publish:
     name: Release build and publish
