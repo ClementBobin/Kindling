@@ -18,7 +18,7 @@ import java.util.Locale
  * @return A string of up to two uppercase initial characters.
  */
 fun initials(name: String) =
-    name.trim().split(" ").take(2).mapNotNull { it.firstOrNull()?.uppercaseChar() }.joinToString("")
+    name.trim().split(Regex("\\s+")).take(2).mapNotNull { it.firstOrNull()?.uppercaseChar() }.joinToString("")
 
 /**
  * Formats a price as a currency string using the device's default locale.
