@@ -1,9 +1,27 @@
 {
-  "image": "mcr.microsoft.com/devcontainers/java:17",
+  "name": "Android Kotlin Dev Environment",
+  "image": "mcr.microsoft.com/devcontainers/java:1-17-bullseye",
   "features": {
     "ghcr.io/devcontainers/features/java:1": {
       "version": "17",
-      "jdkDistribution": "ms"
+      "jdkDistribution": "ms",
+      "gradleVersion": "latest"
+    }
+  },
+  "remoteEnv": {
+    "ANDROID_HOME": "/usr/local/lib/android/sdk",
+    "ANDROID_SDK_ROOT": "/usr/local/lib/android/sdk",
+    "PATH": "${containerEnv:PATH}:/usr/local/lib/android/sdk/cmdline-tools/latest/bin:/usr/local/lib/android/sdk/platform-tools"
+  },
+  "postCreateCommand": "bash .devcontainer/post-create.sh",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "fwcd.kotlin",
+        "vscjava.vscode-gradle",
+        "mathiasfrohlich.Kotlin",
+        "vscjava.vscode-java-pack"
+      ]
     }
   }
 }
