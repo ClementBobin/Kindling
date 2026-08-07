@@ -1,60 +1,46 @@
 package dev.kindling.android.natif
 
-import android.content.Context
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricManager.Authenticators
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
+import javax.crypto.Cipher
 
 // ─────────────────────────────────────────────
 //  BiometricConfig
 // ─────────────────────────────────────────────
 
 /**
- * Décrit la configuration du dialogue biométrique.
+ * Configuration pour le dialogue biométrique.
  *
- * Presets :
- * - [BiometricConfig.Strong]      → empreinte / face 3D uniquement
- * - [BiometricConfig.StrongOrPin] → biométrie forte OU PIN/schéma/mot de passe
- *
- * Personnalisé :
- * ```kotlin
- * val config = BiometricConfig(
- *     title       = "Connexion sécurisée",
- *     subtitle    = "Confirmez votre identité",
- *     description = "Utilisez votre empreinte pour vous connecter à Cyna.",
- *     negativeButtonText = "Annuler",
- *     allowedAuthenticators = Authenticators.BIOMETRIC_STRONG
- * )
- * ```
+ * Note : Pour utiliser un [CryptoObject] (nécessaire à la sécurité Keystore),
+ * [allowedAuthenticators] doit utiliser `Authenticators.BIOMETRIC_STRONG`.
  */
 data class BiometricConfig(
     val title: String,
     val subtitle: String                = "",
     val description: String             = "",
     val negativeButtonText: String      = "Annuler",
-    val allowedAuthenticators: Int      = Authenticators.BIOMETRIC_STRONG
-            or Authenticators.DEVICE_CREDENTIAL
+    val allowedAuthenticators: Int      = Authenticators.BIOMETRIC_STRONG,
+    val keyAlias: String                = "biometric_auth_key"
 ) {
     companion object {
-        fun strong(title: String, subtitle: String = "", description: String = "") =
-            BiometricConfig(
-                title                = title,
-                subtitle             = subtitle,
-                description          = description,
-                negativeButtonText   = "Annuler",
-                allowedAuthenticators = Authenticators.BIOMETRIC_STRONG
-            )
-
-        fun strongOrPin(title: String, subtitle: String = "", description: String = "") =
-            BiometricConfig(
-                title                = title,
-                subtitle             = subtitle,
-                description          = description,
-                allowedAuthenticators = Authenticators.BIOMETRIC_STRONG
-                        or Authenticators.DEVICE_CREDENTIAL
-            )
+        fun strong(
+            title: String,
+            subtitle: String = "",
+            description: String = "",
+            keyAlias: String = "biometric_auth_key"
+        ) = BiometricConfig(
+            title                 = title,
+            subtitle              = subtitle,
+            description           = description,
+            negativeButtonText    = "Annuler",
+            allowedAuthenticators = Authenticators.BIOMETRIC_STRONG,
+            keyAlias              = keyAlias
+        )
     }
 }
 
@@ -62,17 +48,10 @@ data class BiometricConfig(
 //  BiometricResult
 // ─────────────────────────────────────────────
 
-/**
- * Résultat d'une authentification biométrique.
- *
- * - [BiometricResult.Success]          → authentification réussie
- * - [BiometricResult.Error]            → erreur système (message fourni)
- * - [BiometricResult.Failed]           → tentative échouée (mauvaise empreinte, etc.)
- * - [BiometricResult.Unavailable]      → biométrie non disponible sur l'appareil
- * - [BiometricResult.NoneEnrolled]     → aucune biométrie enregistrée
- */
 sealed class BiometricResult {
     data object Success                         : BiometricResult()
+    data class  SuccessWithEncrypted(val data: EncryptedData) : BiometricResult()
+    data class  SuccessWithDecrypted(val plaintext: String)   : BiometricResult()
     data class  Error(val message: String)      : BiometricResult()
     data object Failed                          : BiometricResult()
     data object Unavailable                     : BiometricResult()
@@ -84,77 +63,37 @@ sealed class BiometricResult {
 // ─────────────────────────────────────────────
 
 /**
- * Helper d'authentification biométrique centralisé.
- *
- * Nécessite `androidx.biometric:biometric` dans les dépendances du module :
- * ```kotlin
- * implementation("androidx.biometric:biometric:1.2.0-alpha05")
- * ```
- *
- * Enregistrement Koin :
- * ```kotlin
- * single { BiometricHelper(androidContext()) }
- * ```
- *
- * Utilisation :
- * ```kotlin
- * // Vérifier la disponibilité
- * val available = biometricHelper.canAuthenticate(BiometricConfig.strongOrPin("Connexion"))
- *
- * // Lancer l'authentification (depuis un Fragment ou une Activity)
- * biometricHelper.authenticate(
- *     activity = this,
- *     config   = BiometricConfig.strongOrPin(
- *         title    = "Connexion Cyna",
- *         subtitle = "Confirmez votre identité"
- *     )
- * ) { result ->
- *     when (result) {
- *         BiometricResult.Success      -> navigateToHome()
- *         is BiometricResult.Error     -> showError(result.message)
- *         BiometricResult.Failed       -> showRetry()
- *         BiometricResult.NoneEnrolled -> promptEnrollment()
- *         BiometricResult.Unavailable  -> fallbackToPassword()
- *     }
- * }
- * ```
+ * Helper biométrique réutilisant [KeystoreHelper] pour garantir
+ * la sécurité des opérations via `CryptoObject`.
  */
-class BiometricHelper(context: Context) {
+@RequiresApi(Build.VERSION_CODES.M)
+class BiometricHelper(
+    context: android.content.Context,
+    private val keystoreHelper: KeystoreHelper = KeystoreHelper()
+) {
 
-    internal val appContext      = context.applicationContext
+    internal val appContext       = context.applicationContext
     internal val biometricManager = BiometricManager.from(appContext)
 
-    // ── Availability ──────────────────────────────────────────────────────────
-
-    /**
-     * Vérifie si l'authentification est possible avec le [config] fourni.
-     * Retourne `true` uniquement si l'appareil supporte et a des biométries enregistrées.
-     */
     fun canAuthenticate(config: BiometricConfig): Boolean =
         biometricManager.canAuthenticate(config.allowedAuthenticators) ==
                 BiometricManager.BIOMETRIC_SUCCESS
 
-    /**
-     * Résolution détaillée de la disponibilité :
-     * - `BIOMETRIC_SUCCESS`          → prêt
-     * - `BIOMETRIC_ERROR_NONE_ENROLLED` → aucune biométrie enregistrée
-     * - `BIOMETRIC_ERROR_NO_HARDWARE` / `BIOMETRIC_ERROR_HW_UNAVAILABLE` → non disponible
-     */
     fun availabilityStatus(config: BiometricConfig): Int =
         biometricManager.canAuthenticate(config.allowedAuthenticators)
 
-    // ── Authentication ────────────────────────────────────────────────────────
-
     /**
-     * Lance le dialogue d'authentification biométrique.
+     * Exécute une authentification biométrique sécurisée liée à un [CryptoObject].
      *
-     * @param activity L'Activity hôte (doit être en premier plan).
-     * @param config   Configuration du dialogue.
-     * @param onResult Callback appelé sur le thread principal avec le [BiometricResult].
+     * - Si [plaintextToEncrypt] est fourni : Chiffre la donnée après authentification biométrique.
+     * - Si [dataToDecrypt] est fourni : Déchiffre la donnée après authentification biométrique.
+     * - Si aucun n'est fourni : Effectue une opération de validation (jeton par défaut) pour déverrouiller la clé.
      */
     fun authenticate(
         activity: FragmentActivity,
         config: BiometricConfig,
+        plaintextToEncrypt: String? = null,
+        dataToDecrypt: EncryptedData? = null,
         onResult: (BiometricResult) -> Unit
     ) {
         when (val status = biometricManager.canAuthenticate(config.allowedAuthenticators)) {
@@ -165,10 +104,7 @@ class BiometricHelper(context: Context) {
                 return
             }
             BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE,
-            BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE -> {
-                onResult(BiometricResult.Unavailable)
-                return
-            }
+            BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE,
             BiometricManager.BIOMETRIC_ERROR_SECURITY_UPDATE_REQUIRED,
             BiometricManager.BIOMETRIC_ERROR_UNSUPPORTED,
             BiometricManager.BIOMETRIC_STATUS_UNKNOWN -> {
@@ -176,16 +112,58 @@ class BiometricHelper(context: Context) {
                 return
             }
             else -> {
-                onResult(BiometricResult.Error("Unknown biometric status: $status"))
+                onResult(BiometricResult.Error("Unknown status: $status"))
                 return
             }
         }
 
+        // 1. Initialisation du KeystoreConfig
+        val keyConfig = KeystoreConfig.biometricProtected(config.keyAlias)
+
+        // 2. Création du Cipher en réutilisant KeystoreHelper
+        val cipher: Cipher = try {
+            if (dataToDecrypt != null) {
+                keystoreHelper.createDecryptCipher(keyConfig, dataToDecrypt.iv)
+            } else {
+                keystoreHelper.createEncryptCipher(keyConfig)
+            }
+        } catch (e: Exception) {
+            onResult(BiometricResult.Error("Failed to initialize cipher: ${e.localizedMessage}"))
+            return
+        }
+
         val executor = ContextCompat.getMainExecutor(activity)
 
+        // 3. Callback biométrique consommant le CryptoObject (exigé par CodeQL)
         val callback = object : BiometricPrompt.AuthenticationCallback() {
             override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
-                onResult(BiometricResult.Success)
+                val authenticatedCipher = result.cryptoObject?.cipher
+                if (authenticatedCipher == null) {
+                    onResult(BiometricResult.Error("Missing CryptoObject in result."))
+                    return
+                }
+
+                try {
+                    when {
+                        // Operational Mode A: Déchiffrement
+                        dataToDecrypt != null -> {
+                            val decryptedText = keystoreHelper.decrypt(authenticatedCipher, dataToDecrypt)
+                            onResult(BiometricResult.SuccessWithDecrypted(decryptedText))
+                        }
+                        // Operational Mode B: Chiffrement
+                        plaintextToEncrypt != null -> {
+                            val encryptedData = keystoreHelper.encrypt(authenticatedCipher, plaintextToEncrypt)
+                            onResult(BiometricResult.SuccessWithEncrypted(encryptedData))
+                        }
+                        // Operational Mode C: Authentification standard (Validation cryptographique)
+                        else -> {
+                            keystoreHelper.encrypt(authenticatedCipher, "biometric_validation_payload")
+                            onResult(BiometricResult.Success)
+                        }
+                    }
+                } catch (e: Exception) {
+                    onResult(BiometricResult.Error("Crypto operation failed: ${e.localizedMessage}"))
+                }
             }
 
             override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
@@ -204,14 +182,10 @@ class BiometricHelper(context: Context) {
             .setSubtitle(config.subtitle)
             .setDescription(config.description)
             .setAllowedAuthenticators(config.allowedAuthenticators)
-            .apply {
-                // negativeButtonText is incompatible with DEVICE_CREDENTIAL
-                val hasDeviceCred = config.allowedAuthenticators and
-                        Authenticators.DEVICE_CREDENTIAL != 0
-                if (!hasDeviceCred) setNegativeButtonText(config.negativeButtonText)
-            }
+            .setNegativeButtonText(config.negativeButtonText)
             .build()
 
-        prompt.authenticate(promptInfo)
+        // 4. Lancement avec le CryptoObject
+        prompt.authenticate(promptInfo, BiometricPrompt.CryptoObject(cipher))
     }
 }
