@@ -9,6 +9,14 @@ kotlin {
     android {
         namespace = "${Versions.group}.sample"
         compileSdk { version = release(36) }
+
+        defaultConfig {
+            // Fixes Manifest Merger error by matching/exceeding library requirements
+            minSdk = 23
+            
+            // Fixes the 64K method limit (DexArchiveMergerException)
+            multiDexEnabled = true
+        }
     }
 }
 
