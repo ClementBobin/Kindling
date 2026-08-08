@@ -36,18 +36,18 @@ private fun charToDigit(c: Char): Int = when {
  * Example: `"münchen".encodePunycode()` → `"mnchen-3ya"`
  */
 fun String.encodePunycode(): String {
-    val input  = toList().map { it.code }
+    val input  = toCodePoints()
     val output = StringBuilder()
     val basic  = input.filter { it < INITIAL_N }
     basic.forEach { output.append(it.toChar()) }
     val basicLen = basic.size
-    if (basicLen > 0) output.append(DELIMITER)
+    val inputLen = input.size
+    if (basicLen > 0 && basicLen < inputLen) output.append(DELIMITER)
     var n    = INITIAL_N
     var delta = 0
     var bias  = INITIAL_BIAS
     var h    = basicLen
-    val len  = input.size
-    while (h < len) {
+    while (h < inputLen) {
         val m = input.filter { it >= n }.minOrNull() ?: break
         delta += (m - n) * (h + 1)
         n = m
@@ -78,8 +78,8 @@ fun String.encodePunycode(): String {
 fun String.decodePunycode(): String {
     val input   = this
     val delimIdx = input.lastIndexOf(DELIMITER)
-    val output  = if (delimIdx > 0) input.take(delimIdx).map { it.code }.toMutableList()
-                  else mutableListOf()
+    val output  = if (delimIdx >= 0) input.take(delimIdx).toCodePoints().toMutableList()
+                  else mutableListOf<Int>()
     var i    = 0
     var n    = INITIAL_N
     var bias = INITIAL_BIAS
@@ -87,6 +87,7 @@ fun String.decodePunycode(): String {
     while (pos < input.length) {
         val oldI = i; var w = 1; var k = BASE
         while (true) {
+            if (pos >= input.length) break
             val d = charToDigit(input[pos++])
             i += d * w
             val t = when { k <= bias -> TMIN; k >= bias + TMAX -> TMAX; else -> k - bias }
@@ -99,7 +100,27 @@ fun String.decodePunycode(): String {
         output.add(i, n)
         i++
     }
-    return String(output.map { it.toChar() }.toCharArray())
+    val sb = StringBuilder()
+    output.forEach { cp ->
+        if (cp < 0x10000) {
+            sb.append(cp.toChar())
+        } else {
+            sb.append(((cp - 0x10000) shr 10 or 0xD800).toChar())
+            sb.append(((cp - 0x10000) and 0x3FF or 0xDC00).toChar())
+        }
+    }
+    return sb.toString()
+}
+
+private fun String.toCodePoints(): List<Int> {
+    val result = mutableListOf<Int>()
+    var i = 0
+    while (i < length) {
+        val cp = codePointAt(i)
+        result.add(cp)
+        i += if (Character.isSupplementaryCodePoint(cp)) 2 else 1
+    }
+    return result
 }
 
 /**

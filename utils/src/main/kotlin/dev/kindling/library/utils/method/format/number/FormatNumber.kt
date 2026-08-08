@@ -6,7 +6,10 @@ package dev.kindling.library.utils.method.format.number
  * Formats a [Double] with [decimals] decimal places.
  * Example: `3.14159.round(2)` → `"3.14"`
  */
-fun Double.round(decimals: Int = 2): String = "%.${decimals}f".format(this)
+fun Double.round(decimals: Int = 2): String {
+    require(decimals >= 0) { "decimals must be non-negative" }
+    return String.format(java.util.Locale.US, "%.${decimals}f", this)
+}
 
 /**
  * Formats a number with thousands separators.
@@ -28,7 +31,8 @@ fun Int.toThousands(): String = toLong().toThousands()
  * Example: `1234567.89.toThousands(2)` → `"1,234,567.89"`
  */
 fun Double.toThousands(decimals: Int = 2): String {
-    val formatted = "%.${decimals}f".format(this)
+    require(decimals >= 0) { "decimals must be non-negative" }
+    val formatted = String.format(java.util.Locale.US, "%.${decimals}f", this)
     val parts     = formatted.split(".")
     val intPart   = parts[0].trimStart('-').reversed().chunked(3).joinToString(",").reversed()
     val signed    = if (this < 0) "-$intPart" else intPart
@@ -40,20 +44,21 @@ fun Double.toThousands(decimals: Int = 2): String {
  * Example: `1_500_000.0.toCompact()` → `"1.5M"`
  */
 fun Double.toCompact(decimals: Int = 1): String {
+    require(decimals >= 0) { "decimals must be non-negative" }
     val abs = kotlin.math.abs(this)
     val sign = if (this < 0) "-" else ""
     return when {
-        abs >= 1_000_000_000_000 -> "$sign${"%.${decimals}f".format(abs / 1_000_000_000_000)}T"
-        abs >= 1_000_000_000     -> "$sign${"%.${decimals}f".format(abs / 1_000_000_000)}B"
-        abs >= 1_000_000         -> "$sign${"%.${decimals}f".format(abs / 1_000_000)}M"
-        abs >= 1_000             -> "$sign${"%.${decimals}f".format(abs / 1_000)}K"
-        else                     -> "$sign${"%.${decimals}f".format(abs)}"
+        abs >= 1_000_000_000_000 -> "$sign${String.format(java.util.Locale.US, "%.${decimals}f", abs / 1_000_000_000_000)}T"
+        abs >= 1_000_000_000     -> "$sign${String.format(java.util.Locale.US, "%.${decimals}f", abs / 1_000_000_000)}B"
+        abs >= 1_000_000         -> "$sign${String.format(java.util.Locale.US, "%.${decimals}f", abs / 1_000_000)}M"
+        abs >= 1_000             -> "$sign${String.format(java.util.Locale.US, "%.${decimals}f", abs / 1_000)}K"
+        else                     -> "$sign${String.format(java.util.Locale.US, "%.${decimals}f", abs)}"
     }.trimEnd('0').trimEnd('.')
         .let { if (it.contains('.') || it.last().isDigit()) it else it }
 }
 
 /** @see Double.toCompact */
-fun Long.toCompact(decimals: Int = 1): Double.() -> String = { toCompact(decimals) }
+fun Long.toCompact(decimals: Int = 1): String = toDouble().toCompact(decimals)
 fun Long.toCompactString(decimals: Int = 1): String = toDouble().toCompact(decimals)
 fun Int.toCompactString(decimals: Int = 1): String = toDouble().toCompact(decimals)
 
@@ -77,8 +82,10 @@ fun Number.sign(): String = when {
  * Formats a number with an explicit sign prefix.
  * Example: `42.0.withSign()` → `"+42.0"`
  */
-fun Double.withSign(decimals: Int = 0): String =
-    "${sign()}${"%.${decimals}f".format(kotlin.math.abs(this))}"
+fun Double.withSign(decimals: Int = 0): String {
+    require(decimals >= 0) { "decimals must be non-negative" }
+    return "${sign()}${String.format(java.util.Locale.US, "%.${decimals}f", kotlin.math.abs(this))}"
+}
 
 /**
  * Pads an integer with leading zeros to the given [width].

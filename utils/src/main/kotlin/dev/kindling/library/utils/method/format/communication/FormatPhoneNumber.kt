@@ -3,10 +3,10 @@ package dev.kindling.library.utils.method.format.communication
 // ─── FormatPhoneNumber ────────────────────────────────────────────────────────
 
 /**
- * Strips all non-digit characters from a phone number string.
+ * Strips all non-digit ASCII characters from a phone number string.
  * Example: `"+1 (800) 555-0199".digitsOnly()` → `"18005550199"`
  */
-fun String.digitsOnly(): String = filter { it.isDigit() }
+fun String.digitsOnly(): String = filter { it in '0'..'9' }
 
 /**
  * Formats a 10-digit US phone number as `"(XXX) XXX-XXXX"`.
@@ -25,12 +25,18 @@ fun String.formatUsPhone(): String {
  * Example: `"8005550199".toE164()` → `"+18005550199"`
  */
 fun String.toE164(countryCode: String = "1"): String {
+    val normalizedCC = countryCode.digitsOnly()
+    require(normalizedCC.isNotEmpty()) { "Invalid country code" }
     val digits = digitsOnly()
-    return when {
-        digits.length == 10 -> "+$countryCode$digits"
-        digits.length == 11 && digits.startsWith(countryCode) -> "+$digits"
+    require(digits.isNotEmpty()) { "Input contains no digits" }
+
+    val result = when {
+        digits.length == 10 -> "+$normalizedCC$digits"
+        digits.length == 11 && digits.startsWith(normalizedCC) -> "+$digits"
         else -> "+$digits"
     }
+    require(result.length <= 16) { "Result exceeds E.164 limit of 15 digits" }
+    return result
 }
 
 /**
@@ -38,8 +44,11 @@ fun String.toE164(countryCode: String = "1"): String {
  * Example: `"(800) 555-0199".isValidUsPhone()` → `true`
  */
 fun String.isValidUsPhone(): Boolean {
-    val digits = digitsOnly()
-    return digits.length == 10 || (digits.length == 11 && digits.startsWith("1"))
+    val digits = digitsOnly().let { if (it.length == 11 && it.startsWith("1")) it.drop(1) else it }
+    if (digits.length != 10) return false
+    val areaCode = digits[0] - '0'
+    val centralOffice = digits[3] - '0'
+    return areaCode in 2..9 && centralOffice in 2..9
 }
 
 /**
@@ -47,6 +56,7 @@ fun String.isValidUsPhone(): Boolean {
  * Example: `"8005550199".maskPhone(4)` → `"******0199"`
  */
 fun String.maskPhone(visible: Int = 4): String {
+    require(visible >= 0) { "visible count must be non-negative" }
     val digits = digitsOnly()
     if (digits.length <= visible) return digits
     return "*".repeat(digits.length - visible) + digits.takeLast(visible)

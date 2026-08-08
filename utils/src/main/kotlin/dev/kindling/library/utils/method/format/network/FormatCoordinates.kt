@@ -14,10 +14,10 @@ data class GeoCoordinate(val latitude: Double, val longitude: Double)
  * Example: `48.8566.latToDms()` → `"48° 51' 24\" N"`
  */
 fun Double.latToDms(): String {
-    val abs     = abs(this)
-    val degrees = abs.toInt()
-    val minutes = ((abs - degrees) * 60).toInt()
-    val seconds = round(((abs - degrees) * 60 - minutes) * 60).toInt()
+    val totalSeconds = round(abs(this) * 3600).toInt()
+    val degrees = totalSeconds / 3600
+    val minutes = (totalSeconds % 3600) / 60
+    val seconds = totalSeconds % 60
     val dir     = if (this >= 0) "N" else "S"
     return "$degrees° $minutes' $seconds\" $dir"
 }
@@ -27,10 +27,10 @@ fun Double.latToDms(): String {
  * Example: `2.3522.lngToDms()` → `"2° 21' 8\" E"`
  */
 fun Double.lngToDms(): String {
-    val abs     = abs(this)
-    val degrees = abs.toInt()
-    val minutes = ((abs - degrees) * 60).toInt()
-    val seconds = round(((abs - degrees) * 60 - minutes) * 60).toInt()
+    val totalSeconds = round(abs(this) * 3600).toInt()
+    val degrees = totalSeconds / 3600
+    val minutes = (totalSeconds % 3600) / 60
+    val seconds = totalSeconds % 60
     val dir     = if (this >= 0) "E" else "W"
     return "$degrees° $minutes' $seconds\" $dir"
 }
@@ -89,7 +89,10 @@ fun GeoCoordinate.toGoogleMapsUrl(): String =
 fun String.toGeoCoordinate(): GeoCoordinate? {
     val parts = split(",").map { it.trim().toDoubleOrNull() }
     if (parts.size != 2 || parts.any { it == null }) return null
-    return GeoCoordinate(parts[0]!!, parts[1]!!)
+    val lat = parts[0]!!
+    val lng = parts[1]!!
+    if (lat !in -90.0..90.0 || lng !in -180.0..180.0) return null
+    return GeoCoordinate(lat, lng)
 }
 
 /**

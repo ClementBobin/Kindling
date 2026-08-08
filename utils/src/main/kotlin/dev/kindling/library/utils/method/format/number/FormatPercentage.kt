@@ -6,15 +6,19 @@ package dev.kindling.library.utils.method.format.number
  * Formats a [Double] in the range [0.0, 1.0] as a percentage string.
  * Example: `0.753.toPercent()` → `"75.3%"`
  */
-fun Double.toPercent(decimals: Int = 1): String =
-    "${"%.${decimals}f".format(this * 100)}%"
+fun Double.toPercent(decimals: Int = 1): String {
+    require(decimals >= 0) { "decimals must be non-negative" }
+    return "${String.format(java.util.Locale.US, "%.${decimals}f", this * 100)}%"
+}
 
 /**
  * Formats a [Double] already in percentage scale (0–100) as a percentage string.
  * Example: `75.3.toPercentLabel()` → `"75.3%"`
  */
-fun Double.toPercentLabel(decimals: Int = 1): String =
-    "${"%.${decimals}f".format(this)}%"
+fun Double.toPercentLabel(decimals: Int = 1): String {
+    require(decimals >= 0) { "decimals must be non-negative" }
+    return "${String.format(java.util.Locale.US, "%.${decimals}f", this)}%"
+}
 
 /**
  * Formats a percentage with an explicit sign (useful for change indicators).
@@ -22,9 +26,10 @@ fun Double.toPercentLabel(decimals: Int = 1): String =
  * Example: `0.12.toSignedPercent()` → `"+12.0%"`
  */
 fun Double.toSignedPercent(decimals: Int = 1): String {
+    require(decimals >= 0) { "decimals must be non-negative" }
     val value = this * 100
     val sign  = if (value >= 0) "+" else ""
-    return "$sign${"%.${decimals}f".format(value)}%"
+    return "$sign${String.format(java.util.Locale.US, "%.${decimals}f", value)}%"
 }
 
 /**
@@ -48,9 +53,10 @@ fun Double.percentageChange(previous: Double): Double? =
  * Example: `120.0.toChangeLabel(100.0)` → `"+20.0%"`
  */
 fun Double.toChangeLabel(previous: Double, decimals: Int = 1): String {
+    require(decimals >= 0) { "decimals must be non-negative" }
     val pct = percentageChange(previous) ?: return "N/A"
     val sign = if (pct >= 0) "+" else ""
-    return "$sign${"%.${decimals}f".format(pct)}%"
+    return "$sign${String.format(java.util.Locale.US, "%.${decimals}f", pct)}%"
 }
 
 /**

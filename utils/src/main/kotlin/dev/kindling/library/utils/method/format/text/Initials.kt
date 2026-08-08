@@ -6,7 +6,7 @@ package dev.kindling.library.utils.method.format.text
  * Extracts initials from a full name string.
  * Example: `"Jean-Claude Van Damme".toInitials()` → `"JVD"`
  */
-fun String.toInitials(maxLetters: Int = 2): String =
+fun String.toInitials(maxLetters: Int = 3): String =
     trim()
         .split(Regex("[\\s\\-]+"))
         .filter { it.isNotBlank() }

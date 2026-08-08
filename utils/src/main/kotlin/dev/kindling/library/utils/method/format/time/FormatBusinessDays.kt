@@ -45,10 +45,15 @@ fun LocalDate.plusBusinessDays(days: Int): LocalDate {
  * - -1 → `"Yesterday"`
  * - N  → `"In N business days"` / `"N business days ago"`
  *
+ * Weekend dates are normalized to the next business day for the label calculation.
+ *
  * Example: `LocalDate(2024, 3, 4).toBusinessDayLabel(LocalDate(2024, 3, 6))` → `"In 2 business days"`
  */
 fun LocalDate.toBusinessDayLabel(from: LocalDate = Clock.System.todayIn(TimeZone.currentSystemDefault())): String {
-    val delta = from.businessDaysUntil(this)
+    val normalizedFrom = if (from.isBusinessDay()) from else from.nextBusinessDay()
+    val normalizedThis = if (this.isBusinessDay()) this else this.nextBusinessDay()
+    
+    val delta = normalizedFrom.businessDaysUntil(normalizedThis)
     return when (delta) {
         0    -> "Today"
         1    -> "Tomorrow"

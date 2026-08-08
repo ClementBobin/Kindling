@@ -7,7 +7,7 @@ import kotlinx.datetime.*
 /**
  * Returns the fiscal quarter (1–4) for a [LocalDate] given a fiscal year start month.
  * [fiscalYearStartMonth] defaults to `1` (January = calendar year).
- * Example: `LocalDate(2024, 10, 15).fiscalQuarter(startMonth = 10)` → `1`
+ * Example: `LocalDate(2024, 10, 15).fiscalQuarter(fiscalYearStartMonth = 10)` → `1`
  */
 fun LocalDate.fiscalQuarter(fiscalYearStartMonth: Int = 1): Int {
     val adjusted = ((monthNumber - fiscalYearStartMonth + 12) % 12)
@@ -16,14 +16,14 @@ fun LocalDate.fiscalQuarter(fiscalYearStartMonth: Int = 1): Int {
 
 /**
  * Returns the fiscal year for a [LocalDate] given a fiscal year start month.
- * Example: `LocalDate(2024, 10, 15).fiscalYear(startMonth = 10)` → `2025`
+ * Example: `LocalDate(2024, 10, 15).fiscalYear(fiscalYearStartMonth = 10)` → `2025`
  */
 fun LocalDate.fiscalYear(fiscalYearStartMonth: Int = 1): Int =
     if (monthNumber >= fiscalYearStartMonth && fiscalYearStartMonth != 1) year + 1 else year
 
 /**
  * Returns a formatted fiscal quarter label like `"Q1 FY2025"`.
- * Example: `LocalDate(2024, 10, 15).toFiscalQuarterLabel(startMonth = 10)` → `"Q1 FY2025"`
+ * Example: `LocalDate(2024, 10, 15).toFiscalQuarterLabel(fiscalYearStartMonth = 10)` → `"Q1 FY2025"`
  */
 fun LocalDate.toFiscalQuarterLabel(fiscalYearStartMonth: Int = 1): String {
     val q  = fiscalQuarter(fiscalYearStartMonth)
@@ -33,7 +33,7 @@ fun LocalDate.toFiscalQuarterLabel(fiscalYearStartMonth: Int = 1): String {
 
 /**
  * Returns the first day of the fiscal quarter this date belongs to.
- * Example: `LocalDate(2024, 11, 20).fiscalQuarterStart(startMonth = 10)` → `LocalDate(2024, 10, 1)`
+ * Example: `LocalDate(2024, 11, 20).fiscalQuarterStart(fiscalYearStartMonth = 10)` → `LocalDate(2024, 10, 1)`
  */
 fun LocalDate.fiscalQuarterStart(fiscalYearStartMonth: Int = 1): LocalDate {
     val q = fiscalQuarter(fiscalYearStartMonth)

@@ -7,6 +7,7 @@ package dev.kindling.library.utils.method.format.text
  * Example: `"Hello, World!".truncate(8)` → `"Hello..."`
  */
 fun String.truncate(maxLength: Int, ellipsis: String = "..."): String {
+    require(maxLength >= ellipsis.length) { "maxLength must be at least ellipsis length" }
     if (length <= maxLength) return this
     val cutAt = (maxLength - ellipsis.length).coerceAtLeast(0)
     return take(cutAt) + ellipsis
@@ -17,6 +18,7 @@ fun String.truncate(maxLength: Int, ellipsis: String = "..."): String {
  * Example: `"Hello beautiful world".truncateWords(14)` → `"Hello..."`
  */
 fun String.truncateWords(maxLength: Int, ellipsis: String = "..."): String {
+    require(maxLength >= ellipsis.length) { "maxLength must be at least ellipsis length" }
     if (length <= maxLength) return this
     val limit = maxLength - ellipsis.length
     val cut   = lastIndexOf(' ', limit).takeIf { it > 0 } ?: limit
@@ -28,6 +30,7 @@ fun String.truncateWords(maxLength: Int, ellipsis: String = "..."): String {
  * Example: `"abcdefghij".truncateMiddle(7)` → `"ab...ij"`
  */
 fun String.truncateMiddle(maxLength: Int, ellipsis: String = "..."): String {
+    require(maxLength >= ellipsis.length) { "maxLength must be at least ellipsis length" }
     if (length <= maxLength) return this
     val keepTotal = (maxLength - ellipsis.length).coerceAtLeast(0)
     val start     = keepTotal / 2 + keepTotal % 2
@@ -40,6 +43,7 @@ fun String.truncateMiddle(maxLength: Int, ellipsis: String = "..."): String {
  * Example: `"a\nb\nc\nd".truncateLines(2)` → `"a\nb..."`
  */
 fun String.truncateLines(maxLines: Int, ellipsis: String = "..."): String {
+    require(maxLines > 0) { "maxLines must be positive" }
     val lines = lines()
     if (lines.size <= maxLines) return this
     return lines.take(maxLines).joinToString("\n").trimEnd() + ellipsis
@@ -56,6 +60,7 @@ fun String.collapseWhitespace(): String = replace(Regex("\\s+"), " ").trim()
  * Example: `"Hello world foo bar".wordWrap(10)` → `"Hello\nworld foo\nbar"`
  */
 fun String.wordWrap(lineWidth: Int): String {
+    require(lineWidth > 0) { "lineWidth must be positive" }
     val words   = split(" ")
     val lines   = mutableListOf<String>()
     var current = StringBuilder()

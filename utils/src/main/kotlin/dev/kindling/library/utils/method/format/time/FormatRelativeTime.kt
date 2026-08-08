@@ -23,20 +23,24 @@ fun Long.toRelativeTime(now: Instant = Clock.System.now()): String {
     val abs = kotlin.math.abs(diffSeconds)
     val future = diffSeconds < 0
 
-    val label = when {
-        abs < 45          -> "just now"
-        abs < 90          -> "${if (future) "in " else ""}1 minute${if (!future) " ago" else ""}"
-        abs < 2700        -> "${if (future) "in " else ""}${abs / 60} minutes${if (!future) " ago" else ""}"
-        abs < 5400        -> "${if (future) "in " else ""}1 hour${if (!future) " ago" else ""}"
-        abs < 79200       -> "${if (future) "in " else ""}${abs / 3600} hours${if (!future) " ago" else ""}"
-        abs < 129600      -> "${if (future) "in " else ""}1 day${if (!future) " ago" else ""}"
-        abs < 2160000     -> "${if (future) "in " else ""}${abs / 86400} days${if (!future) " ago" else ""}"
-        abs < 3888000     -> "${if (future) "in " else ""}1 month${if (!future) " ago" else ""}"
-        abs < 31104000    -> "${if (future) "in " else ""}${abs / 2592000} months${if (!future) " ago" else ""}"
-        abs < 46656000    -> "${if (future) "in " else ""}1 year${if (!future) " ago" else ""}"
-        else              -> "${if (future) "in " else ""}${abs / 31536000} years${if (!future) " ago" else ""}"
+    if (abs < 45) return "just now"
+
+    return when {
+        abs < 90          -> formatPhrase(1, "minute", future)
+        abs < 2700        -> formatPhrase(abs / 60, "minutes", future)
+        abs < 5400        -> formatPhrase(1, "hour", future)
+        abs < 79200       -> formatPhrase(abs / 3600, "hours", future)
+        abs < 129600      -> formatPhrase(1, "day", future)
+        abs < 2160000     -> formatPhrase(abs / 86400, "days", future)
+        abs < 3888000     -> formatPhrase(1, "month", future)
+        abs < 31104000    -> formatPhrase(abs / 2592000, "months", future)
+        abs < 46656000    -> formatPhrase(1, "year", future)
+        else              -> formatPhrase(abs / 31536000, "years", future)
     }
-    return if (abs < 45) "just now" else label
+}
+
+private fun formatPhrase(value: Long, unit: String, future: Boolean): String {
+    return if (future) "in $value $unit" else "$value $unit ago"
 }
 
 /**

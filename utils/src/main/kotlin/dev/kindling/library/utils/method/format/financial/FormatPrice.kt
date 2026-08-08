@@ -14,7 +14,7 @@ fun Double.toPrice(
     decimalSep: String = ".",
     symbolAfter: Boolean = false
 ): String {
-    val formatted = "%.${decimals}f".format(this)
+    val formatted = String.format(java.util.Locale.US, "%.${decimals}f", this)
     val parts     = formatted.split(".")
     val intPart   = parts[0].trimStart('-')
         .reversed().chunked(3).joinToString(thousandsSep).reversed()
@@ -68,10 +68,11 @@ fun Double.toPriceRange(max: Double, symbol: String = "$"): String =
     "${toPrice(symbol)} – ${max.toPrice(symbol)}"
 
 /**
- * Rounds a price to the nearest [precision] (e.g. 0.99 pricing).
- * Example: `14.3.roundToNearest(0.99)` → `13.99`
+ * Rounds a price to the nearest multiple of [precision].
+ * Example: `14.3.roundToNearest(0.99)` → `13.86`
  */
 fun Double.roundToNearest(precision: Double): Double {
+    require(precision > 0) { "Precision must be positive" }
     val factor = 1.0 / precision
     return kotlin.math.round(this * factor) / factor
 }

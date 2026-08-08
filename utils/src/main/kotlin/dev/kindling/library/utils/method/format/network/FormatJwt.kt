@@ -42,14 +42,22 @@ fun String.decodeJwtSegment(): String {
  * Returns `null` if the token is malformed.
  * Example: `"eyJ...".jwtHeader()` → `{"alg":"HS256","typ":"JWT"}`
  */
-fun String.jwtHeader(): String? = splitJwt()?.header?.decodeJwtSegment()
+fun String.jwtHeader(): String? = try {
+    splitJwt()?.header?.decodeJwtSegment()
+} catch (e: IllegalArgumentException) {
+    null
+}
 
 /**
  * Decodes the payload segment of a JWT and returns it as a raw JSON string.
  * Returns `null` if the token is malformed.
  * Example: `"eyJ...".jwtPayload()` → `{"sub":"1234","iat":1710000000}`
  */
-fun String.jwtPayload(): String? = splitJwt()?.payload?.decodeJwtSegment()
+fun String.jwtPayload(): String? = try {
+    splitJwt()?.payload?.decodeJwtSegment()
+} catch (e: IllegalArgumentException) {
+    null
+}
 
 /**
  * Extracts the expiry timestamp (`exp` claim) from a JWT payload.
@@ -58,7 +66,7 @@ fun String.jwtPayload(): String? = splitJwt()?.payload?.decodeJwtSegment()
  */
 fun String.jwtExpiry(): Long? {
     val payload = jwtPayload() ?: return null
-    val match   = Regex(""""exp"\s*:\s*(\d+)""").find(payload) ?: return null
+    val match   = Regex(""""exp"\s*:\s*(-?\d+)""").find(payload) ?: return null
     return match.groupValues[1].toLongOrNull()
 }
 
@@ -69,7 +77,7 @@ fun String.jwtExpiry(): Long? {
  */
 fun String.isJwtExpired(): Boolean {
     val exp = jwtExpiry() ?: return false
-    return System.currentTimeMillis() / 1000L > exp
+    return System.currentTimeMillis() / 1000L >= exp
 }
 
 /**
@@ -97,5 +105,5 @@ fun String.isJwtFormat(): Boolean {
     val parts = split(".")
     if (parts.size != 3) return false
     val b64url = Regex("^[A-Za-z0-9_-]*$")
-    return parts[0].matches(b64url) && parts[1].matches(b64url)
+    return parts[0].matches(b64url) && parts[1].matches(b64url) && parts[2].matches(b64url)
 }

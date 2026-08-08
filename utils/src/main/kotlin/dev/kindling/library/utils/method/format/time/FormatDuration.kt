@@ -7,10 +7,12 @@ package dev.kindling.library.utils.method.format.time
  * Example: `3661L.secondsToHhMmSs()` → `"01:01:01"`
  */
 fun Long.secondsToHhMmSs(): String {
-    val h = this / 3600
-    val m = (this % 3600) / 60
-    val s = this % 60
-    return "%02d:%02d:%02d".format(h, m, s)
+    val sign  = if (this < 0) "-" else ""
+    val abs   = kotlin.math.abs(this)
+    val h = abs / 3600
+    val m = (abs % 3600) / 60
+    val s = abs % 60
+    return "$sign%02d:%02d:%02d".format(h, m, s)
 }
 
 /**
@@ -24,12 +26,14 @@ fun Int.secondsToHhMmSs(): String = toLong().secondsToHhMmSs()
  * Example: `3661500L.msToHhMmSsMs()` → `"01:01:01.500"`
  */
 fun Long.msToHhMmSsMs(): String {
-    val ms = this % 1000
-    val total = this / 1000
+    val sign  = if (this < 0) "-" else ""
+    val abs   = kotlin.math.abs(this)
+    val ms    = abs % 1000
+    val total = abs / 1000
     val h = total / 3600
     val m = (total % 3600) / 60
     val s = total % 60
-    return "%02d:%02d:%02d.%03d".format(h, m, s, ms)
+    return "$sign%02d:%02d:%02d.%03d".format(h, m, s, ms)
 }
 
 /**
@@ -38,16 +42,18 @@ fun Long.msToHhMmSsMs(): String {
  */
 fun Long.secondsToHuman(): String {
     if (this == 0L) return "0s"
+    val sign  = if (this < 0) "-" else ""
+    val abs   = kotlin.math.abs(this)
     val parts = mutableListOf<String>()
-    val d = this / 86400
-    val h = (this % 86400) / 3600
-    val m = (this % 3600) / 60
-    val s = this % 60
+    val d = abs / 86400
+    val h = (abs % 86400) / 3600
+    val m = (abs % 3600) / 60
+    val s = abs % 60
     if (d > 0) parts += "${d}d"
     if (h > 0) parts += "${h}h"
     if (m > 0) parts += "${m}m"
     if (s > 0) parts += "${s}s"
-    return parts.joinToString(" ")
+    return "$sign${parts.joinToString(" ")}"
 }
 
 /**
@@ -61,12 +67,14 @@ fun Long.msToHuman(): String = (this / 1000L).secondsToHuman()
  * Example: `90.minutesToHuman()` → `"1h 30m"`
  */
 fun Int.minutesToHuman(): String {
-    val h = this / 60
-    val m = this % 60
+    val sign  = if (this < 0) "-" else ""
+    val abs   = kotlin.math.abs(this)
+    val h = abs / 60
+    val m = abs % 60
     return when {
-        h == 0 -> "${m}m"
-        m == 0 -> "${h}h"
-        else -> "${h}h ${m}m"
+        h == 0 -> "$sign${m}m"
+        m == 0 -> "$sign${h}h"
+        else -> "$sign${h}h ${m}m"
     }
 }
 
@@ -75,11 +83,20 @@ fun Int.minutesToHuman(): String {
  * Example: `"01:30:00".hhMmSsToSeconds()` → `5400`
  */
 fun String.hhMmSsToSeconds(): Long {
-    val parts = split(":").map { it.toLongOrNull() ?: 0L }
-    return when (parts.size) {
-        3 -> parts[0] * 3600 + parts[1] * 60 + parts[2]
-        2 -> parts[0] * 60 + parts[1]
-        1 -> parts[0]
+    val parts = split(":")
+    require(parts.size in 1..3) { "Invalid duration format" }
+    val longs = parts.map { it.toLongOrNull() ?: throw IllegalArgumentException("Non-numeric component") }
+    
+    return when (longs.size) {
+        3 -> {
+            require(longs[1] in 0..59 && longs[2] in 0..59) { "Minutes and seconds must be 0-59" }
+            longs[0] * 3600 + longs[1] * 60 + longs[2]
+        }
+        2 -> {
+            require(longs[1] in 0..59) { "Minutes must be 0-59" }
+            longs[0] * 60 + longs[1]
+        }
+        1 -> longs[0]
         else -> 0L
     }
 }

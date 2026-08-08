@@ -7,6 +7,7 @@ plugins {
 kotlin { jvmToolchain(17) }
 
 dependencies {
+    implementation("androidx.annotation:annotation-jvm:1.10.0")
     implementation(kotlin("stdlib"))
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.coroutines}")
     testImplementation(kotlin("test"))

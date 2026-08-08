@@ -102,10 +102,16 @@ fun LocalDate.isLeapYear(): Boolean =
  * Returns the ISO week number (1–53) for this date.
  */
 fun LocalDate.weekOfYear(): Int {
-    val jan1 = LocalDate(year, 1, 1)
+    // ISO week number is based on the week containing the first Thursday of the year.
+    // An ISO week starts on Monday.
+    val target = this.plus(3 - (this.dayOfWeek.isoDayNumber - 1), DateTimeUnit.DAY) // Thursday of this week
+    val jan1 = LocalDate(target.year, 1, 1)
     val startDow = jan1.dayOfWeek.isoDayNumber
-    val offset = if (startDow <= 4) startDow - 1 else startDow - 8
-    return ((toEpochDays() - jan1.toEpochDays() + offset) / 7) + 1
+    val firstThursday = if (startDow <= 4) jan1.plus(4 - startDow, DateTimeUnit.DAY)
+                        else jan1.plus(11 - startDow, DateTimeUnit.DAY)
+    val firstMonday = firstThursday.plus(-3, DateTimeUnit.DAY)
+    
+    return ((target.toEpochDays() - firstMonday.toEpochDays()) / 7) + 1
 }
 
 /**

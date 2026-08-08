@@ -46,10 +46,11 @@ fun Int.toOrdinalWord(): String {
 
 /**
  * Converts an [Int] to its spelled-out English word.
- * Supports 0–999.
+ * Supports -999 to 999.
  * Example: `42.toWord()` → `"forty-two"`
  */
 fun Int.toWord(): String {
+    require(this in -999..999) { "Word conversion only supports -999 to 999" }
     if (this == 0) return "zero"
     if (this < 0) return "negative ${(-this).toWord()}"
     val ones = listOf("", "one", "two", "three", "four", "five", "six",

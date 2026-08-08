@@ -4,9 +4,9 @@ import kotlin.math.round
 
 /** Converts cm to feet-and-inches notation. Example: `178.0.cmToFeetInches()` → `"5 ft 10 in"` */
 fun Double.cmToFeetInches(): String {
-    val totalInches = this / 2.54
-    val feet  = (totalInches / 12).toInt()
-    val inches = round(totalInches % 12).toInt()
+    val totalInches = round(this / 2.54).toInt()
+    val feet   = totalInches / 12
+    val inches = totalInches % 12
     return "$feet ft $inches in"
 }
 /** Converts cm to decimal inches. */

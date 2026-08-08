@@ -18,10 +18,18 @@ fun Int.minutesToUtcOffset(): String {
 }
 
 /**
- * Formats a UTC offset in total seconds as `"UTC±HH:MM"`.
+ * Formats a UTC offset in total seconds as `"UTC±HH:MM:SS"` or `"UTC±HH:MM"` if seconds are zero.
  * Example: `19800.secondsToUtcOffset()` → `"UTC+05:30"`
  */
-fun Int.secondsToUtcOffset(): String = (this / 60).minutesToUtcOffset()
+fun Int.secondsToUtcOffset(): String {
+    val sign  = if (this >= 0) "+" else "-"
+    val abs   = kotlin.math.abs(this)
+    val hours = abs / 3600
+    val mins  = (abs % 3600) / 60
+    val secs  = abs % 60
+    return if (secs == 0) "UTC$sign%02d:%02d".format(hours, mins)
+           else "UTC$sign%02d:%02d:%02d".format(hours, mins, secs)
+}
 
 /**
  * Returns the UTC offset string for a named [TimeZone] at a given [Instant].

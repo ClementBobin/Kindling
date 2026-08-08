@@ -9,11 +9,20 @@ import kotlin.math.*
  * Example: `123456.789.toScientific()` → `"1.23e+05"`
  */
 fun Double.toScientific(decimals: Int = 2): String {
+    require(decimals >= 0) { "decimals must be non-negative" }
     if (this == 0.0) return "0.${"0".repeat(decimals)}e+00"
-    val exp  = floor(log10(abs(this))).toInt()
-    val mant = this / 10.0.pow(exp)
+    var exp  = floor(log10(abs(this))).toInt()
+    var mant = this / 10.0.pow(exp)
+    
+    // Normalize if rounding carries over to 10.0
+    val formattedMant = String.format(java.util.Locale.US, "%.${decimals}f", mant)
+    if (formattedMant.toDouble().absoluteValue >= 10.0) {
+        mant /= 10.0
+        exp++
+    }
+    
     val sign = if (exp >= 0) "+" else "-"
-    return "${"%.${decimals}f".format(mant)}e$sign${abs(exp).toString().padStart(2, '0')}"
+    return "${String.format(java.util.Locale.US, "%.${decimals}f", mant)}e$sign${abs(exp).toString().padStart(2, '0')}"
 }
 
 /**
@@ -21,12 +30,13 @@ fun Double.toScientific(decimals: Int = 2): String {
  * Example: `123456.0.toEngineering()` → `"123.456e+03"`
  */
 fun Double.toEngineering(decimals: Int = 3): String {
+    require(decimals >= 0) { "decimals must be non-negative" }
     if (this == 0.0) return "0.${"0".repeat(decimals)}e+00"
     val rawExp  = floor(log10(abs(this))).toInt()
-    val engExp  = (rawExp / 3) * 3
+    val engExp  = floor(rawExp / 3.0).toInt() * 3
     val mant    = this / 10.0.pow(engExp)
     val sign    = if (engExp >= 0) "+" else "-"
-    return "${"%.${decimals}f".format(mant)}e$sign${abs(engExp).toString().padStart(2, '0')}"
+    return "${String.format(java.util.Locale.US, "%.${decimals}f", mant)}e$sign${abs(engExp).toString().padStart(2, '0')}"
 }
 
 /**
@@ -35,6 +45,7 @@ fun Double.toEngineering(decimals: Int = 3): String {
  * Example: `1_500_000.0.toSiPrefix()` → `"1.5 M"`
  */
 fun Double.toSiPrefix(decimals: Int = 2): String {
+    require(decimals >= 0) { "decimals must be non-negative" }
     val prefixes = listOf(
         1e-12 to "p",
         1e-9  to "n",
@@ -47,10 +58,11 @@ fun Double.toSiPrefix(decimals: Int = 2): String {
         1e12  to "T",
         1e15  to "P"
     )
-    val abs = abs(this)
-    val (factor, prefix) = prefixes.lastOrNull { abs >= it.first }
+    val absVal = abs(this)
+    val (factor, prefix) = prefixes.lastOrNull { absVal >= it.first }
         ?: (1.0 to "")
-    return "${"%.${decimals}f".format(this / factor)}${if (prefix.isNotEmpty()) " $prefix" else ""}"
+    val formatted = String.format(java.util.Locale.US, "%.${decimals}f", this / factor)
+    return "$formatted${if (prefix.isNotEmpty()) " $prefix" else ""}"
 }
 
 /**
@@ -58,14 +70,18 @@ fun Double.toSiPrefix(decimals: Int = 2): String {
  * Example: `1_048_576.0.toBinaryPrefix()` → `"1.00 Mi"`
  */
 fun Double.toBinaryPrefix(decimals: Int = 2): String {
+    require(decimals >= 0) { "decimals must be non-negative" }
     val prefixes = listOf("", "Ki", "Mi", "Gi", "Ti", "Pi")
-    var value = this
+    var value = abs(this)
     var index = 0
     while (value >= 1024.0 && index < prefixes.lastIndex) {
         value /= 1024.0
         index++
     }
-    return "${"%.${decimals}f".format(value)} ${prefixes[index]}"
+    val signedValue = if (this < 0) -value else value
+    val formatted = String.format(java.util.Locale.US, "%.${decimals}f", signedValue)
+    val prefix = prefixes[index]
+    return if (prefix.isEmpty()) formatted else "$formatted $prefix"
 }
 
 /**
@@ -92,11 +108,13 @@ fun String.fromRoman(): Int {
     val map = mapOf('I' to 1,'V' to 5,'X' to 10,'L' to 50,
                     'C' to 100,'D' to 500,'M' to 1000)
     val s = uppercase()
+    require(s.all { it in map.keys }) { "Invalid Roman numeral character" }
     var result = 0
     for (i in s.indices) {
-        val cur  = map[s[i]] ?: 0
-        val next = if (i + 1 < s.length) map[s[i + 1]] ?: 0 else 0
+        val cur  = map[s[i]]!!
+        val next = if (i + 1 < s.length) map[s[i + 1]]!! else 0
         result += if (cur < next) -cur else cur
     }
+    require(result.toRoman() == s) { "Non-canonical Roman numeral: $s" }
     return result
 }
