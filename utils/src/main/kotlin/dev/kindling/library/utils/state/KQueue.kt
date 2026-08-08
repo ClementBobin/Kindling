@@ -1,4 +1,4 @@
-package dev.kindling.utils
+package dev.kindling.library.utils.state
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -26,10 +26,10 @@ import kotlinx.coroutines.flow.asStateFlow
  */
 class KQueue<T>(initialItems: List<T> = emptyList()) {
 
-    private val _state = MutableStateFlow(ArrayDeque<T>(initialItems.size).also { it.addAll(initialItems) })
+    private val _state = MutableStateFlow(initialItems.toList())
 
     /** The underlying queue contents as a [StateFlow] (front → back). */
-    val state: StateFlow<ArrayDeque<T>> = _state.asStateFlow()
+    val state: StateFlow<List<T>> = _state.asStateFlow()
 
     /** Number of items currently in the queue. */
     val size: Int get() = _state.value.size
@@ -39,7 +39,7 @@ class KQueue<T>(initialItems: List<T> = emptyList()) {
 
     /** Adds [item] to the back of the queue. */
     fun enqueue(item: T) {
-        _state.value = ArrayDeque(_state.value).also { it.addLast(item) }
+        _state.value = (_state.value + item)
     }
 
     /**
@@ -48,9 +48,8 @@ class KQueue<T>(initialItems: List<T> = emptyList()) {
     fun dequeue(): T? {
         val current = _state.value
         if (current.isEmpty()) return null
-        val next = ArrayDeque(current)
-        val item = next.removeFirst()
-        _state.value = next
+        val item = current.first()
+        _state.value = current.drop(1)
         return item
     }
 
@@ -58,7 +57,7 @@ class KQueue<T>(initialItems: List<T> = emptyList()) {
     fun peek(): T? = _state.value.firstOrNull()
 
     /** Removes all items from the queue. */
-    fun clear() { _state.value = ArrayDeque() }
+    fun clear() { _state.value = emptyList() }
 
     override fun toString() = "KQueue(size=$size, front=${peek()})"
 }

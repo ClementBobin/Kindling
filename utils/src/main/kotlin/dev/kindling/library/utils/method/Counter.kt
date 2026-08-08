@@ -1,4 +1,4 @@
-package dev.kindling.utils
+package dev.kindling.library.utils.method
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.asStateFlow
  * val counter = Counter(initialValue = 0, min = 0, max = 10, step = 2)
  * counter.increment()  // → 2
  * counter.decrement()  // → 0
- * counter.set(7)       // → 6 (clamped to even step? no — set clamps to [min,max] only)
+ * counter.set(7)       // → 7 (clamped to [min, max] only)
  * counter.reset()      // → 0
  *
  * // Observe reactively:
@@ -47,10 +47,14 @@ class Counter(
     private fun clamp(value: Int) = value.coerceIn(min, max)
 
     /** Increments the counter by [step], clamped to [max]. */
-    fun increment() { _state.value = clamp(_state.value + step) }
+    fun increment() {
+        _state.value = ((_state.value.toLong() + step).coerceIn(min.toLong(), max.toLong())).toInt()
+    }
 
     /** Decrements the counter by [step], clamped to [min]. */
-    fun decrement() { _state.value = clamp(_state.value - step) }
+    fun decrement() {
+        _state.value = ((_state.value.toLong() - step).coerceIn(min.toLong(), max.toLong())).toInt()
+    }
 
     /** Sets the counter to [value], clamped to [[min], [max]]. */
     fun set(value: Int) { _state.value = clamp(value) }

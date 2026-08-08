@@ -8,23 +8,30 @@ package dev.kindling.library.utils.method.sort
  */
 object BucketSort {
 
+    /** Maximum range supported for IntArray bucket sort to avoid excessive allocation. */
+    const val MAX_RANGE = 1_000_000
+
     /**
      * Sorts an IntArray using counting-style bucket sort.
-     * Requires knowing the max value upfront.
      *
      * @param array array to sort
      */
     fun sort(array: IntArray) {
         if (array.size <= 1) return
 
+        val min = array.min()
         val max = array.max()
-        val buckets = IntArray(max + 1)
+        val range = max.toLong() - min.toLong() + 1
 
-        for (value in array) buckets[value]++
+        require(range <= MAX_RANGE) { "Range $range exceeds MAX_RANGE $MAX_RANGE" }
+
+        val buckets = IntArray(range.toInt())
+
+        for (value in array) buckets[value - min]++
 
         var outPos = 0
         for (i in buckets.indices)
-            repeat(buckets[i]) { array[outPos++] = i }
+            repeat(buckets[i]) { array[outPos++] = i + min }
     }
 
     /**

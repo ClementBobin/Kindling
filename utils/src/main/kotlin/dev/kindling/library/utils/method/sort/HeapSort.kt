@@ -17,11 +17,19 @@ object HeapSort {
      * @param array array to sort
      */
     fun sort(array: IntArray) {
-        val n = array.size
-        for (i in n / 2 - 1 downTo 0) heapifyDown(array, i, n)
+        sortRange(array, 0, array.size)
+    }
+
+    /**
+     * Sorts a range of an [IntArray] in-place.
+     */
+    fun sortRange(array: IntArray, low: Int, highExclusive: Int) {
+        val n = highExclusive - low
+        if (n <= 1) return
+        for (i in n / 2 - 1 downTo 0) heapifyDownRange(array, i, n, low)
         for (i in n - 1 downTo 1) {
-            val temp = array[0]; array[0] = array[i]; array[i] = temp
-            heapifyDown(array, 0, i)
+            val temp = array[low]; array[low] = array[low + i]; array[low + i] = temp
+            heapifyDownRange(array, 0, i, low)
         }
     }
 
@@ -41,52 +49,47 @@ object HeapSort {
      * @param comparator comparator to determine order
      */
     fun <T> sort(array: Array<T>, comparator: Comparator<T>) {
-        val n = array.size
-        for (i in n / 2 - 1 downTo 0) heapifyDown(array, i, n, comparator)
+        sortRange(array, 0, array.size, comparator)
+    }
+
+    /**
+     * Sorts a range of a typed array in-place.
+     */
+    fun <T> sortRange(array: Array<T>, low: Int, highExclusive: Int, comparator: Comparator<T>) {
+        val n = highExclusive - low
+        if (n <= 1) return
+        for (i in n / 2 - 1 downTo 0) heapifyDownRange(array, i, n, low, comparator)
         for (i in n - 1 downTo 1) {
-            SortUtils.swap(array, 0, i)
-            heapifyDown(array, 0, i, comparator)
+            SortUtils.swap(array, low, low + i)
+            heapifyDownRange(array, 0, i, low, comparator)
         }
     }
 
-    /**
-     * Sifts the element at index [i] downward to restore the max-heap property
-     * over `array[0..n)`.
-     *
-     * @param array array representing the heap
-     * @param i     index of the element to sift down
-     * @param n     heap size (exclusive upper bound)
-     */
-    private fun heapifyDown(array: IntArray, i: Int, n: Int) {
-        val temp = array[i]
-        var j = 2 * i + 1
+    private fun heapifyDownRange(array: IntArray, i: Int, n: Int, offset: Int) {
+        val temp = array[offset + i]
+        var current = i
+        var j = 2 * current + 1
         while (j < n) {
-            if (j < n - 1 && array[j] < array[j + 1]) j++
-            if (temp >= array[j]) break
-            array[(j - 1) / 2] = array[j]
-            j = 2 * j + 1
+            if (j < n - 1 && array[offset + j] < array[offset + j + 1]) j++
+            if (temp >= array[offset + j]) break
+            array[offset + current] = array[offset + j]
+            current = j
+            j = 2 * current + 1
         }
-        array[(j - 1) / 2] = temp
+        array[offset + current] = temp
     }
 
-    /**
-     * Sifts the element at index [i] downward to restore the max-heap property
-     * over `array[0..n)` using the given comparator.
-     *
-     * @param array      array representing the heap
-     * @param i          index of the element to sift down
-     * @param n          heap size (exclusive upper bound)
-     * @param comparator comparator to determine order
-     */
-    private fun <T> heapifyDown(array: Array<T>, i: Int, n: Int, comparator: Comparator<T>) {
-        val temp = array[i]
-        var j = 2 * i + 1
+    private fun <T> heapifyDownRange(array: Array<T>, i: Int, n: Int, offset: Int, comparator: Comparator<T>) {
+        val temp = array[offset + i]
+        var current = i
+        var j = 2 * current + 1
         while (j < n) {
-            if (j < n - 1 && SortUtils.less(array[j], array[j + 1], comparator)) j++
-            if (!SortUtils.less(temp, array[j], comparator)) break
-            array[(j - 1) / 2] = array[j]
-            j = 2 * j + 1
+            if (j < n - 1 && SortUtils.less(array[offset + j], array[offset + j + 1], comparator)) j++
+            if (!SortUtils.less(temp, array[offset + j], comparator)) break
+            array[offset + current] = array[offset + j]
+            current = j
+            j = 2 * current + 1
         }
-        array[(j - 1) / 2] = temp
+        array[offset + current] = temp
     }
 }

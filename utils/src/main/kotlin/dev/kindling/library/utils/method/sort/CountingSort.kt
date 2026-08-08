@@ -30,26 +30,9 @@ object CountingSort {
      */
     fun <T> sort(array: Array<T>, comparator: Comparator<T>) {
         if (array.isEmpty()) return
-
-        // Assign each unique element a rank, then count by rank
         val sorted = array.sortedWith(comparator)
-        val rankMap = LinkedHashMap<T, Int>()
-        var rank = 0
-        for (element in sorted) {
-            if (element !in rankMap) rankMap[element] = rank++
+        for (i in array.indices) {
+            array[i] = sorted[i]
         }
-
-        val count = IntArray(rank)
-        for (element in array) count[rankMap[element]!!]++
-        for (i in 1 until rank) count[i] += count[i - 1]
-
-        val output = array.copyOf()
-        for (i in array.size - 1 downTo 0) {
-            val r = rankMap[array[i]]!!
-            output[count[r] - 1] = array[i]
-            count[r]--
-        }
-
-        output.copyInto(array)
     }
 }

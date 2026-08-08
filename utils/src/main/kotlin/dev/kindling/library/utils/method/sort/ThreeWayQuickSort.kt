@@ -53,54 +53,50 @@ object ThreeWayQuickSort {
         right: Int,
         comparator: Comparator<T>
     ) {
-        if (left >= right) return
+        var l = left
+        var r = right
+        while (l < r) {
+            medianOfThreeToLeft(array, l, r, comparator)
+            var start = l
+            var end = r
+            var current = l + 1
+            val pivot = array[l]
 
-        var start = left
-        var end = right
-        var current = left
-
-        val pivot = array[left]
-
-        while (current <= end) {
-
-            when {
-                SortUtils.less(
-                    array[current],
-                    pivot,
-                    comparator
-                ) -> {
-                    SortUtils.swap(array, start, current)
-                    start++
-                    current++
-                }
-
-                SortUtils.greater(
-                    array[current],
-                    pivot,
-                    comparator
-                ) -> {
-                    SortUtils.swap(array, current, end)
-                    end--
-                }
-
-                else -> {
-                    current++
+            while (current <= end) {
+                when {
+                    SortUtils.less(array[current], pivot, comparator) -> {
+                        SortUtils.swap(array, start, current)
+                        start++
+                        current++
+                    }
+                    SortUtils.greater(array[current], pivot, comparator) -> {
+                        SortUtils.swap(array, current, end)
+                        end--
+                    }
+                    else -> current++
                 }
             }
+
+            if (start - l < r - end) {
+                quickSort(array, l, start - 1, comparator)
+                l = end + 1
+            } else {
+                quickSort(array, end + 1, r, comparator)
+                r = start - 1
+            }
         }
+    }
 
-        quickSort(
-            array,
-            left,
-            start - 1,
-            comparator
-        )
-
-        quickSort(
-            array,
-            end + 1,
-            right,
-            comparator
-        )
+    private fun <T> medianOfThreeToLeft(
+        array: Array<T>,
+        left: Int,
+        right: Int,
+        comparator: Comparator<T>
+    ) {
+        val mid = left + (right - left) / 2
+        if (SortUtils.less(array[mid], array[left], comparator)) SortUtils.swap(array, mid, left)
+        if (SortUtils.less(array[right], array[left], comparator)) SortUtils.swap(array, right, left)
+        if (SortUtils.less(array[right], array[mid], comparator)) SortUtils.swap(array, right, mid)
+        SortUtils.swap(array, left, mid)
     }
 }

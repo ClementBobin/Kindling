@@ -1,13 +1,11 @@
-package dev.kindling.utils
+package dev.kindling.library.utils.method
 
+import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  MutexGuard
@@ -59,11 +57,13 @@ class MutexGuard {
      *
      * @return The return value of [block].
      */
-    suspend fun <T> run(block: suspend () -> T): T = mutex.withLock {
+    suspend fun <T> run(block: suspend () -> T): T {
+        mutex.lock()
         _isLocked.value = true
-        try {
+        return try {
             block()
         } finally {
+            mutex.unlock()
             _isLocked.value = mutex.isLocked
         }
     }
@@ -81,8 +81,8 @@ class MutexGuard {
         return try {
             block()
         } finally {
-            _isLocked.value = false
             mutex.unlock()
+            _isLocked.value = mutex.isLocked
         }
     }
 }
@@ -112,26 +112,21 @@ class MutexGuard {
  * }
  * ```
  */
-class SingleFlight<T> {
+class SingleFlight<T> @OptIn(DelicateCoroutinesApi::class) constructor(private val scope: CoroutineScope = GlobalScope) {
     private val mutex = Mutex()
     private var inFlight: Deferred<T>? = null
 
     suspend fun get(block: suspend () -> T): T {
-        mutex.lock()
-        inFlight?.let { deferred ->
-            mutex.unlock()
-            return deferred.await()
+        val deferred = mutex.withLock {
+            inFlight ?: scope.async {
+                try {
+                    block()
+                } finally {
+                    mutex.withLock { if (inFlight?.isActive != true) inFlight = null }
+                }
+            }.also { inFlight = it }
         }
 
-        val deferred = coroutineScope {
-            async { block() }
-        }.also { inFlight = it }
-        mutex.unlock()
-
-        return try {
-            deferred.await()
-        } finally {
-            mutex.withLock { if (inFlight === deferred) inFlight = null }
-        }
+        return deferred.await()
     }
 }

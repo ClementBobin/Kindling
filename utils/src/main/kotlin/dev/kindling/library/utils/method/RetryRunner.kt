@@ -1,4 +1,4 @@
-package dev.kindling.utils
+package dev.kindling.library.utils.method
 
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -7,6 +7,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
+import kotlin.math.pow
+import kotlin.random.Random
 
 /**
  * Retries a suspending operation with configurable exponential back-off.
@@ -17,7 +19,7 @@ import kotlin.time.Duration.Companion.seconds
  * val runner = RetryRunner<String>(
  *     scope = viewModelScope,
  *     retries = 3,
- *     delayMs = 250.milliseconds,
+ *     delay = 250.milliseconds,
  *     backoffFactor = 2.0,
  *     onSuccess = { value -> println("Got: $value") },
  *     onError = { err -> println("Attempt failed: $err") },
@@ -27,6 +29,7 @@ import kotlin.time.Duration.Companion.seconds
  * runner.run { fetchData() }
  *
  * // Or auto-run with a fixed operation:
+ * // autoRun cancels the previous auto-run job and launches block once.
  * runner.autoRun { fetchData() }
  *
  * // Observe state:
@@ -79,8 +82,6 @@ class RetryRunner<T>(
      * Any previously running job is cancelled first.
      */
     suspend fun run(block: suspend () -> T): T {
-        currentJob?.cancelAndJoin()
-
         var lastError: Throwable? = null
 
         _isLoading.value = true
@@ -98,15 +99,17 @@ class RetryRunner<T>(
                     return result
                 } catch (e: CancellationException) {
                     throw e
-                } catch (e: Throwable) {
+                } catch (e: Exception) {
                     lastError = e
                     _error.value = e
                     onError?.invoke(e)
                     if (i < retries) {
+                        val baseDelay = delay.inWholeMilliseconds * backoffFactor.pow(i)
+                        val jitter = Random.nextLong(0, (baseDelay * 0.1).toLong().coerceAtLeast(1))
                         val nextDelay = minOf(
-                            maxDelay,
-                            delay * backoffFactor.pow(i)
-                        )
+                            maxDelay.inWholeMilliseconds,
+                            (baseDelay + jitter).toLong()
+                        ).milliseconds
                         kotlinx.coroutines.delay(nextDelay)
                     }
                 }
@@ -122,8 +125,9 @@ class RetryRunner<T>(
      * Cancels any existing launch first.
      */
     fun launch(block: suspend () -> T): Job {
-        currentJob?.cancel()
+        val oldJob = currentJob
         return scope.launch {
+            oldJob?.cancelAndJoin()
             runCatching { run(block) }
         }.also { currentJob = it }
     }
@@ -160,14 +164,4 @@ class RetryRunner<T>(
 //  Internal helpers
 // ─────────────────────────────────────────────────────────────────────────────
 
-private fun Duration.times(factor: Double): Duration =
-    (inWholeMilliseconds * factor).toLong().milliseconds
-
-private fun minOf(a: Duration, b: Duration): Duration =
-    if (a <= b) a else b
-
-private fun Double.pow(n: Int): Double {
-    var result = 1.0
-    repeat(n) { result *= this }
-    return result
-}
+private fun Double.pow(n: Int): Double = this.pow(n.toDouble())

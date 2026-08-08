@@ -1,15 +1,11 @@
 package dev.kindling.library.utils.method.sort
 
-import java.util.Deque
-import java.util.ArrayDeque
-
 /**
  * Quick Sort (Iterative).
  *
  * An iterative variant of Quick Sort that uses an explicit stack
  * instead of recursion, avoiding stack overflow on large inputs.
  * Achieves O(n log n) average-case time with O(log n) stack space.
- * Uses median-of-three pivot selection to mitigate worst-case O(n²).
  */
 object QuickSortIterative {
 
@@ -21,20 +17,40 @@ object QuickSortIterative {
     fun sort(array: IntArray) {
         if (array.size <= 1) return
 
-        val stack: Deque<Int> = ArrayDeque()
-        stack.push(0)
-        stack.push(array.size - 1)
+        val stack = IntArray(128)
 
-        while (stack.isNotEmpty()) {
-            val high = stack.pop()
-            val low = stack.pop()
+        stack[0] = 0
+        stack[1] = array.size - 1
+        var top = 1
 
-            if (low >= high) continue
+        while (top >= 0) {
+            val h = stack[top--]
+            val l = stack[top--]
 
-            val p = partition(array, low, high)
+            if (l < h) {
+                val p = QuickSort.partition(array, l, h)
 
-            if (p - 1 > low) { stack.push(low); stack.push(p - 1) }
-            if (p + 1 < high) { stack.push(p + 1); stack.push(high) }
+                // Push larger partition first so smaller is popped first
+                if (p - l < h - p) {
+                    if (p + 1 < h) {
+                        stack[++top] = p + 1
+                        stack[++top] = h
+                    }
+                    if (l < p - 1) {
+                        stack[++top] = l
+                        stack[++top] = p - 1
+                    }
+                } else {
+                    if (l < p - 1) {
+                        stack[++top] = l
+                        stack[++top] = p - 1
+                    }
+                    if (p + 1 < h) {
+                        stack[++top] = p + 1
+                        stack[++top] = h
+                    }
+                }
+            }
         }
     }
 
@@ -56,62 +72,39 @@ object QuickSortIterative {
     fun <T> sort(array: Array<T>, comparator: Comparator<T>) {
         if (array.size <= 1) return
 
-        val stack: Deque<Int> = ArrayDeque()
-        stack.push(0)
-        stack.push(array.size - 1)
+        val stack = IntArray(128)
 
-        while (stack.isNotEmpty()) {
-            val high = stack.pop()
-            val low = stack.pop()
+        stack[0] = 0
+        stack[1] = array.size - 1
+        var top = 1
 
-            if (low >= high) continue
+        while (top >= 0) {
+            val h = stack[top--]
+            val l = stack[top--]
 
-            val p = partition(array, low, high, comparator)
+            if (l < h) {
+                val p = QuickSort.partition(array, l, h, comparator)
 
-            if (p - 1 > low) { stack.push(low); stack.push(p - 1) }
-            if (p + 1 < high) { stack.push(p + 1); stack.push(high) }
-        }
-    }
-
-    private fun partition(array: IntArray, low: Int, high: Int): Int {
-        val mid = low + (high - low) / 2
-        // Median-of-three pivot selection
-        if (array[mid] < array[low]) { val t = array[mid]; array[mid] = array[low]; array[low] = t }
-        if (array[high] < array[low]) { val t = array[high]; array[high] = array[low]; array[low] = t }
-        if (array[mid] < array[high]) { val t = array[mid]; array[mid] = array[high]; array[high] = t }
-
-        val pivot = array[high]
-        var i = low - 1
-
-        for (j in low until high) {
-            if (array[j] <= pivot) {
-                i++
-                val temp = array[i]; array[i] = array[j]; array[j] = temp
+                if (p - l < h - p) {
+                    if (p + 1 < h) {
+                        stack[++top] = p + 1
+                        stack[++top] = h
+                    }
+                    if (l < p - 1) {
+                        stack[++top] = l
+                        stack[++top] = p - 1
+                    }
+                } else {
+                    if (l < p - 1) {
+                        stack[++top] = l
+                        stack[++top] = p - 1
+                    }
+                    if (p + 1 < h) {
+                        stack[++top] = p + 1
+                        stack[++top] = h
+                    }
+                }
             }
         }
-
-        val temp = array[i + 1]; array[i + 1] = array[high]; array[high] = temp
-        return i + 1
-    }
-
-    private fun <T> partition(array: Array<T>, low: Int, high: Int, comparator: Comparator<T>): Int {
-        val mid = low + (high - low) / 2
-        // Median-of-three pivot selection
-        if (SortUtils.less(array[mid], array[low], comparator)) SortUtils.swap(array, mid, low)
-        if (SortUtils.less(array[high], array[low], comparator)) SortUtils.swap(array, high, low)
-        if (SortUtils.less(array[mid], array[high], comparator)) SortUtils.swap(array, mid, high)
-
-        val pivot = array[high]
-        var i = low - 1
-
-        for (j in low until high) {
-            if (!SortUtils.greater(array[j], pivot, comparator)) {
-                i++
-                SortUtils.swap(array, i, j)
-            }
-        }
-
-        SortUtils.swap(array, i + 1, high)
-        return i + 1
     }
 }

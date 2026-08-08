@@ -28,11 +28,9 @@ object CycleSort {
 
             while (item == array[pos]) pos++
 
-            if (pos != start) {
-                val temp = item
-                item = array[pos]
-                array[pos] = temp
-            }
+            val temp = item
+            item = array[pos]
+            array[pos] = temp
 
             while (pos != start) {
                 pos = start
@@ -42,11 +40,9 @@ object CycleSort {
 
                 while (item == array[pos]) pos++
 
-                if (item != array[pos]) {
-                    val temp = item
-                    item = array[pos]
-                    array[pos] = temp
-                }
+                val temp = item
+                item = array[pos]
+                array[pos] = temp
             }
         }
     }
@@ -80,11 +76,9 @@ object CycleSort {
 
             while (comparator.compare(item, array[pos]) == 0) pos++
 
-            if (pos != start) {
-                val temp = item
-                item = array[pos]
-                array[pos] = temp
-            }
+            val temp = item
+            item = array[pos]
+            array[pos] = temp
 
             while (pos != start) {
                 pos = start
@@ -94,11 +88,9 @@ object CycleSort {
 
                 while (comparator.compare(item, array[pos]) == 0) pos++
 
-                if (comparator.compare(item, array[pos]) != 0) {
-                    val temp = item
-                    item = array[pos]
-                    array[pos] = temp
-                }
+                val temp = item
+                item = array[pos]
+                array[pos] = temp
             }
         }
     }

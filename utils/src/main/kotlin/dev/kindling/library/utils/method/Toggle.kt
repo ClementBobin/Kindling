@@ -1,4 +1,4 @@
-package dev.kindling.utils
+package dev.kindling.library.utils.method
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

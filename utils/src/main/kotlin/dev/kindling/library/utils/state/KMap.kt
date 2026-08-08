@@ -1,4 +1,4 @@
-package dev.kindling.utils
+package dev.kindling.library.utils.state
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -28,7 +28,7 @@ import kotlinx.coroutines.flow.asStateFlow
  */
 class KMap<K, V>(initialEntries: List<Pair<K, V>> = emptyList()) {
 
-    private val _state = MutableStateFlow(initialEntries.toMap(LinkedHashMap()))
+    private val _state = MutableStateFlow(initialEntries.toMap())
 
     /** Immutable snapshot of the current map contents as a [StateFlow]. */
     val state: StateFlow<Map<K, V>> = _state.asStateFlow()
@@ -44,7 +44,7 @@ class KMap<K, V>(initialEntries: List<Pair<K, V>> = emptyList()) {
 
     /** Associates [key] with [value], replacing any existing entry. */
     fun set(key: K, value: V) {
-        _state.value = LinkedHashMap(_state.value).also { it[key] = value }
+        _state.value = _state.value.toMutableMap().also { it[key] = value }.toMap()
     }
 
     /** Returns the value for [key], or `null` if absent. */
@@ -56,11 +56,11 @@ class KMap<K, V>(initialEntries: List<Pair<K, V>> = emptyList()) {
     /** Removes the entry for [key]. No-op if absent. */
     fun remove(key: K) {
         if (!_state.value.containsKey(key)) return
-        _state.value = LinkedHashMap(_state.value).also { it.remove(key) }
+        _state.value = _state.value.toMutableMap().also { it.remove(key) }.toMap()
     }
 
     /** Removes all entries. */
-    fun clear() { _state.value = LinkedHashMap() }
+    fun clear() { _state.value = emptyMap() }
 
     override fun toString() = "KMap(size=$size)"
 }

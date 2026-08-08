@@ -1,8 +1,7 @@
-package dev.kindling.utils
+package dev.kindling.library.utils.state
 
 import kotlinx.coroutines.*
 import kotlin.time.Duration
-import kotlin.time.Duration.Companion.milliseconds
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  KTimer  (port of useTimeout)
@@ -29,16 +28,26 @@ import kotlin.time.Duration.Companion.milliseconds
  */
 class KTimer(
     private val scope: CoroutineScope,
-    val delay: Duration?,
+    var delay: Duration?,
     private val block: suspend () -> Unit,
 ) {
     private var job: Job? = null
 
     init { if (delay != null) set() }
 
-    /** Starts (or restarts) the timer. No-op if [delay] is `null`. */
+    /** Starts (or restarts) the timer using its current [delay]. */
     fun set() {
         val d = delay ?: return
+        start(d)
+    }
+
+    /** Starts (or restarts) the timer with a new [delay]. */
+    fun set(delay: Duration) {
+        this.delay = delay
+        start(delay)
+    }
+
+    private fun start(d: Duration) {
         job?.cancel()
         job = scope.launch {
             kotlinx.coroutines.delay(d)
@@ -81,16 +90,27 @@ class KTimer(
  */
 class KInterval(
     private val scope: CoroutineScope,
-    val period: Duration?,
+    var period: Duration?,
     private val block: suspend () -> Unit,
 ) {
     private var job: Job? = null
 
     init { if (period != null) set() }
 
-    /** Starts the interval. No-op if [period] is `null`. Cancels any existing job first. */
+    /** Starts the interval using its current [period]. */
     fun set() {
         val p = period ?: return
+        start(p)
+    }
+
+    /** Starts the interval with a new [period]. */
+    fun set(period: Duration) {
+        this.period = period
+        start(period)
+    }
+
+    private fun start(p: Duration) {
+        require(p > Duration.ZERO) { "period must be positive" }
         job?.cancel()
         job = scope.launch {
             while (isActive) {
