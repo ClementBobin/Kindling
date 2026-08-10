@@ -51,6 +51,7 @@ fun Double.bytesToBps(): Double = this * 8.0
  * Example: `10_000_000.0.transferTimeSeconds(100_000_000.0)` → `0.8` seconds
  */
 fun Double.transferTimeSeconds(fileSizeBytes: Double): Double {
+    require(this.isFinite()) { "bandwidth must be finite, was: $this" }
     require(fileSizeBytes >= 0.0 && fileSizeBytes.isFinite()) {
         "fileSizeBytes must be non-negative and finite, was: $fileSizeBytes"
     }
