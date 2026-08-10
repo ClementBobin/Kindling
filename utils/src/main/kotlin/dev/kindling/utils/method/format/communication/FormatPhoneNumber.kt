@@ -26,7 +26,7 @@ fun String.formatUsPhone(): String {
  */
 fun String.toE164(countryCode: String = "1"): String {
     val normalizedCC = countryCode.digitsOnly()
-    require(normalizedCC.isNotEmpty()) { "Invalid country code" }
+    require(normalizedCC.length in 1..3) { "Invalid country code" }
     val digits = digitsOnly()
     require(digits.isNotEmpty()) { "Input contains no digits" }
 

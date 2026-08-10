@@ -1,4 +1,4 @@
-package dev.kindling.thod.format.text
+package dev.kindling.utils.method.format.text
 
 // ─── Initials ─────────────────────────────────────────────────────────────────
 

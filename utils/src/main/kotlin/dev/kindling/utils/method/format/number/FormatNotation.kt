@@ -1,120 +1,127 @@
-package dev.kindling.thod.format.number
+package dev.kindling.utils.method.format.number
 
-import kotlin.math.*
-
-// ─── FormatNotation ───────────────────────────────────────────────────────────
+// ─── FormatNumber ─────────────────────────────────────────────────────────────
 
 /**
- * Formats a [Double] in standard scientific notation.
- * Example: `123456.789.toScientific()` → `"1.23e+05"`
+ * Formats a [Double] with [decimals] decimal places.
+ * Example: `3.14159.round(2)` → `"3.14"`
  */
-fun Double.toScientific(decimals: Int = 2): String {
+fun Double.round(decimals: Int = 2): String {
     require(decimals >= 0) { "decimals must be non-negative" }
-    if (this == 0.0) return "0.${"0".repeat(decimals)}e+00"
-    var exp  = floor(log10(abs(this))).toInt()
-    var mant = this / 10.0.pow(exp)
-    
-    // Normalize if rounding carries over to 10.0
-    val formattedMant = String.format(java.util.Locale.US, "%.${decimals}f", mant)
-    if (formattedMant.toDouble().absoluteValue >= 10.0) {
-        mant /= 10.0
-        exp++
-    }
-    
-    val sign = if (exp >= 0) "+" else "-"
-    return "${String.format(java.util.Locale.US, "%.${decimals}f", mant)}e$sign${abs(exp).toString().padStart(2, '0')}"
+    return String.format(java.util.Locale.US, "%.${decimals}f", this)
 }
 
 /**
- * Formats a [Double] in engineering notation (exponent multiple of 3).
- * Example: `123456.0.toEngineering()` → `"123.456e+03"`
+ * Formats a number with thousands separators.
+ * Example: `1234567.toThousands()` → `"1,234,567"`
  */
-fun Double.toEngineering(decimals: Int = 3): String {
+fun Long.toThousands(): String {
+    val s = this.toString()
+    val neg = s.startsWith("-")
+    val digits = if (neg) s.drop(1) else s
+    val grouped = digits.reversed().chunked(3).joinToString(",").reversed()
+    return if (neg) "-$grouped" else grouped
+}
+
+/** @see Long.toThousands */
+fun Int.toThousands(): String = toLong().toThousands()
+
+/**
+ * Formats a [Double] with thousands separators and fixed decimal places.
+ * Example: `1234567.89.toThousands(2)` → `"1,234,567.89"`
+ */
+fun Double.toThousands(decimals: Int = 2): String {
     require(decimals >= 0) { "decimals must be non-negative" }
-    if (this == 0.0) return "0.${"0".repeat(decimals)}e+00"
-    val rawExp  = floor(log10(abs(this))).toInt()
-    val engExp  = floor(rawExp / 3.0).toInt() * 3
-    val mant    = this / 10.0.pow(engExp)
-    val sign    = if (engExp >= 0) "+" else "-"
-    return "${String.format(java.util.Locale.US, "%.${decimals}f", mant)}e$sign${abs(engExp).toString().padStart(2, '0')}"
+    val formatted = String.format(java.util.Locale.US, "%.${decimals}f", this)
+    val parts     = formatted.split(".")
+    val intPart   = parts[0].trimStart('-').reversed().chunked(3).joinToString(",").reversed()
+    val signed    = if (this < 0) "-$intPart" else intPart
+    return if (parts.size > 1) "$signed.${parts[1]}" else signed
 }
 
 /**
- * Formats a [Double] with an SI prefix (µ, m, k, M, G, T, P).
- * Example: `0.001234.toSiPrefix()` → `"1.234 m"`
- * Example: `1_500_000.0.toSiPrefix()` → `"1.5 M"`
+ * Abbreviates large numbers with K/M/B/T suffixes.
+ * Example: `1_500_000.0.toCompact()` → `"1.5M"`
  */
-fun Double.toSiPrefix(decimals: Int = 2): String {
+fun Double.toCompact(decimals: Int = 1): String {
     require(decimals >= 0) { "decimals must be non-negative" }
-    val prefixes = listOf(
-        1e-12 to "p",
-        1e-9  to "n",
-        1e-6  to "µ",
-        1e-3  to "m",
-        1.0   to "",
-        1e3   to "k",
-        1e6   to "M",
-        1e9   to "G",
-        1e12  to "T",
-        1e15  to "P"
+    val abs = kotlin.math.abs(this)
+    val sign = if (this < 0) "-" else ""
+
+    val tiers = arrayOf(
+        1_000_000_000_000.0 to "T",
+        1_000_000_000.0 to "B",
+        1_000_000.0 to "M",
+        1_000.0 to "K",
+        1.0 to ""
     )
-    val absVal = abs(this)
-    val (factor, prefix) = prefixes.lastOrNull { absVal >= it.first }
-        ?: (1.0 to "")
-    val formatted = String.format(java.util.Locale.US, "%.${decimals}f", this / factor)
-    return "$formatted${if (prefix.isNotEmpty()) " $prefix" else ""}"
+
+    var tierIndex = tiers.indexOfFirst { abs >= it.first }
+    if (tierIndex == -1) tierIndex = tiers.lastIndex
+
+    var (divisor, suffix) = tiers[tierIndex]
+    var formatted = String.format(java.util.Locale.US, "%.${decimals}f", abs / divisor)
+
+    if (formatted.toDoubleOrNull()?.let { it >= 1000.0 } == true && tierIndex > 0) {
+        tierIndex--
+        divisor = tiers[tierIndex].first
+        suffix = tiers[tierIndex].second
+        formatted = String.format(java.util.Locale.US, "%.${decimals}f", abs / divisor)
+    }
+
+    val numStr = formatted.trimEnd('0').trimEnd('.').ifEmpty { "0" }
+    return "$sign$numStr$suffix"
+}
+
+/** @see Double.toCompact */
+fun Long.toCompact(decimals: Int = 1): String = toDouble().toCompact(decimals)
+fun Long.toCompactString(decimals: Int = 1): String = toDouble().toCompact(decimals)
+fun Int.toCompactString(decimals: Int = 1): String = toDouble().toCompact(decimals)
+
+/**
+ * Clamps a [Double] between [min] and [max].
+ * Example: `150.0.clamp(0.0, 100.0)` → `100.0`
+ */
+fun Double.clamp(min: Double, max: Double): Double = this.coerceIn(min, max)
+
+/**
+ * Returns the sign of the number as `"+"`, `"-"`, or `""`.
+ * Example: `42.sign()` → `"+"`
+ */
+fun Number.sign(): String = when {
+    toDouble() > 0 -> "+"
+    toDouble() < 0 -> "-"
+    else            -> ""
 }
 
 /**
- * Formats a [Double] in binary (power-of-two) notation with IEC prefixes (Ki, Mi, Gi…).
- * Example: `1_048_576.0.toBinaryPrefix()` → `"1.00 Mi"`
+ * Formats a number with an explicit sign prefix.
+ * Example: `42.0.withSign()` → `"+42.0"`
  */
-fun Double.toBinaryPrefix(decimals: Int = 2): String {
+fun Double.withSign(decimals: Int = 0): String {
     require(decimals >= 0) { "decimals must be non-negative" }
-    val prefixes = listOf("", "Ki", "Mi", "Gi", "Ti", "Pi")
-    var value = abs(this)
-    var index = 0
-    while (value >= 1024.0 && index < prefixes.lastIndex) {
-        value /= 1024.0
-        index++
-    }
-    val signedValue = if (this < 0) -value else value
-    val formatted = String.format(java.util.Locale.US, "%.${decimals}f", signedValue)
-    val prefix = prefixes[index]
-    return if (prefix.isEmpty()) formatted else "$formatted $prefix"
+    return "${sign()}${String.format(java.util.Locale.US, "%.${decimals}f", kotlin.math.abs(this))}"
 }
 
 /**
- * Converts a [Double] to its Roman numeral representation (supports 1–3999).
- * Example: `2024.0.toRoman()` → `"MMXXIV"`
+ * Pads an integer with leading zeros to the given [width].
+ * Example: `7.zeroPad(3)` → `"007"`
  */
-fun Int.toRoman(): String {
-    require(this in 1..3999) { "Roman numerals only support 1–3999" }
-    val vals   = intArrayOf(1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1)
-    val syms   = arrayOf("M","CM","D","CD","C","XC","L","XL","X","IX","V","IV","I")
-    var n      = this
-    val result = StringBuilder()
-    for (i in vals.indices) {
-        while (n >= vals[i]) { result.append(syms[i]); n -= vals[i] }
-    }
-    return result.toString()
-}
+fun Int.zeroPad(width: Int): String = toString().padStart(width, '0')
 
 /**
- * Parses a Roman numeral string to an [Int]. Case-insensitive.
- * Example: `"MMXXIV".fromRoman()` → `2024`
+ * Returns true if the number is even.
  */
-fun String.fromRoman(): Int {
-    val map = mapOf('I' to 1,'V' to 5,'X' to 10,'L' to 50,
-                    'C' to 100,'D' to 500,'M' to 1000)
-    val s = uppercase()
-    require(s.all { it in map.keys }) { "Invalid Roman numeral character" }
-    var result = 0
-    for (i in s.indices) {
-        val cur  = map[s[i]]!!
-        val next = if (i + 1 < s.length) map[s[i + 1]]!! else 0
-        result += if (cur < next) -cur else cur
-    }
-    require(result.toRoman() == s) { "Non-canonical Roman numeral: $s" }
-    return result
-}
+fun Int.isEven(): Boolean = this % 2 == 0
+
+/**
+ * Returns true if the number is odd.
+ */
+fun Int.isOdd(): Boolean = this % 2 != 0
+
+/**
+ * Safely divides by [divisor], returning [fallback] when [divisor] is zero.
+ * Example: `10.0.safeDivide(0.0)` → `0.0`
+ */
+fun Double.safeDivide(divisor: Double, fallback: Double = 0.0): Double =
+    if (divisor == 0.0) fallback else this / divisor

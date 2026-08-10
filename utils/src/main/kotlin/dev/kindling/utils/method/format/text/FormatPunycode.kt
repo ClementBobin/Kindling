@@ -1,4 +1,4 @@
-package dev.kindling.thod.format.text
+package dev.kindling.utils.method.format.text
 
 // ─── FormatPunycode ───────────────────────────────────────────────────────────
 // Pure-Kotlin Punycode encoder/decoder (RFC 3492) with IDN helpers.

@@ -1,4 +1,4 @@
-package dev.kindling.thod.format.unit
+package dev.kindling.utils.method.format.unit
 
 /** Converts m² to ft². */
 fun Double.sqMetersToSqFeet(): Double = this * 10.7639

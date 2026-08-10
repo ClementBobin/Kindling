@@ -97,19 +97,27 @@ fun String.hhMmSsToSeconds(): Long {
         valLong
     }
     
-    val totalSeconds = when (longs.size) {
-        3 -> {
-            require(longs[1] in 0..59 && longs[2] in 0..59) { "Minutes and seconds must be 0-59" }
-            longs[0] * 3600 + longs[1] * 60 + longs[2]
+    val totalSeconds = try {
+        val positiveSeconds = when (longs.size) {
+            3 -> {
+                require(longs[1] in 0..59 && longs[2] in 0..59) { "Minutes and seconds must be 0-59" }
+                val hSec = Math.multiplyExact(longs[0], 3600L)
+                val mSec = Math.multiplyExact(longs[1], 60L)
+                Math.addExact(hSec, Math.addExact(mSec, longs[2]))
+            }
+            2 -> {
+                require(longs[1] in 0..59) { "Minutes must be 0-59" }
+                Math.addExact(Math.multiplyExact(longs[0], 60L), longs[1])
+            }
+            1 -> longs[0]
+            else -> 0L
         }
-        2 -> {
-            require(longs[1] in 0..59) { "Minutes must be 0-59" }
-            longs[0] * 60 + longs[1]
-        }
-        1 -> longs[0]
-        else -> 0L
+        if (isNegative) Math.negateExact(positiveSeconds) else positiveSeconds
+    } catch (e: ArithmeticException) {
+        throw IllegalArgumentException("Duration value overflowed Long range", e)
     }
-    return if (isNegative) -totalSeconds else totalSeconds
+
+    return totalSeconds
 }
 
 /**

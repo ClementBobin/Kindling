@@ -90,4 +90,7 @@ fun Double.withTax(rate: Double): Double = this * (1.0 + rate)
  * Returns the pre-tax price from a tax-inclusive price.
  * Example: `120.0.withoutTax(0.20)` → `100.0`
  */
-fun Double.withoutTax(rate: Double): Double = this / (1.0 + rate)
+fun Double.withoutTax(rate: Double): Double {
+    require(rate.isFinite() && rate != -1.0) { "Rate must be finite and not equal to -1.0: $rate" }
+    return this / (1.0 + rate)
+}

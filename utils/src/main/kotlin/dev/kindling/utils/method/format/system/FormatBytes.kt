@@ -1,4 +1,4 @@
-package dev.kindling.mat.system
+package dev.kindling.utils.method.format.system
 
 // ─── FormatBytes ──────────────────────────────────────────────────────────────
 

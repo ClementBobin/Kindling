@@ -1,4 +1,4 @@
-package dev.kindling.thod.format.network
+package dev.kindling.utils.method.format.network
 
 /**
  * Categories for HTTP status codes based on their numeric range.
