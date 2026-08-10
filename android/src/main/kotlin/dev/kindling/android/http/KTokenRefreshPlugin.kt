@@ -1,6 +1,6 @@
 package dev.kindling.android.http
 
-import dev.kindling.utils.SingleFlight
+import dev.kindling.utils.method.SingleFlight
 import io.ktor.client.plugins.api.Send
 import io.ktor.client.plugins.api.createClientPlugin
 import io.ktor.client.request.HttpRequestBuilder
@@ -40,16 +40,16 @@ internal fun createTokenRefreshPlugin(
         val originalCall = proceed(request)
 
         if (originalCall.response.status != HttpStatusCode.Unauthorized) return@on originalCall
-        
+
         // Avoid infinite refresh loops
         if (request.attributes.contains(RefreshRetryKey)) return@on originalCall
-        
+
         val path = originalCall.response.request.url.encodedPath
         if (authPaths.any { path.endsWith(it) }) return@on originalCall
         if (!refresher.shouldRefresh()) return@on originalCall
 
         // SingleFlight ensures only one concurrent refresh call
-        val refreshed = refreshFlight.get {
+        val refreshed = refreshFlight.get("token_refresh") {
             runCatching { refresher.refresh() }
                 .onFailure { if (it is CancellationException) throw it }
                 .getOrElse { false }
