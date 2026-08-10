@@ -27,6 +27,7 @@ kotlin {
                 implementation(compose.animation)
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.coroutines}")
                 implementation(kotlin("stdlib"))
+                implementation(project(":utils"))
             }
         }
         val commonTest by getting {
