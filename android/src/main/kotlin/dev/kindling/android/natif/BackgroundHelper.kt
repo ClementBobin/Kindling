@@ -85,7 +85,7 @@ sealed class BackgroundMode {
         val notificationId: Int    = 1,
         val title: String,
         val text: String           = "",
-        @DrawableRes val icon: Int
+        @param:DrawableRes val icon: Int
     ) : BackgroundMode()
 }
 

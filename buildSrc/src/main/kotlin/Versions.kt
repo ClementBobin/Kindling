@@ -19,6 +19,7 @@ object Versions {
     const val camera                 = "1.6.1"
     const val playServicesLocation   = "21.3.0"
     const val biometric              = "1.1.0"
+    const val desugarJdkLibs         = "2.1.4"
 
     /**
      * Resolved at configuration time from the RELEASE_VERSION environment
