@@ -44,7 +44,7 @@ import kotlinx.coroutines.FlowPreview
  * @param leading  If `true`, emit the first value immediately and suppress
  *                 the rest until the quiet period elapses.  Default: `false`.
  */
-@OptIn(FlowPreview::class)
+@OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
 class Debouncer<T>(
     private val scope: CoroutineScope,
     val delay: Duration = 300.milliseconds,
@@ -80,7 +80,10 @@ class Debouncer<T>(
      */
     fun onDebounced(block: suspend (T) -> Unit) {
         callbackJob?.cancel()
-        callbackJob = CoroutineScope(SupervisorJob() + scope.coroutineContext).launch(start = CoroutineStart.UNDISPATCHED) {
+        _input.resetReplayCache()
+        val supervisor = SupervisorJob(scope.coroutineContext[Job])
+        callbackJob = supervisor
+        (scope + supervisor).launch {
             flow.collect { block(it) }
         }
     }
@@ -122,9 +125,15 @@ class Throttler<T>(
 
     fun emit(value: T) { _input.tryEmit(value) }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     fun onThrottled(block: suspend (T) -> Unit) {
         callbackJob?.cancel()
-        callbackJob = CoroutineScope(SupervisorJob() + scope.coroutineContext).launch(start = CoroutineStart.UNDISPATCHED) { flow.collect { block(it) } }
+        _input.resetReplayCache()
+        val supervisor = SupervisorJob(scope.coroutineContext[Job])
+        callbackJob = supervisor
+        (scope + supervisor).launch {
+            flow.collect { block(it) }
+        }
     }
 
     fun cancel() { callbackJob?.cancel(); callbackJob = null }
@@ -168,23 +177,15 @@ fun <T> throttle(
  * @param duration The quiet period after which the next value may be emitted.
  * @return A new [Flow] that emits debounced values.
  */
-fun <T> Flow<T>.debounceLeading(duration: Duration): Flow<T> = flow {
-    var lastEmitTime = 0L
-    var pendingJob: Job? = null
+fun <T> Flow<T>.debounceLeading(duration: Duration): Flow<T> = channelFlow {
+    var timerJob: Job? = null
 
     collect { value ->
-        val now = System.currentTimeMillis()
-        if (now - lastEmitTime >= duration.inWholeMilliseconds) {
-            pendingJob?.cancel()
-            lastEmitTime = now
-            emit(value)
-        } else {
-            pendingJob?.cancel()
-            pendingJob = currentCoroutineContext()[Job]?.let { null } // reset
-            // Schedule trailing emit after quiet period
-            delay(duration - (now - lastEmitTime).milliseconds)
-            emit(value)
-            lastEmitTime = System.currentTimeMillis()
+        if (timerJob == null || !timerJob!!.isActive) {
+            send(value)
+            timerJob = launch {
+                delay(duration)
+            }
         }
     }
 }

@@ -41,13 +41,13 @@ class CircularBuffer<T>(
         return d
     }
 
-    private val _state = MutableStateFlow(initialDeque())
+    private val _state = MutableStateFlow(initialDeque().toList())
 
     /**
      * Snapshot of all items as a [StateFlow] (oldest → newest).
      * Emits on every structural change.
      */
-    val state: StateFlow<ArrayDeque<T>> = _state.asStateFlow()
+    val state: StateFlow<List<T>> = _state.asStateFlow()
 
     /** Number of items currently in the buffer. */
     val size: Int get() = _state.value.size
@@ -66,7 +66,7 @@ class CircularBuffer<T>(
         val next = ArrayDeque(_state.value)
         if (next.size >= capacity) next.removeFirst()
         next.addLast(item)
-        _state.value = next
+        _state.value = next.toList()
     }
 
     /**
@@ -88,11 +88,11 @@ class CircularBuffer<T>(
     fun remove(item: T) {
         val next = ArrayDeque(_state.value)
         next.remove(item)
-        _state.value = next
+        _state.value = next.toList()
     }
 
     /** Removes all items from the buffer. */
-    fun clear() { _state.value = ArrayDeque() }
+    fun clear() { _state.value = emptyList() }
 
     override fun toString() = "CircularBuffer(capacity=$capacity, size=$size)"
 }
