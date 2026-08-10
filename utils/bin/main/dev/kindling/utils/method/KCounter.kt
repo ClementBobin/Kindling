@@ -26,7 +26,7 @@ import kotlinx.coroutines.flow.update
  * @param max          Upper bound, inclusive. Default: [Int.MAX_VALUE].
  * @param step         Amount added/subtracted on each increment/decrement. Default: 1.
  */
-class Counter(
+class KCounter(
     initialValue: Int = 0,
     val min: Int = Int.MIN_VALUE,
     val max: Int = Int.MAX_VALUE,

@@ -45,7 +45,7 @@ import kotlinx.coroutines.sync.withLock
  * guard.isLocked.collect { locked -> showSpinner(locked) }
  * ```
  */
-class MutexGuard {
+class KMutexGuard {
 
     private val mutex = Mutex()
 
@@ -113,7 +113,7 @@ class MutexGuard {
  * }
  * ```
  */
-class SingleFlight<T> {
+class KSingleFlight<T> {
     private val mutex = Mutex()
     private val inFlight = mutableMapOf<Any, Deferred<T>>()
 
