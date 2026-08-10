@@ -67,8 +67,8 @@ object TextDiff {
      * ```
      */
     fun diffLines(original: String, revised: String): List<DiffOperation> {
-        val a = original.lines()
-        val b = revised.lines()
+        val a = original.tokenizeLines()
+        val b = revised.tokenizeLines()
         return buildOps(a, b)
     }
 
@@ -149,24 +149,63 @@ object TextDiff {
         }.mergeAdjacent()
     }
 
-    /** Standard LCS via dynamic programming. */
+    /** Myers algorithm to find LCS. */
     private fun longestCommonSubsequence(a: List<String>, b: List<String>): List<String> {
-        val m = a.size; val n = b.size
-        val dp = Array(m + 1) { IntArray(n + 1) }
-        for (i in 1..m) for (j in 1..n) {
-            dp[i][j] = if (a[i - 1] == b[j - 1]) dp[i - 1][j - 1] + 1
-                       else maxOf(dp[i - 1][j], dp[i][j - 1])
-        }
-        val result = ArrayDeque<String>()
-        var i = m; var j = n
-        while (i > 0 && j > 0) {
-            when {
-                a[i - 1] == b[j - 1] -> { result.addFirst(a[i - 1]); i--; j-- }
-                dp[i - 1][j] >= dp[i][j - 1] -> i--
-                else -> j--
+        val n = a.size
+        val m = b.size
+        if (n == 0 || m == 0) return emptyList()
+
+        val max = n + m
+        val v = IntArray(2 * max + 1)
+        val trace = mutableListOf<IntArray>()
+
+        var found = false
+        for (d in 0..max) {
+            val vCopy = v.copyOf()
+            trace.add(vCopy)
+            for (k in -d..d step 2) {
+                var x = if (k == -d || (k != d && v[max + k - 1] < v[max + k + 1])) {
+                    v[max + k + 1]
+                } else {
+                    v[max + k - 1] + 1
+                }
+                var y = x - k
+                while (x < n && y < m && a[x] == b[y]) {
+                    x++
+                    y++
+                }
+                v[max + k] = x
+                if (x >= n && y >= m) {
+                    found = true
+                    break
+                }
             }
+            if (found) break
         }
-        return result.toList()
+
+        val lcs = mutableListOf<String>()
+        var x = n
+        var y = m
+        for (d in trace.size - 1 downTo 0) {
+            val vPrev = trace[d]
+            val k = x - y
+            val prevK = if (k == -d || (k != d && vPrev[max + k - 1] < vPrev[max + k + 1])) {
+                k + 1
+            } else {
+                k - 1
+            }
+            val prevX = vPrev[max + prevK]
+            val prevY = prevX - prevK
+
+            while (x > prevX && y > prevY) {
+                lcs.add(0, a[x - 1])
+                x--
+                y--
+            }
+            x = prevX
+            y = prevY
+        }
+        return lcs
     }
 
     /** Merges consecutive operations of the same type into a single token. */
@@ -192,6 +231,10 @@ object TextDiff {
     /** Splits on word boundaries, preserving all whitespace as separate tokens. */
     private fun tokenizeWords(text: String): List<String> =
         Regex("\\s+|\\S+").findAll(text).map { it.value }.toList()
+
+    /** Splits into lines while retaining line separators. */
+    private fun String.tokenizeLines(): List<String> =
+        Regex(".*\\R|.+").findAll(this).map { it.value }.toList()
 
     // ── HTML escaping ─────────────────────────────────────────────────────────
 

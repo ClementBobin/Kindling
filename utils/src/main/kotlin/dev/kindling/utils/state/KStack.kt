@@ -25,10 +25,10 @@ import kotlinx.coroutines.flow.asStateFlow
  */
 class KStack<T>(initialItems: List<T> = emptyList()) {
 
-    private val _state = MutableStateFlow(ArrayDeque<T>(initialItems.size).also { it.addAll(initialItems) })
+    private val _state = MutableStateFlow(initialItems.toList())
 
     /** Stack contents as a [StateFlow] (index 0 = bottom, last = top). */
-    val state: StateFlow<ArrayDeque<T>> = _state.asStateFlow()
+    val state: StateFlow<List<T>> = _state.asStateFlow()
 
     /** Number of items currently in the stack. */
     val size: Int get() = _state.value.size
@@ -38,7 +38,7 @@ class KStack<T>(initialItems: List<T> = emptyList()) {
 
     /** Pushes [item] onto the top of the stack. */
     fun push(item: T) {
-        _state.value = ArrayDeque(_state.value).also { it.addLast(item) }
+        _state.value = (_state.value + item)
     }
 
     /**
@@ -47,9 +47,8 @@ class KStack<T>(initialItems: List<T> = emptyList()) {
     fun pop(): T? {
         val current = _state.value
         if (current.isEmpty()) return null
-        val next = ArrayDeque(current)
-        val item = next.removeLast()
-        _state.value = next
+        val item = current.last()
+        _state.value = current.dropLast(1)
         return item
     }
 
@@ -57,7 +56,7 @@ class KStack<T>(initialItems: List<T> = emptyList()) {
     fun peek(): T? = _state.value.lastOrNull()
 
     /** Removes all items. */
-    fun clear() { _state.value = ArrayDeque() }
+    fun clear() { _state.value = emptyList() }
 
     override fun toString() = "KStack(size=$size, top=${peek()})"
 }

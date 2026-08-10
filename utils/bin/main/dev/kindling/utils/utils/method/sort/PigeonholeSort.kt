@@ -13,12 +13,17 @@ package dev.kindling.utilstils.method.sort
  */
 object PigeonholeSort {
 
+    /** Maximum range supported for pigeonhole sort to avoid excessive allocation. */
+    const val MAX_RANGE = 1_000_000
+
     fun sort(array: IntArray) {
         if (array.size < 2) return
 
         val min = array.min()
         val max = array.max()
-        val range = max - min + 1
+        val rangeLong = max.toLong() - min.toLong() + 1
+        require(rangeLong <= MAX_RANGE) { "Range $rangeLong exceeds MAX_RANGE $MAX_RANGE" }
+        val range = rangeLong.toInt()
 
         val holes = IntArray(range)
         for (v in array) holes[v - min]++
@@ -44,9 +49,10 @@ object PigeonholeSort {
         val keys = IntArray(array.size) { key(array[it]) }
         val min  = keys.min()
         val max  = keys.max()
-        val range = max - min + 1
+        val rangeLong = max.toLong() - min.toLong() + 1
+        require(rangeLong <= MAX_RANGE) { "Range $rangeLong exceeds MAX_RANGE $MAX_RANGE" }
+        val range = rangeLong.toInt()
 
-        @Suppress("UNCHECKED_CAST")
         val holes = Array<MutableList<T>>(range) { mutableListOf() }
         for (i in array.indices) holes[keys[i] - min].add(array[i])
 
@@ -63,7 +69,9 @@ object PigeonholeSort {
         val keys  = IntArray(list.size) { key(list[it]) }
         val min   = keys.min()
         val max   = keys.max()
-        val range = max - min + 1
+        val rangeLong = max.toLong() - min.toLong() + 1
+        require(rangeLong <= MAX_RANGE) { "Range $rangeLong exceeds MAX_RANGE $MAX_RANGE" }
+        val range = rangeLong.toInt()
 
         val holes = Array<MutableList<T>>(range) { mutableListOf() }
         for (i in list.indices) holes[keys[i] - min].add(list[i])

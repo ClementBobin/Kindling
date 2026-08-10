@@ -2,7 +2,7 @@ package dev.kindling.library.utils.method.sort
 
 /**
  * Enumerates every sorting algorithm available in the Kindling sort library
- * and provides a unified dispatch surface via [sort].
+ * and provides a unified dispatch surface via [Sorter.sort].
  *
  * Each entry documents its algorithmic characteristics so callers can make
  * an informed choice without consulting individual implementation files.
@@ -14,7 +14,7 @@ package dev.kindling.library.utils.method.sort
  *
  * val strings = arrayOf("banana", "apple", "cherry")
  * Sorter.sort(strings, SortType.INTRO)
- * Sorter.sort(strings, SortType.MERGE, compareByDescending { it.name })
+ * Sorter.sort(strings, SortType.MERGE, compareByDescending { it.length })
  * ```
  */
 enum class SortType {
@@ -81,7 +81,7 @@ enum class SortType {
     CYCLE,
 
     /**
-     * Tournament Sort — O(n log n) all cases.
+     * Tournament Sort — O(n²) all cases.
      *
      * Uses a tournament tree (winner tree) to find successive minima.
      * Similar in spirit to heap sort but with an explicit tree structure.

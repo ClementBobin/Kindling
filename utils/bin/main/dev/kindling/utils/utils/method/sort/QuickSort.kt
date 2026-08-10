@@ -46,17 +46,33 @@ object QuickSort {
     }
 
     private fun quickSort(array: IntArray, low: Int, high: Int) {
-        if (low >= high) return
-        val p = partition(array, low, high)
-        quickSort(array, low, p - 1)
-        quickSort(array, p + 1, high)
+        var l = low
+        var h = high
+        while (l < h) {
+            val p = partition(array, l, h)
+            if (p - l < h - p) {
+                quickSort(array, l, p - 1)
+                l = p + 1
+            } else {
+                quickSort(array, p + 1, h)
+                h = p - 1
+            }
+        }
     }
 
     private fun <T> quickSort(array: Array<T>, low: Int, high: Int, comparator: Comparator<T>) {
-        if (low >= high) return
-        val p = partition(array, low, high, comparator)
-        quickSort(array, low, p - 1, comparator)
-        quickSort(array, p + 1, high, comparator)
+        var l = low
+        var h = high
+        while (l < h) {
+            val p = partition(array, l, h, comparator)
+            if (p - l < h - p) {
+                quickSort(array, l, p - 1, comparator)
+                l = p + 1
+            } else {
+                quickSort(array, p + 1, h, comparator)
+                h = p - 1
+            }
+        }
     }
 
     /**

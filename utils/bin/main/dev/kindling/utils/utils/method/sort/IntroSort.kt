@@ -64,11 +64,7 @@ object IntroSort {
         if (high - low < 1) return
         when {
             high - low < INSERTION_THRESHOLD -> InsertionSort.sortRange(array, low, high)
-            depth == 0 -> {
-                val slice = array.copyOfRange(low, high + 1)
-                HeapSort.sort(slice)
-                slice.copyInto(array, low)
-            }
+            depth <= 0 -> HeapSort.sortRange(array, low, high + 1)
             else -> {
                 val p = QuickSort.partition(array, low, high)
                 introSort(array, low, p - 1, depth - 1)
@@ -90,11 +86,7 @@ object IntroSort {
         if (high - low < 1) return
         when {
             high - low < INSERTION_THRESHOLD -> InsertionSort.sortRange(array, low, high, comparator)
-            depth == 0 -> {
-                val slice = array.copyOfRange(low, high + 1)
-                HeapSort.sort(slice, comparator)
-                slice.copyInto(array, low)
-            }
+            depth <= 0 -> HeapSort.sortRange(array, low, high + 1, comparator)
             else -> {
                 val p = QuickSort.partition(array, low, high, comparator)
                 introSort(array, low, p - 1, depth - 1, comparator)
@@ -113,5 +105,8 @@ object IntroSort {
      * @param n number of elements to sort
      * @return  maximum permitted recursion depth
      */
-    private fun depthLimit(n: Int): Int = (2 * log2(n.toDouble())).toInt()
+    private fun depthLimit(n: Int): Int {
+        if (n <= 0) return 0
+        return (2 * log2(n.toDouble())).toInt()
+    }
 }

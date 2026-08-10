@@ -6,9 +6,9 @@ package dev.kindling.library.utils.method.sort
  * Uses a tournament tree to repeatedly select the smallest element.
  *
  * Time complexity:
- * - Best: O(n log n)
- * - Average: O(n log n)
- * - Worst: O(n log n)
+ * - Best: O(n²)
+ * - Average: O(n²)
+ * - Worst: O(n²)
  *
  * Space complexity:
  * - O(n)
@@ -40,119 +40,58 @@ object TournamentSort {
 
 
     private class TournamentTree<T>(
-        private val array: Array<T>,
+        array: Array<T>,
         private val comparator: Comparator<T>
     ) {
-
-        private val tree: IntArray = IntArray(array.size * 2)
-        private var root: Int
+        private val snapshot = array.copyOf()
+        private val tree: IntArray = IntArray(array.size * 4)
+        private val n = array.size
 
         init {
-            root = build(0, array.lastIndex, 1)
+            build(0, n - 1, 1)
         }
 
         fun pop(): T {
-            val index = winner(root)
-            root = rebuild(root)
-
-            return array[index]
+            val index = tree[1]
+            val result = snapshot[index]
+            update(1, 0, n - 1, index)
+            return result
         }
 
-
-        private fun build(
-            left: Int,
-            right: Int,
-            node: Int
-        ): Int {
-
+        private fun build(left: Int, right: Int, node: Int) {
             if (left == right) {
                 tree[node] = left
-                return node
+                return
             }
 
             val mid = left + (right - left) / 2
+            build(left, mid, node * 2)
+            build(mid + 1, right, node * 2 + 1)
 
-            val leftNode = build(
-                left,
-                mid,
-                node * 2
-            )
-
-            val rightNode = build(
-                mid + 1,
-                right,
-                node * 2 + 1
-            )
-
-            tree[node] = compare(
-                tree[leftNode],
-                tree[rightNode]
-            )
-
-            return node
+            tree[node] = compare(tree[node * 2], tree[node * 2 + 1])
         }
 
-
-        private fun rebuild(node: Int): Int {
-            val index = tree[node]
-
-            update(
-                node,
-                index
-            )
-
-            return node
-        }
-
-
-        private fun update(
-            node: Int,
-            removed: Int
-        ) {
-            if (node >= tree.size) return
-
-            if (tree[node] == removed) {
+        private fun update(node: Int, left: Int, right: Int, removed: Int) {
+            if (left == right) {
                 tree[node] = Int.MAX_VALUE
+                return
             }
 
-            val left = node * 2
-            val right = node * 2 + 1
-
-            if (left < tree.size) {
-                update(left, removed)
-                update(right, removed)
-
-                tree[node] = compare(
-                    tree[left],
-                    tree[right]
-                )
+            val mid = left + (right - left) / 2
+            if (removed <= mid) {
+                update(node * 2, left, mid, removed)
+            } else {
+                update(node * 2 + 1, mid + 1, right, removed)
             }
+
+            tree[node] = compare(tree[node * 2], tree[node * 2 + 1])
         }
 
-
-        private fun winner(node: Int): Int {
-            return tree[node]
-        }
-
-
-        private fun compare(
-            a: Int,
-            b: Int
-        ): Int {
-
+        private fun compare(a: Int, b: Int): Int {
             if (a == Int.MAX_VALUE) return b
             if (b == Int.MAX_VALUE) return a
 
-            return if (
-                comparator.compare(
-                    array[a],
-                    array[b]
-                ) <= 0
-            ) {
-                a
-            } else {
-                b
-            }
+            return if (comparator.compare(snapshot[a], snapshot[b]) <= 0) a else b
         }
     }
 }

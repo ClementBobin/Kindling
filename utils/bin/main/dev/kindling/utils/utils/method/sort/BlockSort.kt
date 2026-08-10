@@ -37,14 +37,26 @@ object BlockSort {
     private fun <T> mergeInPlace(
         array: Array<T>, left: Int, mid: Int, right: Int, comparator: Comparator<T>
     ) {
-        var start2 = mid + 1
-        if (comparator.compare(array[mid], array[start2]) <= 0) return
         var start1 = left
-        while (start1 <= mid && start2 <= right) {
-            if (comparator.compare(array[start1], array[start2]) <= 0) { start1++ } else {
-                val value = array[start2]; var index = start2
-                while (index != start1) { array[index] = array[index - 1]; index-- }
-                array[start1] = value; start1++; start2++
+        var start2 = mid + 1
+        var currentMid = mid
+
+        if (comparator.compare(array[currentMid], array[start2]) <= 0) return
+
+        while (start1 <= currentMid && start2 <= right) {
+            if (comparator.compare(array[start1], array[start2]) <= 0) {
+                start1++
+            } else {
+                val value = array[start2]
+                var index = start2
+                while (index != start1) {
+                    array[index] = array[index - 1]
+                    index--
+                }
+                array[start1] = value
+                start1++
+                start2++
+                currentMid++
             }
         }
     }
