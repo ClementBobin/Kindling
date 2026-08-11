@@ -243,18 +243,18 @@ enum class SortType {
 
     fun sort(array: IntArray) {
         when (this) {
-            COCKTAIL          -> CocktailSort.sort(array)
-            COMB              -> CombSort.sort(array)
-            GNOME             -> GnomeSort.sort(array)
-            CYCLE             -> CycleSort.sort(array)
-            MERGE             -> MergeSort.sort(array)
-            QUICK             -> QuickSort.sort(array)
-            QUICK_ITERATIVE   -> QuickSortIterative.sort(array)
-            INTRO             -> IntroSort.sort(array)
-            RADIX             -> RadixSort.sort(array)
-            BUCKET            -> BucketSort.sort(array)
-            PIGEONHOLE        -> PigeonholeSort.sort(array)
-            else              -> throw UnsupportedOperationException(
+            COCKTAIL           -> CocktailSort.sort(array)
+            COMB               -> CombSort.sort(array)
+            GNOME              -> GnomeSort.sort(array)
+            CYCLE              -> CycleSort.sort(array)
+            MERGE              -> MergeSort.sort(array)
+            QUICK              -> QuickSort.sort(array)
+            QUICK_ITERATIVE    -> QuickSortIterative.sort(array)
+            INTRO              -> IntroSort.sort(array)
+            RADIX              -> RadixSort.sort(array)
+            BUCKET             -> BucketSort.sort(array)
+            PIGEONHOLE         -> PigeonholeSort.sort(array)
+            else               -> throw UnsupportedOperationException(
                 "$this sort does not support IntArray — use Array<T> overload"
             )
         }
@@ -267,34 +267,32 @@ enum class SortType {
     @Suppress("CyclomaticComplexMethod")
     fun <T> sort(array: Array<T>, comparator: Comparator<T>) {
         when (this) {
-            BUBBLE            -> BubbleSort.sort(array, comparator)
-            RECURSIVE_BUBBLE  -> RecursiveBubbleSort.sort(array, comparator)
-            COCKTAIL          -> CocktailSort.sort(array, comparator)
-            COMB              -> CombSort.sort(array, comparator)
-            GNOME             -> GnomeSort.sort(array, comparator)
-            SELECTION         -> SelectionSort.sort(array, comparator)
-            CYCLE             -> CycleSort.sort(array, comparator)
-            TOURNAMENT        -> TournamentSort.sort(array, comparator)
-            INSERTION         -> InsertionSort.sort(array, comparator)
-            BINARY_INSERTION  -> BinaryInsertionSort.sort(array, comparator)
-            SHELL             -> ShellSort.sort(array, comparator)
-            MERGE             -> MergeSort.sort(array, comparator)
-            TIM               -> TimSort.sort(array, comparator)
-            BLOCK             -> BlockSort.sort(array, comparator)
-            QUICK             -> QuickSort.sort(array, comparator)
-            QUICK_ITERATIVE   -> QuickSortIterative.sort(array, comparator)
-            THREE_WAY_QUICK   -> ThreeWayQuickSort.sort(array, comparator)
-            INTRO             -> IntroSort.sort(array, comparator)
-            RADIX             -> RadixSort.sort(array, comparator)
-            COUNTING          -> throw UnsupportedOperationException(
-                "COUNTING sort does not support Array<T> — use IntArray overload"
-            )
-            BUCKET            -> BucketSort.sort(array, comparator)
-            PIGEONHOLE        -> throw UnsupportedOperationException(
+            BUBBLE             -> BubbleSort.sort(array, comparator)
+            RECURSIVE_BUBBLE   -> RecursiveBubbleSort.sort(array, comparator)
+            COCKTAIL           -> CocktailSort.sort(array, comparator)
+            COMB               -> CombSort.sort(array, comparator)
+            GNOME              -> GnomeSort.sort(array, comparator)
+            SELECTION          -> SelectionSort.sort(array, comparator)
+            CYCLE              -> CycleSort.sort(array, comparator)
+            TOURNAMENT         -> TournamentSort.sort(array, comparator)
+            INSERTION          -> InsertionSort.sort(array, comparator)
+            BINARY_INSERTION   -> BinaryInsertionSort.sort(array, comparator)
+            SHELL              -> ShellSort.sort(array, comparator)
+            MERGE              -> MergeSort.sort(array, comparator)
+            TIM                -> TimSort.sort(array, comparator)
+            BLOCK              -> BlockSort.sort(array, comparator)
+            QUICK              -> QuickSort.sort(array, comparator)
+            QUICK_ITERATIVE    -> QuickSortIterative.sort(array, comparator)
+            THREE_WAY_QUICK    -> ThreeWayQuickSort.sort(array, comparator)
+            INTRO              -> IntroSort.sort(array, comparator)
+            RADIX              -> RadixSort.sort(array, comparator)
+            COUNTING           -> CountingSort.sort(array, comparator)
+            BUCKET             -> BucketSort.sort(array, comparator)
+            PIGEONHOLE         -> throw UnsupportedOperationException(
                 "PIGEONHOLE sort does not support Array<T> — use IntArray overload"
             )
-            STALIN            -> StalinSort.sort(array, comparator)
-            BOGO              -> BogoSort.sort(array, comparator)
+            STALIN             -> StalinSort.sort(array, comparator)
+            BOGO               -> BogoSort.sort(array, comparator)
         }
     }
 }

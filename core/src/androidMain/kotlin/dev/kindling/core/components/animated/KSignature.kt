@@ -23,7 +23,7 @@ import kotlinx.coroutines.delay
 // ─── Defaults ─────────────────────────────────────────────────────────────────
 
 object KSignatureDefaults {
-    val color: Color = Color.Black
+    val FontColor: Color = Color.Black
     const val DurationMs: Int = 1500
     const val DelayMs: Int = 0
     val Height: Dp = 80.dp
@@ -48,7 +48,7 @@ fun KSignature(
     text: String,
     modifier: Modifier = Modifier,
     visible: Boolean = true,
-    color: Color = KSignatureDefaults.color,
+    color: Color = KSignatureDefaults.FontColor,
     height: Dp = KSignatureDefaults.Height,
     durationMs: Int = KSignatureDefaults.DurationMs,
     delayMs: Int = KSignatureDefaults.DelayMs

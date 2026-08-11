@@ -26,6 +26,8 @@ kotlin {
                 implementation(compose.ui)
                 implementation(compose.animation)
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.coroutines}")
+                implementation("io.coil-kt.coil3:coil-compose:${Versions.coil}")
+                implementation("io.coil-kt.coil3:coil-network-okhttp:${Versions.coil}")
                 implementation(kotlin("stdlib"))
             }
         }

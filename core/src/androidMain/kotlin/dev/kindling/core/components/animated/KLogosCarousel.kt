@@ -15,9 +15,12 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.SubcomposeLayout
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import dev.kindling.utils.method.KCounter
 
 data class KLogo(
@@ -43,11 +46,24 @@ fun KDefaultLogoItem(
     logoHeight: Dp,
     colorFilter: ColorFilter?
 ) {
+    val context = LocalContext.current
+    val model = logo.url ?: logo.resId
+
     Box(
         modifier = Modifier.height(logoHeight),
         contentAlignment = Alignment.Center
     ) {
-        // Default logo rendering placeholder
+        if (model != null) {
+            AsyncImage(
+                model = ImageRequest.Builder(context)
+                    .data(model)
+                    .crossfade(true)
+                    .build(),
+                contentDescription = logo.alt.ifEmpty { null },
+                colorFilter = colorFilter,
+                modifier = Modifier.fillMaxHeight()
+            )
+        }
     }
 }
 

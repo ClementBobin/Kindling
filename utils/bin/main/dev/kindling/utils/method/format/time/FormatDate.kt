@@ -1,6 +1,6 @@
 @file:Suppress("TooManyFunctions")
 
-package dev.kindling.thod.format.time
+package dev.kindling.utils.method.format.time 
 
 import kotlinx.datetime.*
 import kotlinx.datetime.format.*

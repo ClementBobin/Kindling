@@ -12,6 +12,7 @@ private const val DAMP = 700
 private const val INITIAL_BIAS = 72
 private const val INITIAL_N = 128
 private const val DELIMITER = '-'
+private const val MAX_CODE_POINT = 0x10FFFF
 
 private fun adapt(delta: Int, numPoints: Int, firstTime: Boolean): Int {
     var d = if (firstTime) delta / DAMP else delta / 2
@@ -102,8 +103,17 @@ fun String.decodePunycode(): String {
         var w = 1
         var k = BASE
         while (true) {
-            if (pos >= input.length) break
-            val d = charToDigit(input[pos++])
+            if (pos >= input.length) {
+                throw IllegalArgumentException("Invalid Punycode: unexpected end of input")
+            }
+            val digitChar = input[pos++]
+            val d = charToDigit(digitChar)
+            if (d == BASE || d >= BASE) {
+                throw IllegalArgumentException("Invalid Punycode digit: $digitChar")
+            }
+            if (d > (Int.MAX_VALUE - i) / w) {
+                throw IllegalArgumentException("Punycode overflow")
+            }
             i += d * w
             val t = when {
                 k <= bias -> TMIN
@@ -111,12 +121,22 @@ fun String.decodePunycode(): String {
                 else -> k - bias
             }
             if (d < t) break
+            if (w > Int.MAX_VALUE / (BASE - t)) {
+                throw IllegalArgumentException("Punycode overflow")
+            }
             w *= BASE - t
             k += BASE
         }
         bias = adapt(i - oldI, output.size + 1, oldI == 0)
-        n += i / (output.size + 1)
-        i %= output.size + 1
+        val addedSize = output.size + 1
+        if (i / addedSize > MAX_CODE_POINT - n) {
+            throw IllegalArgumentException("Punycode code point out of range")
+        }
+        n += i / addedSize
+        i %= addedSize
+        if (n < 0 || n > MAX_CODE_POINT) {
+            throw IllegalArgumentException("Invalid code point: $n")
+        }
         output.add(i, n)
         i++
     }

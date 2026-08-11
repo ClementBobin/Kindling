@@ -13,8 +13,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.cacheDraw
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.Shape
@@ -54,7 +54,7 @@ data class UploadFile(
     val progress: Float = 0f, // 0.0f .. 1.0f
 )
 
-// ─── Dashed Border Modifier ──────────────────────────────────────────────────
+// ─── Dashed Border Modifier ────────────────────────────────────────────────--
 
 /**
  * Draws a dashed border around a composable using custom stroke parameters.
@@ -65,8 +65,7 @@ fun Modifier.dashedBorder(
     strokeWidth: Dp = 1.dp,
     dashWidth: Dp = 6.dp,
     gapWidth: Dp = 4.dp
-): Modifier = this.drawWithContent {
-    drawContent()
+): Modifier = this.cacheDraw {
     val strokeWidthPx = strokeWidth.toPx()
     val dashWidthPx = dashWidth.toPx()
     val gapWidthPx = gapWidth.toPx()
@@ -79,17 +78,20 @@ fun Modifier.dashedBorder(
             is androidx.compose.ui.graphics.Outline.Generic -> addPath(outline.path)
         }
     }
-    drawPath(
-        path = path,
-        color = color,
-        style = Stroke(
-            width = strokeWidthPx,
-            pathEffect = PathEffect.dashPathEffect(
-                floatArrayOf(dashWidthPx, gapWidthPx),
-                0f
+    onDrawWithContent {
+        drawContent()
+        drawPath(
+            path = path,
+            color = color,
+            style = Stroke(
+                width = strokeWidthPx,
+                pathEffect = PathEffect.dashPathEffect(
+                    floatArrayOf(dashWidthPx, gapWidthPx),
+                    0f
+                )
             )
         )
-    )
+    }
 }
 
 // ─── KDropzone (Container) ───────────────────────────────────────────────────

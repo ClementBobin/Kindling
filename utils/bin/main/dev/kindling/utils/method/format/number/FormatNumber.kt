@@ -34,8 +34,9 @@ fun Int.toThousands(): String = toLong().toThousands()
  */
 fun Double.toThousands(decimals: Int = 2): String {
     require(decimals >= 0) { "decimals must be non-negative" }
+    if (!this.isFinite()) return this.toString()
     val formatted = String.format(java.util.Locale.US, "%.${decimals}f", this)
-    val parts     = formatted.split(".")
+    val parts    = formatted.split(".")
     val intPart   = parts[0].trimStart('-').reversed().chunked(3).joinToString(",").reversed()
     val signed    = if (this < 0) "-$intPart" else intPart
     return if (parts.size > 1) "$signed.${parts[1]}" else signed
@@ -47,6 +48,7 @@ fun Double.toThousands(decimals: Int = 2): String {
  */
 fun Double.toCompact(decimals: Int = 1): String {
     require(decimals >= 0) { "decimals must be non-negative" }
+    if (!this.isFinite()) return this.toString()
     val abs = kotlin.math.abs(this)
     val sign = if (this < 0) "-" else ""
 
