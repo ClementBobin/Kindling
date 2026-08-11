@@ -27,7 +27,7 @@ import kotlinx.coroutines.flow.asStateFlow
  * @param initialItems Optional items to pre-populate (oldest first).
  *                     Items beyond [capacity] are trimmed from the front.
  */
-class CircularBuffer<T>(
+class KCircularBuffer<T>(
     val capacity: Int,
     private val initialItems: List<T> = emptyList(), 
 ) {

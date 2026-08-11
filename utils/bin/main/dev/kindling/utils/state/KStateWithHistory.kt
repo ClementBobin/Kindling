@@ -28,7 +28,7 @@ import kotlinx.coroutines.flow.asStateFlow
  * @param defaultValue Initial value pushed into history.
  * @param capacity     Maximum number of history entries retained. Default: 10.
  */
-class StateWithHistory<T>(
+class KStateWithHistory<T>(
     defaultValue: T,
     private val capacity: Int = 10,
 ) {

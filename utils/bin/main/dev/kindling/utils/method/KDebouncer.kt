@@ -45,7 +45,7 @@ import kotlinx.coroutines.FlowPreview
  *                 the rest until the quiet period elapses.  Default: `false`.
  */
 @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
-class Debouncer<T>(
+class KDebouncer<T>(
     private val scope: CoroutineScope,
     val delay: Duration = 300.milliseconds,
     val leading: Boolean = false
@@ -112,7 +112,7 @@ class Debouncer<T>(
  * throttler.emit(ClickEvent)
  * ```
  */
-class Throttler<T>(
+class KThrottler<T>(
     private val scope: CoroutineScope,
     val period: Duration = 500.milliseconds
 ) {
@@ -151,12 +151,12 @@ class Throttler<T>(
  * // in UI: onValueChange = { searchDebouncer.emit(it) }
  * ```
  */
-fun <T> debounce(
+fun <T> Kdebounce(
     scope: CoroutineScope,
     delay: Duration = 300.milliseconds,
     leading: Boolean = false,
     block: suspend (T) -> Unit
-): Debouncer<T> = Debouncer<T>(scope, delay, leading).also { it.onDebounced(block) }
+): KDebouncer<T> = KDebouncer<T>(scope, delay, leading).also { it.onDebounced(block) }
 
 /**
  * Creates a [Throttler] and immediately registers a callback.
@@ -165,11 +165,11 @@ fun <T> debounce(
  * private val clickThrottler = throttle(viewModelScope, 500.milliseconds) { handleClick() }
  * ```
  */
-fun <T> throttle(
+fun <T> Kthrottle(
     scope: CoroutineScope,
     period: Duration = 500.milliseconds,
     block: suspend (T) -> Unit
-): Throttler<T> = Throttler<T>(scope, period).also { it.onThrottled(block) }
+): KThrottler<T> = KThrottler<T>(scope, period).also { it.onThrottled(block) }
 
 /**
  * Leading-edge debounce for [Flow] values.

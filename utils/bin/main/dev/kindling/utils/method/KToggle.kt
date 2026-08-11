@@ -21,7 +21,7 @@ import kotlinx.coroutines.flow.asStateFlow
  *
  * @param defaultValue Initial state. Default: `false`.
  */
-class Toggle(defaultValue: Boolean = false) {
+class KToggle(defaultValue: Boolean = false) {
 
     private val _state = MutableStateFlow(defaultValue)
 

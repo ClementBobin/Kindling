@@ -46,7 +46,7 @@ import kotlin.random.Random
  * @param onSuccess      Optional callback invoked once with the successful value.
  * @param onError        Optional callback invoked after each failed attempt.
  */
-class RetryRunner<T>(
+class KRetryRunner<T>(
     private val scope: CoroutineScope,
     val retries: Int = 3,
     val delay: Duration = 250.milliseconds,
