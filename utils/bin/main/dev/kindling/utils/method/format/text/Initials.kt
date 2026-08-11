@@ -8,7 +8,7 @@ package dev.kindling.utils.method.format.text
  */
 fun String.toInitials(maxLetters: Int = 3): String =
     trim()
-        .split(Regex("[\\s\\-]+"))
+        .split(Regex("\\s+"))
         .filter { it.isNotBlank() }
         .take(maxLetters)
         .mapNotNull { it.firstOrNull()?.uppercaseChar() }

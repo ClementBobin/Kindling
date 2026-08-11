@@ -9,6 +9,7 @@ package dev.kindling.utils.method.format.system
  * Example: `1_572_864L.bytesToHuman()` → `"1.5 MiB"`
  */
 fun Long.bytesToHuman(decimals: Int = 1): String {
+    require(decimals >= 0) { "Decimals must be non-negative" }
     val units = listOf("B", "KiB", "MiB", "GiB", "TiB", "PiB")
     var value = toDouble()
     var index = 0
@@ -29,6 +30,7 @@ fun Int.bytesToHuman(decimals: Int = 1): String = toLong().bytesToHuman(decimals
  * Example: `1_500_000L.bytesToHumanSi()` → `"1.5 MB"`
  */
 fun Long.bytesToHumanSi(decimals: Int = 1): String {
+    require(decimals >= 0) { "Decimals must be non-negative" }
     val units = listOf("B", "KB", "MB", "GB", "TB", "PB")
     var value = toDouble()
     var index = 0
@@ -76,4 +78,4 @@ fun Long.diskUsageLabel(total: Long): String =
  * Example: `(3L * 1024).usageRatio(10L * 1024)` → `30.0`
  */
 fun Long.usageRatio(total: Long): Double =
-    if (total <= 0L) 0.0 else (this.toDouble() / total.toDouble()) * 100.0
+    if (total <= 0L) 0.0 else ((this.toDouble() / total.toDouble()) * 100.0).coerceIn(0.0, 100.0)

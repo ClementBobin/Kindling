@@ -1,5 +1,5 @@
 object Versions {
-    const val kotlin                = "2.2.0"
+    const val kotlin                = "2.4.0"
     const val jvmTarget             = "17"
     const val group                 = "io.github.clementbobin.kindling"
     const val dokka                 = "2.2.0"
@@ -10,7 +10,8 @@ object Versions {
     const val navigationCompose     = "2.9.8"
     const val lifecycle             = "2.10.0"
     const val koin                  = "4.2.1"
-    const val ktor                   = "2.3.12"
+    const val ktor                  = "2.3.12"
+    const val coil                  = "3.5.0"
 
     // AndroidX / Google
     const val annotationJvm          = "1.10.0"

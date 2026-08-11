@@ -1,9 +1,9 @@
 {
   "name": "Android Kotlin Dev Environment",
-  "image": "mcr.microsoft.com/devcontainers/java:1-21-bullseye",
+  "image": "mcr.microsoft.com/devcontainers/java:1-23-bullseye",
   "features": {
     "ghcr.io/devcontainers/features/java:1": {
-      "version": "21",
+      "version": "23",
       "jdkDistribution": "ms",
       "gradleVersion": "latest"
     }

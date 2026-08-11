@@ -49,7 +49,7 @@ fun KMasonryGrid(
     SubcomposeLayout(modifier = modifier.fillMaxWidth()) { constraints ->
         val containerWidth = constraints.maxWidth
         if (containerWidth <= 0) {
-            return@subcomposeLayout layout(0, 0) {}
+            return@SubcomposeLayout layout(0, 0) {}
         }
 
         val gapPx = gap.roundToPx()

@@ -1,7 +1,7 @@
 package dev.kindling.android.http
 
-import dev.kindling.utils.CircularBuffer
-import dev.kindling.utils.KMap
+import dev.kindling.utils.state.KCircularBuffer
+import dev.kindling.utils.state.KMap
 import io.ktor.client.HttpClient
 import io.ktor.client.call.HttpClientCall
 import io.ktor.client.engine.mock.MockEngine
@@ -63,7 +63,7 @@ internal data class KCacheEntry(
 internal fun createCachePlugin(config: KCacheConfig) =
     createClientPlugin("KCache") {
 
-        val keyBuffer = CircularBuffer<String>(capacity = config.maxEntries)
+        val keyBuffer = KCircularBuffer<String>(capacity = config.maxEntries)
         val store     = KMap<String, KCacheEntry>()
         val mutex     = Mutex()
 

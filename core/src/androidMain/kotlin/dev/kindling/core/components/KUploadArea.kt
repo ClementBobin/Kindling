@@ -13,8 +13,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.Shape
@@ -54,7 +54,7 @@ data class UploadFile(
     val progress: Float = 0f, // 0.0f .. 1.0f
 )
 
-// ─── Dashed Border Modifier ──────────────────────────────────────────────────
+// ─── Dashed Border Modifier ────────────────────────────────────────────────--
 
 /**
  * Draws a dashed border around a composable using custom stroke parameters.
@@ -66,14 +66,22 @@ fun Modifier.dashedBorder(
     dashWidth: Dp = 6.dp,
     gapWidth: Dp = 4.dp
 ): Modifier = this.drawWithContent {
-    drawContent()
     val strokeWidthPx = strokeWidth.toPx()
     val dashWidthPx = dashWidth.toPx()
     val gapWidthPx = gapWidth.toPx()
 
     val outline = shape.createOutline(size, layoutDirection, this)
-    drawOutline(
-        outline = outline,
+    val path = androidx.compose.ui.graphics.Path().apply {
+        when (outline) {
+            is androidx.compose.ui.graphics.Outline.Rectangle -> addRect(outline.rect)
+            is androidx.compose.ui.graphics.Outline.Rounded   -> addRoundRect(outline.roundRect)
+            is androidx.compose.ui.graphics.Outline.Generic   -> addPath(outline.path)
+        }
+    }
+
+    drawContent()
+    drawPath(
+        path = path,
         color = color,
         style = Stroke(
             width = strokeWidthPx,
@@ -215,7 +223,7 @@ private fun resolveFileIcon(fileName: String, mimeType: String?): ImageVector {
         type.contains("pdf") || ext == "pdf" -> Icons.Outlined.PictureAsPdf
         type.contains("zip") || type.contains("compressed") || ext in listOf("zip", "tar", "gz", "7z", "rar") -> Icons.Outlined.FolderZip
         ext in listOf("kt", "java", "ts", "js", "html", "css", "json", "xml") -> Icons.Outlined.Code
-        else -> Icons.Outlined.InsertDriveFile
+        else -> Icons.Outlined.Description
     }
 }
 
@@ -283,7 +291,7 @@ fun KFileItem(
                     Text(
                         text = when (file.status) {
                             is UploadStatus.Uploading -> "${(animatedProgress * 100).toInt()}% • ${file.sizeBytes.bytesToHuman()}"
-                            is UploadStatus.Error -> (file.status as UploadStatus.Error).message
+                            is UploadStatus.Error -> (file.status).message
                             is UploadStatus.Success -> "Completed • ${file.sizeBytes.bytesToHuman()}"
                             is UploadStatus.Idle -> file.sizeBytes.bytesToHuman()
                         },

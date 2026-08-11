@@ -15,10 +15,57 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.SubcomposeLayout
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
+import coil3.compose.LocalPlatformContext
+import coil3.request.ImageRequest
 import dev.kindling.utils.method.KCounter
+
+data class KLogo(
+    val url: String? = null,
+    val resId: Int? = null,
+    val alt: String = ""
+)
+
+enum class KLogosCarouselDirection {
+    FORWARD, BACKWARD
+}
+
+object KLogosCarouselDefaults {
+    val Velocity: Dp = 50.dp
+    val Spacing: Dp = 24.dp
+    val LogoHeight: Dp = 32.dp
+    val FadeWidth: Dp = 48.dp
+}
+
+@Composable
+fun KDefaultLogoItem(
+    logo: KLogo,
+    logoHeight: Dp,
+    colorFilter: ColorFilter?
+) {
+    val context = LocalPlatformContext.current  // ← à la place de LocalContext.current
+    val model = logo.url ?: logo.resId
+
+    Box(
+        modifier = Modifier.height(logoHeight),
+        contentAlignment = Alignment.Center
+    ) {
+        if (model != null) {
+            AsyncImage(
+                model = ImageRequest.Builder(context)  // ← même API, contexte multiplateforme
+                    .data(model)
+                    .build(),
+                contentDescription = logo.alt.ifEmpty { null },
+                colorFilter = colorFilter,
+                modifier = Modifier.fillMaxHeight()
+            )
+        }
+    }
+}
 
 @Composable
 fun KLogosCarousel(

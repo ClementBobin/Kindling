@@ -37,15 +37,16 @@ import kotlin.random.Random
  * runner.value.collect { v -> if (v != null) render(v) }
  * ```
  *
- * @param T              The result type of the async operation.
- * @param scope          [CoroutineScope] that owns retry jobs.
- * @param retries        Maximum number of *additional* attempts after the first. Default: 3.
- * @param delay          Initial wait between attempts. Default: 250 ms.
- * @param backoffFactor  Multiplier applied to the delay after each failure. Default: 2.0.
- * @param maxDelay       Ceiling on the computed delay. Default: 10 s.
- * @param onSuccess      Optional callback invoked once with the successful value.
- * @param onError        Optional callback invoked after each failed attempt.
+ * @param T             The result type of the async operation.
+ * @param scope         [CoroutineScope] that owns retry jobs.
+ * @param retries       Maximum number of *additional* attempts after the first. Default: 3.
+ * @param delay         Initial wait between attempts. Default: 250 ms.
+ * @param backoffFactor Multiplier applied to the delay after each failure. Default: 2.0.
+ * @param maxDelay      Ceiling on the computed delay. Default: 10 s.
+ * @param onSuccess     Optional callback invoked once with the successful value.
+ * @param onError       Optional callback invoked after each failed attempt.
  */
+@Suppress("LongParameterList")
 class KRetryRunner<T>(
     private val scope: CoroutineScope,
     val retries: Int = 3,
@@ -81,13 +82,13 @@ class KRetryRunner<T>(
      *
      * Any previously running job is cancelled first.
      */
+    @Suppress("TooGenericExceptionCaught")
     suspend fun run(block: suspend () -> T): T {
-        var lastError: Throwable? = null
-
         _isLoading.value = true
         _error.value = null
         _attempt.value = 0
 
+        var lastError: Throwable? = null
         try {
             for (i in 0..retries) {
                 _attempt.value = i + 1
@@ -104,20 +105,24 @@ class KRetryRunner<T>(
                     _error.value = e
                     onError?.invoke(e)
                     if (i < retries) {
-                        val baseDelay = delay.inWholeMilliseconds * backoffFactor.pow(i)
-                        val jitter = Random.nextLong(0, (baseDelay * 0.1).toLong().coerceAtLeast(1))
-                        val nextDelay = minOf(
-                            maxDelay.inWholeMilliseconds,
-                            (baseDelay + jitter).toLong()
-                        ).milliseconds
-                        kotlinx.coroutines.delay(nextDelay)
+                        delayForNextAttempt(i)
                     }
                 }
             }
-            throw lastError!!
+            throw requireNotNull(lastError)
         } finally {
             _isLoading.value = false
         }
+    }
+
+    private suspend fun delayForNextAttempt(i: Int) {
+        val baseDelay = delay.inWholeMilliseconds * backoffFactor.pow(i)
+        val jitter = Random.nextLong(0, (baseDelay * 0.1).toLong().coerceAtLeast(1))
+        val nextDelay = minOf(
+            maxDelay.inWholeMilliseconds,
+            (baseDelay + jitter).toLong()
+        ).milliseconds
+        kotlinx.coroutines.delay(nextDelay)
     }
 
     /**

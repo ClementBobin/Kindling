@@ -1,6 +1,6 @@
 package dev.kindling.android.http
 
-import dev.kindling.utils.method.SingleFlight
+import dev.kindling.utils.method.KSingleFlight
 import io.ktor.client.plugins.api.Send
 import io.ktor.client.plugins.api.createClientPlugin
 import io.ktor.client.request.HttpRequestBuilder
@@ -21,7 +21,7 @@ internal val RefreshRetryKey = AttributeKey<Boolean>("KTokenRefreshRetry")
  * Ktor client plugin that intercepts 401 responses on protected routes and
  * automatically attempts a token refresh before retrying the original request.
  *
- * Concurrency is handled by [SingleFlight] from `kindling-utils`:
+ * Concurrency is handled by [KSingleFlight] from `kindling-utils`:
  * multiple simultaneous 401s trigger exactly one refresh call — all waiters
  * share the result rather than stampeding the refresh endpoint.
  */
@@ -30,7 +30,7 @@ internal fun createTokenRefreshPlugin(
     authPaths: List<String>,
 ) = createClientPlugin("KTokenRefresh") {
 
-    val refreshFlight = SingleFlight<Boolean>()
+    val refreshFlight = KSingleFlight<Boolean>()
 
     if (refresher is KDefaultTokenRefresher) {
         refresher.httpClient = client
