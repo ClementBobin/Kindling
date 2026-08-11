@@ -40,5 +40,10 @@ kotlin {
                 implementation(compose.desktop.currentOs)
             }
         }
+        val androidMain by getting {
+            dependencies {
+                implementation(project(":utils"))
+            }
+        }
     }
 }
