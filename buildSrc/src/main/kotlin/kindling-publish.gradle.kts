@@ -13,6 +13,7 @@
  */
 plugins {
     id("com.vanniktech.maven.publish")
+    id("dev.composedoctor")
 }
 
 afterEvaluate {
