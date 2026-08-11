@@ -1,12 +1,14 @@
-rootProject.name = "kindling"
-
 pluginManagement {
     repositories {
-        google()
         gradlePluginPortal()
+        google()
         mavenCentral()
         maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
     }
+}
+
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
 
 dependencyResolutionManagement {
@@ -19,4 +21,10 @@ dependencyResolutionManagement {
     versionCatalogs { create("libs") }
 }
 
-include(":core", ":utils", ":compose", ":android", ":sample")
+rootProject.name = "kindling"
+
+include(":core", ":utils", ":compose", ":android")
+
+if (System.getenv("JITPACK") == null) {
+    include(":sample")
+}

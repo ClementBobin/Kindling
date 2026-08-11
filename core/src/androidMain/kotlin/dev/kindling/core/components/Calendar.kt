@@ -33,8 +33,8 @@ import java.util.Locale
 
 sealed interface KCalendarLocale {
     data class Standard(val locale: Locale = Locale.getDefault()) : KCalendarLocale
-    data class Persian(val locale: Locale = Locale("fa", "IR"))   : KCalendarLocale
-    data class Hijri(val locale: Locale = Locale("ar", "SA"))     : KCalendarLocale
+    data class Persian(val locale: Locale = Locale.forLanguageTag("fa-IR")) : KCalendarLocale
+    data class Hijri(val locale: Locale = Locale.forLanguageTag("ar-SA"))   : KCalendarLocale
 }
 
 // ─────────────────────────────────────────────
@@ -70,7 +70,7 @@ data class KCalendarPreset(val label: String, val date: LocalDate)
  *
  * // RTL override
  * KCalendar(selected = date, onSelectSingle = { date = it },
- *           layoutDirection = LayoutDirection.Rtl)
+ *            layoutDirection = LayoutDirection.Rtl)
  * ```
  */
 @Composable
@@ -375,7 +375,7 @@ private fun CalendarDayCellInternal(
     val isRangeEnd       = mode is KCalendarMode.Range  && date == selectedRange.to
     val isRangeMiddle    = mode is KCalendarMode.Range
             && selectedRange.from != null && selectedRange.to != null
-            && date > selectedRange.from!! && date < selectedRange.to!!
+            && date > selectedRange.from && date < selectedRange.to
 
     KCalendarDayButton(
         date          = date,
@@ -589,7 +589,7 @@ private fun CalendarPresetRow(
 }
 
 // ─────────────────────────────────────────────
-//  Calendar adapter (unchanged internals)
+//  Calendar adapter (updated signatures)
 // ─────────────────────────────────────────────
 
 data class CalMonth(val year: Int, val month: Int)
@@ -634,8 +634,8 @@ internal class GregorianAdapter(val locale: Locale) : CalendarAdapter {
             .getDisplayName(JTextStyle.FULL, locale).replaceFirstChar { it.uppercase() }
         return "$name ${m.year}"
     }
-    override fun weekdayNarrow(i: Int) =
-        DayOfWeek.of(i + 1).getDisplayName(JTextStyle.NARROW, locale)
+    override fun weekdayNarrow(dowIndex: Int) =
+        DayOfWeek.of(dowIndex + 1).getDisplayName(JTextStyle.NARROW, locale)
     override fun weekNumber(date: LocalDate) =
         date.get(java.time.temporal.WeekFields.of(locale).weekOfWeekBasedYear())
     override fun isRtl() = locale.language in setOf("ar", "he", "fa", "ur", "ps")
@@ -648,7 +648,7 @@ internal class PersianAdapter(val locale: Locale) : CalendarAdapter {
     private fun jalaliToGregorian(jy: Int, jm: Int, jd: Int): LocalDate {
         val (gy,gm,gd) = jdnToGregorian(jalaliToJdn(jy,jm,jd)); return LocalDate.of(gy,gm,gd)
     }
-    override fun yearMonthOf(d: LocalDate) = toJalali(d).let { CalMonth(it.first, it.second) }
+    override fun yearMonthOf(date: LocalDate) = toJalali(date).let { CalMonth(it.first, it.second) }
     override fun plusMonths(m: CalMonth, delta: Int): CalMonth {
         var y = m.year; var mo = m.month + delta
         while (mo > 12) { mo -= 12; y++ }; while (mo < 1) { mo += 12; y-- }
@@ -662,14 +662,14 @@ internal class PersianAdapter(val locale: Locale) : CalendarAdapter {
         return when (iso) { 6 -> 0; 7 -> 1; else -> iso + 1 }
     }
     override fun toLocalDate(m: CalMonth, day: Int) = jalaliToGregorian(m.year, m.month, day)
-    override fun fromLocalDate(d: LocalDate) = toJalali(d)
+    override fun fromLocalDate(date: LocalDate) = toJalali(date)
     override fun monthLabel(m: CalMonth): String {
         val names = persianMonthNames(locale)
         return "${names[m.month - 1]} ${toFarsi(m.year, locale)}"
     }
-    override fun weekdayNarrow(i: Int) = if (locale.language == "fa")
-        arrayOf("ش","ی","د","س","چ","پ","ج")[i]
-    else arrayOf("Sa","Su","Mo","Tu","We","Th","Fr")[i]
+    override fun weekdayNarrow(dowIndex: Int) = if (locale.language == "fa")
+        arrayOf("ش","ی","د","س","چ","پ","ج")[dowIndex]
+    else arrayOf("Sa","Su","Mo","Tu","We","Th","Fr")[dowIndex]
     override fun weekNumber(date: LocalDate): Int {
         val (_,jm,jd) = toJalali(date); return ((jm-1)*30+jd)/7+1
     }
@@ -688,7 +688,7 @@ internal class HijriAdapter(val locale: Locale) : CalendarAdapter {
     private fun jdnToHijri(jdn:Long):Triple<Int,Int,Int>{val l=jdn-1948440+10632;val n=(l-1)/10631;val l2=l-10631*n+354;val j=(10985-l2)/5316*(50*l2)/17719+(l2/5670)*(43*l2)/15238;val l3=l2-(30-j)/15*(17719*j)/50-(j/16)*(15238*j)/43+29;val month=(24*l3)/709;val day=l3-(709*month)/24;val year=30*n+j-30;return Triple(year.toInt(),month.toInt(),day.toInt())}
     private fun hijriToJdn(hy:Int,hm:Int,hd:Int):Long=(11*hy+3).toLong()/30+354*hy+30*hm-(hm-1)/2+hd+1948440-385
     private fun hijriToGregorian(hy:Int,hm:Int,hd:Int):LocalDate{val jdn=hijriToJdn(hy,hm,hd);val l=jdn+68569;val n=4*l/146097;val l2=l-(146097*n+3)/4;val i=4000*(l2+1)/1461001;val l3=l2-1461*i/4+31;val j=80*l3/2447;val day=(l3-2447*j/80).toInt();val l4=j/11;val month=(j+2-12*l4).toInt();val year=(100*(n-49)+i+l4).toInt();return LocalDate.of(year,month,day)}
-    override fun yearMonthOf(d: LocalDate) = toHijri(d).let { CalMonth(it.first, it.second) }
+    override fun yearMonthOf(date: LocalDate) = toHijri(date).let { CalMonth(it.first, it.second) }
     override fun plusMonths(m: CalMonth, delta: Int): CalMonth {
         var y = m.year; var mo = m.month + delta
         while (mo > 12) { mo -= 12; y++ }; while (mo < 1) { mo += 12; y-- }
@@ -703,12 +703,12 @@ internal class HijriAdapter(val locale: Locale) : CalendarAdapter {
         return if(iso==7) 0 else iso
     }
     override fun toLocalDate(m: CalMonth, day: Int) = hijriToGregorian(m.year,m.month,day)
-    override fun fromLocalDate(d: LocalDate) = toHijri(d)
+    override fun fromLocalDate(date: LocalDate) = toHijri(date)
     override fun monthLabel(m: CalMonth) = "${hijriMonthNames(locale)[m.month-1]} ${m.year}"
-    override fun weekdayNarrow(i: Int) = if(locale.language=="ar")
-        arrayOf("ح","ن","ث","ر","خ","ج","س")[i]
-    else arrayOf("Su","Mo","Tu","We","Th","Fr","Sa")[i]
-    override fun weekNumber(d: LocalDate): Int { val(_,hm,hd)=toHijri(d); return((hm-1)*30+hd)/7+1 }
+    override fun weekdayNarrow(dowIndex: Int) = if(locale.language=="ar")
+        arrayOf("ح","ن","ث","ر","خ","ج","س")[dowIndex]
+    else arrayOf("Su","Mo","Tu","We","Th","Fr","Sa")[dowIndex]
+    override fun weekNumber(date: LocalDate): Int { val(_,hm,hd)=toHijri(date); return((hm-1)*30+hd)/7+1 }
 }
 
 private fun persianMonthNames(locale: Locale) = if (locale.language == "fa")

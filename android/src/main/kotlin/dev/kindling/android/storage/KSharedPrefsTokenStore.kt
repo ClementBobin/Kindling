@@ -39,14 +39,14 @@ class KSharedPrefsTokenStore(
     }
 
     override suspend fun saveTokens(accessToken: String?, refreshToken: String?) = withContext(Dispatchers.IO) {
-        getPrefs().edit {
+        getPrefs().edit(commit = true) {
             if (accessToken != null) putString(accessTokenKey, accessToken) else remove(accessTokenKey)
             if (refreshToken != null) putString(refreshTokenKey, refreshToken) else remove(refreshTokenKey)
         }
     }
 
     override suspend fun clear() = withContext(Dispatchers.IO) {
-        getPrefs().edit {
+        getPrefs().edit(commit = true) {
             remove(accessTokenKey)
             remove(refreshTokenKey)
         }

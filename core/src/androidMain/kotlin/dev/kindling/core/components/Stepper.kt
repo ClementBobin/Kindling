@@ -242,7 +242,7 @@ fun RowScope.StepperItem(
 /**
  * Tappable trigger for a step — mirrors `StepperTrigger`.
  *
- * Navigates to this step on tap (unless [nonInteractive]).
+ * Navigates to this step on tap (unless `nonInteractive`).
  */
 @Composable
 fun StepperTrigger(

@@ -5,4 +5,4 @@ before_install:
   - sdk install gradle
 
 install:
-  - ./gradlew :core:assemble :utils:assemble :compose:assemble --no-daemon
+  - ./gradlew publishToMavenLocal --no-daemon

@@ -54,7 +54,7 @@ class KEncryptedTokenStore(
     }
 
     override suspend fun clear() = withContext(Dispatchers.IO) {
-        prefs.edit {
+        prefs.edit(commit = true) {
             remove(accessTokenKey)
             remove("${accessTokenKey}_iv")
             remove(refreshTokenKey)
@@ -80,7 +80,7 @@ class KEncryptedTokenStore(
     private fun saveEncrypted(key: String, value: String) {
         try {
             val encrypted = keystoreHelper.encrypt(keyConfig, value)
-            prefs.edit {
+            prefs.edit(commit = true) {
                 putString(key, encrypted.ciphertext)
                 putString("${key}_iv", encrypted.iv)
             }
@@ -91,7 +91,7 @@ class KEncryptedTokenStore(
     }
 
     private fun removeEncrypted(key: String) {
-        prefs.edit {
+        prefs.edit(commit = true) {
             remove(key)
             remove("${key}_iv")
         }

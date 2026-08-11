@@ -1,17 +1,17 @@
 object Versions {
-    const val kotlin            = "2.2.0"
-    const val jvmTarget         = "17"
-    const val group             = "io.github.clementbobin.kindling"
-    const val dokka             = "2.2.0"
-    const val junit5            = "6.1.0"
-    const val coroutines        = "1.11.0"
-    const val jetbrainCompose   = "1.7.3"
-    const val compose           = "1.13.0"
-    const val mavenPublish      = "0.36.0"
-    const val navigationCompose = "2.9.8"
-    const val lifecycle         = "2.10.0"
-    const val koin              = "4.2.1"
-    const val ktor = "2.3.12"
+    const val kotlin                = "2.4.0"
+    const val jvmTarget             = "17"
+    const val group                 = "io.github.clementbobin.kindling"
+    const val dokka                 = "2.2.0"
+    const val junit5                = "6.1.0"
+    const val coroutines            = "1.11.0"
+    const val jetbrainCompose       = "1.7.3"
+    const val compose               = "1.13.0"
+    const val navigationCompose     = "2.9.8"
+    const val lifecycle             = "2.10.0"
+    const val koin                  = "4.2.1"
+    const val ktor                  = "2.3.12"
+    const val coil                  = "3.5.0"
 
     // AndroidX / Google
     const val annotationJvm          = "1.10.0"
@@ -20,6 +20,7 @@ object Versions {
     const val camera                 = "1.6.1"
     const val playServicesLocation   = "21.3.0"
     const val biometric              = "1.1.0"
+    const val desugarJdkLibs         = "2.1.4"
 
     /**
      * Resolved at configuration time from the RELEASE_VERSION environment

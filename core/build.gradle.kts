@@ -4,21 +4,17 @@ plugins {
     id("com.android.kotlin.multiplatform.library")
     id("org.jetbrains.compose")
     id("dokka-convention")
-    id("com.vanniktech.maven.publish")
+    id("kindling-android-library")
+    id("kindling-publish")
 }
 
-group = Versions.group
-version = Versions.libraryVersion
-
 kotlin {
-    jvmToolchain(17)
+    jvm("desktop")
 
     android {
-        namespace = "${Versions.group}.core"
+        namespace = "${Versions.group}.${project.name}"
         compileSdk { version = release(36) }
     }
-
-    jvm("desktop")
 
     sourceSets {
         val commonMain by getting {
@@ -30,58 +26,27 @@ kotlin {
                 implementation(compose.ui)
                 implementation(compose.animation)
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.coroutines}")
+                implementation("io.coil-kt.coil3:coil-compose:${Versions.coil}")
+                implementation("io.coil-kt.coil3:coil-network-okhttp:${Versions.coil}")
                 implementation(kotlin("stdlib"))
             }
         }
-
         val commonTest by getting {
             dependencies {
                 implementation(kotlin("test"))
                 implementation("org.junit.jupiter:junit-jupiter:${Versions.junit5}")
             }
         }
-
-        val androidMain by getting {
-            dependencies { }
-        }
-
         val desktopMain by getting {
             dependencies {
                 implementation(compose.desktop.currentOs)
             }
         }
-    }
-}
-
-mavenPublishing {
-    publishToMavenCentral()
-    signAllPublications()
-
-    coordinates(Versions.group, "core", Versions.libraryVersion)
-
-    pom {
-        name.set("core")
-        description.set("Core module for kindling")
-        inceptionYear.set("2026")
-        url.set("https://github.com/ClementBobin/Kindling")
-        licenses {
-            license {
-                name.set("The Apache License, Version 2.0")
-                url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
-                distribution.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
+        val androidMain by getting {
+            dependencies {
+                implementation(project(":utils"))
+                implementation(project(":android"))
             }
-        }
-        developers {
-            developer {
-                id.set("clementbobin")
-                name.set("Clement Bobin")
-                url.set("https://github.com/ClementBobin/")
-            }
-        }
-        scm {
-            url.set("https://github.com/ClementBobin/Kindling")
-            connection.set("scm:git:git://github.com/ClementBobin/Kindling.git")
-            developerConnection.set("scm:git:ssh://git@github.com/ClementBobin/Kindling.git")
         }
     }
 }

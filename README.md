@@ -1,8 +1,8 @@
 # Kindling
 
 [![CI](https://github.com/ClementBobin/Kindling/actions/workflows/ci.yml/badge.svg)](https://github.com/ClementBobin/Kindling/actions/workflows/ci.yml)
+[![](https://jitpack.io/v/ClementBobin/Kindling.svg)](https://jitpack.io/#ClementBobin/Kindling)
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.clementbobin.kindling/core)](https://central.sonatype.com/search?q=io.github.clementbobin.kindling)
-[![JitPack](https://jitpack.io/v/ClementBobin/Kindling.svg)](https://jitpack.io/#ClementBobin/Kindling)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
 A production-ready Kotlin multi-module component library for Jetpack Compose — shadcn/ui-inspired UI components, typed navigation, a structured ViewModel base, and coroutine utilities, all fully theme-aware via Material3.
@@ -489,16 +489,6 @@ clickFlow
 See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 Branch naming: `feat/<short-description>` · `fix/<short-description>` · `chore/<short-description>`
-
----
-
-## Publishing
-
-Releases are published automatically to Maven Central when a GitHub release is created (via the `publish.yml` workflow). The Git tag (e.g. `0.3.0` or `v0.3.0`) sets the artifact version.
-
-Required repository secrets: `MAVEN_CENTRAL_USERNAME`, `MAVEN_CENTRAL_PASSWORD`, `SIGNING_KEY_ID`, `SIGNING_PASSWORD`, `GPG_KEY_CONTENTS`.
-
-`:core` and `:utils` are additionally available on JitPack as a fallback (built from the `jitpack.yml` at the repo root). `:compose` is Android-only and distributed exclusively through Maven Central.
 
 ---
 

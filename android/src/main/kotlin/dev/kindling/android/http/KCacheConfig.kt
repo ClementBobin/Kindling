@@ -1,7 +1,7 @@
 package dev.kindling.android.http
 
-import dev.kindling.utils.CircularBuffer
-import dev.kindling.utils.KMap
+import dev.kindling.utils.state.KCircularBuffer
+import dev.kindling.utils.state.KMap
 import io.ktor.client.HttpClient
 import io.ktor.client.call.HttpClientCall
 import io.ktor.client.engine.mock.MockEngine
@@ -63,7 +63,7 @@ internal data class KCacheEntry(
 internal fun createCachePlugin(config: KCacheConfig) =
     createClientPlugin("KCache") {
 
-        val keyBuffer = CircularBuffer<String>(capacity = config.maxEntries)
+        val keyBuffer = KCircularBuffer<String>(capacity = config.maxEntries)
         val store     = KMap<String, KCacheEntry>()
         val mutex     = Mutex()
 
@@ -128,7 +128,9 @@ internal fun createCachePlugin(config: KCacheConfig) =
             if (cached != null) return forwardToMock(request)
             val call = proceed(request)
             if (call.response.status.isSuccess()) {
-                putCached(key, call.response.bodyAsText())
+                val body = call.response.bodyAsText()
+                putCached(key, body)
+                return forwardToMock(request)
             }
             return call
         }
@@ -141,7 +143,9 @@ internal fun createCachePlugin(config: KCacheConfig) =
             val call = result.getOrNull()
             if (call != null) {
                 if (call.response.status.isSuccess()) {
-                    putCached(key, call.response.bodyAsText())
+                    val body = call.response.bodyAsText()
+                    putCached(key, body)
+                    return forwardToMock(request)
                 }
                 return call
             }
@@ -158,7 +162,7 @@ internal fun createCachePlugin(config: KCacheConfig) =
                 KCacheStrategy.NetworkOnly -> proceed(request)
 
                 KCacheStrategy.CacheOnly -> {
-                    if (cached == null) throw KHttpException.ServerError(504, "Cache miss: $key")
+                    if (cached == null) throw KHttpException.ServerError(504, "Cache miss")
                     forwardToMock(request)
                 }
 
