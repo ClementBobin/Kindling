@@ -72,8 +72,15 @@ fun Modifier.dashedBorder(
     val gapWidthPx = gapWidth.toPx()
 
     val outline = shape.createOutline(size, layoutDirection, this)
-    drawOutline(
-        outline = outline,
+    val path = androidx.compose.ui.graphics.Path().apply {
+        when (outline) {
+            is androidx.compose.ui.graphics.Outline.Rectangle -> addRect(outline.rect)
+            is androidx.compose.ui.graphics.Outline.Rounded -> addRoundRect(outline.roundRect)
+            is androidx.compose.ui.graphics.Outline.Generic -> addPath(outline.path)
+        }
+    }
+    drawPath(
+        path = path,
         color = color,
         style = Stroke(
             width = strokeWidthPx,
@@ -215,7 +222,7 @@ private fun resolveFileIcon(fileName: String, mimeType: String?): ImageVector {
         type.contains("pdf") || ext == "pdf" -> Icons.Outlined.PictureAsPdf
         type.contains("zip") || type.contains("compressed") || ext in listOf("zip", "tar", "gz", "7z", "rar") -> Icons.Outlined.FolderZip
         ext in listOf("kt", "java", "ts", "js", "html", "css", "json", "xml") -> Icons.Outlined.Code
-        else -> Icons.Outlined.InsertDriveFile
+        else -> Icons.Outlined.Description
     }
 }
 

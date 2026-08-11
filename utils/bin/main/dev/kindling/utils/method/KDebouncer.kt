@@ -181,7 +181,7 @@ fun <T> Flow<T>.debounceLeading(duration: Duration): Flow<T> = channelFlow {
     var timerJob: Job? = null
 
     collect { value ->
-        if (timerJob == null || !timerJob!!.isActive) {
+        if (timerJob?.isActive != true) {
             send(value)
             timerJob = launch {
                 delay(duration)

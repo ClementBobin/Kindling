@@ -9,7 +9,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.ArrowForward
+import androidx.compose.material.icons.automirrored.outlined.ArrowForward
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -18,7 +18,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -180,10 +181,11 @@ fun KExplodingInput(
                         .size(40.dp)
                         .clip(CircleShape)
                         .background(if (value.isNotBlank()) cs.primary else cs.surfaceVariant)
-                        .graphicsLayer {
+                        .onGloballyPositioned { coordinates ->
+                            val position = coordinates.positionInParent()
                             originOffset = Offset(
-                                x = size.width / 2f + x,
-                                y = size.height / 2f + y
+                                x = position.x + coordinates.size.width / 2f,
+                                y = position.y + coordinates.size.height / 2f
                             )
                         },
                     contentAlignment = Alignment.Center
@@ -198,7 +200,7 @@ fun KExplodingInput(
                         enabled = value.isNotBlank()
                     ) {
                         Icon(
-                            imageVector = Icons.Outlined.ArrowForward,
+                            imageVector = Icons.AutoMirrored.Outlined.ArrowForward,
                             contentDescription = "Submit",
                             tint = if (value.isNotBlank()) cs.onPrimary else cs.onSurfaceVariant.copy(alpha = 0.4f),
                             modifier = Modifier.size(18.dp)

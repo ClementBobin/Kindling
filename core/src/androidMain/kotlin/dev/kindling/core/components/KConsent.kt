@@ -278,7 +278,7 @@ fun KConsentPreferencesDialog(
                     lineHeight = 18.sp
                 )
 
-                Divider(color = cs.outlineVariant.copy(alpha = 0.5f))
+                HorizontalDivider(color = cs.outlineVariant.copy(alpha = 0.5f))
 
                 // Scrollable List of Categories
                 Column(
@@ -299,7 +299,7 @@ fun KConsentPreferencesDialog(
                     }
                 }
 
-                Divider(color = cs.outlineVariant.copy(alpha = 0.5f))
+                HorizontalDivider(color = cs.outlineVariant.copy(alpha = 0.5f))
 
                 // Action Footer
                 Row(
@@ -339,7 +339,7 @@ fun KConsentBanner(
     modifier: Modifier = Modifier,
     title: String = "We respect your privacy",
     description: String = "We use cookies and similar technologies to enhance navigation, analyze site traffic, and personalize content. You can manage your choices at any time.",
-    categories: List<KConsentCategory> = DefaultConsentCategories,
+    categories: List<KConsentCategory> = KDefaultConsentCategories,
     initialPreferences: KConsentPreferences = KConsentPreferences(),
     shape: Shape = MaterialTheme.kindlingShapes.radiusLg,
     elevation: Dp = 4.dp
