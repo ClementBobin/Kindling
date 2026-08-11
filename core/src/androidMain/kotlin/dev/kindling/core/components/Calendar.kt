@@ -375,7 +375,7 @@ private fun CalendarDayCellInternal(
     val isRangeEnd       = mode is KCalendarMode.Range  && date == selectedRange.to
     val isRangeMiddle    = mode is KCalendarMode.Range
             && selectedRange.from != null && selectedRange.to != null
-            && date > selectedRange.from!! && date < selectedRange.to!!
+            && date > selectedRange.from && date < selectedRange.to
 
     KCalendarDayButton(
         date          = date,

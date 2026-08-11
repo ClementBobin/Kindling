@@ -19,8 +19,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
+import coil3.compose.AsyncImage
+import coil3.compose.LocalPlatformContext
+import coil3.request.ImageRequest
 import dev.kindling.utils.method.KCounter
 
 data class KLogo(
@@ -46,7 +47,7 @@ fun KDefaultLogoItem(
     logoHeight: Dp,
     colorFilter: ColorFilter?
 ) {
-    val context = LocalContext.current
+    val context = LocalPlatformContext.current  // ← à la place de LocalContext.current
     val model = logo.url ?: logo.resId
 
     Box(
@@ -55,9 +56,8 @@ fun KDefaultLogoItem(
     ) {
         if (model != null) {
             AsyncImage(
-                model = ImageRequest.Builder(context)
+                model = ImageRequest.Builder(context)  // ← même API, contexte multiplateforme
                     .data(model)
-                    .crossfade(true)
                     .build(),
                 contentDescription = logo.alt.ifEmpty { null },
                 colorFilter = colorFilter,

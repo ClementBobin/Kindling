@@ -45,6 +45,7 @@ kotlin {
         val androidMain by getting {
             dependencies {
                 implementation(project(":utils"))
+                implementation(project(":android"))
             }
         }
     }

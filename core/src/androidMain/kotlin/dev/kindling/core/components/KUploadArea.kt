@@ -13,7 +13,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.cacheDraw
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
@@ -65,7 +65,7 @@ fun Modifier.dashedBorder(
     strokeWidth: Dp = 1.dp,
     dashWidth: Dp = 6.dp,
     gapWidth: Dp = 4.dp
-): Modifier = this.cacheDraw {
+): Modifier = this.drawWithContent {
     val strokeWidthPx = strokeWidth.toPx()
     val dashWidthPx = dashWidth.toPx()
     val gapWidthPx = gapWidth.toPx()
@@ -74,24 +74,23 @@ fun Modifier.dashedBorder(
     val path = androidx.compose.ui.graphics.Path().apply {
         when (outline) {
             is androidx.compose.ui.graphics.Outline.Rectangle -> addRect(outline.rect)
-            is androidx.compose.ui.graphics.Outline.Rounded -> addRoundRect(outline.roundRect)
-            is androidx.compose.ui.graphics.Outline.Generic -> addPath(outline.path)
+            is androidx.compose.ui.graphics.Outline.Rounded   -> addRoundRect(outline.roundRect)
+            is androidx.compose.ui.graphics.Outline.Generic   -> addPath(outline.path)
         }
     }
-    onDrawWithContent {
-        drawContent()
-        drawPath(
-            path = path,
-            color = color,
-            style = Stroke(
-                width = strokeWidthPx,
-                pathEffect = PathEffect.dashPathEffect(
-                    floatArrayOf(dashWidthPx, gapWidthPx),
-                    0f
-                )
+
+    drawContent()
+    drawPath(
+        path = path,
+        color = color,
+        style = Stroke(
+            width = strokeWidthPx,
+            pathEffect = PathEffect.dashPathEffect(
+                floatArrayOf(dashWidthPx, gapWidthPx),
+                0f
             )
         )
-    }
+    )
 }
 
 // ─── KDropzone (Container) ───────────────────────────────────────────────────
@@ -292,7 +291,7 @@ fun KFileItem(
                     Text(
                         text = when (file.status) {
                             is UploadStatus.Uploading -> "${(animatedProgress * 100).toInt()}% • ${file.sizeBytes.bytesToHuman()}"
-                            is UploadStatus.Error -> (file.status as UploadStatus.Error).message
+                            is UploadStatus.Error -> (file.status).message
                             is UploadStatus.Success -> "Completed • ${file.sizeBytes.bytesToHuman()}"
                             is UploadStatus.Idle -> file.sizeBytes.bytesToHuman()
                         },

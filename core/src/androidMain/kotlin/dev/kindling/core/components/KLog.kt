@@ -18,7 +18,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.Dp
@@ -27,6 +26,9 @@ import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
+import android.content.Context
+import androidx.compose.ui.platform.LocalContext
+import dev.kindling.android.natif.ClipboardHelper
 
 // ─── Data & Types ────────────────────────────────────────────────────────────
 
@@ -83,13 +85,18 @@ fun KLogViewerTerminal(
     lineNumbers: Boolean = true,
     timestamps: Boolean = true,
     autoScroll: Boolean = true,
+    clipboardHelper: ClipboardHelper? = null, // Optional custom helper
     onClear: (() -> Unit)? = null
 ) {
     var paused by remember { mutableStateOf(false) }
     var searchOpen by remember { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf("") }
     
-    val clipboardManager = LocalClipboardManager.current
+    val context = LocalContext.current
+    val resolvedClipboardHelper = remember(clipboardHelper, context) {
+        clipboardHelper ?: ClipboardHelper(context)
+    }
+    
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
 
@@ -165,7 +172,7 @@ fun KLogViewerTerminal(
                     IconButton(
                         onClick = {
                             val text = entries.joinToString("\n") { "[${formatTimestamp(it.timestamp)}] [${LEVEL_LABELS[it.level]}] ${it.message}" }
-                            clipboardManager.setText(AnnotatedString(text))
+                            resolvedClipboardHelper.copy(text)
                         },
                         modifier = Modifier.size(28.dp)
                     ) {
@@ -363,19 +370,24 @@ fun KLogViewerMinimal(
  */
 @Composable
 fun KLogViewerFilterable(
-    entries: List<KLogEntry>,
+entries: List<KLogEntry>,
     modifier: Modifier = Modifier,
     title: String = "Logs",
     maxHeight: Dp = KLogViewerDefaults.MaxHeight,
     timestamps: Boolean = true,
     autoScroll: Boolean = true,
     levels: List<KLogLevel> = listOf(KLogLevel.ERROR, KLogLevel.WARN, KLogLevel.INFO, KLogLevel.DEBUG),
+    clipboardHelper: ClipboardHelper? = null,
     onClear: (() -> Unit)? = null
 ) {
     var activeLevels by remember { mutableStateOf(levels.toSet()) }
     var searchQuery by remember { mutableStateOf("") }
     
-    val clipboardManager = LocalClipboardManager.current
+    val context = LocalContext.current
+    val resolvedClipboardHelper = remember(clipboardHelper, context) {
+        clipboardHelper ?: ClipboardHelper(context)
+    }
+    
     val listState = rememberLazyListState()
 
     val levelCounts = remember(entries) {
@@ -437,7 +449,7 @@ fun KLogViewerFilterable(
                     IconButton(
                         onClick = {
                             val text = filteredEntries.joinToString("\n") { "[${formatTimestamp(it.timestamp)}] [${LEVEL_LABELS[it.level]}] ${it.message}" }
-                            clipboardManager.setText(AnnotatedString(text))
+                            resolvedClipboardHelper.copy(text)
                         },
                         modifier = Modifier.size(28.dp)
                     ) {
