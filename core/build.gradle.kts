@@ -27,7 +27,6 @@ kotlin {
                 implementation(compose.animation)
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.coroutines}")
                 implementation(kotlin("stdlib"))
-                implementation(project(":utils"))
             }
         }
         val commonTest by getting {
@@ -39,6 +38,11 @@ kotlin {
         val desktopMain by getting {
             dependencies {
                 implementation(compose.desktop.currentOs)
+            }
+        }
+        val androidMain by getting {
+            dependencies {
+                implementation(project(":utils"))
             }
         }
     }
