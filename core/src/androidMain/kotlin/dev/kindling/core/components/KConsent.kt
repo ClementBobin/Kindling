@@ -28,7 +28,7 @@ import androidx.compose.ui.window.DialogProperties
 import dev.kindling.core.theme.kindlingShapes
 
 // ─── Models ───────────────────────────────────────────────────────────────────
-
+ 
 /**
  * Standard cookie & privacy consent categories.
  */

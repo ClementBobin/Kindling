@@ -44,7 +44,7 @@ val LocalKConsentManager = staticCompositionLocalOf<KConsentManager> {
  */
 @Composable
 fun rememberConsent(): KConsentManager = LocalKConsentManager.current
-
+ 
 // ─── Provider Component ───────────────────────────────────────────────────────
 
 /**
