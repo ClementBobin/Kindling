@@ -7,4 +7,5 @@ plugins {
     id("com.android.library") apply false
     id("org.jetbrains.dokka") apply false
     id("com.android.kotlin.multiplatform.library") apply false
+    id("com.google.devtools.ksp") version Versions.ksp apply false 
 }

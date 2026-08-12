@@ -12,6 +12,7 @@ object Versions {
     const val koin                  = "4.2.1"
     const val ktor                  = "2.3.12"
     const val coil                  = "3.5.0"
+    const val serialization         = "1.6.3"
 
     // AndroidX / Google
     const val annotationJvm          = "1.10.0"
@@ -23,8 +24,7 @@ object Versions {
     const val desugarJdkLibs         = "2.1.4"
 
     // Processor
-    const val ksp                    = "2.0.21-1.0.28"
-    const val kotlinCompileEmbeddable    = "2.0.21"
+    const val ksp = "2.3.10"
 
     /**
      * Resolved at configuration time from the RELEASE_VERSION environment

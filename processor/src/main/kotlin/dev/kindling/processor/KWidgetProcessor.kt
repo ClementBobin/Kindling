@@ -2,6 +2,7 @@ package dev.kindling.processor
 
 import com.google.devtools.ksp.processing.*
 import com.google.devtools.ksp.symbol.*
+import java.util.Locale
 
 /**
  * KSP compiler symbol processor that scans functions annotated with [@KWidget]
@@ -15,75 +16,68 @@ class KWidgetProcessor(
     private val logger: KSPLogger
 ) : SymbolProcessor {
 
+    private var generated = false // ← ajouter
+
     override fun process(resolver: Resolver): List<KSAnnotated> {
+        if (generated) return emptyList() // ← court-circuiter les rounds suivants
+
         val symbols = resolver.getSymbolsWithAnnotation("dev.kindling.core.components.dashboard.KWidget")
         val annotatedFunctions = symbols.filterIsInstance<KSFunctionDeclaration>().toList()
 
-        if (annotatedFunctions.isEmpty()) {
-            return emptyList()
-        }
-
-        var hasError = false
-        val seenTypes = mutableSetOf<String>()
-        val validFunctions = mutableListOf<KSFunctionDeclaration>()
-
-        for (func in annotatedFunctions) {
-            if (func.parentDeclaration != null) {
-                logger.error("@KWidget function must be a top-level declaration.", func)
-                hasError = true
-                continue
-            }
-
-            if (func.extensionReceiver != null) {
-                logger.error("@KWidget function cannot be an extension function.", func)
-                hasError = true
-                continue
-            }
-
-            if (func.parameters.isEmpty()) {
-                logger.error("@KWidget function must accept parameters (at least a 'title' parameter).", func)
-                hasError = true
-                continue
-            }
-
-            val titleParam = func.parameters.find { it.name?.asString() == "title" }
-            if (titleParam == null) {
-                logger.error("@KWidget function must have a parameter named 'title'.", func)
-                hasError = true
-                continue
-            }
-
-            val resolvedType = titleParam.type.resolve()
-            val typeName = resolvedType.declaration.qualifiedName?.asString()
-            if (typeName != null && typeName != "kotlin.String") {
-                logger.error("@KWidget function 'title' parameter must be of type String.", func)
-                hasError = true
-                continue
-            }
-
-            val annotation = func.annotations.firstOrNull { it.shortName.asString() == "KWidget" }
-            val typeValue = annotation?.arguments?.find { it.name?.asString() == "type" }?.value?.toString()
-            if (typeValue.isNullOrBlank()) {
-                logger.error("@KWidget annotation must define a non-blank 'type' value.", func)
-                hasError = true
-                continue
-            }
-
-            if (!seenTypes.add(typeValue)) {
-                logger.error("Duplicate @KWidget type value found: '$typeValue'.", func)
-                hasError = true
-                continue
-            }
-
-            validFunctions.add(func)
-        }
-
-        if (hasError || validFunctions.isEmpty()) {
-            return emptyList()
+        val validFunctions = if (annotatedFunctions.isEmpty()) {
+            emptyList()
+        } else {
+            val seenTypes = mutableSetOf<String>()
+            annotatedFunctions.filter { isValidWidgetFunction(it, seenTypes) }
         }
 
         generateRegistryFile(validFunctions)
+        generated = true // ← marquer comme fait
         return emptyList()
+    }
+
+    private fun isValidWidgetFunction(func: KSFunctionDeclaration, seenTypes: MutableSet<String>): Boolean {
+        if (func.parentDeclaration != null) {
+            logger.error("@KWidget function must be a top-level declaration.", func)
+            return false
+        }
+
+        if (func.extensionReceiver != null) {
+            logger.error("@KWidget function cannot be an extension function.", func)
+            return false
+        }
+
+        if (func.parameters.isEmpty()) {
+            logger.error("@KWidget function must accept parameters (at least a 'title' parameter).", func)
+            return false
+        }
+
+        val titleParam = func.parameters.find { it.name?.asString() == "title" }
+        if (titleParam == null) {
+            logger.error("@KWidget function must have a parameter named 'title'.", func)
+            return false
+        }
+
+        val resolvedType = titleParam.type.resolve()
+        val typeName = resolvedType.declaration.qualifiedName?.asString()
+        if (typeName != null && typeName != "kotlin.String") {
+            logger.error("@KWidget function 'title' parameter must be of type String.", func)
+            return false
+        }
+
+        val annotation = func.annotations.firstOrNull { it.shortName.asString() == "KWidget" }
+        val typeValue = annotation?.arguments?.find { it.name?.asString() == "type" }?.value?.toString()
+        if (typeValue.isNullOrBlank()) {
+            logger.error("@KWidget annotation must define a non-blank 'type' value.", func)
+            return false
+        }
+
+        if (!seenTypes.add(typeValue)) {
+            logger.error("Duplicate @KWidget type value found: '$typeValue'.", func)
+            return false
+        }
+
+        return true
     }
 
     private fun String.escapeKotlinLiteral(): String {
@@ -100,7 +94,7 @@ class KWidgetProcessor(
                     '$' -> append("\\$")
                     else -> {
                         if (c.isISOControl()) {
-                            append(String.format("\\u%04x", c.code))
+                            append(String.format(Locale.ROOT, "\\u%04x", c.code))
                         } else {
                             append(c)
                         }
@@ -111,62 +105,73 @@ class KWidgetProcessor(
     }
 
     private fun generateRegistryFile(functions: List<KSFunctionDeclaration>) {
-        val file = codeGenerator.createNewFile(
-            dependencies = Dependencies(false, *functions.mapNotNull { it.containingFile }.toTypedArray()),
-            packageName = "dev.kindling.core.components.dashboard",
-            fileName = "GeneratedWidgetRegistry"
-        )
-
-        file.bufferedWriter().use { writer ->
-            writer.write("""
-                package dev.kindling.core.components.dashboard
-
-                import androidx.compose.runtime.Composable
-
-                // AUTO-GENERATED BY KSP - DO NOT EDIT
-
-                val GeneratedWidgetMap: Map<String, @Composable (KWidgetModel) -> Unit> = mapOf(
-            """.trimIndent())
-
-            functions.forEach { func ->
-                val annotation = func.annotations.first { it.shortName.asString() == "KWidget" }
-                val typeValue = annotation.arguments.first { it.name?.asString() == "type" }.value.toString().escapeKotlinLiteral()
-                val pkg = func.packageName.asString()
-                val funcName = func.simpleName.asString()
-                
-                writer.write("\n    \"$typeValue\" to { widget -> $pkg.$funcName(title = widget.title) },")
+        try {
+            val originatingFiles = functions.mapNotNull { it.containingFile }.toTypedArray()
+            val dependencies = if (originatingFiles.isEmpty()) {
+                Dependencies(aggregating = true)
+            } else {
+                Dependencies(aggregating = true, *originatingFiles)
             }
 
-            writer.write("\n)\n\n")
+            val file = codeGenerator.createNewFile(
+                dependencies = dependencies,
+                packageName = "dev.kindling.core.components.dashboard",
+                fileName = "GeneratedWidgetRegistry"
+            )
 
-            writer.write("val GeneratedWidgetCatalog: List<KWidgetMetadata> = listOf(")
-            
-            functions.forEach { func ->
-                val annotation = func.annotations.first { it.shortName.asString() == "KWidget" }
-                val typeValue = annotation.arguments.find { it.name?.asString() == "type" }?.value.toString().escapeKotlinLiteral()
-                val titleValue = (annotation.arguments.find { it.name?.asString() == "title" }?.value?.toString() ?: "").escapeKotlinLiteral()
-                val iconArg = annotation.arguments.find { it.name?.asString() == "icon" }?.value?.toString()
+            file.bufferedWriter().use { writer ->
+                writer.write("""
+                    package dev.kindling.core.components.dashboard
+
+                    import androidx.compose.runtime.Composable
+
+                    // AUTO-GENERATED BY KSP - DO NOT EDIT
+
+                    val GeneratedWidgetMap: Map<String, @Composable (KWidgetModel) -> Unit> = mapOf(
+                """.trimIndent())
+
+                functions.forEach { func ->
+                    val annotation = func.annotations.first { it.shortName.asString() == "KWidget" }
+                    val typeValue = annotation.arguments.first { it.name?.asString() == "type" }.value.toString().escapeKotlinLiteral()
+                    val pkg = func.packageName.asString()
+                    val funcName = func.simpleName.asString()
+                    
+                    writer.write("\n    \"$typeValue\" to { widget -> $pkg.$funcName(title = widget.title) },")
+                }
+
+                writer.write("\n)\n\n")
+
+                writer.write("val GeneratedWidgetCatalog: List<KWidgetMetadata> = listOf(")
                 
-                val width = annotation.arguments.find { it.name?.asString() == "widthCells" }?.value ?: 1
-                val height = annotation.arguments.find { it.name?.asString() == "heightCells" }?.value ?: 1
-                val sizeString = "$width*$height".escapeKotlinLiteral()
+                functions.forEach { func ->
+                    val annotation = func.annotations.first { it.shortName.asString() == "KWidget" }
+                    val typeValue = annotation.arguments.find { it.name?.asString() == "type" }?.value.toString().escapeKotlinLiteral()
+                    val titleValue = (annotation.arguments.find { it.name?.asString() == "title" }?.value?.toString() ?: "").escapeKotlinLiteral()
+                    val iconArg = annotation.arguments.find { it.name?.asString() == "icon" }?.value?.toString()
+                    
+                    val width = annotation.arguments.find { it.name?.asString() == "widthCells" }?.value ?: 1
+                    val height = annotation.arguments.find { it.name?.asString() == "heightCells" }?.value ?: 1
+                    val sizeString = "$width*$height".escapeKotlinLiteral()
 
-                @Suppress("UNCHECKED_CAST")
-                val tagsArg = annotation.arguments.find { it.name?.asString() == "tags" }?.value as? List<*>
-                val tagsList = tagsArg?.joinToString(prefix = "listOf(", postfix = ")") { "\"${it.toString().escapeKotlinLiteral()}\"" } ?: "emptyList()"
+                    @Suppress("UNCHECKED_CAST")
+                    val tagsArg = annotation.arguments.find { it.name?.asString() == "tags" }?.value as? List<*>
+                    val tagsList = tagsArg?.joinToString(prefix = "listOf(", postfix = ")") { "\"${it.toString().escapeKotlinLiteral()}\"" } ?: "emptyList()"
 
-                val iconLiteral = if (iconArg.isNullOrBlank()) "null" else "\"${iconArg.escapeKotlinLiteral()}\""
+                    val iconLiteral = if (iconArg.isNullOrBlank()) "null" else "\"${iconArg.escapeKotlinLiteral()}\""
 
-                writer.write("\n    KWidgetMetadata(")
-                writer.write("\n        type = \"$typeValue\",")
-                writer.write("\n        title = \"$titleValue\",")
-                writer.write("\n        tags = $tagsList,")
-                writer.write("\n        icon = $iconLiteral,")
-                writer.write("\n        size = \"$sizeString\"")
-                writer.write("\n    ),")
+                    writer.write("\n    KWidgetMetadata(")
+                    writer.write("\n        type = \"$typeValue\",")
+                    writer.write("\n        title = \"$titleValue\",")
+                    writer.write("\n        tags = $tagsList,")
+                    writer.write("\n        icon = $iconLiteral,")
+                    writer.write("\n        size = \"$sizeString\"")
+                    writer.write("\n    ),")
+                }
+
+                writer.write("\n)\n")
             }
-
-            writer.write("\n)\n")
+        } catch (e: Exception) {
+            logger.error("Failed to generate GeneratedWidgetRegistry: ${e.message}\n${e.stackTraceToString()}")
         }
     }
 }
