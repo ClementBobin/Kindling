@@ -1,6 +1,7 @@
 package dev.kindling.core.components.dashboard
 
 import android.content.Context
+import android.util.AtomicFile
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.File
@@ -11,18 +12,26 @@ import java.io.File
  * @property context Application context reference utilized for accessing sandbox file paths.
  */
 class KDashboardStorage(private val context: Context) {
-    private val file = File(context.filesDir, "dashboard_layout.json")
+    private val atomicFile = AtomicFile(File(context.filesDir, "dashboard_layout.json"))
     private val json = Json { ignoreUnknownKeys = true }
 
     /**
-     * Encodes and persists a list of [KWidgetModel] configurations safely to local device storage.
+     * Encodes and persists a list of [KWidgetModel] configurations safely to local device storage using atomic writes.
      *
      * @param widgets List of widget configuration nodes to serialize and store.
+     * @return A [Result] indicating success or containing any serialization/write exceptions.
      */
-    fun saveLayout(widgets: List<KWidgetModel>) {
-        runCatching {
+    fun saveLayout(widgets: List<KWidgetModel>): Result<Unit> {
+        return runCatching {
             val serialized = json.encodeToString(widgets)
-            file.writeText(serialized)
+            val stream = atomicFile.startWrite()
+            try {
+                stream.write(serialized.toByteArray(Charsets.UTF_8))
+                atomicFile.finishWrite(stream)
+            } catch (e: Exception) {
+                atomicFile.failWrite(stream)
+                throw e
+            }
         }
     }
 
@@ -33,8 +42,8 @@ class KDashboardStorage(private val context: Context) {
      */
     fun loadLayout(): List<KWidgetModel>? {
         return runCatching {
-            if (!file.exists()) return null
-            val text = file.readText()
+            if (!atomicFile.baseFile.exists()) return null
+            val text = atomicFile.openRead().bufferedReader().use { it.readText() }
             json.decodeFromString<List<KWidgetModel>>(text)
         }.getOrNull()
     }

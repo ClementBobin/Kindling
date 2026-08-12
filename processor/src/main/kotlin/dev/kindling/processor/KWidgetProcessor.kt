@@ -19,11 +19,95 @@ class KWidgetProcessor(
         val symbols = resolver.getSymbolsWithAnnotation("dev.kindling.core.components.dashboard.KWidget")
         val annotatedFunctions = symbols.filterIsInstance<KSFunctionDeclaration>().toList()
 
-        if (annotatedFunctions.isNotEmpty()) {
-            generateRegistryFile(annotatedFunctions)
+        if (annotatedFunctions.isEmpty()) {
+            return emptyList()
         }
 
+        var hasError = false
+        val seenTypes = mutableSetOf<String>()
+        val validFunctions = mutableListOf<KSFunctionDeclaration>()
+
+        for (func in annotatedFunctions) {
+            if (func.parentDeclaration != null) {
+                logger.error("@KWidget function must be a top-level declaration.", func)
+                hasError = true
+                continue
+            }
+
+            if (func.extensionReceiver != null) {
+                logger.error("@KWidget function cannot be an extension function.", func)
+                hasError = true
+                continue
+            }
+
+            if (func.parameters.isEmpty()) {
+                logger.error("@KWidget function must accept parameters (at least a 'title' parameter).", func)
+                hasError = true
+                continue
+            }
+
+            val titleParam = func.parameters.find { it.name?.asString() == "title" }
+            if (titleParam == null) {
+                logger.error("@KWidget function must have a parameter named 'title'.", func)
+                hasError = true
+                continue
+            }
+
+            val resolvedType = titleParam.type.resolve()
+            val typeName = resolvedType.declaration.qualifiedName?.asString()
+            if (typeName != null && typeName != "kotlin.String") {
+                logger.error("@KWidget function 'title' parameter must be of type String.", func)
+                hasError = true
+                continue
+            }
+
+            val annotation = func.annotations.firstOrNull { it.shortName.asString() == "KWidget" }
+            val typeValue = annotation?.arguments?.find { it.name?.asString() == "type" }?.value?.toString()
+            if (typeValue.isNullOrBlank()) {
+                logger.error("@KWidget annotation must define a non-blank 'type' value.", func)
+                hasError = true
+                continue
+            }
+
+            if (!seenTypes.add(typeValue)) {
+                logger.error("Duplicate @KWidget type value found: '$typeValue'.", func)
+                hasError = true
+                continue
+            }
+
+            validFunctions.add(func)
+        }
+
+        if (hasError || validFunctions.isEmpty()) {
+            return emptyList()
+        }
+
+        generateRegistryFile(validFunctions)
         return emptyList()
+    }
+
+    private fun String.escapeKotlinLiteral(): String {
+        return buildString {
+            for (c in this@escapeKotlinLiteral) {
+                when (c) {
+                    '"' -> append("\\\"")
+                    '\\' -> append("\\\\")
+                    '\b' -> append("\\b")
+                    '\u000C' -> append("\\f")
+                    '\n' -> append("\\n")
+                    '\r' -> append("\\r")
+                    '\t' -> append("\\t")
+                    '$' -> append("\\$")
+                    else -> {
+                        if (c.isISOControl()) {
+                            append(String.format("\\u%04x", c.code))
+                        } else {
+                            append(c)
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private fun generateRegistryFile(functions: List<KSFunctionDeclaration>) {
@@ -46,7 +130,7 @@ class KWidgetProcessor(
 
             functions.forEach { func ->
                 val annotation = func.annotations.first { it.shortName.asString() == "KWidget" }
-                val typeValue = annotation.arguments.first { it.name?.asString() == "type" }.value.toString()
+                val typeValue = annotation.arguments.first { it.name?.asString() == "type" }.value.toString().escapeKotlinLiteral()
                 val pkg = func.packageName.asString()
                 val funcName = func.simpleName.asString()
                 
@@ -59,23 +143,25 @@ class KWidgetProcessor(
             
             functions.forEach { func ->
                 val annotation = func.annotations.first { it.shortName.asString() == "KWidget" }
-                val typeValue = annotation.arguments.find { it.name?.asString() == "type" }?.value.toString()
-                val titleValue = annotation.arguments.find { it.name?.asString() == "title" }?.value?.toString() ?: ""
-                val iconValue = annotation.arguments.find { it.name?.asString() == "icon" }?.value?.toString()
+                val typeValue = annotation.arguments.find { it.name?.asString() == "type" }?.value.toString().escapeKotlinLiteral()
+                val titleValue = (annotation.arguments.find { it.name?.asString() == "title" }?.value?.toString() ?: "").escapeKotlinLiteral()
+                val iconArg = annotation.arguments.find { it.name?.asString() == "icon" }?.value?.toString()
                 
                 val width = annotation.arguments.find { it.name?.asString() == "widthCells" }?.value ?: 1
                 val height = annotation.arguments.find { it.name?.asString() == "heightCells" }?.value ?: 1
-                val sizeString = "$width*$height"
+                val sizeString = "$width*$height".escapeKotlinLiteral()
 
                 @Suppress("UNCHECKED_CAST")
                 val tagsArg = annotation.arguments.find { it.name?.asString() == "tags" }?.value as? List<*>
-                val tagsList = tagsArg?.joinToString(prefix = "listOf(", postfix = ")") { "\"$it\"" } ?: "emptyList()"
+                val tagsList = tagsArg?.joinToString(prefix = "listOf(", postfix = ")") { "\"${it.toString().escapeKotlinLiteral()}\"" } ?: "emptyList()"
+
+                val iconLiteral = if (iconArg.isNullOrBlank()) "null" else "\"${iconArg.escapeKotlinLiteral()}\""
 
                 writer.write("\n    KWidgetMetadata(")
                 writer.write("\n        type = \"$typeValue\",")
                 writer.write("\n        title = \"$titleValue\",")
                 writer.write("\n        tags = $tagsList,")
-                writer.write("\n        icon = ${if (iconValue.isNullOrBlank()) "null" else "\"$iconValue\""},")
+                writer.write("\n        icon = $iconLiteral,")
                 writer.write("\n        size = \"$sizeString\"")
                 writer.write("\n    ),")
             }
