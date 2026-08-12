@@ -16,10 +16,10 @@ class KWidgetProcessor(
     private val logger: KSPLogger
 ) : SymbolProcessor {
 
-    private var generated = false // ← ajouter
+    private var generated = false
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
-        if (generated) return emptyList() // ← court-circuiter les rounds suivants
+        if (generated) return emptyList()
 
         val symbols = resolver.getSymbolsWithAnnotation("dev.kindling.core.components.dashboard.KWidget")
         val annotatedFunctions = symbols.filterIsInstance<KSFunctionDeclaration>().toList()
@@ -32,7 +32,7 @@ class KWidgetProcessor(
         }
 
         generateRegistryFile(validFunctions)
-        generated = true // ← marquer comme fait
+        generated = true
         return emptyList()
     }
 
@@ -62,6 +62,12 @@ class KWidgetProcessor(
         val typeName = resolvedType.declaration.qualifiedName?.asString()
         if (typeName != null && typeName != "kotlin.String") {
             logger.error("@KWidget function 'title' parameter must be of type String.", func)
+            return false
+        }
+
+        val nonTitleParams = func.parameters.filter { it.name?.asString() != "title" }
+        if (nonTitleParams.any { !it.hasDefault && !it.isVararg }) {
+            logger.error("@KWidget function cannot have required parameters other than 'title'.", func)
             return false
         }
 

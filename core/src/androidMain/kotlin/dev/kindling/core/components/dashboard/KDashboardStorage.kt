@@ -41,8 +41,8 @@ class KDashboardStorage(private val context: Context) {
      * @return List of decoded [KWidgetModel] instances, or null on failure/absence.
      */
     fun loadLayout(): List<KWidgetModel>? {
+        if (!atomicFile.baseFile.exists()) return null
         return runCatching {
-            if (!atomicFile.baseFile.exists()) return null
             val text = atomicFile.openRead().bufferedReader().use { it.readText() }
             json.decodeFromString<List<KWidgetModel>>(text)
         }.getOrNull()

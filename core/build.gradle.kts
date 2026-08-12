@@ -28,11 +28,11 @@ kotlin {
                 implementation(compose.ui)
                 implementation(compose.animation)
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.coroutines}")
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.serialization}")
                 implementation("io.coil-kt.coil3:coil-compose:${Versions.coil}")
                 implementation("io.coil-kt.coil3:coil-network-okhttp:${Versions.coil}")
                 implementation("io.insert-koin:koin-core:${Versions.koin}")
                 implementation("io.insert-koin:koin-compose:${Versions.koin}")
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.serialization}")
                 implementation(kotlin("stdlib"))
                 implementation(project(":utils"))
             }
