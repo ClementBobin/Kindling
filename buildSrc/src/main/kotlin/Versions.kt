@@ -22,6 +22,10 @@ object Versions {
     const val biometric              = "1.1.0"
     const val desugarJdkLibs         = "2.1.4"
 
+    // Processor
+    const val ksp                    = "2.0.21-1.0.28"
+    const val kotlinCompileEmbeddable    = "2.0.21"
+
     /**
      * Resolved at configuration time from the RELEASE_VERSION environment
      * variable (set by the publish workflow from the Git tag), or falls back

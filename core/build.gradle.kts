@@ -28,6 +28,8 @@ kotlin {
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.coroutines}")
                 implementation("io.coil-kt.coil3:coil-compose:${Versions.coil}")
                 implementation("io.coil-kt.coil3:coil-network-okhttp:${Versions.coil}")
+                implementation("io.insert-koin:koin-core:${Versions.koin}")
+                implementation("io.insert-koin:koin-compose:${Versions.koin}")
                 implementation(kotlin("stdlib"))
             }
         }
