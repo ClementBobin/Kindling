@@ -1,4 +1,4 @@
-package dev.kindling.core.components.ui
+package dev.kindling.core.components.ui.stepper
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 
 // Internal composition locals for child slots
 val LocalStepperState = compositionLocalOf<StepperState?> { null }

@@ -1,8 +1,9 @@
-package dev.kindling.core.components
+package dev.kindling.core.components.ui.maskInput
 
 import java.text.NumberFormat
 import java.util.Currency
 import java.util.Locale
+import kotlin.text.iterator
 
 /**
  * Applies a `#`-placeholder [pattern] to [value].

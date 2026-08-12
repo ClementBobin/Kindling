@@ -1,4 +1,4 @@
-package dev.kindling.core.components.ui
+package dev.kindling.core.components.ui.upload
 
 /**
  * Represents the current status of an individual file in the uploader.

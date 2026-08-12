@@ -1,4 +1,4 @@
-package dev.kindling.core.components.dashboard
+package dev.kindling.core.components.ui.dashboard
 
 import android.content.Context
 import android.util.AtomicFile

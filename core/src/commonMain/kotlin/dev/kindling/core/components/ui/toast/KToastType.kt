@@ -1,4 +1,4 @@
-package dev.kindling.core.components.ui
+package dev.kindling.core.components.ui.toast
 
 enum class KToastType {
     Success,

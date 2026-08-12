@@ -1,4 +1,4 @@
-package dev.kindling.core.components
+package dev.kindling.core.components.ui.logViewer
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -36,7 +36,8 @@ internal fun KLogHeader(
     entryCountText: String,
     onCopy: () -> Unit,
     onClear: (() -> Unit)?,
-    extraActions: @RowScope.() -> Unit = {}
+    extraActions: @Composable
+    @RowScope.() -> Unit = {}
 ) {
     Row(
         modifier = Modifier
@@ -117,7 +118,8 @@ internal fun KLogRowContent(
     timestamps: Boolean,
     showIndicatorDot: Boolean
 ) {
-    val levelColor = getLevelColor(entry.level)
+    val levelColor =
+        _root_ide_package_.dev.kindling.core.components.ui.logViewer.getLevelColor(entry.level)
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -146,7 +148,9 @@ internal fun KLogRowContent(
 
         if (timestamps) {
             Text(
-                text = formatTimestamp(entry.timestamp),
+                text = formatTimestamp(
+                    entry.timestamp
+                ),
                 fontFamily = FontFamily.Monospace,
                 fontSize = 11.sp,
                 color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)

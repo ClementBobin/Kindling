@@ -1,10 +1,11 @@
-package dev.kindling.core.components
+package dev.kindling.core.components.ui.logViewer
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -34,6 +35,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import dev.kindling.android.natif.ClipboardHelper
+import kotlin.collections.get
 
 @Composable
 fun KLogViewerFilterable(
@@ -73,13 +75,19 @@ fun KLogViewerFilterable(
         tonalElevation = 2.dp,
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f))
     ) {
-        androidx.compose.foundation.layout.Column(modifier = Modifier.fillMaxWidth()) {
+        Column(modifier = Modifier.fillMaxWidth()) {
             KLogHeader(
                 title = title,
                 icon = Icons.Default.FilterList,
                 entryCountText = "${filteredEntries.size} / ${entries.size}",
                 onCopy = {
-                    val text = filteredEntries.joinToString("\n") { "[${formatTimestamp(it.timestamp)}] [${LEVEL_LABELS[it.level]}] ${it.message}" }
+                    val text = filteredEntries.joinToString("\n") {
+                        "[${
+                            formatTimestamp(
+                                it.timestamp
+                            )
+                        }] [${LEVEL_LABELS[it.level]}] ${it.message}"
+                    }
                     resolvedClipboardHelper.copy(text)
                 },
                 onClear = onClear
@@ -98,7 +106,10 @@ fun KLogViewerFilterable(
                 levels.forEach { level ->
                     val isActive = activeLevels.contains(level)
                     val count = levelCounts[level] ?: 0
-                    val color = getLevelColor(level)
+                    val color =
+                        getLevelColor(
+                            level
+                        )
 
                     FilterChip(
                         selected = isActive,

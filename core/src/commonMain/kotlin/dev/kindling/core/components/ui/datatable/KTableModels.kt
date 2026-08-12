@@ -1,6 +1,7 @@
-package dev.kindling.core.components.ui
+package dev.kindling.core.components.ui.datatable
 
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.style.TextAlign
 
 /**

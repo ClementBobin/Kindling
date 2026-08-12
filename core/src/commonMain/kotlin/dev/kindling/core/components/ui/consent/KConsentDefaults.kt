@@ -1,4 +1,4 @@
-package dev.kindling.core.components.ui
+package dev.kindling.core.components.ui.consent
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Campaign

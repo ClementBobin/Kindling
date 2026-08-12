@@ -1,4 +1,4 @@
-package dev.kindling.core.components.ui
+package dev.kindling.core.components.ui.empty
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

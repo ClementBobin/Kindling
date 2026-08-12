@@ -1,4 +1,4 @@
-package dev.kindling.core.components.ui
+package dev.kindling.core.components.ui.popover
 
 /** Which side of the trigger the inline panel appears on. */
 enum class KPopoverSide { Top, Bottom, Left, Right }

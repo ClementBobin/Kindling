@@ -1,4 +1,4 @@
-package dev.kindling.core.components
+package dev.kindling.core.components.ui.logViewer
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement

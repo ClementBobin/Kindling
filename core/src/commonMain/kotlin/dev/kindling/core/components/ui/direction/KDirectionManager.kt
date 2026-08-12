@@ -1,4 +1,4 @@
-package dev.kindling.core.components.ui
+package dev.kindling.core.components.ui.direction
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf

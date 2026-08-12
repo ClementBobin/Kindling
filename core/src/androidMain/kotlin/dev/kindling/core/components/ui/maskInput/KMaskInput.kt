@@ -1,4 +1,4 @@
-package dev.kindling.core.components
+package dev.kindling.core.components.ui.maskInput
 
 import androidx.compose.foundation.interaction.FocusInteraction
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import dev.kindling.core.components.ui.KInput
 import dev.kindling.core.theme.LocalKindlingShapes
 import dev.kindling.core.theme.kindlingShadowXs
 

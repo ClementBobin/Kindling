@@ -1,4 +1,4 @@
-package dev.kindling.core.components.ui
+package dev.kindling.core.components.ui.upload
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -28,7 +28,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import dev.kindling.core.components.theme.kindlingShapes
+import dev.kindling.core.theme.kindlingShapes
+import dev.kindling.core.components.ui.layout.dashedBorder
 
 /**
  * Base dropzone container component inspired by Better Upload / shadcn.

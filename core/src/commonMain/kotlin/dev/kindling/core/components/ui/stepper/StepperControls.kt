@@ -1,4 +1,4 @@
-package dev.kindling.core.components.ui
+package dev.kindling.core.components.ui.stepper
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope

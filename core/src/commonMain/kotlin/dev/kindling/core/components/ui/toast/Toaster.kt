@@ -1,4 +1,4 @@
-package dev.kindling.core.components.ui
+package dev.kindling.core.components.ui.toast
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -92,7 +92,7 @@ private fun ToastAnimatedItem(toast: KToastData, onClose: () -> Unit) {
         exit    = slideOutVertically(tween(300)) { it } + fadeOut(tween(300))
     ) {
         Toast(
-            data    = toast,
+            data = toast,
             onClose = { onClose() }
         )
     }

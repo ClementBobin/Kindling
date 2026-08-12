@@ -1,9 +1,10 @@
-package dev.kindling.core.components.ui
+package dev.kindling.core.components.ui.card
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -93,7 +94,7 @@ fun KCardFooter(
 ) {
     val rounded = LocalKindlingShapes.current.roundedXl
     HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant, thickness = 0.5.dp)
-    androidx.compose.foundation.layout.Row(
+    Row(
         modifier              = modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp).clip(RoundedCornerShape(topEnd = rounded)),
         horizontalArrangement = horizontalArrangement,
         verticalAlignment     = Alignment.CenterVertically,

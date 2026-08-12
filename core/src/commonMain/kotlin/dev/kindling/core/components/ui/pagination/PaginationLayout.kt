@@ -1,5 +1,6 @@
-package dev.kindling.core.components.ui
+package dev.kindling.core.components.ui.pagination
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
@@ -19,6 +20,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import dev.kindling.core.components.ui.KButton
+import dev.kindling.core.components.ui.KButtonSize
+import dev.kindling.core.components.ui.KButtonVariant
 
 @Composable
 fun PaginationContent(
@@ -27,7 +31,7 @@ fun PaginationContent(
 ) {
     Row(
         modifier              = modifier,
-        horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(2.dp),
+        horizontalArrangement = Arrangement.spacedBy(2.dp),
         verticalAlignment     = Alignment.CenterVertically,
         content               = content
     )
@@ -42,7 +46,7 @@ fun PaginationItem(
 }
 
 /**
- * A single page link — active page uses [KButtonVariant.Outline].
+ * A single page link — active page uses [dev.kindling.core.components.ui.KButtonVariant.Outline].
  */
 @Composable
 fun PaginationLink(
@@ -52,10 +56,10 @@ fun PaginationLink(
     modifier: Modifier = Modifier
 ) {
     KButton(
-        onClick  = onClick,
+        onClick = onClick,
         modifier = modifier,
-        variant  = if (isActive) KButtonVariant.Outline else KButtonVariant.Ghost,
-        size     = KButtonSize.Icon
+        variant = if (isActive) KButtonVariant.Outline else KButtonVariant.Ghost,
+        size = KButtonSize.Icon
     ) {
         Text(page.toString())
     }
@@ -74,17 +78,17 @@ fun PaginationPrevious(
 ) {
     val rtl = LocalLayoutDirection.current == LayoutDirection.Rtl
     KButton(
-        onClick  = onClick,
+        onClick = onClick,
         modifier = modifier,
-        variant  = KButtonVariant.Ghost,
-        size     = KButtonSize.Default,
-        enabled  = enabled
+        variant = KButtonVariant.Ghost,
+        size = KButtonSize.Default,
+        enabled = enabled
     ) {
         Icon(
-            imageVector        = if (rtl) Icons.AutoMirrored.Filled.KeyboardArrowRight
-            else     Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+            imageVector = if (rtl) Icons.AutoMirrored.Filled.KeyboardArrowRight
+            else Icons.AutoMirrored.Filled.KeyboardArrowLeft,
             contentDescription = "Previous",
-            modifier           = Modifier.size(16.dp)
+            modifier = Modifier.size(16.dp)
         )
         Spacer(Modifier.width(4.dp))
         Text(text)
@@ -104,19 +108,19 @@ fun PaginationNext(
 ) {
     val rtl = LocalLayoutDirection.current == LayoutDirection.Rtl
     KButton(
-        onClick  = onClick,
+        onClick = onClick,
         modifier = modifier,
-        variant  = KButtonVariant.Ghost,
-        size     = KButtonSize.Default,
-        enabled  = enabled
+        variant = KButtonVariant.Ghost,
+        size = KButtonSize.Default,
+        enabled = enabled
     ) {
         Text(text)
         Spacer(Modifier.width(4.dp))
         Icon(
-            imageVector        = if (rtl) Icons.AutoMirrored.Filled.KeyboardArrowLeft
-            else     Icons.AutoMirrored.Filled.KeyboardArrowRight,
+            imageVector = if (rtl) Icons.AutoMirrored.Filled.KeyboardArrowLeft
+            else Icons.AutoMirrored.Filled.KeyboardArrowRight,
             contentDescription = "Next",
-            modifier           = Modifier.size(16.dp)
+            modifier = Modifier.size(16.dp)
         )
     }
 }

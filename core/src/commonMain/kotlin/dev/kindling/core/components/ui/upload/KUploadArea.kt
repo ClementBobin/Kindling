@@ -1,4 +1,4 @@
-package dev.kindling.core.components.ui
+package dev.kindling.core.components.ui.upload
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -55,7 +55,7 @@ fun KUploadArea(
                 }
                 Spacer(Modifier.height(4.dp))
                 KDropzoneTitle(text = titleText)
-                
+
                 val subtitle = listOfNotNull(acceptedTypesText, maxFileSizeText)
                     .joinToString(" • ")
                 if (subtitle.isNotEmpty()) {

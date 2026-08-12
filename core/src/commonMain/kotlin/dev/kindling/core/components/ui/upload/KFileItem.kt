@@ -1,4 +1,4 @@
-package dev.kindling.core.components.ui
+package dev.kindling.core.components.ui.upload
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
@@ -37,6 +37,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -46,7 +47,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import dev.kindling.core.components.theme.kindlingShapes
+import dev.kindling.core.theme.kindlingShapes
 import dev.kindling.utils.method.format.system.bytesToHuman
 
 /**
@@ -221,7 +222,7 @@ fun KFileList(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         files.forEach { file ->
-            androidx.compose.runtime.key(file.id) {
+            key(file.id) {
                 KFileItem(
                     file = file,
                     onRemove = onRemoveFile,

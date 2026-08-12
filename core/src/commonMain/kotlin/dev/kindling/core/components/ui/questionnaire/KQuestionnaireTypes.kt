@@ -1,4 +1,4 @@
-package dev.kindling.core.components.ui
+package dev.kindling.core.components.ui.questionnaire
 
 enum class KQuestionnaireChoiceType {
     RADIO, CHECKBOX

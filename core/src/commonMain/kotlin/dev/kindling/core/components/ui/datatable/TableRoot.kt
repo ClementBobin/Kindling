@@ -1,4 +1,4 @@
-package dev.kindling.core.components.ui
+package dev.kindling.core.components.ui.datatable
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll

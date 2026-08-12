@@ -1,4 +1,4 @@
-package dev.kindling.core.components.prefab
+package dev.kindling.core.components.ui.prefab
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -9,9 +9,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import dev.kindling.core.components.KLabel
-import dev.kindling.core.components.KMaskPattern
-import dev.kindling.core.components.KMaskInput
+import dev.kindling.core.components.ui.KLabel
+import dev.kindling.core.components.ui.maskInput.KMaskPattern
+import dev.kindling.core.components.ui.maskInput.KMaskInput
 
 @Composable
 fun KFieldSimple(

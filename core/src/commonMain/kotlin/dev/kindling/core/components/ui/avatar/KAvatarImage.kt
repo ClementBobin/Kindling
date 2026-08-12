@@ -1,4 +1,4 @@
-package dev.kindling.core.components.ui
+package dev.kindling.core.components.ui.avatar
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.BoxScope

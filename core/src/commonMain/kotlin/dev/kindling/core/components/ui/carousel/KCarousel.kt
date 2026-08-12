@@ -1,4 +1,4 @@
-package dev.kindling.core.components.ui
+package dev.kindling.core.components.ui.carousel
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
@@ -20,14 +20,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 /**
  * Shadcn/ui-style Carousel — mirrors `carousel.tsx`.
  *
- * Arrows are [KButton] instances rendered beside the pager (not overlaid).
- * Respects [LocalLayoutDirection] — arrows are visually mirrored in RTL.
+ * Arrows are [dev.kindling.core.components.ui.KButton] instances rendered beside the pager (not overlaid).
+ * Respects [KLocalLayoutDirection] — arrows are visually mirrored in RTL.
  *
  * ```kotlin
  * val api = rememberCarouselApi(pageCount = items.size)
@@ -57,7 +58,7 @@ fun KCarousel(
     val state  = api.pagerState
 
     // ── Auto-play ────────────────────────────────────────────────────────
-    val autoPlayJob = remember { mutableStateOf<kotlinx.coroutines.Job?>(null) }
+    val autoPlayJob = remember { mutableStateOf<Job?>(null) }
 
     fun startAutoPlay() {
         autoPlay ?: return
@@ -96,15 +97,15 @@ fun KCarousel(
         ) {
             if (showArrows) {
                 KCarouselPrevious(
-                    onClick  = { navigateTo(state.currentPage - 1) },
-                    enabled  = state.currentPage > 0
+                    onClick = { navigateTo(state.currentPage - 1) },
+                    enabled = state.currentPage > 0
                 )
             }
 
             if (showArrows) {
                 KCarouselNext(
-                    onClick  = { navigateTo(state.currentPage + 1) },
-                    enabled  = state.currentPage < state.pageCount - 1
+                    onClick = { navigateTo(state.currentPage + 1) },
+                    enabled = state.currentPage < state.pageCount - 1
                 )
             }
         }

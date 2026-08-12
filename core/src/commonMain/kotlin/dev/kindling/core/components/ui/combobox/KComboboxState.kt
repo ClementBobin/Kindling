@@ -1,5 +1,6 @@
-package dev.kindling.core.components.ui
+package dev.kindling.core.components.ui.combobox
 
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.Stable

@@ -1,4 +1,4 @@
-package dev.kindling.core.components.ui
+package dev.kindling.core.components.ui.carousel
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
@@ -18,6 +18,9 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import dev.kindling.core.components.ui.KButton
+import dev.kindling.core.components.ui.KButtonSize
+import dev.kindling.core.components.ui.KButtonVariant
 
 /**
  * Wraps the pager slides — place [KCarouselItem]s inside.
@@ -79,17 +82,17 @@ fun KCarouselPrevious(
 ) {
     val rtl = LocalLayoutDirection.current == LayoutDirection.Rtl
     KButton(
-        onClick  = onClick,
+        onClick = onClick,
         modifier = modifier.clip(CircleShape),
-        variant  = variant,
-        size     = size,
-        enabled  = enabled
+        variant = variant,
+        size = size,
+        enabled = enabled
     ) {
         Icon(
-            imageVector        = if (rtl) Icons.AutoMirrored.Filled.KeyboardArrowRight
-            else     Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+            imageVector = if (rtl) Icons.AutoMirrored.Filled.KeyboardArrowRight
+            else Icons.AutoMirrored.Filled.KeyboardArrowLeft,
             contentDescription = "Previous slide",
-            modifier           = Modifier.size(16.dp)
+            modifier = Modifier.size(16.dp)
         )
     }
 }
@@ -108,17 +111,17 @@ fun KCarouselNext(
 ) {
     val rtl = LocalLayoutDirection.current == LayoutDirection.Rtl
     KButton(
-        onClick  = onClick,
+        onClick = onClick,
         modifier = modifier.clip(CircleShape),
-        variant  = variant,
-        size     = size,
-        enabled  = enabled
+        variant = variant,
+        size = size,
+        enabled = enabled
     ) {
         Icon(
-            imageVector        = if (rtl) Icons.AutoMirrored.Filled.KeyboardArrowLeft
-            else     Icons.AutoMirrored.Filled.KeyboardArrowRight,
+            imageVector = if (rtl) Icons.AutoMirrored.Filled.KeyboardArrowLeft
+            else Icons.AutoMirrored.Filled.KeyboardArrowRight,
             contentDescription = "Next slide",
-            modifier           = Modifier.size(16.dp)
+            modifier = Modifier.size(16.dp)
         )
     }
 }

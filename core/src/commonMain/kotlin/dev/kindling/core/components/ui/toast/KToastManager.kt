@@ -1,4 +1,4 @@
-package dev.kindling.core.components.ui
+package dev.kindling.core.components.ui.toast
 
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -26,12 +26,12 @@ object KToastManager {
     ) {
         _flow.tryEmit(
             KToastData(
-                message     = message,
+                message = message,
                 description = description,
-                type        = type,
+                type = type,
                 actionLabel = actionLabel,
-                onAction    = onAction,
-                durationMs  = durationMs
+                onAction = onAction,
+                durationMs = durationMs
             )
         )
     }

@@ -1,4 +1,4 @@
-package dev.kindling.core.components.ui
+package dev.kindling.core.components.ui.popover
 
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.runtime.Composable
@@ -60,25 +60,25 @@ fun KPopover(
 ) {
     if (overlayZone != null) {
         KPopoverOverlay(
-            open                  = open,
-            onDismiss             = onDismiss,
-            position              = overlayZone,
+            open = open,
+            onDismiss = onDismiss,
+            position = overlayZone,
             dismissOnClickOutside = dismissOnClickOutside,
-            trigger               = trigger,
-            modifier              = modifier,
-            content               = content
+            trigger = trigger,
+            modifier = modifier,
+            content = content
         )
     } else {
         KPopoverInline(
-            open                  = open,
-            onDismiss             = onDismiss,
-            trigger               = trigger,
-            side                  = side,
-            align                 = align,
-            sideOffset            = sideOffset,
+            open = open,
+            onDismiss = onDismiss,
+            trigger = trigger,
+            side = side,
+            align = align,
+            sideOffset = sideOffset,
             dismissOnClickOutside = dismissOnClickOutside,
-            modifier              = modifier,
-            content               = content
+            modifier = modifier,
+            content = content
         )
     }
 }

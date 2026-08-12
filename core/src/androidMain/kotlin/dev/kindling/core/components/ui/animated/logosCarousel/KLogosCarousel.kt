@@ -1,4 +1,4 @@
-package dev.kindling.core.components.animated
+package dev.kindling.core.components.ui.animated.logosCarousel
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures

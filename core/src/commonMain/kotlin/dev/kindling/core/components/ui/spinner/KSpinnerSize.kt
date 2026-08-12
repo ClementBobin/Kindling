@@ -1,4 +1,4 @@
-package dev.kindling.core.components.ui
+package dev.kindling.core.components.ui.spinner
 
 enum class KSpinnerSize {
     Sm,

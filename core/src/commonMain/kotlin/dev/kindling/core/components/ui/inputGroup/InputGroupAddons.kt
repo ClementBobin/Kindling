@@ -1,4 +1,4 @@
-package dev.kindling.core.components.ui
+package dev.kindling.core.components.ui.inputGroup
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -13,6 +13,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.kindling.core.components.ui.KButton
+import dev.kindling.core.components.ui.KButtonSize
+import dev.kindling.core.components.ui.KButtonVariant
 
 /**
  * Addon container placed inline or as a block above/below the input.
@@ -42,7 +45,7 @@ fun KInputGroupScope.InputGroupAddon(
 
 /**
  * Ghost-style icon button sized to sit flush inside an [InputGroup] addon.
- * Uses [KButton] with [KButtonVariant.Ghost].
+ * Uses [dev.kindling.core.components.ui.KButton] with [dev.kindling.core.components.ui.KButtonVariant.Ghost].
  */
 @Composable
 fun KInputGroupScope.InputGroupButton(
@@ -54,12 +57,12 @@ fun KInputGroupScope.InputGroupButton(
     content: @Composable RowScope.() -> Unit
 ) {
     KButton(
-        onClick  = onClick,
+        onClick = onClick,
         modifier = modifier,
-        variant  = variant,
-        size     = size,
-        enabled  = enabled,
-        content  = content
+        variant = variant,
+        size = size,
+        enabled = enabled,
+        content = content
     )
 }
 

@@ -1,4 +1,4 @@
-package dev.kindling.core.components.ui
+package dev.kindling.core.components.ui.dialog
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -21,13 +21,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import dev.kindling.core.theme.LocalKindlingShapes
+import dev.kindling.core.components.ui.KButton
+import dev.kindling.core.components.ui.KButtonSize
+import dev.kindling.core.components.ui.KButtonVariant
 
 /**
  * The dialog panel — mirrors `DialogContent` from `dialog.tsx`.
  *
  * Renders a full-screen scrim + centred card.
  * Includes a close × button when [showCloseButton] = true (default).
- * Uses [KButton] for the close action.
+ * Uses [dev.kindling.core.components.ui.KButton] for the close action.
  *
  * ```kotlin
  * DialogContent(open = open, onDismiss = { open = false }) {
@@ -70,9 +73,13 @@ fun DialogContent(
                         KButton(
                             onClick = onDismiss,
                             variant = KButtonVariant.Ghost,
-                            size    = KButtonSize.IconSm
+                            size = KButtonSize.IconSm
                         ) {
-                            Icon(Icons.Default.Close, contentDescription = "Close", modifier = Modifier.size(16.dp))
+                            Icon(
+                                Icons.Default.Close,
+                                contentDescription = "Close",
+                                modifier = Modifier.size(16.dp)
+                            )
                         }
                     }
                 }

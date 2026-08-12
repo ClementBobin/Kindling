@@ -1,4 +1,4 @@
-package dev.kindling.core.components.ui
+package dev.kindling.core.components.ui.inputGroup
 
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -25,7 +25,7 @@ import dev.kindling.core.theme.kindlingShadowNone
  * The text input control inside an [InputGroup].
  *
  * Strips outer borders (the group draws its own).
- * Uses [KInput] internally.
+ * Uses [dev.kindling.core.components.ui.KInput] internally.
  */
 @Composable
 fun KInputGroupScope.InputGroupInput(
@@ -85,7 +85,7 @@ fun KInputGroupScope.InputGroupInput(
 
 /**
  * Multi-line textarea variant for an [InputGroup].
- * Delegates to [Textarea] with borders suppressed.
+ * Delegates to [dev.kindling.core.components.ui.Textarea] with borders suppressed.
  */
 @Composable
 fun KInputGroupScope.InputGroupTextarea(

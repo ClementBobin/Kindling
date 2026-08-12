@@ -1,4 +1,4 @@
-package dev.kindling.core.components.theme
+package dev.kindling.core.theme
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -84,7 +84,7 @@ data class KindlingShapes(
  * Provides [KindlingShapes] down the composition tree.
  *
  * Read via `LocalKindlingShapes.current` inside any composable, or use the
- * convenience extension [MaterialTheme.kindlingShapes].
+ * convenience extension [kindlingShapes].
  */
 val LocalKindlingShapes: ProvidableCompositionLocal<KindlingShapes> =
     staticCompositionLocalOf { KindlingShapes() }

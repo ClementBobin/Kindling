@@ -1,4 +1,4 @@
-package dev.kindling.core.components.ui
+package dev.kindling.core.components.ui.stepper
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween

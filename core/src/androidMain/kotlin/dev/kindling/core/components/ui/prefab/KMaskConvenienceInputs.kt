@@ -1,7 +1,9 @@
-package dev.kindling.core.components
+package dev.kindling.core.components.ui.prefab
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import dev.kindling.core.components.ui.maskInput.KMaskInput
+import dev.kindling.core.components.ui.maskInput.KMaskPattern
 
 @Composable
 fun PhoneInput(
@@ -11,7 +13,15 @@ fun PhoneInput(
     enabled: Boolean = true,
     isError: Boolean = false,
     onValidationChange: ((Boolean) -> Unit)? = null
-) = KMaskInput(value, onValueChange, modifier, KMaskPattern.Phone, enabled = enabled, isError = isError, onValidationChange = onValidationChange)
+) = KMaskInput(
+    value,
+    onValueChange,
+    modifier,
+    KMaskPattern.Phone,
+    enabled = enabled,
+    isError = isError,
+    onValidationChange = onValidationChange
+)
 
 @Composable
 fun SsnInput(
@@ -21,7 +31,15 @@ fun SsnInput(
     enabled: Boolean = true,
     isError: Boolean = false,
     onValidationChange: ((Boolean) -> Unit)? = null
-) = KMaskInput(value, onValueChange, modifier, KMaskPattern.Ssn, enabled = enabled, isError = isError, onValidationChange = onValidationChange)
+) = KMaskInput(
+    value,
+    onValueChange,
+    modifier,
+    KMaskPattern.Ssn,
+    enabled = enabled,
+    isError = isError,
+    onValidationChange = onValidationChange
+)
 
 @Composable
 fun DateMaskInput(
@@ -31,7 +49,15 @@ fun DateMaskInput(
     enabled: Boolean = true,
     isError: Boolean = false,
     onValidationChange: ((Boolean) -> Unit)? = null
-) = KMaskInput(value, onValueChange, modifier, KMaskPattern.Date, enabled = enabled, isError = isError, onValidationChange = onValidationChange)
+) = KMaskInput(
+    value,
+    onValueChange,
+    modifier,
+    KMaskPattern.Date,
+    enabled = enabled,
+    isError = isError,
+    onValidationChange = onValidationChange
+)
 
 @Composable
 fun CreditCardInput(
@@ -41,7 +67,15 @@ fun CreditCardInput(
     enabled: Boolean = true,
     isError: Boolean = false,
     onValidationChange: ((Boolean) -> Unit)? = null
-) = KMaskInput(value, onValueChange, modifier, KMaskPattern.CreditCard, enabled = enabled, isError = isError, onValidationChange = onValidationChange)
+) = KMaskInput(
+    value,
+    onValueChange,
+    modifier,
+    KMaskPattern.CreditCard,
+    enabled = enabled,
+    isError = isError,
+    onValidationChange = onValidationChange
+)
 
 @Composable
 fun EinInput(
@@ -51,7 +85,15 @@ fun EinInput(
     enabled: Boolean = true,
     isError: Boolean = false,
     onValidationChange: ((Boolean) -> Unit)? = null
-) = KMaskInput(value, onValueChange, modifier, KMaskPattern.Ein, enabled = enabled, isError = isError, onValidationChange = onValidationChange)
+) = KMaskInput(
+    value,
+    onValueChange,
+    modifier,
+    KMaskPattern.Ein,
+    enabled = enabled,
+    isError = isError,
+    onValidationChange = onValidationChange
+)
 
 @Composable
 fun EmailInput(
@@ -61,7 +103,15 @@ fun EmailInput(
     enabled: Boolean = true,
     isError: Boolean = false,
     onValidationChange: ((Boolean) -> Unit)? = null
-) = KMaskInput(value, onValueChange, modifier, KMaskPattern.Email, enabled = enabled, isError = isError, onValidationChange = onValidationChange)
+) = KMaskInput(
+    value,
+    onValueChange,
+    modifier,
+    KMaskPattern.Email,
+    enabled = enabled,
+    isError = isError,
+    onValidationChange = onValidationChange
+)
 
 @Composable
 fun UriInput(
@@ -71,7 +121,15 @@ fun UriInput(
     enabled: Boolean = true,
     isError: Boolean = false,
     onValidationChange: ((Boolean) -> Unit)? = null
-) = KMaskInput(value, onValueChange, modifier, KMaskPattern.Uri, enabled = enabled, isError = isError, onValidationChange = onValidationChange)
+) = KMaskInput(
+    value,
+    onValueChange,
+    modifier,
+    KMaskPattern.Uri,
+    enabled = enabled,
+    isError = isError,
+    onValidationChange = onValidationChange
+)
 
 @Composable
 fun NumberInput(
@@ -81,7 +139,15 @@ fun NumberInput(
     enabled: Boolean = true,
     isError: Boolean = false,
     onValidationChange: ((Boolean) -> Unit)? = null
-) = KMaskInput(value, onValueChange, modifier, KMaskPattern.Number, enabled = enabled, isError = isError, onValidationChange = onValidationChange)
+) = KMaskInput(
+    value,
+    onValueChange,
+    modifier,
+    KMaskPattern.Number,
+    enabled = enabled,
+    isError = isError,
+    onValidationChange = onValidationChange
+)
 
 @Composable
 fun DecimalInput(
@@ -91,4 +157,12 @@ fun DecimalInput(
     enabled: Boolean = true,
     isError: Boolean = false,
     onValidationChange: ((Boolean) -> Unit)? = null
-) = KMaskInput(value, onValueChange, modifier, KMaskPattern.Decimal, enabled = enabled, isError = isError, onValidationChange = onValidationChange)
+) = KMaskInput(
+    value,
+    onValueChange,
+    modifier,
+    KMaskPattern.Decimal,
+    enabled = enabled,
+    isError = isError,
+    onValidationChange = onValidationChange
+)

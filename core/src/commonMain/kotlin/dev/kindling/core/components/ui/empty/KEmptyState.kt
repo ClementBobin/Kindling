@@ -1,4 +1,4 @@
-package dev.kindling.core.components.ui
+package dev.kindling.core.components.ui.empty
 
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,6 +9,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import dev.kindling.core.components.ui.KButton
+import dev.kindling.core.components.ui.KButtonVariant
 
 /**
  * Convenience preset: icon + title + description + optional CTA buttons.
@@ -40,7 +42,12 @@ fun KEmptyState(
         KEmptyHeader {
             Spacer(Modifier.height(8.dp))
             KEmptyMedia(variant = KEmptyMediaVariant.Icon) {
-                Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.fillMaxSize())
+                Icon(
+                    icon,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.fillMaxSize()
+                )
             }
             Spacer(Modifier.height(4.dp))
             KEmptyTitle(title)
@@ -49,7 +56,11 @@ fun KEmptyState(
         if (actionLabel != null || secondaryActionLabel != null) {
             KEmptyContent {
                 if (actionLabel != null && onAction != null) KButton(actionLabel, onAction)
-                if (secondaryActionLabel != null && onSecondaryAction != null) KButton(secondaryActionLabel, onSecondaryAction, variant = KButtonVariant.Outline)
+                if (secondaryActionLabel != null && onSecondaryAction != null) KButton(
+                    secondaryActionLabel,
+                    onSecondaryAction,
+                    variant = KButtonVariant.Outline
+                )
             }
         }
         Spacer(Modifier.height(8.dp))

@@ -1,11 +1,11 @@
-package dev.kindling.core.components.ui
+package dev.kindling.core.components.ui.badge
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
 /**
- * Defines styling configurations and themes for [KBadge].
+ * Defines styling configurations and themes for [dev.kindling.core.components.ui.badge.KBadge].
  */
 data class KBadgeVariant(
     val bg: @Composable () -> Color,

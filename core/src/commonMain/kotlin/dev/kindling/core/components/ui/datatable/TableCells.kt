@@ -1,4 +1,4 @@
-package dev.kindling.core.components.ui
+package dev.kindling.core.components.ui.datatable
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -68,6 +68,7 @@ fun RowScope.TableHead(
                     KSortDirection.Asc  -> "↑"
                     KSortDirection.Desc -> "↓"
                     KSortDirection.None -> "↕"
+                    else -> {}
                 },
                 fontSize = 11.sp,
                 color    = if (sortDirection != KSortDirection.None) cs.primary

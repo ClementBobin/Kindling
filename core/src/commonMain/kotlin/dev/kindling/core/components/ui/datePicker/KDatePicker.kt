@@ -1,4 +1,4 @@
-package dev.kindling.core.components.ui
+package dev.kindling.core.components.ui.datePicker
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -32,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.kindling.core.components.ui.calendar.CalendarGrid
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -103,9 +104,9 @@ fun KDatePicker(
         ) {
             CalendarGrid(
                 selected = selected,
-                minDate  = minDate,
-                maxDate  = maxDate,
-                locale   = locale,
+                minDate = minDate,
+                maxDate = maxDate,
+                locale = locale,
                 onSelect = { date ->
                     onSelect(date)
                     expanded = false

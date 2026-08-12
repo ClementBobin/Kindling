@@ -1,4 +1,4 @@
-package dev.kindling.core.components.ui
+package dev.kindling.core.components.ui.toast
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -26,6 +26,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.kindling.core.components.ui.KButton
+import dev.kindling.core.components.ui.KButtonSize
+import dev.kindling.core.components.ui.KButtonVariant
 
 private data class ToastStyle(val bg: Color, val icon: Color, val text: Color)
 
@@ -95,15 +98,15 @@ fun Toast(
 
         // Close button — uses KButton
         KButton(
-            onClick  = onClose,
-            variant  = KButtonVariant.Ghost,
-            size     = KButtonSize.IconXs,
+            onClick = onClose,
+            variant = KButtonVariant.Ghost,
+            size = KButtonSize.IconXs,
             modifier = Modifier.size(20.dp)
         ) {
             Icon(
                 Icons.Default.Close,
                 contentDescription = "Dismiss",
-                tint     = style.text.copy(alpha = .7f),
+                tint = style.text.copy(alpha = .7f),
                 modifier = Modifier.size(14.dp)
             )
         }

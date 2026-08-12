@@ -1,10 +1,10 @@
-package dev.kindling.core.components.ui.consent
+package dev.kindling.core.components.manager
 
 import androidx.compose.runtime.*
-import dev.kindling.core.components.KConsentPreferences
-import dev.kindling.core.components.KConsentCategory
-import dev.kindling.core.components.KConsentCategoryType
-import dev.kindling.core.components.KDefaultConsentCategories
+import dev.kindling.core.components.ui.consent.KConsentCategory
+import dev.kindling.core.components.ui.consent.KConsentCategoryType
+import dev.kindling.core.components.ui.consent.KConsentPreferences
+import dev.kindling.core.components.ui.consent.KDefaultConsentCategories
 
 // ─── State Holder ─────────────────────────────────────────────────────────────
 

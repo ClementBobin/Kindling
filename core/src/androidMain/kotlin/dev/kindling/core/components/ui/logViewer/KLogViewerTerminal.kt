@@ -1,4 +1,4 @@
-package dev.kindling.core.components
+package dev.kindling.core.components.ui.logViewer
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -79,7 +79,13 @@ fun KLogViewerTerminal(
                 icon = Icons.Default.Terminal,
                 entryCountText = "${filteredEntries.size}${if (searchQuery.isNotBlank()) " / ${entries.size}" else ""} lines",
                 onCopy = {
-                    val text = entries.joinToString("\n") { "[${formatTimestamp(it.timestamp)}] [${LEVEL_LABELS[it.level]}] ${it.message}" }
+                    val text = entries.joinToString("\n") {
+                        "[${
+                            formatTimestamp(
+                                it.timestamp
+                            )
+                        }] [${LEVEL_LABELS[it.level]}] ${it.message}"
+                    }
                     resolvedClipboardHelper.copy(text)
                 },
                 onClear = onClear,
@@ -91,7 +97,11 @@ fun KLogViewerTerminal(
                         },
                         modifier = Modifier.size(28.dp)
                     ) {
-                        Icon(Icons.Default.Search, contentDescription = "Search", modifier = Modifier.size(16.dp))
+                        Icon(
+                            Icons.Default.Search,
+                            contentDescription = "Search",
+                            modifier = Modifier.size(16.dp)
+                        )
                     }
                     IconButton(
                         onClick = { paused = !paused },

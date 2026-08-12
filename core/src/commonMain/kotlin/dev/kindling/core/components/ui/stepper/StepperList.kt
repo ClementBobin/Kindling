@@ -1,4 +1,4 @@
-package dev.kindling.core.components.ui
+package dev.kindling.core.components.ui.stepper
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope

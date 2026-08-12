@@ -1,4 +1,4 @@
-package dev.kindling.core.components.ui
+package dev.kindling.core.components.ui.avatar
 
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp

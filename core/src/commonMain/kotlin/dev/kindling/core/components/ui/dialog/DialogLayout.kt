@@ -1,4 +1,4 @@
-package dev.kindling.core.components.ui
+package dev.kindling.core.components.ui.dialog
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -20,6 +20,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.kindling.core.theme.LocalKindlingShapes
+import dev.kindling.core.components.ui.KButton
+import dev.kindling.core.components.ui.KButtonVariant
 
 @Composable
 fun DialogHeader(
@@ -61,7 +63,7 @@ fun DialogDescription(
 
 /**
  * Footer row with optional built-in close button.
- * Uses [KButton] for [showCloseButton].
+ * Uses [dev.kindling.core.components.ui.KButton] for [showCloseButton].
  */
 @Composable
 fun DialogFooter(

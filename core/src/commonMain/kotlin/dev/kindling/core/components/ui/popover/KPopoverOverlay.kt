@@ -1,4 +1,4 @@
-package dev.kindling.core.components.ui
+package dev.kindling.core.components.ui.popover
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween

@@ -1,4 +1,4 @@
-package dev.kindling.core.components.layout.ui
+package dev.kindling.core.components.ui.layout
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box

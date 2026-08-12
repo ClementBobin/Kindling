@@ -1,15 +1,16 @@
-package dev.kindling.core.components
+package dev.kindling.core.components.ui.logViewer
 
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import dev.kindling.android.natif.ClipboardHelper
 
 @Composable
 fun rememberResolvedClipboardHelper(clipboardHelper: ClipboardHelper?): ClipboardHelper {
     val context = LocalContext.current
-    return androidx.compose.runtime.remember(clipboardHelper, context) {
+    return remember(clipboardHelper, context) {
         clipboardHelper ?: ClipboardHelper(context)
     }
 }

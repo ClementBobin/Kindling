@@ -1,4 +1,4 @@
-package dev.kindling.core.components.ui
+package dev.kindling.core.components.ui.combobox
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
@@ -22,6 +23,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.kindling.core.theme.LocalKindlingShapes
+import dev.kindling.core.components.ui.KButton
+import dev.kindling.core.components.ui.KButtonSize
+import dev.kindling.core.components.ui.KButtonVariant
 
 /**
  * Chip container shown inside the trigger area for multiple-selection mode.
@@ -69,13 +73,13 @@ fun ComboboxChip(
             KButton(
                 onClick = { state.removeChip(item) },
                 variant = KButtonVariant.Ghost,
-                size    = KButtonSize.IconXs,
+                size = KButtonSize.IconXs,
                 modifier = Modifier.size(14.dp)
             ) {
                 Icon(
                     Icons.Default.Close,
                     contentDescription = "Remove ${item.label}",
-                    modifier           = Modifier.size(10.dp)
+                    modifier = Modifier.size(10.dp)
                 )
             }
         }
@@ -93,7 +97,7 @@ fun ComboboxChipsInput(
     enabled: Boolean = true
 ) {
     val cs = MaterialTheme.colorScheme
-    androidx.compose.foundation.text.BasicTextField(
+    BasicTextField(
         value         = state.query,
         onValueChange = { state.query = it; state.expanded = true },
         enabled       = enabled,

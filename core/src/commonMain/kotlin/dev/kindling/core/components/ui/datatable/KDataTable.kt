@@ -1,4 +1,4 @@
-package dev.kindling.core.components.ui
+package dev.kindling.core.components.ui.datatable
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,6 +21,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.kindling.core.components.ui.pagination.Pagination
+import dev.kindling.core.components.ui.pagination.PaginationContent
+import dev.kindling.core.components.ui.pagination.PaginationEllipsis
+import dev.kindling.core.components.ui.pagination.PaginationItem
+import dev.kindling.core.components.ui.pagination.PaginationLink
+import dev.kindling.core.components.ui.pagination.PaginationNext
+import dev.kindling.core.components.ui.pagination.PaginationPrevious
 
 /**
  * Convenience data-table built on top of the primitive Table slots.
@@ -67,16 +74,16 @@ fun <T> KDataTable(
                 TableRow {
                     columns.forEach { col ->
                         TableHead(
-                            weight        = col.weight,
-                            align         = col.align,
-                            sortable      = col.sortable,
+                            weight = col.weight,
+                            align = col.align,
+                            sortable = col.sortable,
                             sortDirection = if (sortKey == col.key) sortDir else KSortDirection.None,
-                            onSort        = if (col.sortable && onSort != null) {
+                            onSort = if (col.sortable && onSort != null) {
                                 {
                                     val newDir = when {
-                                        sortKey != col.key          -> KSortDirection.Asc
+                                        sortKey != col.key -> KSortDirection.Asc
                                         sortDir == KSortDirection.Asc -> KSortDirection.Desc
-                                        else                        -> KSortDirection.None
+                                        else -> KSortDirection.None
                                     }
                                     sortKey = if (newDir == KSortDirection.None) null else col.key
                                     sortDir = newDir
@@ -95,12 +102,17 @@ fun <T> KDataTable(
                 } else {
                     displayData.forEachIndexed { i, row ->
                         if (i > 0) HorizontalDivider(
-                            color     = MaterialTheme.colorScheme.outline.copy(.5f),
+                            color = MaterialTheme.colorScheme.outline.copy(.5f),
                             thickness = 1.dp
                         )
                         TableRow(striped = striped && i % 2 == 1) {
                             columns.forEach { col ->
-                                TableCell(weight = col.weight, align = col.align) { col.cell(this, row) }
+                                TableCell(weight = col.weight, align = col.align) {
+                                    col.cell(
+                                        this,
+                                        row
+                                    )
+                                }
                             }
                         }
                     }
@@ -127,13 +139,18 @@ fun <T> KDataTable(
                             PaginationPrevious(
                                 onClick = { page-- },
                                 enabled = page > 1,
-                                text    = "Previous"
+                                text = "Previous"
                             )
                         }
                         // Window of pages
                         val range = maxOf(1, page - 1)..minOf(totalPages, page + 1)
                         if (range.first > 1) {
-                            PaginationItem { PaginationLink(1, isActive = false, onClick = { page = 1 }) }
+                            PaginationItem {
+                                PaginationLink(
+                                    1,
+                                    isActive = false,
+                                    onClick = { page = 1 })
+                            }
                             if (range.first > 2) PaginationItem { PaginationEllipsis() }
                         }
                         range.forEach { p ->
@@ -143,13 +160,18 @@ fun <T> KDataTable(
                         }
                         if (range.last < totalPages) {
                             if (range.last < totalPages - 1) PaginationItem { PaginationEllipsis() }
-                            PaginationItem { PaginationLink(totalPages, isActive = false, onClick = { page = totalPages }) }
+                            PaginationItem {
+                                PaginationLink(
+                                    totalPages,
+                                    isActive = false,
+                                    onClick = { page = totalPages })
+                            }
                         }
                         PaginationItem {
                             PaginationNext(
                                 onClick = { page++ },
                                 enabled = page < totalPages,
-                                text    = "Next"
+                                text = "Next"
                             )
                         }
                     }

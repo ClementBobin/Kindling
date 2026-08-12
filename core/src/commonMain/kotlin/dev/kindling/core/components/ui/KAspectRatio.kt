@@ -21,8 +21,8 @@ import androidx.compose.ui.Modifier
  */
 @Composable
 fun KAspectRatio(
-    ratio: Float = 1f,
     modifier: Modifier = Modifier,
+    ratio: Float = 1f,
     content: @Composable () -> Unit
 ) {
     Box(
