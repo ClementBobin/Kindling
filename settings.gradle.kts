@@ -23,7 +23,7 @@ dependencyResolutionManagement {
 
 rootProject.name = "kindling"
 
-include(":core", ":utils", ":compose", ":android")
+include(":core", ":utils", ":compose", ":android", ":processor")
 
 if (System.getenv("JITPACK") == null) {
     include(":sample")
