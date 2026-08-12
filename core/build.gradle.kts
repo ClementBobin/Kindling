@@ -34,6 +34,7 @@ kotlin {
                 implementation("io.insert-koin:koin-compose:${Versions.koin}")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.serialization}")
                 implementation(kotlin("stdlib"))
+                implementation(project(":utils"))
             }
         }
         val desktopMain by getting {
@@ -43,7 +44,6 @@ kotlin {
         }
         val androidMain by getting {
             dependencies {
-                implementation(project(":utils"))
                 implementation(project(":android"))
             }
         }
