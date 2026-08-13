@@ -19,7 +19,7 @@ dokka {
         // docs/*.md files must start with `# Module kindling` to be picked up.
         // fileTree avoids build failures when a listed file doesn't exist yet.
         includes.from(
-            fileTree("docs") { include("*.md") } + files("README.md")
+            files("README.md") + fileTree("docs") { include("*.md") }
         )
     }
  
