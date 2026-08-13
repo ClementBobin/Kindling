@@ -1,0 +1,8 @@
+TwitterCompose:
+  # Disables the multiple emitters rule globally for the whole project
+  MultipleEmitters:
+    active: false
+
+  # Disables the composition local allowlist rule globally
+  CompositionLocalAllowlist:
+    active: false

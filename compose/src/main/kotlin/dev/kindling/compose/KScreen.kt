@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.navigation.NavController
 import kotlinx.coroutines.flow.collect
@@ -28,7 +29,6 @@ import kotlinx.coroutines.flow.onEach
  * | Screen wrapper | Use when |
  * |---|---|
  * | `Screen` ← you are here | ViewModel extends [KViewModel] (Application + Koin) |
- * | [SimpleScreen][dev.kindling.compose.legacy.SimpleScreen] | ViewModel extends [KSimpleViewModel][dev.kindling.compose.legacy.KSimpleViewModel] |
  * | [KScreen][dev.kindling.compose.KScreen] | ViewModel extends the two-param [KViewModel][dev.kindling.compose.KViewModel] |
  *
  * ---
@@ -130,14 +130,16 @@ fun <State, VM : KViewModel<State>> KScreen(
     content: @Composable (state: State, viewModel: VM) -> Unit
 ) {
     val state by viewModel.state.collectAsState()
-
     val focusManager = LocalFocusManager.current
+
+    val currentOnEvent by rememberUpdatedState(onEvent)
+    val currentOnBack by rememberUpdatedState(onBack)
 
     if (onBack != null) {
         BackHandler(
             onBack = {
                 focusManager.clearFocus()
-                onBack(state, viewModel)
+                currentOnBack?.invoke(state, viewModel)
             }
         )
     }
@@ -145,8 +147,21 @@ fun <State, VM : KViewModel<State>> KScreen(
     LaunchedEffect(viewModel) {
         viewModel.events
             .onEach { event ->
-                if (event is Destination) navController.navigate(destination = event)
-                else onEvent(state, viewModel, event)
+                when (event) {
+                    is NavigationEvent -> {
+                        navController.navigate(
+                            destination = event.destination,
+                            navOptions = event.navOptions,
+                            navigatorExtras = event.navigatorExtras
+                        )
+                    }
+                    is Destination -> {
+                        navController.navigate(destination = event)
+                    }
+                    else -> {
+                        currentOnEvent(state, viewModel, event)
+                    }
+                }
             }.collect()
     }
 

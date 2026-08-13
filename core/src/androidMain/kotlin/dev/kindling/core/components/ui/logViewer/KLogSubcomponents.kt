@@ -36,8 +36,7 @@ internal fun KLogHeader(
     entryCountText: String,
     onCopy: () -> Unit,
     onClear: (() -> Unit)?,
-    extraActions: @Composable
-    @RowScope.() -> Unit = {}
+    extraActions: @Composable RowScope.() -> Unit = {}
 ) {
     Row(
         modifier = Modifier
@@ -118,8 +117,7 @@ internal fun KLogRowContent(
     timestamps: Boolean,
     showIndicatorDot: Boolean
 ) {
-    val levelColor =
-        _root_ide_package_.dev.kindling.core.components.ui.logViewer.getLevelColor(entry.level)
+    val levelColor = getLevelColor(entry.level)
     Row(
         modifier = Modifier
             .fillMaxWidth()

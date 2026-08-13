@@ -1,4 +1,4 @@
-@file:Suppress("UnusedReceiverParameter")
+@file:Suppress("UnusedReceiverParameter", "TooGenericExceptionCaught")
 
 package dev.kindling.compose
 

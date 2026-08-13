@@ -13,6 +13,7 @@ object Versions {
     const val ktor                  = "2.3.12"
     const val coil                  = "3.5.0"
     const val serialization         = "1.6.3"
+    const val immutableCollections   = "0.3.8"
 
     // AndroidX / Google
     const val annotationJvm          = "1.10.0"

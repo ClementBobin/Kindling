@@ -1,5 +1,8 @@
 package dev.kindling.core.components.ui.dashboard
 
+import dev.kindling.core.components.ui.dashboard.GeneratedWidgetCatalog
+import dev.kindling.core.components.ui.dashboard.KWidgetMetadata
+
 object KWidgetCatalogManager {
 
     fun listAll(limit: Int = Int.MAX_VALUE): List<KWidgetMetadata> {

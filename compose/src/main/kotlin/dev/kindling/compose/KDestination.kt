@@ -119,6 +119,22 @@ fun NavController.navigate(
 )
 
 /**
+ * Navigates to a [Destination] while clearing the current destination 
+ * from the back stack inclusively, ensuring its ViewModel and screen state are destroyed.
+ */
+fun NavController.navigateTransient(
+    destination: Destination,
+    popUpToDestination: Destination,
+    inclusive: Boolean = true
+) {
+    navigate(destination) {
+        popUpTo(popUpToDestination.route) {
+            this.inclusive = inclusive
+        }
+    }
+}
+
+/**
  * Pops the navigation back stack to the specified [Destination].
  *
  * ## Example

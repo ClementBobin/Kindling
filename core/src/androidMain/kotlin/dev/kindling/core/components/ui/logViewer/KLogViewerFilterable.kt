@@ -90,7 +90,8 @@ fun KLogViewerFilterable(
                     }
                     resolvedClipboardHelper.copy(text)
                 },
-                onClear = onClear
+                onClear = onClear,
+                extraActions = {}
             )
 
             // Filter Chips Bar

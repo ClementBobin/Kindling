@@ -2,6 +2,8 @@ package dev.kindling.core.components.ui.dashboard
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import dev.kindling.core.components.ui.dashboard.GeneratedWidgetMap
+import dev.kindling.core.components.ui.dashboard.KWidgetModel
 
 /**
  * Dynamic dispatcher component that evaluates incoming widget models and executes

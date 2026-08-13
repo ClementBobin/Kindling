@@ -46,7 +46,7 @@ fun RowScope.TableHead(
             .then(
                 if (sortable && onSort != null) Modifier.clickable(onClick = onSort) else Modifier
             ),
-        verticalAlignment     = Alignment.CenterVertically,
+        verticalAlignment    = Alignment.CenterVertically,
         horizontalArrangement = when (align) {
             TextAlign.End    -> Arrangement.End
             TextAlign.Center -> Arrangement.Center
@@ -68,7 +68,6 @@ fun RowScope.TableHead(
                     KSortDirection.Asc  -> "↑"
                     KSortDirection.Desc -> "↓"
                     KSortDirection.None -> "↕"
-                    else -> {}
                 },
                 fontSize = 11.sp,
                 color    = if (sortDirection != KSortDirection.None) cs.primary
@@ -93,7 +92,7 @@ fun RowScope.TableCell(
 ) {
     Row(
         modifier = modifier.weight(weight),
-        verticalAlignment     = Alignment.CenterVertically,
+        verticalAlignment    = Alignment.CenterVertically,
         horizontalArrangement = when (align) {
             TextAlign.End    -> Arrangement.End
             TextAlign.Center -> Arrangement.Center
@@ -112,7 +111,7 @@ fun TableCaption(
     content: @Composable () -> Unit
 ) {
     Box(
-        modifier         = modifier
+        modifier        = modifier
             .fillMaxWidth()
             .padding(top = 8.dp, bottom = 4.dp),
         contentAlignment = Alignment.Center

@@ -3,7 +3,6 @@ package dev.kindling.core.components.ui.logViewer
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import dev.kindling.core.components.ui.KLogLevel
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
