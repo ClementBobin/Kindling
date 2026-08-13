@@ -5,6 +5,11 @@ import androidx.compose.ui.Modifier
 import dev.kindling.core.components.ui.maskInput.KMaskInput
 import dev.kindling.core.components.ui.maskInput.KMaskPattern
 
+/**
+ * A pre-configured [KMaskInput] for phone numbers.
+ *
+ * Uses the default phone mask: `(###) ###-####`.
+ */
 @Composable
 fun PhoneInput(
     value: String,
@@ -23,6 +28,11 @@ fun PhoneInput(
     onValidationChange = onValidationChange
 )
 
+/**
+ * A pre-configured [KMaskInput] for Social Security Numbers (SSN).
+ *
+ * Uses the mask: `###-##-####`.
+ */
 @Composable
 fun SsnInput(
     value: String,
@@ -59,6 +69,11 @@ fun DateMaskInput(
     onValidationChange = onValidationChange
 )
 
+/**
+ * A pre-configured [KMaskInput] for credit card numbers.
+ *
+ * Uses a standard 16-digit mask: `#### #### #### ####`.
+ */
 @Composable
 fun CreditCardInput(
     value: String,
@@ -95,6 +110,12 @@ fun EinInput(
     onValidationChange = onValidationChange
 )
 
+/**
+ * A pre-configured [KMaskInput] for email addresses.
+ * 
+ * Note: While this uses [KMaskPattern.Email], email "masking" is typically
+ * just validation rather than a rigid character-by-character mask.
+ */
 @Composable
 fun EmailInput(
     value: String,

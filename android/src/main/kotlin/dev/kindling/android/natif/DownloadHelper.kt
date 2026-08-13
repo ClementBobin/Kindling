@@ -19,20 +19,18 @@ import androidx.core.net.toUri
 // ─────────────────────────────────────────────
 
 /**
- * Décrit un téléchargement à effectuer via [DownloadManager].
+ * Describes a download task to be performed via [DownloadManager].
  *
- * Presets :
- * - [DownloadConfig.publicFile] → dossier Téléchargements public, notification visible
+ * Use the provided presets:
+ * - [DownloadConfig.publicFile] -> Public Downloads folder, notification visible upon completion.
  *
- * Personnalisé :
+ * ### Example usage:
  * ```kotlin
  * val config = DownloadConfig(
- *     url              = "https://example.com/file.pdf",
- *     fileName         = "document.pdf",
- *     title            = "Document",
- *     description      = "Téléchargement en cours…",
- *     mimeType         = "application/pdf",
- *     requiresWifi     = true
+ *     url = "https://example.com/file.pdf",
+ *     fileName = "document.pdf",
+ *     title = "Financial Report",
+ *     requiresWifi = true
  * )
  * val downloadId = downloadHelper.enqueue(config)
  * ```
@@ -81,37 +79,34 @@ sealed class DownloadStatus {
 // ─────────────────────────────────────────────
 
 /**
- * Helper de téléchargement centralisé basé sur [DownloadManager].
+ * Centralized download helper based on Android's [DownloadManager].
  *
- * Aucune permission requise pour les téléchargements dans le dossier public
- * sur API 29+. Sur API < 29 : `WRITE_EXTERNAL_STORAGE`.
+ * Handles file downloads to public or private directories with automatic
+ * progress tracking and system notifications.
  *
- * Enregistrement Koin :
+ * **Permissions:**
+ * - No permissions required for public folder downloads on API 29+.
+ * - `WRITE_EXTERNAL_STORAGE` required on API < 29.
+ *
+ * ### Example usage:
  * ```kotlin
- * single { DownloadHelper(androidContext()) }
- * ```
- *
- * Utilisation :
- * ```kotlin
+ * val downloadHelper = DownloadHelper(context)
+ * 
  * val id = downloadHelper.enqueue(
  *     DownloadConfig.publicFile(
- *         url      = "https://example.com/report.pdf",
- *         fileName = "rapport.pdf",
- *         mimeType = "application/pdf"
+ *         url = "https://example.com/report.pdf",
+ *         fileName = "rapport.pdf"
  *     )
  * )
  *
- * // Observer la complétion
- * downloadHelper.completionFlow(id)
- *     .onEach { status -> when (status) {
- *         is DownloadStatus.Success -> openFile(status.localUri)
- *         is DownloadStatus.Failed  -> showError(status.reason)
- *         else -> {}
- *     }}
- *     .launchIn(lifecycleScope)
- *
- * // Annuler
- * downloadHelper.cancel(id)
+ * // Observe completion
+ * viewModelScope.launch {
+ *     downloadHelper.completionFlow(id).collect { status -> 
+ *         if (status is DownloadStatus.Success) {
+ *             openFile(status.localUri)
+ *         }
+ *     }
+ * }
  * ```
  */
 class DownloadHelper(context: Context) {
@@ -123,7 +118,7 @@ class DownloadHelper(context: Context) {
 
     // ── Enqueue ───────────────────────────────────────────────────────────────
 
-    /** Démarre le téléchargement décrit par [config]. Retourne l'ID du téléchargement. */
+    /** Starts the download described by [config]. Returns the download ID. */
     fun enqueue(config: DownloadConfig): Long {
         val request = DownloadManager.Request(config.url.toUri()).apply {
             setTitle(config.title)

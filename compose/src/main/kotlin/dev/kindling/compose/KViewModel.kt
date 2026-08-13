@@ -23,6 +23,10 @@ import org.koin.core.component.KoinComponent
  * hierarchy. It provides state management, one-shot events, and async helpers while
  * remaining compatible with Koin's `by inject()` delegation and the [Application] context.
  *
+ * This ViewModel follows a simplified MVI (Model-View-Intent) pattern where:
+ * - **State** is a single observable object (usually a data class).
+ * - **Events** are one-shot side effects (navigation, toasts, etc.).
+ *
  * ---
  *
  * ## When to use which ViewModel
@@ -36,22 +40,12 @@ import org.koin.core.component.KoinComponent
  *
  * ---
  *
- * ## Tradeoffs
- *
- * - ✅ Full Koin `by inject()` support via [KoinComponent]
- * - ✅ Access to [Application] context via `getApplication()`
- * - ❌ Events are typed as [Any] — no compile-time exhaustiveness checking
- * - ❌ Requires an [Application] reference at construction time
- * - ❌ Harder to unit-test due to [AndroidViewModel] dependency
- *
- * ---
- *
  * ## Basic usage
  *
  * ```kotlin
  * data class ProfileState(
  *     val isLoading: Boolean = true,
- *     val name: String = ""
+ *     val user: User? = null
  * )
  *
  * sealed interface ProfileEvent {
@@ -59,51 +53,38 @@ import org.koin.core.component.KoinComponent
  * }
  *
  * class ProfileViewModel(
- *     application: Application
+ *     application: Application,
+ *     private val repository: UserRepository
  * ) : KViewModel<ProfileState>(
  *     initialState = ProfileState(),
  *     application = application
  * ) {
- *     private val repo: ProfileRepository by inject()
+ *     // Koin injection supported
+ *     private val analytics: AnalyticsService by inject()
  *
- *     init { loadProfile() }
+ *     init { 
+ *         loadProfile() 
+ *     }
  *
  *     private fun loadProfile() {
  *         fetchData(
- *             source = { repo.getProfile() },
+ *             source = { repository.getUser() },
  *             onResult = { result ->
  *                 result
- *                     .onSuccess { profile ->
- *                         updateState { copy(name = profile.name, isLoading = false) }
+ *                     .onSuccess { user ->
+ *                         updateState { copy(user = user, isLoading = false) }
+ *                         analytics.logEvent("profile_loaded")
  *                     }
  *                     .onFailure {
+ *                         updateState { copy(isLoading = false) }
  *                         sendEvent(ProfileEvent.ShowToast("Failed to load profile"))
  *                     }
  *             }
  *         )
  *     }
- * }
- * ```
- *
- * ---
- *
- * ## Live data collection
- *
- * ```kotlin
- * class FeedViewModel(
- *     application: Application
- * ) : KViewModel<FeedState>(FeedState(), application) {
- *     private val repo: FeedRepository by inject()
- *
- *     init {
- *         collectData(
- *             source = { repo.observeFeed() },
- *             onResult = { result ->
- *                 result.onSuccess { items ->
- *                     updateState { copy(items = items) }
- *                 }
- *             }
- *         )
+ *     
+ *     fun onLogoutClick() {
+ *         sendEvent(AppScreen.Login) // Automatic navigation if AppScreen implements KDestination
  *     }
  * }
  * ```
@@ -115,8 +96,6 @@ import org.koin.core.component.KoinComponent
  * @see AndroidViewModel
  * @see KoinComponent
  * @see KScreen
- * @see dev.kindling.compose.legacy.KSimpleViewModel
- * @see dev.kindling.compose.KViewModel
  */
 open class KViewModel<State>(
     initialState: State,
@@ -204,12 +183,12 @@ open class KViewModel<State>(
      * ```kotlin
      * sendEvent(ProfileEvent.ShowToast("Profile saved"))
      *
-     * // Navigation events are intercepted automatically by Screen:
-     * sendEvent(Screen.Home)
+     * // Navigation events are intercepted automatically by KScreen:
+     * sendEvent(AppScreen.Home)
      * ```
      *
      * @param obj The event object to deliver. Can be any type, including a
-     *   [Destination] for automatic navigation handling in [KScreen].
+     *   [KDestination] for automatic navigation handling in [KScreen].
      */
     protected fun sendEvent(obj: Any) {
         viewModelScope.launch {

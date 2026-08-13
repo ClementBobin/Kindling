@@ -41,6 +41,36 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import dev.kindling.android.natif.ClipboardHelper
 
+/**
+ * A terminal-style log viewer component.
+ *
+ * Displays a list of log entries in a scrollable container that looks like a console.
+ * Supports searching, pausing (stopping auto-scroll), and copying logs to the clipboard.
+ *
+ * ### Example usage:
+ * ```kotlin
+ * val logs = listOf(
+ *     KLogEntry(message = "App started", level = KLogLevel.INFO),
+ *     KLogEntry(message = "Network error", level = KLogLevel.ERROR)
+ * )
+ * 
+ * KLogViewerTerminal(
+ *     entries = logs,
+ *     title = "Application Logs",
+ *     maxHeight = 400.dp
+ * )
+ * ```
+ *
+ * @param entries The list of [KLogEntry] objects to display.
+ * @param modifier The modifier to be applied to the terminal surface.
+ * @param title The title displayed in the header.
+ * @param maxHeight The maximum height of the scrollable log area.
+ * @param lineNumbers Whether to display line numbers next to each entry.
+ * @param timestamps Whether to display the timestamp for each entry.
+ * @param autoScroll Whether the view should automatically scroll to the bottom when new entries arrive.
+ * @param clipboardHelper Optional helper for copy actions.
+ * @param onClear Optional callback for the clear logs action.
+ */
 @Composable
 fun KLogViewerTerminal(
     entries: List<KLogEntry>,

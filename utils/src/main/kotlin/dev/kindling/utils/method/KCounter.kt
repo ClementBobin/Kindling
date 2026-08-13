@@ -6,25 +6,35 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
 /**
- * A mutable counter with optional min/max bounds and a configurable step.
+ * A reactive mutable counter with optional min/max bounds and a configurable step.
  *
- * Port of the `useCounter` React hook.
+ * This utility is a Kotlin port of common reactive counter hooks (like `useCounter`).
+ * It encapsulates the logic for incrementing, decrementing, and clamping values,
+ * while exposing the current count through a [StateFlow].
  *
+ * ### Example usage:
  * ```kotlin
- * val counter = Counter(initialValue = 0, min = 0, max = 10, step = 2)
- * counter.increment()  // → 2
- * counter.decrement()  // → 0
- * counter.set(7)       // → 7 (clamped to [min, max] only)
- * counter.reset()      // → 0
+ * val counter = KCounter(initialValue = 0, min = 0, max = 10, step = 2)
+ * 
+ * counter.increment()  // count becomes 2
+ * counter.decrement()  // count becomes 0
+ * counter.set(7)       // count becomes 7
+ * counter.increment()  // count becomes 9
+ * counter.increment()  // count becomes 10 (clamped to max)
+ * counter.reset()      // count returns to 0
  *
- * // Observe reactively:
- * counter.state.collect { value -> println(value) }
+ * // Reactively observing in a ViewModel or Composable:
+ * viewModelScope.launch {
+ *     counter.state.collect { value -> 
+ *         println("Current count: $value") 
+ *     }
+ * }
  * ```
  *
- * @param initialValue Starting value (clamped to [min, max]).
- * @param min          Lower bound, inclusive. Default: [Int.MIN_VALUE].
- * @param max          Upper bound, inclusive. Default: [Int.MAX_VALUE].
- * @param step         Amount added/subtracted on each increment/decrement. Default: 1.
+ * @param initialValue Starting value (automatically clamped to [[min], [max]]).
+ * @param min Lower bound, inclusive. Default: [Int.MIN_VALUE].
+ * @param max Upper bound, inclusive. Default: [Int.MAX_VALUE].
+ * @param step The amount to add or subtract on each [increment] or [decrement]. Must be positive. Default: 1.
  */
 class KCounter(
     initialValue: Int = 0,

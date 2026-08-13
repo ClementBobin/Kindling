@@ -14,31 +14,15 @@ import kotlinx.coroutines.flow.onEach
 /**
  * Legacy lifecycle-aware screen wrapper for [KViewModel]-driven Composables.
  *
- * `Screen` is the original screen wrapper in the Kindling hierarchy. It centralises
- * the boilerplate every screen needs:
+ * `KScreen` is the original screen wrapper in the Kindling hierarchy. It centralizes
+ * the boilerplate required for a standard feature screen:
  *
- * - **State collection** via [collectAsState]
- * - **One-shot event dispatch** — [Destination] events trigger automatic
- *   navigation; all other events are forwarded to [onEvent]
- * - **Back press handling** with optional focus clearing
- *
- * ---
- *
- * ## When to use
- *
- * | Screen wrapper | Use when |
- * |---|---|
- * | `Screen` ← you are here | ViewModel extends [KViewModel] (Application + Koin) |
- * | [KScreen][dev.kindling.compose.KScreen] | ViewModel extends the two-param [KViewModel][dev.kindling.compose.KViewModel] |
- *
- * ---
- *
- * ## Lifecycle awareness
- *
- * > **Note:** This wrapper uses [collectAsState] rather than `collectAsStateWithLifecycle`.
- * > State collection therefore continues while the app is in the background.
- * > Prefer [KScreen][dev.kindling.compose.KScreen] for new screens where
- * > lifecycle-safe collection is desired.
+ * - **State collection**: Automatically collects the ViewModel's [KViewModel.state] and
+ *   provides it to the content block.
+ * - **Event dispatching**: One-shot side effects emitted via [KViewModel.events] are
+ *   handled here. If an event implements [KDestination], it triggers automatic navigation.
+ * - **Back press handling**: Optional custom handling for the system back button,
+ *   with automatic focus clearing.
  *
  * ---
  *
@@ -50,20 +34,21 @@ import kotlinx.coroutines.flow.onEach
  *     viewModel: ProfileViewModel,
  *     navController: NavController
  * ) {
- *     Screen(
+ *     KScreen(
  *         viewModel = viewModel,
  *         navController = navController,
- *         onEvent = { _, _, event ->
+ *         onEvent = { state, vm, event ->
  *             when (event) {
- *                 is ProfileEvent.ShowToast ->
- *                     Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
- *                 else -> Unit
+ *                 is ProfileEvent.ShowToast -> {
+ *                     // Handle toast
+ *                 }
  *             }
  *         }
  *     ) { state, vm ->
+ *         // Screen content
  *         ProfileContent(
- *             state = state,
- *             onSave = vm::save
+ *             name = state.name,
+ *             onLogout = vm::onLogoutClick
  *         )
  *     }
  * }
@@ -71,55 +56,25 @@ import kotlinx.coroutines.flow.onEach
  *
  * ---
  *
- * ## Navigation
+ * ## Automatic Navigation
  *
- * Any event that implements [Destination] is intercepted and forwarded directly
- * to the [NavController] — no extra handling needed in [onEvent]:
- *
- * ```kotlin
- * // In your ViewModel:
- * sendEvent(AppScreen.Home)           // ← automatically navigated by Screen
- * sendEvent(ProfileEvent.ShowToast()) // ← forwarded to onEvent
- * ```
- *
- * ---
- *
- * ## Back handling
- *
- * Supply [onBack] to intercept the system back press. Focus is cleared
- * automatically before the callback fires, dismissing any open keyboard:
- *
- * ```kotlin
- * Screen(
- *     viewModel = viewModel,
- *     navController = navController,
- *     onBack = { state, vm ->
- *         if (state.hasUnsavedChanges) vm.showDiscardDialog()
- *         else navController.popBackStack()
- *     }
- * ) { state, vm -> ... }
- * ```
- *
- * If [onBack] is `null` (the default), the system back press is not intercepted
- * and default navigation behaviour applies.
+ * Any event emitted by the ViewModel that implements [KDestination] is automatically
+ * intercepted and used to navigate via the provided [navController].
  *
  * ---
  *
  * @param State UI state type produced by [viewModel].
  * @param VM ViewModel type, must extend [KViewModel]<[State]>.
- * @param viewModel The [KViewModel] driving this screen.
- * @param navController [NavController] used for automatic [Destination] navigation.
+ * @param viewModel The [KViewModel] instance driving this screen.
+ * @param navController [NavController] used for automatic navigation when [KDestination] events occur.
  * @param onBack Optional back press handler. Receives the latest state and ViewModel.
- *   Pass `null` to leave the system back behaviour unchanged.
+ *   Focus is cleared automatically before this callback is invoked.
  * @param onEvent Handler for non-navigation events emitted by [viewModel].
- *   Receives the latest state, the ViewModel, and the raw event object.
- *   Defaults to a no-op.
- * @param content Main screen content. Receives the latest [State] and [viewModel].
+ *   Receives the latest state, the ViewModel, and the event object.
+ * @param content The main UI content of the screen.
  *
  * @see KViewModel
- * @see dev.kindling.compose.KScreen
- * @see dev.kindling.compose.legacy.SimpleScreen
- * @see Destination
+ * @see KDestination
  */
 @Composable
 fun <State, VM : KViewModel<State>> KScreen(
@@ -155,7 +110,7 @@ fun <State, VM : KViewModel<State>> KScreen(
                             navigatorExtras = event.navigatorExtras
                         )
                     }
-                    is Destination -> {
+                    is KDestination -> {
                         navController.navigate(destination = event)
                     }
                     else -> {

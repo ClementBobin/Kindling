@@ -25,13 +25,33 @@ import dev.kindling.core.theme.LocalKindlingShapes
 /**
  * Shadcn/ui-style Card root — mirrors `card.tsx`.
  *
+ * Cards are used to group related information and actions into a single container.
+ * They support an optional top image and structured sub-components like [KCardHeader],
+ * [KCardContent], and [KCardFooter].
+ *
+ * ### Example usage:
  * ```kotlin
- * KCard {
- *     KCardHeader { KCardTitle("Title"); KCardDescription("Desc") }
- *     KCardContent { Text("Body") }
- *     KCardFooter { KButton("Action", onClick = {}) }
+ * KCard(
+ *     image = painterResource(Res.drawable.card_image),
+ *     modifier = Modifier.width(300.dp)
+ * ) {
+ *     KCardHeader {
+ *         KCardTitle("Kindling Card")
+ *         KCardDescription("A flexible card component for your UI.")
+ *     }
+ *     KCardContent {
+ *         Text("This is the main content area of the card.")
+ *     }
+ *     KCardFooter {
+ *         KButton("View More", onClick = { /* ... */ })
+ *     }
  * }
  * ```
+ *
+ * @param modifier The modifier to be applied to the card surface.
+ * @param size The size variant of the card (e.g., [KCardSize.Default], [KCardSize.Sm]).
+ * @param image Optional painter for a top-aligned cover image.
+ * @param content The structured content of the card.
  */
 @Composable
 fun KCard(
