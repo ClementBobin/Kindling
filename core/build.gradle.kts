@@ -33,6 +33,7 @@ kotlin {
                 implementation("io.coil-kt.coil3:coil-network-okhttp:${Versions.coil}")
                 implementation("io.insert-koin:koin-core:${Versions.koin}")
                 implementation("io.insert-koin:koin-compose:${Versions.koin}")
+                implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:${Versions.immutableCollections}")
                 implementation(kotlin("stdlib"))
                 implementation(project(":utils"))
             }
@@ -57,5 +58,15 @@ dependencies {
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask<*>>().configureEach {
     if (name != "kspCommonMainKotlinMetadata") {
         dependsOn("kspCommonMainKotlinMetadata")
+    }
+}
+
+tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
+    // Make sure Detekt tasks depend on KSP metadata generation if present
+    if (name.contains("Metadata", ignoreCase = true)) {
+        val kspTask = project.tasks.findByName("kspCommonMainKotlinMetadata")
+        if (kspTask != null) {
+            dependsOn(kspTask)
+        }
     }
 }
