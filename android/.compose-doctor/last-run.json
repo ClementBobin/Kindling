@@ -1,0 +1,11 @@
+{
+    "score": 95,
+    "ruleIds": [
+        "SwallowedException",
+        "LongMethod",
+        "EmptyFunctionBlock",
+        "SpreadOperator",
+        "CyclomaticComplexMethod",
+        "TooGenericExceptionCaught"
+    ]
+}

@@ -1,0 +1,7 @@
+{
+    "score": 99,
+    "ruleIds": [
+        "LongMethod",
+        "NestedBlockDepth"
+    ]
+}
