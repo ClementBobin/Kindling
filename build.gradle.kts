@@ -17,6 +17,21 @@ dokka {
         outputDirectory.set(layout.buildDirectory.dir("docs/html"))
         includes.from("README.md")
     }
+
+    // ── Versioning plugin ─────────────────────────────────────────────────
+    // Adds a version dropdown to the docs site.
+    // olderVersionsDir points to a folder structured as:
+    //   .ci-docs-history/
+    //     0.2.0/ ← previous Dokka output
+    //     0.3.0/ ← previous Dokka output
+    // The GitHub Actions workflow downloads, populates, and archives this dir.
+    pluginsConfiguration {
+        versioning {
+            version.set(Versions.libraryVersion)
+            olderVersionsDir.set(rootDir.resolve(".ci-docs-history"))
+            renderVersionsNavigationOnAllPages.set(true)
+        }
+    }
 }
 
 dependencies {
@@ -25,4 +40,8 @@ dependencies {
     dokka(project(":android"))
     dokka(project(":compose"))
     // :processor is internal (KSP), not part of the public API
+
+    // Dokka plugins — applied at doc-generation time only
+    dokkaPlugin("org.jetbrains.dokka:versioning-plugin:${Versions.dokka}")
+    dokkaPlugin("com.glureau:html-mermaid-dokka-plugin:0.6.0")
 }
