@@ -9,7 +9,7 @@ plugins {
     id("com.android.kotlin.multiplatform.library") apply false
     id("com.google.devtools.ksp") version Versions.ksp apply false
 }
-
+ 
 // ── Dokka multi-module aggregation ───────────────────────────────────────────
 dokka {
     dokkaPublications.html {
@@ -17,13 +17,12 @@ dokka {
         outputDirectory.set(layout.buildDirectory.dir("docs/html"))
         // README.md gives the module landing page its intro text.
         // docs/*.md files must start with `# Module kindling` to be picked up.
+        // fileTree avoids build failures when a listed file doesn't exist yet.
         includes.from(
-            "README.md",
-            "docs/getting-started.md",
-            "docs/contributing-docs.md",
+            fileTree("docs") { include("*.md") } + files("README.md")
         )
     }
-
+ 
     // ── Versioning plugin ─────────────────────────────────────────────────
     // Adds a version dropdown to the docs site.
     // olderVersionsDir points to a folder structured as:
@@ -39,6 +38,7 @@ dokka {
         }
     }
 }
+ 
 
 dependencies {
     dokka(project(":core"))
