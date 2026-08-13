@@ -1,12 +1,9 @@
 package dev.kindling.core.components.ui.dashboard
 
-import dev.kindling.core.components.ui.dashboard.GeneratedWidgetCatalog
-import dev.kindling.core.components.ui.dashboard.KWidgetMetadata
-
 object KWidgetCatalogManager {
 
     fun listAll(limit: Int = Int.MAX_VALUE): List<KWidgetMetadata> {
-        return GeneratedWidgetCatalog.take(limit)
+        return KWidgetRegistry.getAllMetadata().take(limit)
     }
 
     fun search(
@@ -14,7 +11,7 @@ object KWidgetCatalogManager {
         tag: String? = null,
         limit: Int = Int.MAX_VALUE
     ): List<KWidgetMetadata> {
-        return GeneratedWidgetCatalog.filter { metadata ->
+        return KWidgetRegistry.getAllMetadata().filter { metadata ->
             val matchesQuery = query.isBlank() ||
                 metadata.title.contains(query, ignoreCase = true) ||
                 metadata.type.contains(query, ignoreCase = true)
