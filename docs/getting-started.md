@@ -1,3 +1,4 @@
+# Package docs.start
 # Module kindling
 
 Getting started with Kindling — a Kotlin multi-module component library for Jetpack Compose.

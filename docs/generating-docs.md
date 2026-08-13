@@ -1,3 +1,4 @@
+# Package docs.generate
 # Module kindling
 
 How to write and contribute documentation for Kindling.
