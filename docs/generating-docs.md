@@ -1,46 +1,59 @@
-# Generating the docs site content
+# Module kindling
 
-The Kindling docs site (`/docs-site`) renders JSON files generated from Kotlin source and KDoc.
+How to write and contribute documentation for Kindling.
 
-## Generate JSON content
+## How docs are generated
+
+The API reference is generated automatically from KDoc comments in Kotlin source files using
+[Dokka](https://kotlinlang.org/docs/dokka-introduction.html). You never write docs outside the code.
+
+To generate locally:
 
 ```bash
-cd docs-site
-npm install
-npm run generate
+./gradlew dokkaGenerate
+# Output: build/docs/html/index.html
 ```
 
-This writes:
+## Writing KDoc
 
-- `docs-site/public/content/core.json`
-- `docs-site/public/content/utils.json`
-- `docs-site/public/content/compose.json`
+Every public API should have a KDoc comment. The format Dokka renders:
 
-## What gets generated
+```kotlin
+/**
+ * Short one-line summary shown in the index.
+ *
+ * Longer description that appears on the detail page.
+ * Supports **Markdown** formatting.
+ *
+ * @param visible Controls whether the animation triggers or resets.
+ * @param durationMs Animation duration in milliseconds.
+ * @param content Target content to reveal.
+ *
+ * ```kotlin
+ * // This code block appears as a usage example in the docs
+ * KSlideUp(visible = isReady) {
+ *     Text("Hello!")
+ * }
+ * ```
+ */
+@Composable
+fun KSlideUp(
+    visible: Boolean = true,
+    durationMs: Int = 600,
+    content: @Composable () -> Unit
+)
+```
 
-The generator is `docs-site/scripts/generate-core-docs.mjs`.
+## Adding extra documentation pages
 
-It auto-detects Kotlin sources by scanning these folders recursively for `*.kt`:
+Place `.md` files in the `docs/` folder. Each file must start with a `# Module kindling` heading
+so Dokka picks it up and embeds it into the generated site.
 
-- `core/src/androidMain/kotlin/dev/kindling/core/`
-- `utils/src/main/kotlin/dev/kindling/utils/` (fallback: `utils/src/main/kotlin/dev/kindling/library/utils/`)
-- `compose/src/main/kotlin/dev/kindling/compose/`
+```
+docs/
+  getting-started.md     ← Module-level, shown on the root index
+  contributing-docs.md   ← This file
+```
 
-For each documented API, it extracts:
-
-- **Props**: parameters + constructor properties.
-  - KDoc `@param name ...` and `@property name ...` become the prop description.
-- **Examples**: fenced code blocks in KDoc, for example:
-  - ` ```kotlin ... ``` ` will appear under the “Examples” section.
-- **Enums**:
-  - If a prop type is an `enum class`, the docs site displays its possible values automatically.
-  - You can also force/show enum values via KDoc with `@enum`:
-    - `@enum size Default, Sm, Lg`
-
-## Adding custom docs
-
-Everything shown on the docs site comes from KDoc:
-
-- Add extra prose after the first paragraph to expand the summary.
-- Add more fenced code blocks to add more examples.
-- Add or refine `@param`, `@property`, and `@enum` entries to improve the generated tables.
+Do **not** write docs under `# Package dev.kindling.foo` unless you specifically want to annotate
+a package index page — the `# Module kindling` heading appends content to the root module page.

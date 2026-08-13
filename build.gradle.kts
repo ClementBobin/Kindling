@@ -15,7 +15,13 @@ dokka {
     dokkaPublications.html {
         moduleName.set("Kindling")
         outputDirectory.set(layout.buildDirectory.dir("docs/html"))
-        includes.from("README.md")
+        // README.md gives the module landing page its intro text.
+        // docs/*.md files must start with `# Module kindling` to be picked up.
+        includes.from(
+            "README.md",
+            "docs/getting-started.md",
+            "docs/contributing-docs.md",
+        )
     }
 
     // ── Versioning plugin ─────────────────────────────────────────────────
