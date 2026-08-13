@@ -12,6 +12,8 @@ object Versions {
     const val koin                  = "4.2.1"
     const val ktor                  = "2.3.12"
     const val coil                  = "3.5.0"
+    const val serialization         = "1.6.3"
+    const val immutableCollections   = "0.3.8"
 
     // AndroidX / Google
     const val annotationJvm          = "1.10.0"
@@ -21,6 +23,9 @@ object Versions {
     const val playServicesLocation   = "21.3.0"
     const val biometric              = "1.1.0"
     const val desugarJdkLibs         = "2.1.4"
+
+    // Processor
+    const val ksp = "2.3.10"
 
     /**
      * Resolved at configuration time from the RELEASE_VERSION environment
