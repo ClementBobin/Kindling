@@ -4,10 +4,11 @@
 [![](https://jitpack.io/v/ClementBobin/Kindling.svg)](https://jitpack.io/#ClementBobin/Kindling)
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.clementbobin.kindling/core)](https://central.sonatype.com/search?q=io.github.clementbobin.kindling)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+[![API Docs](https://img.shields.io/badge/API%20docs-Dokka-orange)](https://clementbobin.github.io/Kindling/)
 
 A production-ready Kotlin multi-module component library for Jetpack Compose — shadcn/ui-inspired UI components, typed navigation, a structured ViewModel base, and coroutine utilities, all fully theme-aware via Material3.
 
-Docs site: https://clementbobin.github.io/Kindling/
+📖 **API reference:** https://clementbobin.github.io/Kindling/
 
 ---
 
@@ -17,7 +18,8 @@ Docs site: https://clementbobin.github.io/Kindling/
 |--------|----------|-------------|--------------|
 | `core` | `io.github.clementbobin.kindling:core` | Shadcn/ui-style Compose components (Button, Input, Dialog, Carousel, DataTable, DatePicker, Stepper, Toaster, Skeleton, Spinner, Combobox, Empty state, Pagination…) | Maven Central · JitPack |
 | `utils` | `io.github.clementbobin.kindling:utils` | Coroutine utilities: `Debouncer<T>`, `Throttler<T>`, `debounceLeading`, `throttleFirst` Flow extensions | Maven Central · JitPack |
-| `compose` | `io.github.clementbobin.kindling:compose` | Typed navigation (`Destination`, `KNavHost`), `KViewModel` base with state/events/data-loading helpers | Maven Central only |
+| `compose` | `io.github.clementbobin.kindling:compose` | Typed navigation (`Destination`, `KNavHost`), `KViewModel` base with state/events/data-loading helpers | Maven Central · JitPack |
+| `android` | `io.github.clementbobin.kindling:android` | Android platform helpers: 30+ native device helpers (Camera, Biometric, Bluetooth, Location, NFC…), `KHttpClient` (Ktor-based with token refresh & caching), and session/token storage utilities | Maven Central · JitPack |
 
 ---
 
@@ -28,7 +30,7 @@ Docs site: https://clementbobin.github.io/Kindling/
 ```kotlin
 repositories {
     mavenCentral()
-    maven("https://jitpack.io") // fallback for core and utils
+    maven("https://jitpack.io") // fallback
 }
 
 dependencies {
@@ -38,8 +40,11 @@ dependencies {
     // Coroutine utilities (debounce, throttle)
     implementation("io.github.clementbobin.kindling:utils:0.3.0")
 
-    // Typed navigation + KViewModel (Android only, Maven Central)
+    // Typed navigation + KViewModel (Android only)
     implementation("io.github.clementbobin.kindling:compose:0.3.0")
+
+    // Android platform helpers: device APIs, HTTP client, token storage
+    implementation("io.github.clementbobin.kindling:android:0.3.0")
 }
 ```
 
@@ -55,10 +60,11 @@ dependencies {
     implementation 'io.github.clementbobin.kindling:core:0.3.0'
     implementation 'io.github.clementbobin.kindling:utils:0.3.0'
     implementation 'io.github.clementbobin.kindling:compose:0.3.0'
+    implementation 'io.github.clementbobin.kindling:android:0.3.0'
 }
 ```
 
-> **Note:** `:compose` is an Android library and is only published to Maven Central. `:core` and `:utils` are available on both Maven Central and JitPack.
+> **Note:** `:compose` and `:android` are Android-only modules.
 
 ### Requirements
 
@@ -470,6 +476,83 @@ searchFlow
 clickFlow
     .kThrottleFirst(500.milliseconds)
     .collect { handleClick() }
+```
+
+---
+
+## Android helpers — `android`
+
+### Native device helpers
+
+30+ platform helpers wrapping Android APIs with a clean Kotlin interface:
+
+```kotlin
+// Biometric authentication
+BiometricHelper.authenticate(
+    activity    = this,
+    title       = "Confirm payment",
+    onSuccess   = { proceed() },
+    onFailure   = { showError(it) }
+)
+
+// Camera
+CameraHelper.capturePhoto(context, outputUri) { uri -> uploadPhoto(uri) }
+
+// Connectivity
+ConnectivityHelper.isOnline(context)               // Boolean
+ConnectivityHelper.observeNetwork(context).collect { isOnline -> … }
+
+// Location
+LocationHelper.getCurrentLocation(context) { lat, lng -> … }
+
+// Clipboard
+ClipboardHelper.copy(context, "Copied text")
+ClipboardHelper.paste(context)                     // String?
+
+// Haptic feedback
+HapticHelper.vibrate(context, HapticHelper.Pattern.Click)
+
+// Notifications
+NotificationHelper.show(context, title = "Hello", body = "World")
+
+// NFC
+NfcHelper.readTag(activity) { payload -> … }
+
+// … and Camera, Bluetooth, Battery, Audio, Display, Keystore, Wifi, and more
+```
+
+### KHttpClient (Ktor-based)
+
+A preconfigured Ktor HTTP client with token refresh, caching, and interceptors:
+
+```kotlin
+val client = KHttpClient(
+    config = KHttpConfig(
+        baseUrl      = "https://api.example.com",
+        tokenRefresh = KDefaultTokenRefresher(tokenStore, authApi),
+        cache        = KCacheConfig(maxAgeSeconds = 300)
+    )
+)
+
+// Automatic Bearer token injection + silent refresh on 401
+val response: MyDto = client.get("/users/me")
+```
+
+### Session & token storage
+
+```kotlin
+// Encrypted SharedPreferences
+val store: KTokenStore = KEncryptedTokenStore(context)
+
+// DataStore-backed
+val store: KTokenStore = KDataStoreTokenStore(context)
+
+// In-memory (tests / previews)
+val store: KTokenStore = KInMemoryTokenStore()
+
+// Session manager — combines token store + refresh logic
+val session = KSessionManager(store, tokenRefresher)
+session.getValidToken()   // refreshes automatically if expired
 ```
 
 ---
