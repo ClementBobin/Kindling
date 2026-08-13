@@ -3,15 +3,12 @@ package dev.kindling.compose
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NamedNavArgument
-import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
-import androidx.navigation.NavDeepLink
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
 import androidx.navigation.Navigator
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  KDestination
@@ -73,7 +70,7 @@ interface KDestination {
  * sealed interface HomeEvent {
  *
  *     data class Navigate(
- *         override val destination: Destination
+ *         override val destination: KDestination
  *     ) : HomeEvent, NavigationEvent
  * }
  * ```
@@ -83,7 +80,7 @@ interface KDestination {
  * @property navigatorExtras Optional navigator-specific extras.
  */
 interface NavigationEvent {
-    val destination: Destination
+    val destination: KDestination
     val navOptions: NavOptions?
         get() = null
 
@@ -96,7 +93,7 @@ interface NavigationEvent {
 // ─────────────────────────────────────────────────────────────────────────────
 
 /**
- * Navigates to a typed [Destination].
+ * Navigates to a typed [KDestination].
  *
  * ## Example
  *
@@ -109,7 +106,7 @@ interface NavigationEvent {
  * @param navigatorExtras Optional navigator-specific extras.
  */
 fun NavController.navigate(
-    destination: Destination,
+    destination: KDestination,
     navOptions: NavOptions? = null,
     navigatorExtras: Navigator.Extras? = null
 ) = navigate(
@@ -119,12 +116,12 @@ fun NavController.navigate(
 )
 
 /**
- * Navigates to a [Destination] while clearing the current destination 
+ * Navigates to a [KDestination] while clearing the current destination 
  * from the back stack inclusively, ensuring its ViewModel and screen state are destroyed.
  */
 fun NavController.navigateTransient(
-    destination: Destination,
-    popUpToDestination: Destination,
+    destination: KDestination,
+    popUpToDestination: KDestination,
     inclusive: Boolean = true
 ) {
     navigate(destination) {
@@ -135,7 +132,7 @@ fun NavController.navigateTransient(
 }
 
 /**
- * Pops the navigation back stack to the specified [Destination].
+ * Pops the navigation back stack to the specified [KDestination].
  *
  * ## Example
  *
@@ -154,7 +151,7 @@ fun NavController.navigateTransient(
  * @return `true` if the back stack was popped successfully.
  */
 fun NavController.popBackTo(
-    destination: Destination,
+    destination: KDestination,
     inclusive: Boolean = false
 ): Boolean = popBackStack(
     route = destination.route,
@@ -168,7 +165,7 @@ fun NavController.popBackTo(
 /**
  * Typed wrapper around Compose [NavHost].
  *
- * This variant accepts a typed [Destination] as the start destination,
+ * This variant accepts a typed [KDestination] as the start destination,
  * avoiding raw route strings at call sites.
  *
  * ## Example
@@ -200,7 +197,7 @@ fun NavController.popBackTo(
 @Composable
 fun KNavHost(
     navController: NavHostController,
-    startDestination: Destination,
+    startDestination: KDestination,
     modifier: Modifier = Modifier,
     builder: NavGraphBuilder.() -> Unit
 ) {
