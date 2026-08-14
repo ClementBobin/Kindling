@@ -51,27 +51,25 @@ import androidx.compose.ui.unit.dp
  * KindlingTheme(shapes = KindlingShapes(base = 20.dp)) { … }
  *
  * // Override one slot while keeping everything else default
- * KindlingTheme(shapes = KindlingShapes(base = 10.dp, card = 16.dp)) { … }
+ * KindlingTheme(shapes = KindlingShapes(base = 10.dp)) { … }
  * ```
  */
 @Immutable
 data class KindlingShapes(
-
-    // ── Root token ────────────────────────────────────────────────────────
     /** The global base radius.  Defaults to 10 dp (= 0.625 rem × 16). */
     val base: Dp = 10.dp,
 ) {
     // Derived Shape helpers used internally by components.
     // Components call these to avoid repeating RoundedCornerShape() everywhere.
-    val rounded = base
-    val roundedSm get() = calc(base, 0.6f)
-    val roundedMd get() = calc(base, 0.8f)
-    val roundedLg get() = base
-    val roundedXl get() = calc(base, 1.4f)
+    val rounded    = base
+    val roundedSm  get() = calc(base, 0.6f)
+    val roundedMd  get() = calc(base, 0.8f)
+    val roundedLg  get() = base
+    val roundedXl  get() = calc(base, 1.4f)
     val rounded2xl get() = calc(base, 1.8f)
     val rounded3xl get() = calc(base, 2.2f)
     val rounded4xl get() = calc(base, 2.6f)
-    val radius:  Shape get() = RoundedCornerShape(base)
+    val radius:    Shape get() = RoundedCornerShape(base)
     val radiusSm:  Shape get() = RoundedCornerShape(roundedSm)
     val radiusMd:  Shape get() = RoundedCornerShape(roundedMd)
     val radiusLg:  Shape get() = RoundedCornerShape(base)
@@ -82,30 +80,132 @@ data class KindlingShapes(
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-//  CompositionLocal
+//  KindlingColors
+//
+//  Mirrors shadcn's --chart-1 … --chart-5 CSS variables.
+//  Defined here alongside KindlingShapes so both token bags live in one file
+//  and are passed together through KindlingTheme — exactly like a single
+//  theme object in shadcn/ui.
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Five-slot chart color palette consumed by every Kindling chart renderer.
+ *
+ * Pass a custom instance to [KindlingTheme] to brand the entire chart library
+ * without touching individual composables:
+ *
+ * ```kotlin
+ * KindlingTheme(
+ *     colors = KindlingColors(
+ *         chart1 = Color(0xFFFF6B35),
+ *         chart2 = Color(0xFF004E89),
+ *         chart3 = Color(0xFF1A936F),
+ *         chart4 = Color(0xFFC6AC8F),
+ *         chart5 = Color(0xFF5C4742),
+ *     )
+ * ) { … }
+ * ```
+ */
+@Immutable
+data class KindlingColors(
+    /** Equivalent of --chart-1 */
+    val chart1: Color,
+    /** Equivalent of --chart-2 */
+    val chart2: Color,
+    /** Equivalent of --chart-3 */
+    val chart3: Color,
+    /** Equivalent of --chart-4 */
+    val chart4: Color,
+    /** Equivalent of --chart-5 */
+    val chart5: Color,
+) {
+    /** Returns the color at [index] mod 5, cycling through chart1…chart5. */
+    fun atIndex(index: Int): Color = when (index % 5) {
+        0 -> chart1
+        1 -> chart2
+        2 -> chart3
+        3 -> chart4
+        else -> chart5
+    }
+
+    companion object {
+        /**
+         * Derives a palette from the current [MaterialTheme.colorScheme].
+         * This is the default used by [KindlingTheme] so dark/light mode is
+         * handled automatically when no explicit [KindlingColors] is supplied.
+         */
+        @Composable
+        fun fromMaterial3(): KindlingColors {
+            val cs = MaterialTheme.colorScheme
+            return KindlingColors(
+                chart1 = cs.primary,
+                chart2 = cs.secondary,
+                chart3 = cs.tertiary,
+                chart4 = cs.primaryContainer,
+                chart5 = cs.secondaryContainer,
+            )
+        }
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+//  CompositionLocals
 // ─────────────────────────────────────────────────────────────────────────────
 
 /**
  * Provides [KindlingShapes] down the composition tree.
  *
- * Read via `LocalKindlingShapes.current` inside any composable, or use the
- * convenience extension [kindlingShapes].
+ * Read via `MaterialTheme.kindlingShapes` inside any composable.
  */
 val LocalKindlingShapes: ProvidableCompositionLocal<KindlingShapes> =
     staticCompositionLocalOf { KindlingShapes() }
 
 /**
- * Convenience accessor — mirrors `MaterialTheme.colorScheme`, `MaterialTheme.typography`.
+ * Provides [KindlingColors] down the composition tree.
+ *
+ * The static default is a safe fallback for use outside [KindlingTheme].
+ * [KindlingTheme] replaces it with M3-derived values at composition time.
+ *
+ * Read via `MaterialTheme.kindlingColors` inside any composable.
+ */
+val LocalKindlingColors: ProvidableCompositionLocal<KindlingColors> =
+    staticCompositionLocalOf {
+        KindlingColors(
+            chart1 = Color(0xFF2563EB),
+            chart2 = Color(0xFF16A34A),
+            chart3 = Color(0xFFD97706),
+            chart4 = Color(0xFFDC2626),
+            chart5 = Color(0xFF7C3AED),
+        )
+    }
+
+// ─────────────────────────────────────────────────────────────────────────────
+//  MaterialTheme convenience accessors
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Returns the active [KindlingShapes] from the composition tree.
  *
  * ```kotlin
  * val shapes = MaterialTheme.kindlingShapes
- * Surface(shape = shapes.buttonShape) { … }
+ * Surface(shape = shapes.radius) { … }
  * ```
  */
 val MaterialTheme.kindlingShapes: KindlingShapes
-    @Composable
-    @ReadOnlyComposable
+    @Composable @ReadOnlyComposable
     get() = LocalKindlingShapes.current
+
+/**
+ * Returns the active [KindlingColors] from the composition tree.
+ *
+ * ```kotlin
+ * val colors = MaterialTheme.kindlingColors
+ * Canvas { drawCircle(color = colors.chart1, …) }
+ * ```
+ */
+val MaterialTheme.kindlingColors: KindlingColors
+    @Composable @ReadOnlyComposable
+    get() = LocalKindlingColors.current
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  KindlingTheme
@@ -114,87 +214,98 @@ val MaterialTheme.kindlingShapes: KindlingShapes
 /**
  * Root theme wrapper for any app using Kindling.
  *
- * Wraps [MaterialTheme] and additionally provides [KindlingShapes] (and, in
- * the future, any other Kindling-specific tokens) via composition locals.
+ * Wraps [MaterialTheme] and provides [KindlingShapes] and [KindlingColors]
+ * via composition locals so every descendant composable can read them without
+ * explicit parameter threading.
  *
  * **Placement**: call once at the top of your NavHost / Activity composition,
- * just like you would call `MaterialTheme { … }`.
+ * just like `MaterialTheme { … }`.
  *
  * ```kotlin
- * // Minimal — uses library defaults (base = 10.dp)
+ * // Minimal — library defaults (base = 10.dp, M3-derived chart colors)
  * KindlingTheme {
  *     Scaffold { … }
  * }
  *
- * // With a custom color scheme and sharp corners
+ * // Custom corner radius + branded chart palette
  * KindlingTheme(
  *     colorScheme = myDarkColorScheme,
- *     shapes      = KindlingShapes(base = 4.dp)
- * ) {
- *     Scaffold { … }
- * }
- *
- * // Override only the card radius
- * KindlingTheme(shapes = KindlingShapes(card = 24.dp)) {
- *     Scaffold { … }
- * }
+ *     shapes      = KindlingShapes(base = 4.dp),
+ *     colors      = KindlingColors(
+ *         chart1 = Color(0xFFFF6B35),
+ *         chart2 = Color(0xFF004E89),
+ *         chart3 = Color(0xFF1A936F),
+ *         chart4 = Color(0xFFC6AC8F),
+ *         chart5 = Color(0xFF5C4742),
+ *     ),
+ * ) { … }
  * ```
  *
  * @param colorScheme  Material3 color scheme.  Defaults to [MaterialTheme.colorScheme]
- *                     so you can nest KindlingTheme inside an existing MaterialTheme.
+ *                     so you can nest [KindlingTheme] inside an existing [MaterialTheme].
  * @param typography   Material3 typography.
  * @param shapes       Kindling shape tokens.  Defaults to [KindlingShapes] (base = 10 dp).
+ * @param colors       Five-slot chart palette.  Defaults to [KindlingColors.fromMaterial3]
+ *                     so dark/light mode is handled automatically when omitted.
  * @param content      The composition subtree.
  */
 @Composable
 fun KindlingTheme(
-    colorScheme: ColorScheme = MaterialTheme.colorScheme,
-    typography: Typography   = MaterialTheme.typography,
-    shapes: KindlingShapes   = KindlingShapes(),
-    content: @Composable () -> Unit
+    colorScheme: ColorScheme    = MaterialTheme.colorScheme,
+    typography:  Typography     = MaterialTheme.typography,
+    shapes:      KindlingShapes = KindlingShapes(),
+    colors:      KindlingColors = KindlingColors.fromMaterial3(),
+    content: @Composable () -> Unit,
 ) {
-    CompositionLocalProvider(LocalKindlingShapes provides shapes) {
+    CompositionLocalProvider(
+        LocalKindlingShapes provides shapes,
+        LocalKindlingColors provides colors,
+    ) {
         MaterialTheme(
             colorScheme = colorScheme,
             typography  = typography,
-            content     = content
+            content     = content,
         )
     }
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+//  Modifier shadow helpers
+// ─────────────────────────────────────────────────────────────────────────────
 
 fun Modifier.kindlingShadowXs(shape: Shape): Modifier = this.shadow(
     elevation    = 1.dp,
     shape        = shape,
     ambientColor = Color.Black.copy(alpha = 0.05f),
-    spotColor    = Color.Black.copy(alpha = 0.05f)
+    spotColor    = Color.Black.copy(alpha = 0.05f),
 )
 
 fun Modifier.kindlingShadowSm(shape: Shape): Modifier = this.shadow(
     elevation    = 2.dp,
     shape        = shape,
     ambientColor = Color.Black.copy(alpha = 0.07f),
-    spotColor    = Color.Black.copy(alpha = 0.07f)
+    spotColor    = Color.Black.copy(alpha = 0.07f),
 )
 
 fun Modifier.kindlingShadowMd(shape: Shape): Modifier = this.shadow(
     elevation    = 4.dp,
     shape        = shape,
     ambientColor = Color.Black.copy(alpha = 0.10f),
-    spotColor    = Color.Black.copy(alpha = 0.10f)
+    spotColor    = Color.Black.copy(alpha = 0.10f),
 )
 
 fun Modifier.kindlingShadowLg(shape: Shape): Modifier = this.shadow(
     elevation    = 8.dp,
     shape        = shape,
     ambientColor = Color.Black.copy(alpha = 0.12f),
-    spotColor    = Color.Black.copy(alpha = 0.12f)
+    spotColor    = Color.Black.copy(alpha = 0.12f),
 )
 
 fun Modifier.kindlingShadowNone(shape: Shape = RoundedCornerShape(0.dp)): Modifier = this.shadow(
     elevation    = 0.dp,
     shape        = shape,
     ambientColor = Color.Transparent,
-    spotColor    = Color.Transparent
+    spotColor    = Color.Transparent,
 )
 
 fun Modifier.kindlingClipNone(shape: Shape = RoundedCornerShape(0.dp)): Modifier = this.clip(shape)

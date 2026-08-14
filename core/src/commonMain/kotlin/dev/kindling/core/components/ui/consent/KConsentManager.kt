@@ -1,4 +1,4 @@
-package dev.kindling.core.components.manager
+package dev.kindling.core.components.ui.consent.manager
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider

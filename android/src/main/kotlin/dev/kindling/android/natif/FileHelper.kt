@@ -19,12 +19,12 @@ import java.nio.charset.Charset
 // ─────────────────────────────────────────────
 
 /**
- * Décrit la destination d'un fichier dans MediaStore.
+ * Describes the destination of a file in Android's MediaStore.
  *
- * Presets :
- * - [FileDestination.Downloads] → dossier Téléchargements
- * - [FileDestination.Pictures]  → dossier Images
- * - [FileDestination.Documents] → dossier Documents
+ * Use the provided presets:
+ * - [FileDestination.Downloads] -> Downloads folder.
+ * - [FileDestination.Pictures]  -> Pictures folder.
+ * - [FileDestination.Documents] -> Documents folder.
  */
 data class FileDestination(
     val collection: Uri,
@@ -55,34 +55,29 @@ data class FileDestination(
 // ─────────────────────────────────────────────
 
 /**
- * Helper fichiers centralisé (MediaStore + SAF).
+ * Centralized file helper for Android (MediaStore + Storage Access Framework).
  *
- * Deux approches :
- * - **MediaStore** (API 29+) → écriture dans les dossiers publics sans permission.
- * - **SAF** → sélecteur de fichiers système, pas de permission requise.
+ * Provides two main approaches:
+ * - **MediaStore** (API 29+): For writing to public folders without explicit storage permissions.
+ * - **SAF (Storage Access Framework)**: System file picker for reading/creating files.
  *
- * Sur API < 29, `WRITE_EXTERNAL_STORAGE` est requise pour MediaStore.
- *
- * Enregistrement Koin :
+ * ### Example usage:
  * ```kotlin
- * single { FileHelper(androidContext()) }
- * ```
- *
- * Utilisation :
- * ```kotlin
- * // Écrire dans les Téléchargements
+ * val fileHelper = FileHelper(context)
+ * 
+ * // Save to Downloads using MediaStore
  * fileHelper.saveToMediaStore(
- *     context     = context,
- *     fileName    = "export.csv",
- *     mimeType    = "text/csv",
+ *     context = context,
+ *     fileName = "export.csv",
+ *     mimeType = "text/csv",
  *     destination = FileDestination.Downloads
  * ) { outputStream ->
- *     outputStream.write(csvData.toByteArray())
+ *     outputStream.write("id,name\n1,Kindling".toByteArray())
  * }
- *
- * // Sélecteur de fichier (SAF)
+ * 
+ * // Open system file picker
  * val launcher = fileHelper.registerPickerLauncher(activity) { uri ->
- *     uri?.let { fileHelper.readBytes(context, it) }
+ *     uri?.let { /* Read file */ }
  * }
  * fileHelper.openPicker(launcher, mimeType = "application/pdf")
  * ```

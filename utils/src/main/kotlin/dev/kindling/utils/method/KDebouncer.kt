@@ -12,37 +12,38 @@ import kotlinx.coroutines.FlowPreview
 
 /**
  * A coroutine-based debouncer that delays forwarding values until no new
- * values have arrived for [delay].
+ * values have arrived for the specified [delay] duration.
  *
- * ### Basic usage
+ * This is typically used for search fields, auto-saves, or any input-triggered
+ * actions that should only execute after the user has stopped typing.
+ *
+ * ### Basic usage (Flow-based)
  * ```kotlin
- * val debouncer = Debouncer<String>(scope = viewModelScope, delay = 300.milliseconds)
+ * val debouncer = KDebouncer<String>(scope = viewModelScope, delay = 300.milliseconds)
  *
  * // Emit from a text-field's onValueChange:
  * onValueChange = { text -> debouncer.emit(text) }
  *
  * // Collect the stable values:
- * debouncer.flow.collect { stableText -> search(stableText) }
+ * viewModelScope.launch {
+ *     debouncer.flow.collect { stableText -> search(stableText) }
+ * }
  * ```
  *
- * ### One-shot callback style
+ * ### Callback-style usage
  * ```kotlin
- * val debouncer = Debouncer<String>(scope = viewModelScope)
+ * val debouncer = KDebouncer<String>(scope = viewModelScope)
  * debouncer.onDebounced { query -> viewModel.search(query) }
- * // then in UI:
- * debouncer.emit(searchText)
+ * 
+ * // Then in UI:
+ * onValueChange = { debouncer.emit(it) }
  * ```
  *
- * ### Trailing-edge (default) vs leading-edge
- * By default the debouncer fires *after* the quiet period ends (trailing edge).
- * Set [leading] = `true` to fire immediately on the first value, then suppress
- * subsequent values for [delay].
- *
- * @param T        The type of values being debounced.
- * @param scope    The [CoroutineScope] that owns the internal job.
- * @param delay    Quiet period before a value is forwarded.  Default: 300 ms.
- * @param leading  If `true`, emit the first value immediately and suppress
- *                 the rest until the quiet period elapses.  Default: `false`.
+ * @param T The type of values being debounced.
+ * @param scope The [CoroutineScope] in which the debouncing coroutine runs.
+ * @param delay The quiet period duration before a value is forwarded. Default: 300ms.
+ * @param leading If `true`, emit the first value immediately and suppress subsequent
+ *                values until the quiet period elapses. Default: `false`.
  */
 @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
 class KDebouncer<T>(
@@ -100,17 +101,29 @@ class KDebouncer<T>(
 // ─────────────────────────────────────────────────────────────────────────────
 
 /**
- * A coroutine-based throttler that forwards at most one value per [period].
+ * A coroutine-based throttler that ensures at most one value is forwarded per [period].
+ *
+ * Throttling is useful for rate-limiting expensive operations like window resizing,
+ * scrolling events, or "fast-click" button protection.
  *
  * Uses leading-edge semantics: the first value in each window is emitted
- * immediately; subsequent values within the same window are dropped.
+ * immediately; subsequent values within the same [period] are dropped.
  *
+ * ### Example usage:
  * ```kotlin
- * val throttler = Throttler<ClickEvent>(scope = viewModelScope, period = 500.milliseconds)
- * throttler.onThrottled { event -> handleClick(event) }
- * // in UI:
- * throttler.emit(ClickEvent)
+ * val throttler = KThrottler<Unit>(scope = viewModelScope, period = 500.milliseconds)
+ * 
+ * throttler.onThrottled { 
+ *     println("Button clicked - performing action") 
+ * }
+ * 
+ * // In UI:
+ * Button(onClick = { throttler.emit(Unit) }) { Text("Click Me") }
  * ```
+ *
+ * @param T The type of values being throttled.
+ * @param scope The [CoroutineScope] in which the throttler runs.
+ * @param period The minimum time interval between consecutive emissions. Default: 500ms.
  */
 class KThrottler<T>(
     private val scope: CoroutineScope,
@@ -144,11 +157,18 @@ class KThrottler<T>(
 // ─────────────────────────────────────────────────────────────────────────────
 
 /**
- * Creates a [Debouncer] and immediately registers a callback.
+ * Creates and starts a [KDebouncer] with an immediate callback.
  *
+ * This is a shorthand for creating a [KDebouncer] and calling [KDebouncer.onDebounced].
+ *
+ * ### Example usage:
  * ```kotlin
- * private val searchDebouncer = debounce(viewModelScope, 300.milliseconds) { q -> search(q) }
- * // in UI: onValueChange = { searchDebouncer.emit(it) }
+ * private val searchDebouncer = Kdebounce<String>(viewModelScope) { query ->
+ *     performSearch(query)
+ * }
+ * 
+ * // In UI:
+ * onValueChange = { searchDebouncer.emit(it) }
  * ```
  */
 fun <T> Kdebounce(
@@ -159,10 +179,18 @@ fun <T> Kdebounce(
 ): KDebouncer<T> = KDebouncer<T>(scope, delay, leading).also { it.onDebounced(block) }
 
 /**
- * Creates a [Throttler] and immediately registers a callback.
+ * Creates and starts a [KThrottler] with an immediate callback.
  *
+ * This is a shorthand for creating a [KThrottler] and calling [KThrottler.onThrottled].
+ *
+ * ### Example usage:
  * ```kotlin
- * private val clickThrottler = throttle(viewModelScope, 500.milliseconds) { handleClick() }
+ * private val clickThrottler = Kthrottle<Unit>(viewModelScope, 500.milliseconds) {
+ *     handleSubmit()
+ * }
+ * 
+ * // In UI:
+ * Button(onClick = { clickThrottler.emit(Unit) }) { ... }
  * ```
  */
 fun <T> Kthrottle(

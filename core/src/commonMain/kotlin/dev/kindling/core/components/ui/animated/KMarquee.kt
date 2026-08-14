@@ -36,6 +36,26 @@ object KMarqueeDefaults {
 /**
  * A seamless infinite scrolling marquee container.
  *
+ * This component scrolls its content continuously in a specified direction.
+ * It is ideal for tickers, news feeds, or showcasing a list of logos/items
+ * that should loop forever.
+ *
+ * ### Example usage:
+ * ```kotlin
+ * KMarquee(
+ *     direction = KMarqueeDirection.FORWARD,
+ *     velocity = 40.dp,
+ *     spacing = 20.dp
+ * ) {
+ *     Row(verticalAlignment = Alignment.CenterVertically) {
+ *         repeat(10) { index ->
+ *             Text("Item $index", modifier = Modifier.padding(horizontal = 8.dp))
+ *             Icon(Icons.Default.Star, null)
+ *         }
+ *     }
+ * }
+ * ```
+ *
  * @param modifier Applied to the outer layout wrapper.
  * @param direction Controls the scroll direction ([KMarqueeDirection.FORWARD] or [KMarqueeDirection.BACKWARD]).
  * @param velocity Base speed in Dp per second.

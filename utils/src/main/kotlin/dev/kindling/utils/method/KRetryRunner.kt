@@ -11,40 +11,44 @@ import kotlin.math.pow
 import kotlin.random.Random
 
 /**
- * Retries a suspending operation with configurable exponential back-off.
+ * A utility that retries a suspending operation with configurable exponential back-off and jitter.
  *
- * Port of the `useRetry` React hook.
+ * This is a Kotlin implementation of the `useRetry` pattern. It manages the lifecycle of
+ * asynchronous attempts, providing reactive state for loading status, current attempt count,
+ * successful values, and the last encountered error.
  *
+ * ### Example usage:
  * ```kotlin
- * val runner = RetryRunner<String>(
+ * val runner = KRetryRunner<User>(
  *     scope = viewModelScope,
  *     retries = 3,
- *     delay = 250.milliseconds,
+ *     delay = 500.milliseconds,
  *     backoffFactor = 2.0,
- *     onSuccess = { value -> println("Got: $value") },
- *     onError = { err -> println("Attempt failed: $err") },
+ *     onSuccess = { user -> println("User fetched: ${user.name}") },
+ *     onError = { err -> println("Attempt failed: ${err.message}") }
  * )
  *
- * // Manually trigger:
- * runner.run { fetchData() }
+ * // Trigger manually:
+ * runner.launch { api.getUser(id) }
  *
- * // Or auto-run with a fixed operation:
- * // autoRun cancels the previous auto-run job and launches block once.
- * runner.autoRun { fetchData() }
- *
- * // Observe state:
- * runner.isLoading.collect { loading -> showSpinner(loading) }
- * runner.value.collect { v -> if (v != null) render(v) }
+ * // Observe in UI:
+ * val isLoading by runner.isLoading.collectAsState()
+ * val error by runner.error.collectAsState()
+ * val user by runner.value.collectAsState()
+ * 
+ * if (isLoading) CircularProgressIndicator()
+ * error?.let { Text("Error: ${it.message}") }
+ * user?.let { UserProfile(it) }
  * ```
  *
- * @param T             The result type of the async operation.
- * @param scope         [CoroutineScope] that owns retry jobs.
- * @param retries       Maximum number of *additional* attempts after the first. Default: 3.
- * @param delay         Initial wait between attempts. Default: 250 ms.
- * @param backoffFactor Multiplier applied to the delay after each failure. Default: 2.0.
- * @param maxDelay      Ceiling on the computed delay. Default: 10 s.
- * @param onSuccess     Optional callback invoked once with the successful value.
- * @param onError       Optional callback invoked after each failed attempt.
+ * @param T The type of the result produced by the asynchronous operation.
+ * @param scope The [CoroutineScope] that owns the retry jobs.
+ * @param retries The maximum number of *additional* attempts after the first failure. Default: 3.
+ * @param delay The initial wait duration between the first and second attempt. Default: 250ms.
+ * @param backoffFactor The multiplier applied to the wait duration after each failure. Default: 2.0.
+ * @param maxDelay The maximum allowed delay between attempts. Default: 10s.
+ * @param onSuccess Optional callback invoked when an attempt succeeds.
+ * @param onError Optional callback invoked after each failed attempt.
  */
 @Suppress("LongParameterList")
 class KRetryRunner<T>(

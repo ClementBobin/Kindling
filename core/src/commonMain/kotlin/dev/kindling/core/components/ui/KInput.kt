@@ -23,12 +23,39 @@ import dev.kindling.core.theme.LocalKindlingShapes
 /**
  * Shadcn/ui-style Input — mirrors `input.tsx`.
  *
+ * A standardized text input component that follows the Kindling design system.
+ * It provides built-in support for placeholders, error states, disabled states,
+ * and password masking.
+ *
  * Respects [androidx.compose.ui.platform.LocalLayoutDirection] via Compose RTL support.
  *
+ * ### Example usage:
  * ```kotlin
- * var value by remember { mutableStateOf("") }
- * KInput(value = value, onValueChange = { value = it }, placeholder = "m@example.com")
+ * var email by remember { mutableStateOf("") }
+ * 
+ * KInput(
+ *     value = email,
+ *     onValueChange = { email = it },
+ *     placeholder = "name@example.com",
+ *     leadingIcon = { Icon(Icons.Default.Email, null) }
+ * )
  * ```
+ *
+ * @param value The current text value to display.
+ * @param onValueChange Callback invoked when the text value changes.
+ * @param modifier The modifier to be applied to the input layout.
+ * @param placeholder The placeholder text to display when the input is empty.
+ * @param enabled Whether the input is enabled for interaction.
+ * @param isPassword Whether the input should mask the text (e.g., for passwords).
+ * @param isError Whether the input should display an error state.
+ * @param singleLine Whether the input should be restricted to a single line.
+ * @param maxLines The maximum number of lines allowed.
+ * @param minLines The minimum number of lines allowed.
+ * @param leadingIcon Optional leading composable slot.
+ * @param trailingIcon Optional trailing composable slot.
+ * @param keyboardOptions Software keyboard options.
+ * @param keyboardActions Software keyboard actions.
+ * @param interactionSource The [MutableInteractionSource] to represent the stream of interactions.
  */
 @Composable
 fun KInput(

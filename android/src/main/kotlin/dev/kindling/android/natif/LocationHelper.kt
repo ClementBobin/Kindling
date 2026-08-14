@@ -24,13 +24,13 @@ import kotlin.coroutines.resumeWithException
 // ─────────────────────────────────────────────
 
 /**
- * Décrit la précision et la fréquence de mise à jour de la localisation.
+ * Describes the accuracy and frequency of location updates.
  *
- * Presets :
- * - [LocationConfig.HighAccuracy]  → GPS précis, mises à jour fréquentes
- * - [LocationConfig.Balanced]      → équilibre précision / batterie
- * - [LocationConfig.LowPower]      → réseau uniquement, économie de batterie
- * - [LocationConfig.Passive]       → mises à jour passives (autres apps uniquement)
+ * Use the provided presets:
+ * - [LocationConfig.HighAccuracy] -> Precise GPS fixes, frequent updates.
+ * - [LocationConfig.Balanced]     -> Balance between accuracy and battery life (Wifi/Cellular).
+ * - [LocationConfig.LowPower]     -> Network-only fixes, optimized for battery.
+ * - [LocationConfig.Passive]      -> Receives updates triggered by other apps only.
  */
 data class LocationConfig(
     val priority: Int       = Priority.PRIORITY_BALANCED_POWER_ACCURACY,
@@ -67,34 +67,31 @@ data class LocationConfig(
 // ─────────────────────────────────────────────
 
 /**
- * Helper de localisation centralisé basé sur FusedLocationProviderClient.
+ * Centralized location helper based on Google Play Services FusedLocationProviderClient.
  *
- * Nécessite Google Play Services. Ajouter dans `android/build.gradle.kts` :
+ * This utility provides high-level APIs for fetching the last known location,
+ * getting a single fresh fix, or observing a continuous stream of updates.
+ *
+ * **Requirements:**
+ * - Google Play Services dependency in `android/build.gradle.kts`
+ * - Permissions: `ACCESS_FINE_LOCATION` or `ACCESS_COARSE_LOCATION`
+ *
+ * ### Example usage:
  * ```kotlin
- * implementation("com.google.android.gms:play-services-location:21.3.0")
- * ```
+ * val locationHelper = LocationHelper(context)
  *
- * Permissions requises (au moins une) :
- * - `ACCESS_FINE_LOCATION`   → précision GPS
- * - `ACCESS_COARSE_LOCATION` → précision réseau
- *
- * Enregistrement Koin :
- * ```kotlin
- * single { LocationHelper(androidContext()) }
- * ```
- *
- * Utilisation :
- * ```kotlin
- * // Dernière position connue (rapide, peut être null)
+ * // Get last known location (fast, can be null)
  * val last = locationHelper.getLastLocation()
  *
- * // Position unique (attend le prochain fix)
+ * // Get single fresh fix
  * val location = locationHelper.getCurrentLocation(LocationConfig.HighAccuracy)
  *
- * // Stream continu
- * locationHelper.locationFlow(LocationConfig.Balanced)
- *     .onEach { location -> updateMap(location) }
- *     .launchIn(viewModelScope)
+ * // Continuous stream
+ * viewModelScope.launch {
+ *     locationHelper.locationFlow(LocationConfig.Balanced).collect { location ->
+ *         updateMap(location)
+ *     }
+ * }
  * ```
  */
 class LocationHelper(context: Context) {

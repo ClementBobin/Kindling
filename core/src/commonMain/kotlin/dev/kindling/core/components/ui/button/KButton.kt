@@ -23,16 +23,45 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 /**
- * Shadcn/ui-style Button.
+ * Shadcn/ui-style Button — mirrors `button.tsx`.
+ *
+ * A versatile button component that supports various visual variants, sizes, and states
+ * (including a loading state). It adheres to the Kindling design system and ensures
+ * proper accessibility and RTL support.
  *
  * Respects [LocalLayoutDirection] automatically — icon/content order is
  * never reversed programmatically; rely on Compose's RTL mirroring.
  *
+ * ### Example usage:
  * ```kotlin
- * KButton(onClick = {}) { Text("Save") }
- * KButton(onClick = {}, variant = KButtonVariant.Outline, size = KButtonSize.Sm) { Text("Cancel") }
- * KButton(onClick = {}, size = KButtonSize.Icon) { Icon(Icons.Default.Add, null) }
+ * // Primary action
+ * KButton(onClick = { /* Save */ }) {
+ *     Text("Save")
+ * }
+ *
+ * // Outline variant with small size
+ * KButton(
+ *     onClick = { /* Cancel */ },
+ *     variant = KButtonVariant.Outline,
+ *     size = KButtonSize.Sm
+ * ) {
+ *     Text("Cancel")
+ * }
+ *
+ * // Loading state
+ * KButton(onClick = {}, isLoading = true) {
+ *     Text("Logging in...")
+ * }
  * ```
+ *
+ * @param onClick Callback invoked when the button is clicked.
+ * @param modifier The modifier to be applied to the button.
+ * @param variant The visual style variant of the button. Defaults to [KButtonVariant.Default].
+ * @param size The size variant of the button. Defaults to [KButtonSize.Default].
+ * @param enabled Whether the button is enabled for interaction.
+ * @param isLoading Whether to show a loading indicator instead of the content.
+ * @param interactionSource The [MutableInteractionSource] to represent the stream of interactions.
+ * @param content The composable content to display inside the button (typically text or an icon).
  */
 @Composable
 fun KButton(
@@ -96,7 +125,22 @@ fun KButton(
     }
 }
 
-/** Convenience overload accepting a plain text label. */
+/**
+ * A convenience overload of [KButton] that accepts a plain string as a label.
+ *
+ * ### Example usage:
+ * ```kotlin
+ * KButton(text = "Submit", onClick = { /* Submit form */ })
+ * ```
+ *
+ * @param text The label text to display inside the button.
+ * @param onClick Callback invoked when the button is clicked.
+ * @param modifier The modifier to be applied to the button.
+ * @param variant The visual style variant of the button.
+ * @param size The size variant of the button.
+ * @param enabled Whether the button is enabled for interaction.
+ * @param isLoading Whether to show a loading indicator instead of the content.
+ */
 @Composable
 fun KButton(
     text: String,

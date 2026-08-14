@@ -2,6 +2,7 @@ package dev.kindling.compose.experimental
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dev.kindling.compose.KScreen
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.*
@@ -15,37 +16,33 @@ import kotlinx.coroutines.withContext
 /**
  * Marker interface for UI actions coming from the view layer.
  *
- * These represent user intentions such as clicks, input changes,
- * or lifecycle triggers.
+ * Intents represent user actions such as button clicks, text input changes,
+ * or lifecycle events like `OnStart`. They are the only way to trigger
+ * state changes or side effects in an MVI architecture.
  *
- * ## Example
- *
+ * ### Example usage:
  * ```kotlin
  * sealed interface HomeIntent : Intent {
- *     data object LoadItems : HomeIntent
+ *     data object LoadData : HomeIntent
  *     data class Search(val query: String) : HomeIntent
+ *     data class ToggleFavorite(val itemId: String) : HomeIntent
  * }
  * ```
  */
 interface Intent
 
 /**
- * One-time side effects emitted by the ViewModel.
+ * One-time side effects emitted by the ViewModel to the UI layer.
  *
- * Effects are consumed once by the UI layer and are not part of state.
+ * Effects are consumed exactly once and are not part of the persistent UI state.
+ * Typical examples include navigation, showing snackbars, or triggering Haptic feedback.
  *
- * Typical uses:
- * - navigation
- * - snackbar messages
- * - dialogs
- * - external actions (analytics, deep links)
- *
- * ## Example
- *
+ * ### Example usage:
  * ```kotlin
  * sealed interface HomeEffect : Effect {
- *     data class ShowSnackbar(val message: String) : HomeEffect
- *     data class Navigate(val route: String) : HomeEffect
+ *     data class ShowToast(val message: String) : HomeEffect
+ *     data class NavigateToDetails(val id: String) : HomeEffect
+ *     data object CloseApp : HomeEffect
  * }
  * ```
  */
@@ -54,25 +51,19 @@ interface Effect
 /**
  * Core contract for MVI ViewModels in Kindling.
  *
- * Defines a strict unidirectional flow:
+ * Defines a strict unidirectional flow where:
+ * 1. The UI dispatches an [Intent].
+ * 2. The ViewModel processes the Intent and updates the [state] or emits an [Effect].
+ * 3. The UI observes the [state] and reacts to [effects].
  *
+ * ### Architecture overview:
  * ```
- * Intent → ViewModel → State + Effect → UI
+ * UI (Composable) --[Intent]--> ViewModel --[State / Effect]--> UI (Composable)
  * ```
  *
- * ## Example
- *
- * ```kotlin
- * class HomeViewModel : KMviViewModel<HomeState, HomeIntent, HomeEffect>(
- *     HomeState()
- * ) {
- *     override suspend fun handleIntent(intent: HomeIntent) {
- *         when (intent) {
- *             HomeIntent.LoadItems -> loadItems()
- *         }
- *     }
- * }
- * ```
+ * @param State The UI state type.
+ * @param I The Intent type.
+ * @param E The Effect type.
  */
 interface MviViewModel<State, I, E> {
 
@@ -87,53 +78,46 @@ interface MviViewModel<State, I, E> {
 // ─────────────────────────────────────────────────────────────
 
 /**
- * Base implementation of a strict MVI ViewModel.
+ * Base implementation of a strict MVI (Model-View-Intent) ViewModel.
  *
- * Provides:
- * - State management via StateFlow
- * - One-time effects via SharedFlow
- * - Coroutine-safe intent handling
- * - IO-safe async helpers
+ * This class provides the foundational logic for managing state and side effects
+ * in a thread-safe and lifecycle-aware manner. It is designed to work seamlessly
+ * with [KScreen].
  *
- * Designed to work seamlessly with `KScreen`.
+ * ### Key Features:
+ * - **State Management**: Uses a [StateFlow] to hold and emit immutable state objects.
+ * - **Side Effects**: Uses a buffered [SharedFlow] for one-shot effects (e.g., navigation).
+ * - **Unidirectional Flow**: Enforces the [Intent] -> [State] pattern.
+ * - **Async Helpers**: Built-in [async] and [collectFlow] for coroutine-safe data fetching.
  *
- * ## Architecture Flow
- *
- * ```
- * UI → Intent → ViewModel → State / Effect → UI
- * ```
- *
- * ## Example
- *
+ * ### Implementation Example:
  * ```kotlin
- * class HomeViewModel(
- *     private val repo: ItemRepository
- * ) : KMviViewModel<HomeState, HomeIntent, HomeEffect>(
- *     HomeState()
- * ) {
+ * data class ProfileState(val name: String = "", val isLoading: Boolean = false)
+ * sealed interface ProfileIntent : Intent { data object Load : ProfileIntent }
+ * sealed interface ProfileEffect : Effect { data class ShowError(val msg: String) : ProfileEffect }
  *
- *     override suspend fun handleIntent(intent: HomeIntent) {
+ * class ProfileViewModel(val repo: Repo) : KMviViewModel<ProfileState, ProfileIntent, ProfileEffect>(ProfileState()) {
+ *     override suspend fun handleIntent(intent: ProfileIntent) {
  *         when (intent) {
- *             HomeIntent.LoadItems -> loadItems()
- *         }
- *     }
- *
- *     private fun loadItems() {
- *         async(
- *             block = { repo.getItems() }
- *         ) { result ->
- *             result
- *                 .onSuccess { items ->
- *                     copy(items = items, isLoading = false)
+ *             ProfileIntent.Load -> {
+ *                 setState { copy(isLoading = true) }
+ *                 async({ repo.getName() }) { result ->
+ *                     result.onSuccess { copy(name = it, isLoading = false) }
+ *                           .onFailure { 
+ *                               emitEffect(ProfileEffect.ShowError("Failed"))
+ *                               copy(isLoading = false) 
+ *                           }
  *                 }
- *                 .onFailure {
- *                     emitEffect(HomeEffect.ShowSnackbar("Error loading items"))
- *                     this
- *                 }
+ *             }
  *         }
  *     }
  * }
  * ```
+ *
+ * @param State The immutable UI state data class.
+ * @param I The Intent type representing user actions.
+ * @param E The Effect type for one-shot side effects.
+ * @param initialState The state emitted immediately on subscription.
  */
 abstract class KMviViewModel<State, I, E>(
     initialState: State
