@@ -15,6 +15,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
+import dev.kindling.core.theme.kindlingColors
 import dev.kindling.core.theme.kindlingShapes
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -47,7 +48,7 @@ fun KAreaChart(
     showGridLines: Boolean = true,
     modifier: Modifier = Modifier,
 ) {
-    val colors = KindlingChartColors.fromMaterial3()
+    val colors = MaterialTheme.kindlingColors
     val gridColor = MaterialTheme.colorScheme.outlineVariant
     val strokePx = ChartDefaults.strokeWidth
 
@@ -129,7 +130,7 @@ fun KAreaChart(
 
                 val fillBrush: Brush = if (gradient) {
                     Brush.verticalGradient(
-                        colorStops = arrayOf(
+                        colorStops = arrayOf<Pair<Float, Color>>(
                             0.05f to seriesColor.copy(alpha = 0.8f),
                             0.95f to seriesColor.copy(alpha = 0.1f),
                         ),
@@ -188,7 +189,7 @@ fun KLineChart(
     showGridLines: Boolean = true,
     modifier: Modifier = Modifier,
 ) {
-    val colors = KindlingChartColors.fromMaterial3()
+    val colors = MaterialTheme.kindlingColors
     val gridColor = MaterialTheme.colorScheme.outlineVariant
     val strokePx = ChartDefaults.strokeWidth
     val dotR = ChartDefaults.dotRadius

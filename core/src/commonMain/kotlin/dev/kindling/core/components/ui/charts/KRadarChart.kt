@@ -1,4 +1,4 @@
-package dev.kindling.core.components.charts
+package dev.kindling.core.components.ui.charts
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
+import dev.kindling.core.theme.kindlingColors
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  Radar Chart
@@ -56,7 +57,7 @@ fun KRadarChart(
     gridLevels: Int = 4,
     modifier: Modifier = Modifier,
 ) {
-    val colors       = KindlingChartColors.fromMaterial3()
+    val colors       = MaterialTheme.kindlingColors
     val gridColor    = MaterialTheme.colorScheme.outlineVariant
     val surfaceColor = MaterialTheme.colorScheme.surface
 

@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.sp
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
+import dev.kindling.core.theme.kindlingColors
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  Pie / Donut Chart
@@ -57,7 +58,7 @@ fun KPieChart(
     separatorStroke: Float = 2f,
     modifier: Modifier = Modifier,
 ) {
-    val colors = KindlingChartColors.fromMaterial3()
+    val colors = MaterialTheme.kindlingColors
     val onSurface = MaterialTheme.colorScheme.onSurface
     val mutedFg = MaterialTheme.colorScheme.onSurfaceVariant
 

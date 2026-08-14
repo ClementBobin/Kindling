@@ -1,16 +1,13 @@
-package dev.kindling.core.components.charts
+package dev.kindling.core.components.ui.charts
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -25,6 +22,7 @@ import dev.kindling.core.components.ui.card.KCardContent
 import dev.kindling.core.components.ui.card.KCardDescription
 import dev.kindling.core.components.ui.card.KCardHeader
 import dev.kindling.core.components.ui.card.KCardTitle
+import dev.kindling.core.theme.kindlingColors
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  UniversalChartCard
@@ -63,7 +61,9 @@ fun UniversalChartCard(
         // ── Header ────────────────────────────────────────────────────────────
         KCardHeader {
             KCardTitle(item.title)
-            KCardDescription(item.description)
+            item.description?.let { desc ->
+                KCardDescription(desc)
+            }
         }
 
         // ── Chart area ────────────────────────────────────────────────────────
@@ -97,7 +97,7 @@ fun UniversalChartCard(
 
 @Composable
 private fun ChartLegendRow(item: ChartRegistryItem) {
-    val colors = KindlingChartColors.fromMaterial3()
+    val colors = MaterialTheme.kindlingColors
 
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -147,8 +147,8 @@ private fun ChartFooter(item: ChartRegistryItem) {
             ) {
                 // Trending arrow indicator (▲ or ▼ derived from badge text)
                 val isUp = item.footerBadge.contains("↑") ||
-                           item.footerBadge.contains("up", ignoreCase = true) ||
-                           item.footerBadge.contains("+")
+                         item.footerBadge.contains("up", ignoreCase = true) ||
+                         item.footerBadge.contains("+")
                 Text(
                     text  = if (isUp) "▲" else "▼",
                     style = MaterialTheme.typography.labelSmall.copy(

@@ -8,11 +8,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.RoundRect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import dev.kindling.core.theme.kindlingColors
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  Bar Chart
@@ -24,16 +26,11 @@ import androidx.compose.ui.unit.dp
 /**
  * A fully-themed vertical bar chart that mirrors the shadcn `<BarChart>` component.
  *
- * @param stacked        When true, series are stacked on top of each other
- *                       (chart-bar-stacked).
- * @param showNegative   When true, bars below zero are drawn in [negativeColor]
- *                       (chart-bar-negative).
- * @param cornerRadius   Rounding applied to bar tops.  Use [BarCornerRadius.TOP_ONLY]
- *                       for stacked (outer corners only), [BarCornerRadius.ALL] for
- *                       single-series charts.
+ * @param stacked        When true, series are stacked on top of each other.
+ * @param showNegative   When true, bars below zero are drawn in chart2 color.
+ * @param cornerRadius   Rounding applied to bar tops.
  * @param showGridLines  Horizontal grid lines toggle.
- * @param activeIndex    When >= 0, draws the bar at that x-index with full opacity
- *                       and all others muted (chart-bar-active).
+ * @param activeIndex    When >= 0, highlights that x-index and mutes all others.
  */
 @Composable
 fun KBarChart(
@@ -45,7 +42,7 @@ fun KBarChart(
     activeIndex: Int = -1,
     modifier: Modifier = Modifier,
 ) {
-    val colors = KindlingChartColors.fromMaterial3()
+    val colors = MaterialTheme.kindlingColors
     val gridColor = MaterialTheme.colorScheme.outlineVariant
     val cr = ChartDefaults.barCorner
 
@@ -60,15 +57,13 @@ fun KBarChart(
             val dataCount = item.data.first().values.size
             val seriesCount = item.data.size
 
-            // Determine value range (negative bars need a zero baseline)
             val allValues = item.data.flatMap { it.values }
-            val maxAbsVal = if (stacked)
+            val maxAbsVal: Float = if (stacked)
                 item.data.safeStackedMaxValue()
             else
                 allValues.maxOf { kotlin.math.abs(it) }.let { if (it == 0f) 1f else it }
 
             val hasNegative = showNegative && allValues.any { it < 0f }
-            // Y coordinate that represents value = 0
             val zeroY = if (hasNegative) size.height / 2f else size.height
 
             // Grid
@@ -81,11 +76,12 @@ fun KBarChart(
 
             val groupWidth = size.width / dataCount
             val barPad = groupWidth * 0.15f
-            val barWidth = if (stacked) groupWidth - 2 * barPad
-            else (groupWidth - 2 * barPad) / seriesCount - 2.dp.toPx()
+            val barWidth: Float = if (stacked)
+                groupWidth - 2 * barPad
+            else
+                (groupWidth - 2 * barPad) / seriesCount - 2.dp.toPx()
 
             if (stacked) {
-                // ── Stacked bars ──────────────────────────────────────────────
                 repeat(dataCount) { xi ->
                     var stackedHeight = 0f
                     val groupX = xi * groupWidth + barPad
@@ -94,9 +90,8 @@ fun KBarChart(
                     item.data.forEachIndexed { si, series ->
                         val value = series.values.getOrElse(xi) { 0f }
                         val barH = (value / maxAbsVal) * zeroY
-                        val color = colors.atIndex(si).let {
-                            if (isMuted) it.copy(alpha = 0.3f) else it
-                        }
+                        val baseColor: Color = colors.atIndex(si)
+                        val color: Color = if (isMuted) baseColor.copy(alpha = 0.3f) else baseColor
                         val isBottom = si == 0
                         val isTop = si == item.data.size - 1
 
@@ -106,7 +101,7 @@ fun KBarChart(
                             width = barWidth,
                             height = barH,
                             color = color,
-                            cornerRadiusDp = cr.toPx(),
+                            cornerRadiusPx = cr.toPx(),
                             topRounded = isTop,
                             bottomRounded = isBottom,
                         )
@@ -114,7 +109,6 @@ fun KBarChart(
                     }
                 }
             } else {
-                // ── Grouped bars ─────────────────────────────────────────────
                 item.data.forEachIndexed { si, series ->
                     series.values.forEachIndexed { xi, value ->
                         val groupX = xi * groupWidth + barPad
@@ -122,12 +116,12 @@ fun KBarChart(
                         val isMuted = activeIndex >= 0 && xi != activeIndex
                         val isPositive = value >= 0f
 
-                        val baseColor = if (showNegative && !isPositive)
-                            colors.chart2  // negative colour (chart-2)
+                        val baseColor: Color = if (showNegative && !isPositive)
+                            colors.chart2
                         else
                             colors.atIndex(si)
 
-                        val color = if (isMuted) baseColor.copy(alpha = 0.3f) else baseColor
+                        val color: Color = if (isMuted) baseColor.copy(alpha = 0.3f) else baseColor
                         val barH = (kotlin.math.abs(value) / maxAbsVal) * zeroY
                         val y = if (isPositive) zeroY - barH else zeroY
 
@@ -137,7 +131,7 @@ fun KBarChart(
                             width = barWidth,
                             height = barH,
                             color = color,
-                            cornerRadiusDp = cr.toPx(),
+                            cornerRadiusPx = cr.toPx(),
                             topRounded = cornerRadius != BarCornerRadius.NONE,
                             bottomRounded = cornerRadius == BarCornerRadius.ALL,
                         )
@@ -149,20 +143,16 @@ fun KBarChart(
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-//  Horizontal Bar Chart
-//  Covers: chart-bar-horizontal
+//  Horizontal Bar Chart  —  chart-bar-horizontal
 // ─────────────────────────────────────────────────────────────────────────────
 
-/**
- * A horizontal bar chart.  Equivalent to shadcn's `<BarChart layout="vertical">`.
- */
 @Composable
 fun KHorizontalBarChart(
     item: ChartRegistryItem,
     showGridLines: Boolean = true,
     modifier: Modifier = Modifier,
 ) {
-    val colors = KindlingChartColors.fromMaterial3()
+    val colors = MaterialTheme.kindlingColors
     val gridColor = MaterialTheme.colorScheme.outlineVariant
     val cr = ChartDefaults.barCorner
 
@@ -174,11 +164,9 @@ fun KHorizontalBarChart(
         ) {
             if (item.data.isEmpty()) return@Canvas
 
-            val series = item.data.first()
-            val dataCount = series.values.size
+            val dataCount = item.data.first().values.size
             val maxVal = item.data.safeMaxValue()
 
-            // Vertical grid lines
             if (showGridLines) {
                 repeat(5) { i ->
                     val x = size.width * i / 4
@@ -189,18 +177,23 @@ fun KHorizontalBarChart(
             val rowHeight = size.height / dataCount
             val barPad = rowHeight * 0.2f
             val barH = rowHeight - 2 * barPad
-            val cr4 = cr.toPx()
+            val crPx = cr.toPx()
 
             item.data.forEachIndexed { si, s ->
-                val color = colors.atIndex(si)
+                val color: Color = colors.atIndex(si)
                 s.values.forEachIndexed { xi, v ->
                     val barW = (v / maxVal) * size.width
                     val y = xi * rowHeight + barPad
-                    drawRoundedRect(
+                    drawRoundedBar(
+                        x = 0f,
+                        y = y,
+                        width = barW,
+                        height = barH,
                         color = color,
-                        topLeft = Offset(0f, y),
-                        size = Size(barW, barH),
-                        cornerRadius = CornerRadius(cr4, cr4)
+                        cornerRadiusPx = crPx,
+                        topRounded = false,
+                        bottomRounded = false,
+                        allRounded = true,
                     )
                 }
             }
@@ -209,10 +202,15 @@ fun KHorizontalBarChart(
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-//  Rounding helper
+//  Corner radius enum
 // ─────────────────────────────────────────────────────────────────────────────
 
 enum class BarCornerRadius { NONE, TOP_ONLY, ALL }
+
+// ─────────────────────────────────────────────────────────────────────────────
+//  Rounded bar helper — uses Path + RoundRect instead of drawRoundedRect
+//  (DrawScope.drawRoundedRect is not available on all KMP targets)
+// ─────────────────────────────────────────────────────────────────────────────
 
 private fun DrawScope.drawRoundedBar(
     x: Float,
@@ -220,26 +218,35 @@ private fun DrawScope.drawRoundedBar(
     width: Float,
     height: Float,
     color: Color,
-    cornerRadiusDp: Float,
+    cornerRadiusPx: Float,
     topRounded: Boolean,
     bottomRounded: Boolean,
+    allRounded: Boolean = false,
 ) {
-    val r = minOf(cornerRadiusDp, width / 2f, height / 2f)
-    if (!topRounded && !bottomRounded) {
+    if (width <= 0f || height <= 0f) return
+    val r = minOf(cornerRadiusPx, width / 2f, height / 2f)
+
+    if (!topRounded && !bottomRounded && !allRounded) {
         drawRect(color, Offset(x, y), Size(width, height))
         return
     }
-    drawRoundedRect(
-        color = color,
-        topLeft = Offset(x, y),
-        size = Size(width, height),
-        cornerRadius = CornerRadius(r, r)
-    )
-    // Flatten undesired corners by overdrawing a square rect on top or bottom half
-    if (!bottomRounded) {
-        drawRect(color, Offset(x, y + height / 2f), Size(width, height / 2f))
+
+    val topR    = if (topRounded    || allRounded) CornerRadius(r, r) else CornerRadius.Zero
+    val bottomR = if (bottomRounded || allRounded) CornerRadius(r, r) else CornerRadius.Zero
+
+    val path = Path().apply {
+        addRoundRect(
+            RoundRect(
+                left   = x,
+                top    = y,
+                right  = x + width,
+                bottom = y + height,
+                topLeftCornerRadius     = topR,
+                topRightCornerRadius    = topR,
+                bottomLeftCornerRadius  = bottomR,
+                bottomRightCornerRadius = bottomR,
+            )
+        )
     }
-    if (!topRounded) {
-        drawRect(color, Offset(x, y), Size(width, height / 2f))
-    }
+    drawPath(path, color)
 }

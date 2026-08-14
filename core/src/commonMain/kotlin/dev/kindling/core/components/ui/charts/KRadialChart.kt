@@ -1,4 +1,4 @@
-package dev.kindling.core.components.charts
+package dev.kindling.core.components.ui.charts
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.kindling.core.theme.kindlingColors
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  Radial Bar Chart
@@ -58,7 +59,7 @@ fun KRadialChart(
     centerSubLabel: String = "",
     modifier: Modifier = Modifier,
 ) {
-    val colors      = KindlingChartColors.fromMaterial3()
+    val colors      = MaterialTheme.kindlingColors
     val trackColor  = MaterialTheme.colorScheme.surfaceVariant
     val gridColor   = MaterialTheme.colorScheme.outlineVariant
 

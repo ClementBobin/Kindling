@@ -5,8 +5,22 @@ import com.google.devtools.ksp.symbol.*
 import java.util.Locale
 
 /**
- * KSP compiler symbol processor that scans functions annotated with [@KWidget]
- * and generates both the runtime rendering map and catalog metadata declarations.
+ * KSP compiler symbol processor that scans functions annotated with `@KWidget`
+ * and generates a centralized module initializer.
+ *
+ * This processor ensures that all Kindling widgets are automatically registered
+ * at runtime without requiring manual registration for every new component.
+ *
+ * ### Requirements for `@KWidget` functions:
+ * - Must be a top-level declaration.
+ * - Must not be an extension function.
+ * - Must have at least one parameter named `title` of type `String`.
+ * - All other parameters must have default values.
+ * - The annotation must define a unique `type` value.
+ *
+ * ### Generated Output:
+ * Generates `dev.kindling.generated.KWidgetModuleInitializer`, which contains 
+ * a static block to register every discovered widget in the `KWidgetRegistry`.
  *
  * @property codeGenerator Generator utility for writing target source files.
  * @property logger System logging diagnostic handler.
@@ -196,8 +210,16 @@ class KWidgetProcessor(
 
 /**
  * Provider interface implementation for registering [KWidgetProcessor] with the KSP compiler.
+ * 
+ * This class is the entry point for KSP to instantiate the Kindling Widget processor.
  */
 class KWidgetProcessorProvider : SymbolProcessorProvider {
+    /**
+     * Creates a new [KWidgetProcessor] instance.
+     * 
+     * @param environment The KSP environment providing configuration, logging, and code generation tools.
+     * @return A configured [SymbolProcessor].
+     */
     override fun create(environment: SymbolProcessorEnvironment): SymbolProcessor {
         return KWidgetProcessor(environment.codeGenerator, environment.logger)
     }
