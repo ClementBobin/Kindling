@@ -19,16 +19,33 @@ import dev.kindling.core.theme.LocalKindlingShapes
 /**
  * Shadcn/ui-style Textarea — mirrors `textarea.tsx`.
  *
+ * A multi-line text input component designed for longer entries like messages or descriptions.
+ * It provides a consistent look and feel with other Kindling input components and handles
+ * error states, disabled states, and placeholder text.
+ *
  * Respects [androidx.compose.ui.platform.LocalLayoutDirection] for RTL text alignment automatically.
  *
+ * ### Example usage:
  * ```kotlin
  * var message by remember { mutableStateOf("") }
  * Textarea(
  *     value         = message,
  *     onValueChange = { message = it },
- *     placeholder   = "Type your message here."
+ *     placeholder   = "Type your message here...",
+ *     minLines      = 3
  * )
  * ```
+ *
+ * @param value The current text value to display in the textarea.
+ * @param onValueChange Callback invoked when the text value changes.
+ * @param modifier The modifier to be applied to the layout.
+ * @param placeholder The placeholder text to display when the textarea is empty.
+ * @param enabled Whether the textarea is enabled for user interaction.
+ * @param isError Whether the textarea should display an error state.
+ * @param minLines The minimum number of lines to display.
+ * @param maxLines The maximum number of lines to display.
+ * @param keyboardOptions Software keyboard options.
+ * @param keyboardActions Software keyboard actions.
  */
 @Composable
 fun Textarea(

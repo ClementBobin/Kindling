@@ -8,11 +8,11 @@ import android.widget.Toast
 // ─────────────────────────────────────────────
 
 /**
- * Décrit un style de toast sémantique.
+ * Describes a semantic toast style, determining how long the message is displayed.
  *
- * Presets :
- * - [ToastStyle.Short]  → durée courte  ([Toast.LENGTH_SHORT])
- * - [ToastStyle.Long]   → durée longue  ([Toast.LENGTH_LONG])
+ * Use the provided presets:
+ * - [ToastStyle.Short] -> 2 seconds ([Toast.LENGTH_SHORT])
+ * - [ToastStyle.Long]  -> 3.5 seconds ([Toast.LENGTH_LONG])
  */
 data class ToastStyle(val duration: Int) {
     companion object {
@@ -26,23 +26,20 @@ data class ToastStyle(val duration: Int) {
 // ─────────────────────────────────────────────
 
 /**
- * Helper toast centralisé.
+ * Centralized Toast helper for Android.
  *
- * Enregistrement Koin :
+ * Simplifies showing standard Android toasts with semantic shorthands (info, success, etc.).
+ *
+ * **Important:** All calls must be made from the main (UI) thread.
+ *
+ * ### Example usage:
  * ```kotlin
- * single { ToastHelper(androidContext()) }
+ * val toastHelper = ToastHelper(context)
+ * 
+ * toastHelper.show("Copied to clipboard!", ToastStyle.Short)
+ * toastHelper.success("Profile updated")
+ * toastHelper.error("Connection failed")
  * ```
- *
- * Utilisation :
- * ```kotlin
- * toastHelper.show("Copié !", ToastStyle.Short)
- * toastHelper.info("Chargement en cours…")
- * toastHelper.success("Abonnement activé")
- * toastHelper.warning("Connexion instable")
- * toastHelper.error("Échec de la requête")
- * ```
- *
- * Doit être appelé depuis le thread principal.
  */
 class ToastHelper(context: Context) {
 

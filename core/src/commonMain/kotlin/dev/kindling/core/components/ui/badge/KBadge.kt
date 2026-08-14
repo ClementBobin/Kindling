@@ -20,13 +20,32 @@ import dev.kindling.core.theme.LocalKindlingShapes
 /**
  * Shadcn/ui-style Badge — mirrors `badge.tsx`.
  *
+ * A small status indicator used to display labels, categories, or short numbers.
+ * Supports several visual variants like [KBadgeVariant.Default], [KBadgeVariant.Outline],
+ * and [KBadgeVariant.Destructive].
+ *
  * Respects [androidx.compose.ui.platform.LocalLayoutDirection] automatically via Compose RTL support.
  *
+ * ### Example usage:
  * ```kotlin
+ * // Simple text badge
  * KBadge { Text("New") }
- * KBadge(variant = KBadgeVariant.Destructive) { Text("Error") }
- * KBadge(variant = KBadgeVariant.Outline) { Icon(…); Text("Label") }
+ * 
+ * // Destructive variant for errors
+ * KBadge(variant = KBadgeVariant.Destructive) { 
+ *     Text("Critical") 
+ * }
+ * 
+ * // Outline variant with an icon
+ * KBadge(variant = KBadgeVariant.Outline) { 
+ *     Icon(Icons.Default.Info, null, modifier = Modifier.size(12.dp))
+ *     Text("Info") 
+ * }
  * ```
+ *
+ * @param modifier The modifier to be applied to the layout.
+ * @param variant The visual style variant of the badge.
+ * @param content The composable content to display inside the badge.
  */
 @Composable
 fun KBadge(

@@ -13,22 +13,22 @@ import androidx.annotation.RequiresPermission
 // ─────────────────────────────────────────────
 
 /**
- * Décrit un pattern de vibration sémantique.
+ * Describes a semantic vibration pattern.
  *
- * Les presets alignés avec les états UI sont disponibles via le companion :
- * - [VibrationPattern.Error]   → double impulsion courte/forte  (erreur serveur, réseau)
- * - [VibrationPattern.Warning] → impulsion unique modérée        (erreur client 4xx)
- * - [VibrationPattern.Success] → impulsion douce courte          (opération réussie)
- * - [VibrationPattern.Light]   → tick léger                      (feedback UI générique)
+ * Use the provided presets for consistent UI feedback:
+ * - [VibrationPattern.Error]   -> Double strong pulse (for server or network errors).
+ * - [VibrationPattern.Warning] -> Single moderate pulse (for user input errors).
+ * - [VibrationPattern.Success] -> Short gentle pulse (for successful operations).
+ * - [VibrationPattern.Light]   -> Subtle tick (generic UI feedback).
  *
- * Patterns personnalisés :
+ * ### Custom patterns:
  * ```kotlin
- * val myPattern = VibrationPattern(
- *     timings    = longArrayOf(0, 50, 30, 50, 30, 50),
- *     amplitudes = intArrayOf(0, 255, 0, 200, 0, 150),
+ * val pattern = VibrationPattern(
+ *     timings = longArrayOf(0, 50, 100, 50),
+ *     amplitudes = intArrayOf(0, 255, 0, 128),
  *     fallbackMs = 50L
  * )
- * vibrationHelper.vibrate(myPattern)
+ * vibrationHelper.vibrate(pattern)
  * ```
  */
 data class VibrationPattern(
@@ -52,28 +52,28 @@ data class VibrationPattern(
     }
 
     companion object {
-        /** Double impulsion courte/forte — erreur serveur (5xx) ou réseau. */
+        /** Double short/strong pulse - for server errors (5xx) or network failures. */
         val Error = VibrationPattern(
             timings    = longArrayOf(0, 80, 60, 80),
             amplitudes = intArrayOf(0, 220, 0, 220),
             fallbackMs = 80L
         )
 
-        /** Impulsion unique modérée — erreur client (4xx). */
+        /** Single moderate pulse - for client input errors (4xx). */
         val Warning = VibrationPattern(
             timings    = longArrayOf(0, 120),
             amplitudes = intArrayOf(0, 160),
             fallbackMs = 120L
         )
 
-        /** Impulsion douce courte — succès d'une opération. */
+        /** Short gentle pulse - for successful operation feedback. */
         val Success = VibrationPattern(
             timings    = longArrayOf(0, 60),
             amplitudes = intArrayOf(0, 100),
             fallbackMs = 60L
         )
 
-        /** Tick léger — feedback générique. */
+        /** Subtle tick - for generic interactive feedback. */
         val Light = VibrationPattern(
             timings    = longArrayOf(0, 30),
             amplitudes = intArrayOf(0, 60),
@@ -104,32 +104,23 @@ data class VibrationPattern(
 // ─────────────────────────────────────────────
 
 /**
- * Helper de vibration centralisé.
+ * Centralized vibration helper for Android.
  *
- * Enregistrement Koin :
+ * Simplifies playing haptic feedback and custom vibration waveforms.
+ *
+ * **Requires permission:** `VIBRATE` must be declared in the Manifest.
+ *
+ * ### Example usage:
  * ```kotlin
- * single { VibrationHelper(androidContext()) }
+ * val vibrationHelper = VibrationHelper(context)
+ * 
+ * // Using presets
+ * vibrationHelper.error()
+ * vibrationHelper.success()
+ * 
+ * // Using custom patterns
+ * vibrationHelper.vibrate(myPattern)
  * ```
- *
- * Utilisation avec un preset :
- * ```kotlin
- * val vibrationHelper: VibrationHelper by inject()
- * vibrationHelper.vibrate(VibrationPattern.Error)
- * ```
- *
- * Utilisation avec un pattern personnalisé :
- * ```kotlin
- * vibrationHelper.vibrate(
- *     VibrationPattern(
- *         timings    = longArrayOf(0, 100, 50, 100),
- *         amplitudes = intArrayOf(0, 255, 0, 180),
- *         fallbackMs = 100L
- *     )
- * )
- * ```
- *
- * L'app doit déclarer `<uses-permission android:name="android.permission.VIBRATE"/>`
- * dans son `AndroidManifest.xml`.
  */
 class VibrationHelper(context: Context) {
 

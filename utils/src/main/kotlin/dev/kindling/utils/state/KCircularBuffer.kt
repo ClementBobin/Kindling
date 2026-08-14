@@ -5,27 +5,36 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 /**
- * A fixed-capacity ring buffer.
+ * A fixed-capacity ring buffer (Circular Buffer).
  *
  * When the buffer is full, adding a new item silently drops the **oldest** entry.
- * Useful for bounded logs, recent-search history, rolling telemetry windows, etc.
+ * This implementation is ideal for bounded logs, recent-search history, rolling telemetry windows,
+ * or any scenario where you only need to keep the last `N` items.
  *
+ * The buffer state is exposed as a [StateFlow], making it easy to observe changes in a reactive UI.
+ *
+ * ### Example usage:
  * ```kotlin
- * val log = CircularBuffer<String>(capacity = 3)
- * log.add("a")  // [a]
- * log.add("b")  // [a, b]
- * log.add("c")  // [a, b, c]
- * log.add("d")  // [b, c, d]  ← "a" dropped
+ * val log = KCircularBuffer<String>(capacity = 3)
+ * log.add("a")  // Buffer: [a]
+ * log.add("b")  // Buffer: [a, b]
+ * log.add("c")  // Buffer: [a, b, c]
+ * log.add("d")  // Buffer: [b, c, d]  ← "a" is automatically dropped
  *
- * println(log.toList()) // [b, c, d]
- * println(log.latest()) // "d"
- *
- * log.state.collect { items -> render(items) }
+ * println(log.toList()) // Prints: [b, c, d]
+ * println(log.latest()) // Prints: "d"
+ * 
+ * // In a Composable:
+ * val items by log.state.collectAsState()
+ * LazyColumn {
+ *     items(items) { Text(it) }
+ * }
  * ```
  *
- * @param capacity Maximum number of items retained. Must be ≥ 1.
- * @param initialItems Optional items to pre-populate (oldest first).
- *                     Items beyond [capacity] are trimmed from the front.
+ * @param T The type of elements held in this buffer.
+ * @param capacity The maximum number of items the buffer can retain. Must be ≥ 1.
+ * @param initialItems Optional list of items to pre-populate the buffer with (ordered oldest to newest).
+ *                     If the list size exceeds [capacity], only the last [capacity] items are kept.
  */
 class KCircularBuffer<T>(
     val capacity: Int,

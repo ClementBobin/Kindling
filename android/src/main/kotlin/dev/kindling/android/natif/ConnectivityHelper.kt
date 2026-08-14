@@ -18,11 +18,11 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 // ─────────────────────────────────────────────
 
 /**
- * Représente l'état de connectivité réseau.
+ * Represents the current network connectivity status.
  *
- * - [NetworkStatus.Available]   → connecté (transport précisé)
- * - [NetworkStatus.Unavailable] → hors ligne
- * - [NetworkStatus.Losing]      → connexion en cours de perte
+ * - [NetworkStatus.Available]: Device is online (transport type specified).
+ * - [NetworkStatus.Unavailable]: Device is offline.
+ * - [NetworkStatus.Losing]: Connection is currently being lost (e.g., transitioning between networks).
  */
 sealed class NetworkStatus {
     data class Available(val transport: NetworkTransport) : NetworkStatus()
@@ -37,22 +37,32 @@ enum class NetworkTransport { Wifi, Cellular, Ethernet, Other }
 // ─────────────────────────────────────────────
 
 /**
- * Helper de connectivité réseau centralisé.
+ * Centralized network connectivity helper for Android.
  *
- * Enregistrement Koin :
+ * This utility provides synchronous checks and reactive flows for monitoring
+ * internet availability and transport types (Wifi, Cellular, etc.).
+ *
+ * **Requires permission:** `ACCESS_NETWORK_STATE`
+ *
+ * ### Example usage:
  * ```kotlin
- * single { ConnectivityHelper(androidContext()) }
- * ```
- *
- * Utilisation :
- * ```kotlin
- * // Lecture synchrone
- * val online = connectivityHelper.isOnline()
- *
- * // Observation réactive (dans un ViewModel)
- * connectivityHelper.statusFlow
- *     .onEach { status -> /* réagir */ }
- *     .launchIn(viewModelScope)
+ * val connectivityHelper = ConnectivityHelper(context)
+ * 
+ * // Synchronous check
+ * if (connectivityHelper.isOnline()) {
+ *     refreshContent()
+ * }
+ * 
+ * // Reactive observation
+ * viewModelScope.launch {
+ *     connectivityHelper.statusFlow.collect { status ->
+ *         when (status) {
+ *             is NetworkStatus.Available -> showOnlineMode()
+ *             is NetworkStatus.Unavailable -> showOfflineBanner()
+ *             is NetworkStatus.Losing -> Unit
+ *         }
+ *     }
+ * }
  * ```
  */
 class ConnectivityHelper(context: Context) {
@@ -108,12 +118,10 @@ class ConnectivityHelper(context: Context) {
     // ── Reactive ──────────────────────────────────────────────────────────────
 
     /**
-     * Flow émettant [NetworkStatus] à chaque changement de connectivité.
-     * Émet immédiatement l'état courant à la souscription.
-     * Doit être collecté dans un scope avec cycle de vie (viewModelScope, etc.).
+     * A [Flow] that emits [NetworkStatus] whenever the network connectivity changes.
+     * It emits the current status immediately upon subscription.
      *
-     * La permission ACCESS_NETWORK_STATE doit être déclarée dans le Manifest
-     * et accordée avant de collecter ce flow.
+     * The `ACCESS_NETWORK_STATE` permission must be declared in the Manifest.
      */
     @get:RequiresPermission(Manifest.permission.ACCESS_NETWORK_STATE)
     val statusFlow: Flow<NetworkStatus> get() = callbackFlow {

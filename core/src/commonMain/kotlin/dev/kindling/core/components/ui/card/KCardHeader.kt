@@ -19,8 +19,27 @@ import androidx.compose.ui.unit.sp
 import dev.kindling.core.theme.LocalKindlingShapes
 
 /**
- * Card header with an optional trailing [action] slot.
- * Respects [androidx.compose.ui.platform.LocalLayoutDirection].
+ * A container for card titles and descriptions, with an optional trailing [action] slot.
+ *
+ * Respects [androidx.compose.ui.platform.LocalLayoutDirection] for proper alignment of content and action.
+ *
+ * ### Example usage:
+ * ```kotlin
+ * KCardHeader(
+ *     action = {
+ *         IconButton(onClick = { /* ... */ }) {
+ *             Icon(Icons.Default.MoreVert, contentDescription = "Settings")
+ *         }
+ *     }
+ * ) {
+ *     KCardTitle("Project Status")
+ *     KCardDescription("Current progress of the Kindling library.")
+ * }
+ * ```
+ *
+ * @param modifier The modifier to be applied to the header layout.
+ * @param action Optional trailing composable slot (e.g., for a menu button or badge).
+ * @param content The title and description components.
  */
 @Composable
 fun KCardHeader(

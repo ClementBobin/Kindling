@@ -9,15 +9,24 @@ import androidx.compose.ui.Modifier
 /**
  * Constrains its content to a given aspect ratio — mirrors shadcn/ui `AspectRatio`.
  *
+ * This component is useful for maintaining consistent proportions for images, videos, or
+ * other media content regardless of their actual dimensions or the parent container's width.
+ *
+ * ### Example usage:
  * ```kotlin
  * KAspectRatio(ratio = 16f / 9f) {
- *     Image(painter = …, contentDescription = null, modifier = Modifier.fillMaxSize())
+ *     Image(
+ *         painter = painterResource(Res.drawable.landscape),
+ *         contentDescription = "Landscape image",
+ *         modifier = Modifier.fillMaxSize(),
+ *         contentScale = ContentScale.Crop
+ *     )
  * }
  * ```
  *
- * @param ratio   Width-to-height ratio, e.g. `16f / 9f`, `4f / 3f`, `1f`.
- * @param modifier Applied to the outer [Box].
- * @param content  Content to render inside the constrained area.
+ * @param modifier The modifier to be applied to the layout.
+ * @param ratio The width-to-height ratio (e.g., 1.0f for a square, 1.77f for 16:9).
+ * @param content The composable content to be constrained by the aspect ratio.
  */
 @Composable
 fun KAspectRatio(
