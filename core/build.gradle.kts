@@ -34,6 +34,7 @@ kotlin {
                 implementation("io.insert-koin:koin-core:${Versions.koin}")
                 implementation("io.insert-koin:koin-compose:${Versions.koin}")
                 implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:${Versions.immutableCollections}")
+                implementation("org.maplibre.compose:maplibre-compose:${Versions.maplibre}")
                 implementation(kotlin("stdlib"))
                 implementation(project(":utils"))
             }

@@ -14,6 +14,7 @@ object Versions {
     const val coil                  = "3.5.0"
     const val serialization         = "1.6.3"
     const val immutableCollections   = "0.3.8"
+    const val maplibre               = "0.14.0"
 
     // AndroidX / Google
     const val annotationJvm          = "1.10.0"
