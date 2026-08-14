@@ -18,14 +18,14 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 // ─────────────────────────────────────────────
 
 /**
- * État courant de la batterie.
+ * Current battery status information.
  *
- * @param level          Niveau [0..100].
- * @param isCharging     `true` si en charge (USB ou AC).
- * @param chargeType     Type de charge ou [ChargeType.None].
- * @param health         Santé de la batterie.
- * @param temperature    Température en dixièmes de degré Celsius (ex. 250 = 25.0°C).
- * @param voltage        Tension en millivolts.
+ * @param level The battery level percentage [0..100].
+ * @param isCharging Whether the device is currently plugged into a power source.
+ * @param chargeType The specific source of power (AC, USB, Wireless) or [ChargeType.None].
+ * @param health The physical health state of the battery (e.g., Good, Overheat).
+ * @param temperature The battery temperature in tenths of a degree Celsius (e.g., 250 = 25.0°C).
+ * @param voltage The current battery voltage in millivolts.
  */
 data class BatteryStatus(
     val level: Int,
@@ -49,28 +49,32 @@ enum class BatteryHealth {
 // ─────────────────────────────────────────────
 
 /**
- * Helper batterie centralisé.
+ * Centralized battery helper for Android.
  *
- * Aucune permission requise.
+ * This utility provides synchronous access and reactive flows for monitoring battery
+ * status, level, and power-saving modes.
  *
- * Enregistrement Koin :
+ * **No permissions required.**
+ *
+ * ### Example usage:
  * ```kotlin
- * single { BatteryHelper(androidContext()) }
- * ```
+ * val batteryHelper = BatteryHelper(context)
  *
- * Utilisation :
- * ```kotlin
- * // Lecture synchrone
+ * // Synchronous check
  * val status = batteryHelper.getStatus()
- * println("${status.level}% — ${if (status.isCharging) "en charge" else "sur batterie"}")
+ * println("${status.level}% - ${if (status.isCharging) "Charging" else "On Battery"}")
  *
- * // Stream réactif
- * batteryHelper.statusFlow
- *     .onEach { status -> updateBatteryUI(status) }
- *     .launchIn(viewModelScope)
+ * // Reactive flow
+ * viewModelScope.launch {
+ *     batteryHelper.statusFlow.collect { status ->
+ *         updateBatteryUI(status)
+ *     }
+ * }
  *
- * // Mode économie d'énergie
- * val saving = batteryHelper.isPowerSaveMode()
+ * // Power save mode
+ * if (batteryHelper.isPowerSaveMode()) {
+ *     disableExpensiveAnimations()
+ * }
  * ```
  */
 class BatteryHelper(context: Context) {
@@ -104,8 +108,8 @@ class BatteryHelper(context: Context) {
     // ── Reactive flow ─────────────────────────────────────────────────────────
 
     /**
-     * Flow émettant un [BatteryStatus] à chaque changement d'état batterie.
-     * Émet immédiatement l'état courant à la souscription.
+     * A [Flow] that emits a [BatteryStatus] whenever the battery state changes.
+     * It emits the current status immediately upon subscription.
      */
     val statusFlow: Flow<BatteryStatus> = callbackFlow {
         val receiver = object : BroadcastReceiver() {

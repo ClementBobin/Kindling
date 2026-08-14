@@ -16,14 +16,17 @@ import androidx.core.app.NotificationManagerCompat
 // ─────────────────────────────────────────────
 
 /**
- * Décrit un canal de notification à enregistrer.
+ * Describes a notification channel to be registered with the system.
  *
+ * Notification channels are required starting from Android O (API 26).
+ *
+ * ### Example usage:
  * ```kotlin
  * val channel = NotificationChannelConfig(
- *     id          = "orders",
- *     name        = "Commandes",
- *     description = "Statut de vos commandes Cyna",
- *     importance  = NotificationManager.IMPORTANCE_DEFAULT
+ *     id = "messages",
+ *     name = "Messages",
+ *     description = "Notifications for new chat messages",
+ *     importance = NotificationManager.IMPORTANCE_HIGH
  * )
  * notificationHelper.registerChannel(channel)
  * ```
@@ -40,23 +43,22 @@ data class NotificationChannelConfig(
 // ─────────────────────────────────────────────
 
 /**
- * Décrit une notification locale à poster.
+ * Describes a local notification to be posted to the system tray.
  *
- * Presets sémantiques alignés avec les états UI :
- * - [NotificationConfig.info]    → information neutre
- * - [NotificationConfig.success] → opération réussie
- * - [NotificationConfig.warning] → avertissement
- * - [NotificationConfig.error]   → erreur
+ * Provides semantic presets that align with standard UI states:
+ * - [NotificationConfig.info] -> Neutral information
+ * - [NotificationConfig.success] -> Operation successful
+ * - [NotificationConfig.warning] -> High priority warning
+ * - [NotificationConfig.error] -> Error or failure notification
  *
- * Config personnalisée :
+ * ### Example usage:
  * ```kotlin
  * val config = NotificationConfig(
- *     id        = 42,
- *     channelId = "orders",
- *     title     = "Commande expédiée",
- *     body      = "Votre commande #1234 est en route.",
+ *     id = 101,
+ *     channelId = "updates",
+ *     title = "Update available",
+ *     body = "A new version of Kindling is ready to install.",
  *     smallIcon = R.drawable.ic_notification,
- *     priority  = NotificationCompat.PRIORITY_HIGH,
  *     autoCancel = true
  * )
  * notificationHelper.post(config)
@@ -117,39 +119,25 @@ data class NotificationConfig(
 // ─────────────────────────────────────────────
 
 /**
- * Helper de notifications locales centralisé.
+ * Centralized helper for managing Android local notifications.
  *
- * Enregistrement Koin :
- * ```kotlin
- * single { NotificationHelper(androidContext()) }
- * ```
+ * This utility simplifies channel registration and notification posting while
+ * ensuring compliance with Android's notification requirements (API 26+ channels).
  *
- * Initialisation (Application.onCreate ou module Koin) :
+ * **Note:** Apps targeting API 33+ must declare and request the
+ * `android.permission.POST_NOTIFICATIONS` permission at runtime.
+ *
+ * ### Initialization:
  * ```kotlin
+ * val notificationHelper = NotificationHelper(context)
+ * 
  * notificationHelper.registerChannel(
  *     NotificationChannelConfig(
- *         id          = "orders",
- *         name        = "Commandes",
- *         description = "Statut de vos commandes"
+ *         id = "alerts",
+ *         name = "System Alerts"
  *     )
  * )
  * ```
- *
- * Post :
- * ```kotlin
- * notificationHelper.post(
- *     NotificationConfig.success(
- *         id        = 1,
- *         channelId = "orders",
- *         title     = "Paiement accepté",
- *         body      = "Votre abonnement Cyna est actif.",
- *         icon      = R.drawable.ic_notification
- *     )
- * )
- * ```
- *
- * L'app doit déclarer `<uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>`
- * (requise à l'exécution sur API 33+).
  */
 class NotificationHelper(context: Context) {
 
@@ -159,8 +147,8 @@ class NotificationHelper(context: Context) {
     // ── Channel registration ──────────────────────────────────────────────────
 
     /**
-     * Enregistre un canal de notification (idempotent — safe à appeler plusieurs fois).
-     * No-op sur API < 26.
+     * Registers a notification channel (idempotent — safe to call multiple times).
+     * This is a no-op on Android versions below API 26 (O).
      */
     fun registerChannel(config: NotificationChannelConfig) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
