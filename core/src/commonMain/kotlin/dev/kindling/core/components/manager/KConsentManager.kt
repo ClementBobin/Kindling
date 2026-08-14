@@ -9,10 +9,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
-import dev.kindling.core.components.ui.consent.KConsentCategory
-import dev.kindling.core.components.ui.consent.KConsentCategoryType
-import dev.kindling.core.components.ui.consent.KConsentPreferences
-import dev.kindling.core.components.ui.consent.KDefaultConsentCategories
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 
