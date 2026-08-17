@@ -70,3 +70,9 @@ tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
         }
     }
 }
+
+tasks.withType<Jar>().configureEach {
+    if (name.contains("Source", ignoreCase = true)) {
+        dependsOn("kspCommonMainKotlinMetadata")
+    }
+}
