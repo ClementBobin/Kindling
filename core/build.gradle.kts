@@ -19,7 +19,7 @@ kotlin {
 
     sourceSets {
         val commonMain by getting {
-            kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
+            //kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
             dependencies {
                 implementation(compose.runtime)
                 implementation(compose.foundation)
@@ -55,6 +55,10 @@ dependencies {
     add("kspCommonMainMetadata", project(":processor"))
 }
 
+tasks.matching { it.name == "androidSourcesJar" || it.name == "sourcesJar" }.configureEach {
+    dependsOn("kspCommonMainKotlinMetadata")
+}
+
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask<*>>().configureEach {
     if (name != "kspCommonMainKotlinMetadata") {
         dependsOn("kspCommonMainKotlinMetadata")
@@ -68,11 +72,5 @@ tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
         if (kspTask != null) {
             dependsOn(kspTask)
         }
-    }
-}
-
-tasks.withType<Jar>().configureEach {
-    if (name.contains("Source", ignoreCase = true)) {
-        dependsOn("kspCommonMainKotlinMetadata")
     }
 }
