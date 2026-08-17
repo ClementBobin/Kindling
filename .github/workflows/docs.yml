@@ -46,9 +46,8 @@ jobs:
       # so the next run can reference it as an older version.
       - name: Archive current version into history
         run: |
-          VERSION=$(./gradlew -q properties | grep '^version:' | awk '{print $2}' || echo "SNAPSHOT")
-          mkdir -p .ci-docs-history/"$VERSION"
-          cp -r build/docs/html/. .ci-docs-history/"$VERSION"/
+          mkdir -p .ci-docs-history/SNAPSHOT
+          cp -r build/docs/html/. .ci-docs-history/SNAPSHOT/
 
       - name: Save docs history cache
         uses: actions/cache/save@v4
