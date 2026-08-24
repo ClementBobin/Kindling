@@ -1,13 +1,8 @@
 {
   "name": "Android Kotlin Dev Environment",
+  // Java 21 is already bundled in the base image — no need for the SDKMAN feature.
+  // Adding it again causes a conflict because SDKMAN can't locate "ms/21" in its registry.
   "image": "mcr.microsoft.com/devcontainers/java:1-21-bullseye",
-  "features": {
-    "ghcr.io/devcontainers/features/java:1": {
-      "version": "21",
-      "jdkDistribution": "ms",
-      "gradleVersion": "latest"
-    }
-  },
   "remoteEnv": {
     "ANDROID_HOME": "/usr/local/lib/android/sdk",
     "ANDROID_SDK_ROOT": "/usr/local/lib/android/sdk",

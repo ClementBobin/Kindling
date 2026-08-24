@@ -1,6 +1,7 @@
 @file:Suppress("TooManyFunctions")
 
 package dev.kindling.utils.method.format.system
+import android.util.Base64
 
 // ─── FormatBytes ──────────────────────────────────────────────────────────────
 
@@ -77,3 +78,34 @@ fun Long.diskUsageLabel(total: Long): String =
  */
 fun Long.usageRatio(total: Long): Double =
     if (total <= 0L) 0.0 else (this.toDouble() / total.toDouble()) * 100.0
+
+/**
+ * Formats byte to base64 string
+ */
+fun ByteArray.toBase64(): String =
+    Base64.encodeToString(this, Base64.NO_WRAP)
+
+/**
+ * Converts a base64 string to byte array
+ */
+fun String.fromBase64(): ByteArray =
+    Base64.decode(this, Base64.NO_WRAP)
+
+/**
+ * Converts an integer to a 4-byte array in big-endian format.
+ */
+fun Int.toBytesBigEndian(): ByteArray = byteArrayOf(
+    (this shr 24).toByte(),
+    (this shr 16).toByte(),
+    (this shr  8).toByte(),
+    (this        ).toByte()
+)
+
+/**
+ * Converts a 4-byte array in big-endian format to an integer.
+ */
+fun ByteArray.fromBytesBigEndian(): Int =
+    ((this[0].toInt() and 0xFF) shl 24) or
+    ((this[1].toInt() and 0xFF) shl 16) or
+    ((this[2].toInt() and 0xFF) shl  8) or
+    ((this[3].toInt() and 0xFF)       )
