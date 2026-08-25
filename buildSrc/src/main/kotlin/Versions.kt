@@ -15,6 +15,7 @@ object Versions {
     const val serialization         = "1.6.3"
     const val immutableCollections  = "0.3.8"
     const val playIntegrity         = "1.4.0"
+    const val castle                = "1.80"
 
     // AndroidX / Google
     const val annotationJvm          = "1.10.0"
