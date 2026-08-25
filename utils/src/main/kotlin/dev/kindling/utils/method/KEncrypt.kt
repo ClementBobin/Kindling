@@ -11,6 +11,10 @@ import javax.crypto.KeyGenerator
 import javax.crypto.SecretKey
 import javax.crypto.spec.GCMParameterSpec
 import javax.crypto.spec.SecretKeySpec
+import dev.kindling.utils.method.format.system.toBase64
+import dev.kindling.utils.method.format.system.fromBase64
+import dev.kindling.utils.method.format.system.toBytesBigEndian
+import dev.kindling.utils.method.format.system.fromBytesBigEndian
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  Provider registration (call once at app startup)
@@ -285,7 +289,7 @@ private fun deriveAesKey(
 private fun encryptPostQuantum(
     plaintext : ByteArray,
     key       : KEncryptKeyType.PostQuantum
-): ByteArray = runCatching {
+): ByteArray = runCatching<ByteArray> {
     val publicKey = loadKyberPublicKey(key.publicKeyBase64)
 
     // 1. Generate ephemeral AES-256 key
@@ -312,7 +316,7 @@ private fun encryptPostQuantum(
 private fun decryptPostQuantum(
     data : ByteArray,
     key  : KEncryptKeyType.PostQuantum
-): ByteArray = runCatching {
+): ByteArray = runCatching<ByteArray> {
     val privateKeyB64 = key.privateKeyBase64
         ?: throw KEncryptException("Private key required for post-quantum decryption")
 
