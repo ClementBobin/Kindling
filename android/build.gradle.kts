@@ -26,6 +26,7 @@ dependencies {
     implementation("io.ktor:ktor-serialization-kotlinx-json:${Versions.ktor}")
     implementation("io.ktor:ktor-client-logging:${Versions.ktor}")
     implementation("io.ktor:ktor-client-auth:${Versions.ktor}")
+    implementation("com.google.android.play:integrity:${Versions.playIntegrity}")
     compileOnly("io.ktor:ktor-client-mock:${Versions.ktor}")
     testImplementation(kotlin("test"))
     testImplementation("org.junit.jupiter:junit-jupiter:${Versions.junit5}")
