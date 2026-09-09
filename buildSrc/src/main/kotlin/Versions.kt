@@ -26,7 +26,7 @@ object Versions {
     const val desugarJdkLibs         = "2.1.4"
 
     // Processor
-    const val ksp = "2.2.10"
+    const val ksp = "2.2.0-2.0.2"
 
     /**
      * Resolved at configuration time from the RELEASE_VERSION environment
