@@ -1,6 +1,5 @@
 object Versions {
-    const val kotlin                = "2.4.0"
-    const val jvmTarget             = "17"
+    const val kotlin                = "2.2.0"
     const val group                 = "io.github.clementbobin.kindling"
     const val dokka                 = "2.2.0"
     const val junit5                = "6.1.0"
