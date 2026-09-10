@@ -1,3 +1,5 @@
+import com.vanniktech.maven.publish.SonatypeHost
+
 /**
  * Convention plugin: kindling-publish
  *
@@ -23,7 +25,7 @@ afterEvaluate {
         ?: "${project.name} module for Kindling"
 
     mavenPublishing {
-        publishToMavenCentral()
+        publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
 
         if (System.getenv("JITPACK") == null) {
             signAllPublications()
