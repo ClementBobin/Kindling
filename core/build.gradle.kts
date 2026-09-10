@@ -12,9 +12,10 @@ plugins {
 kotlin {
     jvm("desktop")
 
-    android {
+    androidLibrary {
         namespace = "${Versions.group}.${project.name}"
-        compileSdk { version = release(36) }
+        compileSdk = 36
+        minSdk = 21
     }
 
     sourceSets {
@@ -55,13 +56,17 @@ dependencies {
     add("kspCommonMainMetadata", project(":processor"))
 }
 
-tasks.matching { it.name == "androidSourcesJar" || it.name == "sourcesJar" }.configureEach {
-    dependsOn("kspCommonMainKotlinMetadata")
+tasks.matching {
+    it.name == "androidSourcesJar" || it.name == "sourcesJar"
+}.configureEach {
+    val kspTask = project.tasks.findByName("kspCommonMainKotlinMetadata")
+    if (kspTask != null) dependsOn(kspTask)
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask<*>>().configureEach {
     if (name != "kspCommonMainKotlinMetadata") {
-        dependsOn("kspCommonMainKotlinMetadata")
+        val kspTask = project.tasks.findByName("kspCommonMainKotlinMetadata")
+        if (kspTask != null) dependsOn(kspTask)
     }
 }
 

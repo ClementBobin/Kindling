@@ -4,7 +4,7 @@ object Versions {
     const val dokka                 = "2.2.0"
     const val junit5                = "6.1.0"
     const val coroutines            = "1.11.0"
-    const val jetbrainCompose       = "1.7.3"
+    const val jetbrainCompose       = "1.8.2"
     const val compose               = "1.13.0"
     const val navigationCompose     = "2.9.8"
     const val lifecycle             = "2.10.0"
