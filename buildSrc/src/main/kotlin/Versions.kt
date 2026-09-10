@@ -10,7 +10,7 @@ object Versions {
     const val lifecycle             = "2.10.0"
     const val koin                  = "4.2.1"
     const val ktor                  = "2.3.12"
-    const val coil                  = "3.5.0"
+    const val coil                  = "3.2.0"
     const val serialization         = "1.6.3"
     const val immutableCollections  = "0.3.8"
     const val playIntegrity         = "1.4.0"
