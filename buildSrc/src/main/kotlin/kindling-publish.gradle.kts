@@ -25,7 +25,7 @@ afterEvaluate {
         ?: "${project.name} module for Kindling"
 
     mavenPublishing {
-        publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+        publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL, automaticRelease = true)
 
         if (System.getenv("JITPACK") == null) {
             signAllPublications()
