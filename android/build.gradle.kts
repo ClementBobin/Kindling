@@ -9,7 +9,7 @@ extra["pomDescription"] = "Android platform utilities for Kindling"
 
 dependencies {
     implementation(project(":utils"))
-    implementation(kotlin("stdlib"))
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:${Versions.kotlin}")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.coroutines}")
     implementation("androidx.annotation:annotation-jvm:${Versions.annotationJvm}")
     implementation("androidx.core:core:${Versions.core}")
