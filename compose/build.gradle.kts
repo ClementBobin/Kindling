@@ -15,8 +15,7 @@ android {
 
 dependencies {
     implementation(project(":core"))
-    val composeBom = platform("androidx.compose:compose-bom:2025.05.00")
-    implementation(composeBom)
+    api(platform("androidx.compose:compose-bom:2025.05.00"))
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.runtime:runtime")
     implementation("androidx.compose.foundation:foundation")
