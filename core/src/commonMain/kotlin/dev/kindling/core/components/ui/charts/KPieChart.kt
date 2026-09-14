@@ -45,8 +45,6 @@ import dev.kindling.core.theme.kindlingColors
  *                        (chart-pie-label / chart-pie-label-custom).
  * @param separatorStroke Stroke width of the gap between segments in dp.
  *                        Pass 0.dp for chart-pie-separator-none.
- * @param innerRadiusFraction  Fraction of outer radius used for the donut hole.
- *                             Sourced from [ChartRegistryItem.innerRadiusFraction].
  */
 @Composable
 fun KPieChart(

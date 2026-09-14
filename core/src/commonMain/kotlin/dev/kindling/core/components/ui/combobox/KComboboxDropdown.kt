@@ -179,7 +179,7 @@ fun ComboboxItem(
 }
 
 /**
- * Renders all [items] as [ComboboxItem]s, filtered by [state.query].
+ * Renders all [items] as [ComboboxItem]s, filtered by 'state.query'.
  */
 @Composable
 fun ComboboxCollection(

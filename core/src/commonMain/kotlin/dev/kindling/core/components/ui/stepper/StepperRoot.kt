@@ -33,7 +33,6 @@ fun useStepper(): StepperState =
  * Shadcn/ui-style Stepper root — mirrors `Stepper` from `stepper.tsx`.
  *
  * Provides [StepperState] to all child slots via [useStepper].
- * Supports horizontal and vertical orientations, RTL via [LocalLayoutDirection].
  *
  * ```kotlin
  * val state = rememberStepperState(steps = listOf("step-1", "step-2", "step-3"))
