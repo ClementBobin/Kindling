@@ -1,4 +1,4 @@
-package dev.kindling.core.components.ui.animated.logosCarousel
+package dev.kindling.core.components.ui.logosCarousel
 
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp

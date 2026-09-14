@@ -10,17 +10,17 @@ plugins {
 }
 
 kotlin {
-    jvm("desktop")
-
     androidLibrary {
         namespace = "${Versions.group}.${project.name}"
         compileSdk = 36
         minSdk = 21
+
+        // Enable host tests to properly connect commonTest
+        withHostTest {}
     }
 
     sourceSets {
         val commonMain by getting {
-            //kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
             dependencies {
                 implementation(compose.runtime)
                 implementation(compose.foundation)
@@ -39,14 +39,11 @@ kotlin {
                 implementation(project(":utils"))
             }
         }
-        val desktopMain by getting {
+
+        // Add this block to resolve the warning
+        val commonTest by getting {
             dependencies {
-                implementation(compose.desktop.currentOs)
-            }
-        }
-        val androidMain by getting {
-            dependencies {
-                implementation(project(":android"))
+                implementation(kotlin("test"))
             }
         }
     }

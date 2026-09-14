@@ -95,7 +95,7 @@ class KMutexGuard {
 /**
  * Deduplicates concurrent calls to the same async operation.
  *
- * If [get] is called while a previous call with the same [key] is still in progress,
+ * If [get] is called while a previous call with the same `key` is still in progress,
  * **all callers share the same in-flight result** rather than triggering duplicate work.
  * Once the in-flight call finishes, the next call starts a fresh execution.
  *
@@ -118,7 +118,7 @@ class KSingleFlight<T> {
     private val inFlight = mutableMapOf<Any, Deferred<T>>()
 
     /**
-     * Executes [block] or awaits an existing in-flight execution sharing the same [key].
+     * Executes [block] or awaits an existing in-flight execution sharing the same [`key`].
      *
      * @param key Request key to distinguish distinct concurrent operations. Defaults to [Unit].
      * @param block The suspending work to execute.

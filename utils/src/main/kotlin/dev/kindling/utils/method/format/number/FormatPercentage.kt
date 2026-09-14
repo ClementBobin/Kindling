@@ -33,7 +33,7 @@ fun Double.toSignedPercent(decimals: Int = 1): String {
 }
 
 /**
- * Computes the percentage of [part] out of [total], returning 0.0 if [total] is zero.
+ * Computes the percentage of `` `part` `` out of `` `total` ``, returning 0.0 if `` `total` `` is zero.
  * Example: `25.0.percentOf(200.0)` → `12.5`
  */
 fun Double.percentOf(total: Double): Double =

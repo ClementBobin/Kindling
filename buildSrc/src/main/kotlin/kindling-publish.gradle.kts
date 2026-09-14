@@ -15,7 +15,7 @@ import com.vanniktech.maven.publish.SonatypeHost
  */
 plugins {
     id("com.vanniktech.maven.publish")
-    id("dev.composedoctor")
+    //id("dev.composedoctor")
 }
 
 afterEvaluate {
@@ -27,7 +27,12 @@ afterEvaluate {
     mavenPublishing {
         publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL, automaticRelease = true)
 
-        if (System.getenv("JITPACK") == null) {
+        val isJitpack = System.getenv("JITPACK") != null
+        val isLocalPublish = gradle.startParameter.taskNames.any {
+            it.contains("MavenLocal", ignoreCase = true)
+        }
+
+        if (!isJitpack && !isLocalPublish) {
             signAllPublications()
         }
 

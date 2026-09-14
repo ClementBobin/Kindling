@@ -1,7 +1,5 @@
 package dev.kindling.core.components.ui.dashboard
 
-import android.content.Context
-import android.util.AtomicFile
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.File
@@ -9,41 +7,37 @@ import java.io.File
 /**
  * Persistence manager handling local JSON disk read and write operations for dashboard layout schemas.
  *
- * @property context Application context reference utilized for accessing sandbox file paths.
+ * @property filesDir The application's files directory path provided by platform-specific expect/actual or parameter.
  */
-class KDashboardStorage(private val context: Context) {
-    private val atomicFile = AtomicFile(File(context.filesDir, "dashboard_layout.json"))
+class KDashboardStorage(private val filesDir: File) {
+    private val jsonFile = File(filesDir, "dashboard_layout.json")
     private val json = Json { ignoreUnknownKeys = true }
 
     /**
-     * Encodes and persists a list of [KWidgetModel] configurations safely to local device storage using atomic writes.
-     *
-     * @param widgets List of widget configuration nodes to serialize and store.
-     * @return A [Result] indicating success or containing any serialization/write exceptions.
+     * Encodes and persists a list of [KWidgetModel] configurations safely to local device storage.
      */
     fun saveLayout(widgets: List<KWidgetModel>): Result<Unit> {
         return runCatching {
             val serialized = json.encodeToString(widgets)
-            val stream = atomicFile.startWrite()
-            try {
-                stream.write(serialized.toByteArray(Charsets.UTF_8))
-                atomicFile.finishWrite(stream)
-            } catch (e: Exception) {
-                atomicFile.failWrite(stream)
-                throw e
+            // Simple atomic-like write using a temporary file
+            val tempFile = File(jsonFile.parentFile, "${jsonFile.name}.tmp")
+            tempFile.writeText(serialized, Charsets.UTF_8)
+            if (jsonFile.exists()) {
+                jsonFile.delete()
+            }
+            if (!tempFile.renameTo(jsonFile)) {
+                throw IllegalStateException("Failed to update dashboard layout file.")
             }
         }
     }
 
     /**
      * Loads and decodes saved widget models from local storage, or returns `null` if no configuration file exists.
-     *
-     * @return List of decoded [KWidgetModel] instances, or null on failure/absence.
      */
     fun loadLayout(): List<KWidgetModel>? {
-        if (!atomicFile.baseFile.exists()) return null
+        if (!jsonFile.exists()) return null
         return runCatching {
-            val text = atomicFile.openRead().bufferedReader().use { it.readText() }
+            val text = jsonFile.readText(Charsets.UTF_8)
             json.decodeFromString<List<KWidgetModel>>(text)
         }.getOrNull()
     }

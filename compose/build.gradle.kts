@@ -2,6 +2,7 @@ plugins {
     id("com.android.library")
     id("kindling-android-library")
     kotlin("plugin.compose")
+    kotlin("android")
     id("dokka-convention")
     id("kindling-publish")
 }

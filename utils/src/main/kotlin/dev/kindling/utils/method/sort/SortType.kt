@@ -173,7 +173,7 @@ enum class SortType {
     /**
      * Intro Sort — O(n log n) all cases, O(log n) space.
      *
-     * Hybrid of [QUICK], [HEAP], and [INSERTION]. Starts with quick
+     * Hybrid of [QUICK], `` `heap` ``, and [INSERTION]. Starts with quick
      * sort, falls back to heap sort if recursion depth exceeds
      * `2 * log₂(n)`, and uses insertion sort for small partitions.
      * This is the algorithm used by `std::sort` in most C++ STLs.

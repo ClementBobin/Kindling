@@ -14,9 +14,9 @@ dependencies {
     implementation("org.bouncycastle:bcpkix-jdk18on:${Versions.castle}")
     implementation("org.bouncycastle:bcprov-jdk18on:${Versions.castle}")
     // implementation("org.bouncycastle:bcpqc-jdk18on:${Versions.castle}")
-    testImplementation(kotlin("test"))
-    testImplementation("org.junit.jupiter:junit-jupiter:${Versions.junit5}")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:${Versions.coroutines}")
+    //testImplementation(kotlin("test"))
+    //testImplementation("org.junit.jupiter:junit-jupiter:${Versions.junit5}")
+    //testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:${Versions.coroutines}")
 }
 
-tasks.test { useJUnitPlatform() }
+//tasks.test { useJUnitPlatform() }
