@@ -1,4 +1,4 @@
-package dev.kindling.core.components.ui.prefab
+package dev.kindling.core.components.prefab
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

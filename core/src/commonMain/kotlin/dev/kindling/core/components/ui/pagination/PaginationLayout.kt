@@ -20,9 +20,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import dev.kindling.core.components.ui.KButton
-import dev.kindling.core.components.ui.KButtonSize
-import dev.kindling.core.components.ui.KButtonVariant
+import dev.kindling.core.components.ui.button.KButton
+import dev.kindling.core.components.ui.button.KButtonSize
+import dev.kindling.core.components.ui.button.KButtonVariant
 
 @Composable
 fun PaginationContent(
@@ -46,7 +46,7 @@ fun PaginationItem(
 }
 
 /**
- * A single page link — active page uses [dev.kindling.core.components.ui.KButtonVariant.Outline].
+ * A single page link — active page uses [KButtonVariant.Outline].
  */
 @Composable
 fun PaginationLink(

@@ -1,4 +1,4 @@
-package dev.kindling.core.components.ui
+package dev.kindling.core.components.ui.button
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.interaction.MutableInteractionSource

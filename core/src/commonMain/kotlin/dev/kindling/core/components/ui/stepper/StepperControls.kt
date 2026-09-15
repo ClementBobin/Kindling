@@ -10,14 +10,14 @@ import kotlinx.coroutines.launch
  * Mirrors `StepperPrev`.
  *
  * ```kotlin
- * StepperPrev { KButton("Back", onClick = onClick) }
+ * KStepperPrev { KButton("Back", onClick = onClick) }
  * ```
  */
 @Composable
-fun StepperPrev(
+fun KStepperPrev(
     content: @Composable (onClick: () -> Unit) -> Unit
 ) {
-    val state = useStepper()
+    val state = useKStepper()
     val scope = rememberCoroutineScope()
     content({
         if (state.canGoPrev) {
@@ -35,14 +35,14 @@ fun StepperPrev(
  * Mirrors `StepperNext`.
  *
  * ```kotlin
- * StepperNext { KButton("Continue", onClick = onClick) }
+ * KStepperNext { KButton("Continue", onClick = onClick) }
  * ```
  */
 @Composable
-fun StepperNext(
+fun KStepperNext(
     content: @Composable (onClick: () -> Unit) -> Unit
 ) {
-    val state = useStepper()
+    val state = useKStepper()
     val scope = rememberCoroutineScope()
     content({
         if (state.canGoNext) {

@@ -1,10 +1,5 @@
 package dev.kindling.core.components.ui.charts
 
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.ui.graphics.Color
-import dev.kindling.core.theme.KindlingColors
-import dev.kindling.core.theme.kindlingColors
-
 // ─────────────────────────────────────────────────────────────────────────────
 //  Shared Chart Helpers & Extensions
 // ─────────────────────────────────────────────────────────────────────────────

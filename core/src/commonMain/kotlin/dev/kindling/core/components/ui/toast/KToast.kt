@@ -26,9 +26,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import dev.kindling.core.components.ui.KButton
-import dev.kindling.core.components.ui.KButtonSize
-import dev.kindling.core.components.ui.KButtonVariant
+import dev.kindling.core.components.ui.button.KButton
+import dev.kindling.core.components.ui.button.KButtonSize
+import dev.kindling.core.components.ui.button.KButtonVariant
 
 private data class ToastStyle(val bg: Color, val icon: Color, val text: Color)
 
@@ -36,7 +36,7 @@ private data class ToastStyle(val bg: Color, val icon: Color, val text: Color)
  * Renders a single toast notification.
  *
  * Mirrors the individual toast card from shadcn/ui `sonner.tsx`.
- * Typically not used directly — prefer [Toaster] + [KToastManager].
+ * Typically not used directly — prefer [KToaster] + [KToastManager].
  *
  * ```kotlin
  * Toast(
@@ -46,7 +46,7 @@ private data class ToastStyle(val bg: Color, val icon: Color, val text: Color)
  * ```
  */
 @Composable
-fun Toast(
+fun KToast(
     data: KToastData,
     onClose: () -> Unit,
     modifier: Modifier = Modifier

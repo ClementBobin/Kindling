@@ -43,7 +43,7 @@ import java.time.format.TextStyle as JTextStyle
 import java.util.Locale
 
 @Composable
-internal fun CalendarGrid(
+internal fun KCalendarGrid(
     selected: LocalDate?,
     minDate: LocalDate?,
     maxDate: LocalDate?,

@@ -57,11 +57,11 @@ class KStepperState internal constructor(
  * Creates and remembers a [KStepperState].
  *
  * ```kotlin
- * val stepper = rememberStepperState(
+ * val stepper = rememberKStepperState(
  *     steps        = listOf("account", "billing", "review"),
  *     defaultValue = "account"
  * )
- * Stepper(state = stepper) { … }
+ * KStepper(state = stepper) { … }
  * ```
  */
 @Composable

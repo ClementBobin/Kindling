@@ -29,9 +29,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import dev.kindling.core.components.ui.KButton
-import dev.kindling.core.components.ui.KButtonSize
-import dev.kindling.core.components.ui.KButtonVariant
+import dev.kindling.core.components.ui.button.KButton
+import dev.kindling.core.components.ui.button.KButtonSize
+import dev.kindling.core.components.ui.button.KButtonVariant
 
 /**
  * Shadcn/ui-style Combobox root — mirrors `Combobox` (Base UI primitive).

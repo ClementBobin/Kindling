@@ -26,8 +26,8 @@ import androidx.compose.ui.unit.sp
  * Numbered / checkmark bubble — mirrors `StepperIndicator`.
  *
  * ```kotlin
- * StepperIndicator()                                     // auto: number or check
- * StepperIndicator { dataState -> MyIcon(dataState) }  // custom
+ * KStepperIndicator()                                     // auto: number or check
+ * KStepperIndicator { dataState -> MyIcon(dataState) }  // custom
  * ```
  */
 @Composable

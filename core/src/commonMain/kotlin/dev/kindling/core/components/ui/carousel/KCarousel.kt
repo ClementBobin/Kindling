@@ -27,7 +27,7 @@ import kotlinx.coroutines.launch
 /**
  * Shadcn/ui-style Carousel — mirrors `carousel.tsx`.
  *
- * Arrows are [dev.kindling.core.components.ui.KButton] instances rendered beside the pager (not overlaid).
+ * Arrows are [dev.kindling.core.components.ui.button.KButton] instances rendered beside the pager (not overlaid).
  *
  * ```kotlin
  * val api = rememberCarouselApi(pageCount = items.size)

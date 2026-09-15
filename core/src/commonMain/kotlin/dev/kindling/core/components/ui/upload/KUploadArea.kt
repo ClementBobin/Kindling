@@ -24,11 +24,11 @@ import androidx.compose.ui.unit.dp
  */
 @Composable
 fun KUploadArea(
-    files: List<UploadFile>,
+    files: List<KUploadFile>,
     onSelectFiles: () -> Unit,
-    onRemoveFile: (UploadFile) -> Unit,
+    onRemoveFile: (KUploadFile) -> Unit,
     modifier: Modifier = Modifier,
-    onRetryFile: ((UploadFile) -> Unit)? = null,
+    onRetryFile: ((KUploadFile) -> Unit)? = null,
     titleText: String = "Click to upload or drag & drop",
     maxFileSizeText: String? = "Max file size: 10MB",
     acceptedTypesText: String? = null,

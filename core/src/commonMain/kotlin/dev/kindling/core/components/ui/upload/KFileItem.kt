@@ -73,10 +73,10 @@ private fun resolveFileIcon(fileName: String, mimeType: String?): ImageVector {
  */
 @Composable
 fun KFileItem(
-    file: UploadFile,
-    onRemove: (UploadFile) -> Unit,
+    file: KUploadFile,
+    onRemove: (KUploadFile) -> Unit,
     modifier: Modifier = Modifier,
-    onRetry: ((UploadFile) -> Unit)? = null,
+    onRetry: ((KUploadFile) -> Unit)? = null,
     shape: Shape = MaterialTheme.kindlingShapes.radiusMd
 ) {
     val cs = MaterialTheme.colorScheme
@@ -129,13 +129,13 @@ fun KFileItem(
                     Spacer(Modifier.height(2.dp))
                     Text(
                         text = when (file.status) {
-                            is UploadStatus.Uploading -> "${(animatedProgress * 100).toInt()}% • ${file.sizeBytes.bytesToHuman()}"
-                            is UploadStatus.Error -> (file.status).message
-                            is UploadStatus.Success -> "Completed • ${file.sizeBytes.bytesToHuman()}"
-                            is UploadStatus.Idle -> file.sizeBytes.bytesToHuman()
+                            is KUploadStatus.Uploading -> "${(animatedProgress * 100).toInt()}% • ${file.sizeBytes.bytesToHuman()}"
+                            is KUploadStatus.Error -> (file.status).message
+                            is KUploadStatus.Success -> "Completed • ${file.sizeBytes.bytesToHuman()}"
+                            is KUploadStatus.Idle -> file.sizeBytes.bytesToHuman()
                         },
                         fontSize = 11.sp,
-                        color = if (file.status is UploadStatus.Error) cs.error else cs.onSurfaceVariant,
+                        color = if (file.status is KUploadStatus.Error) cs.error else cs.onSurfaceVariant,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -147,7 +147,7 @@ fun KFileItem(
                     horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     when (file.status) {
-                        is UploadStatus.Success -> {
+                        is KUploadStatus.Success -> {
                             Icon(
                                 imageVector = Icons.Outlined.CheckCircle,
                                 contentDescription = "Completed",
@@ -155,7 +155,7 @@ fun KFileItem(
                                 modifier = Modifier.size(20.dp)
                             )
                         }
-                        is UploadStatus.Error -> {
+                        is KUploadStatus.Error -> {
                             if (onRetry != null) {
                                 IconButton(
                                     onClick = { onRetry(file) },
@@ -189,7 +189,7 @@ fun KFileItem(
 
             // Progress Bar (when uploading)
             AnimatedVisibility(
-                visible = file.status is UploadStatus.Uploading,
+                visible = file.status is KUploadStatus.Uploading,
                 enter = fadeIn() + expandVertically(),
                 exit = fadeOut() + shrinkVertically()
             ) {
@@ -212,10 +212,10 @@ fun KFileItem(
  */
 @Composable
 fun KFileList(
-    files: List<UploadFile>,
-    onRemoveFile: (UploadFile) -> Unit,
+    files: List<KUploadFile>,
+    onRemoveFile: (KUploadFile) -> Unit,
     modifier: Modifier = Modifier,
-    onRetryFile: ((UploadFile) -> Unit)? = null
+    onRetryFile: ((KUploadFile) -> Unit)? = null
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),

@@ -28,7 +28,7 @@ import dev.kindling.core.theme.LocalKindlingShapes
  * ### Example usage:
  * ```kotlin
  * var message by remember { mutableStateOf("") }
- * Textarea(
+ * KTextarea(
  *     value         = message,
  *     onValueChange = { message = it },
  *     placeholder   = "Type your message here...",
@@ -48,7 +48,7 @@ import dev.kindling.core.theme.LocalKindlingShapes
  * @param keyboardActions Software keyboard actions.
  */
 @Composable
-fun Textarea(
+fun KTextarea(
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,

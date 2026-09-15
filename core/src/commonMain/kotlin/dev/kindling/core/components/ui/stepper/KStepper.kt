@@ -20,7 +20,7 @@ val LocalStepperOrientation = compositionLocalOf { KStepperOrientation.Horizonta
  * Reads the nearest [KStepperState] — mirrors `useStepper` from `stepper.tsx`.
  *
  * ```kotlin
- * val stepper = useStepper()
+ * val stepper = useKStepper()
  * Text("Step ${stepper.currentIndex + 1} of${stepper.steps.size}")
  * ```
  */
@@ -35,29 +35,29 @@ fun useKStepper(): KStepperState =
  * Provides [KStepperState] to all child slots via [useKStepper].
  *
  * ```kotlin
- * val state = rememberStepperState(steps = listOf("step-1", "step-2", "step-3"))
+ * val state = rememberKStepperState(steps = listOf("step-1", "step-2", "step-3"))
  *
- * Stepper(state = state) {
- *     StepperList {
+ * KStepper(state = state) {
+ *     KStepperList {
  *         listOf("Account", "Billing", "Review").forEachIndexed { i, label ->
- *             StepperItem(value = "step-${i+1}") {
- *                 StepperTrigger {
- *                     StepperIndicator()
+ *             KStepperItem(value = "step-${i+1}") {
+ *                 KStepperTrigger {
+ *                     KStepperIndicator()
  *                     Column {
- *                         StepperTitle { Text(label) }
- *                         StepperDescription { Text("Details") }
+ *                         KStepperTitle { Text(label) }
+ *                         KStepperDescription { Text("Details") }
  *                     }
  *                 }
- *                 StepperSeparator()
+ *                 KStepperSeparator()
  *             }
  *         }
  *     }
- *     StepperContent(value = "step-1") { Text("Step 1 content") }
- *     StepperContent(value = "step-2") { Text("Step 2 content") }
- *     StepperContent(value = "step-3") { Text("Step 3 content") }
+ *     KStepperContent(value = "step-1") { Text("Step 1 content") }
+ *     KStepperContent(value = "step-2") { Text("Step 2 content") }
+ *     KStepperContent(value = "step-3") { Text("Step 3 content") }
  *     Row {
- *         StepperPrev { KButton("Back",  onClick = it) }
- *         StepperNext { KButton("Next",  onClick = it) }
+ *         KStepperPrev { KButton("Back",  onClick = it) }
+ *         KStepperNext { KButton("Next",  onClick = it) }
  *     }
  * }
  * ```

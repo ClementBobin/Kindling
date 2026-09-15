@@ -68,7 +68,7 @@ fun KToaster(
         ) {
             toasts.forEach { toast ->
                 key(toast.id) {
-                    ToastAnimatedItem(toast = toast, onClose = { toasts.remove(toast) })
+                    KToastAnimatedItem(toast = toast, onClose = { toasts.remove(toast) })
                 }
             }
         }
@@ -91,7 +91,7 @@ private fun KToastAnimatedItem(toast: KToastData, onClose: () -> Unit) {
         enter   = slideInVertically(tween(300)) { it } + fadeIn(tween(300)),
         exit    = slideOutVertically(tween(300)) { it } + fadeOut(tween(300))
     ) {
-        Toast(
+        KToast(
             data = toast,
             onClose = { onClose() }
         )

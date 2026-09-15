@@ -14,7 +14,7 @@ fun KStepperTitle(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit
 ) {
-    val state = useStepper()
+    val state = useKStepper()
     val itemValue = LocalStepperItemValue.current
     val active = state.dataState(itemValue) == KStepState.Active
     ProvideTextStyle(

@@ -1,4 +1,4 @@
-package dev.kindling.core.components.ui
+package dev.kindling.core.components.ui.button
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
