@@ -9,13 +9,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 
 /**
- * Observable state for a [Stepper].
+ * Observable state for a [KStepper].
  *
- * Access via [useStepper] inside any composable that descends from [Stepper].
+ * Access via [useKStepper] inside any composable that descends from [KStepper].
  * Mirrors the `useStepper` hook from `stepper.tsx`.
  */
 @Stable
-class StepperState internal constructor(
+class KStepperState internal constructor(
     initialValue: String,
     val steps: List<String>,
     val onValueChange: (String) -> Unit,
@@ -54,7 +54,7 @@ class StepperState internal constructor(
 }
 
 /**
- * Creates and remembers a [StepperState].
+ * Creates and remembers a [KStepperState].
  *
  * ```kotlin
  * val stepper = rememberStepperState(
@@ -65,15 +65,15 @@ class StepperState internal constructor(
  * ```
  */
 @Composable
-fun rememberStepperState(
+fun rememberKStepperState(
     steps: List<String>,
     defaultValue: String = steps.firstOrNull() ?: "",
     value: String? = null,
     onValueChange: (String) -> Unit = {},
     onValidate: (suspend (value: String, direction: KNavigationDirection) -> Boolean)? = null
-): StepperState {
+): KStepperState {
     val state = remember(steps) {
-        StepperState(value ?: defaultValue, steps, onValueChange, onValidate)
+        KStepperState(value ?: defaultValue, steps, onValueChange, onValidate)
     }
     LaunchedEffect(value) { if (value != null) state.value = value }
     return state

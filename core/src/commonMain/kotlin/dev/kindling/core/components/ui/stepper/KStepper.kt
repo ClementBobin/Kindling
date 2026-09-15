@@ -11,13 +11,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 // Internal composition locals for child slots
-val LocalStepperState = compositionLocalOf<StepperState?> { null }
+val LocalStepperState = compositionLocalOf<KStepperState?> { null }
 val LocalStepperDisabled = compositionLocalOf { false }
 val LocalStepperNonInteractive = compositionLocalOf { false }
 val LocalStepperOrientation = compositionLocalOf { KStepperOrientation.Horizontal }
 
 /**
- * Reads the nearest [StepperState] — mirrors `useStepper` from `stepper.tsx`.
+ * Reads the nearest [KStepperState] — mirrors `useStepper` from `stepper.tsx`.
  *
  * ```kotlin
  * val stepper = useStepper()
@@ -25,14 +25,14 @@ val LocalStepperOrientation = compositionLocalOf { KStepperOrientation.Horizonta
  * ```
  */
 @Composable
-fun useStepper(): StepperState =
+fun useKStepper(): KStepperState =
     LocalStepperState.current
-        ?: error("`useStepper()` must be called inside a `Stepper` composable")
+        ?: error("`useKStepper()` must be called inside a `Stepper` composable")
 
 /**
  * Shadcn/ui-style Stepper root — mirrors `Stepper` from `stepper.tsx`.
  *
- * Provides [StepperState] to all child slots via [useStepper].
+ * Provides [KStepperState] to all child slots via [useKStepper].
  *
  * ```kotlin
  * val state = rememberStepperState(steps = listOf("step-1", "step-2", "step-3"))
@@ -63,8 +63,8 @@ fun useStepper(): StepperState =
  * ```
  */
 @Composable
-fun Stepper(
-    state: StepperState,
+fun KStepper(
+    state: KStepperState,
     modifier: Modifier = Modifier,
     orientation: KStepperOrientation = KStepperOrientation.Horizontal,
     disabled: Boolean = false,

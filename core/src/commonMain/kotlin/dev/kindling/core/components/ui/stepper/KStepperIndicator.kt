@@ -31,11 +31,11 @@ import androidx.compose.ui.unit.sp
  * ```
  */
 @Composable
-fun StepperIndicator(
+fun KStepperIndicator(
     modifier: Modifier = Modifier,
     content: (@Composable (KStepState) -> Unit)? = null
 ) {
-    val state = useStepper()
+    val state = useKStepper()
     val itemValue = LocalStepperItemValue.current
     val dsState = state.dataState(itemValue)
     val stepPos = state.steps.indexOf(itemValue) + 1

@@ -12,13 +12,13 @@ import androidx.compose.ui.Modifier
  * Mirrors `StepperContent`.
  */
 @Composable
-fun StepperContent(
+fun KStepperContent(
     value: String,
     modifier: Modifier = Modifier,
     forceMount: Boolean = false,
     content: @Composable BoxScope.() -> Unit
 ) {
-    val state = useStepper()
+    val state = useKStepper()
     if (state.value != value && !forceMount) return
     Box(modifier = modifier.fillMaxWidth(), content = content)
 }

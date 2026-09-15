@@ -17,8 +17,8 @@ import androidx.compose.ui.unit.dp
  * Hidden automatically on the last step.
  */
 @Composable
-fun RowScope.StepperSeparator(modifier: Modifier = Modifier) {
-    val state = useStepper()
+fun RowScope.KStepperSeparator(modifier: Modifier = Modifier) {
+    val state = useKStepper()
     val itemValue = LocalStepperItemValue.current
     val isLast = state.steps.lastOrNull() == itemValue
     if (isLast) return

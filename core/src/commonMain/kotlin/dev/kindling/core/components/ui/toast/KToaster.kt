@@ -36,12 +36,12 @@ import kotlinx.coroutines.delay
  * ```kotlin
  * Box(Modifier.fillMaxSize()) {
  *     NavHost(…)
- *     Toaster()
+ *     KToaster()
  * }
  * ```
  */
 @Composable
-fun Toaster(
+fun KToaster(
     modifier: Modifier = Modifier,
     maxVisible: Int = 3,
     alignment: Alignment = Alignment.BottomCenter
@@ -76,7 +76,7 @@ fun Toaster(
 }
 
 @Composable
-private fun ToastAnimatedItem(toast: KToastData, onClose: () -> Unit) {
+private fun KToastAnimatedItem(toast: KToastData, onClose: () -> Unit) {
     var visible by remember { mutableStateOf(true) }
 
     LaunchedEffect(toast.id) {

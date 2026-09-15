@@ -21,12 +21,12 @@ import kotlinx.coroutines.launch
  * Navigates to this step on tap (unless `nonInteractive`).
  */
 @Composable
-fun StepperTrigger(
+fun KStepperTrigger(
     modifier: Modifier = Modifier,
     hasLabel: Boolean = false,
     content: @Composable RowScope.() -> Unit
 ) {
-    val state = useStepper()
+    val state = useKStepper()
     val itemValue = LocalStepperItemValue.current
     val nonInteractive = LocalStepperNonInteractive.current
     val disabled = LocalStepperDisabled.current

@@ -12,7 +12,7 @@ import androidx.compose.runtime.remember
  * Access via `rememberCarouselApi()` and pass to [KCarousel].
  */
 @OptIn(ExperimentalFoundationApi::class)
-class CarouselApi internal constructor(
+class KCarouselApi internal constructor(
     internal val pagerState: PagerState
 ) {
     /** Zero-based index of the currently visible slide. */
@@ -30,9 +30,9 @@ class CarouselApi internal constructor(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun rememberCarouselApi(pageCount: Int): CarouselApi {
+fun rememberCarouselApi(pageCount: Int): KCarouselApi {
     val pager = rememberPagerState { pageCount }
-    return remember(pager) { CarouselApi(pager) }
+    return remember(pager) { KCarouselApi(pager) }
 }
 
 data class KCarouselAutoPlay(

@@ -8,11 +8,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
 /**
- * Horizontal or vertical list of [StepperItem]s.
+ * Horizontal or vertical list of [KStepperItem]s.
  * Mirrors `StepperList`.
  */
 @Composable
-fun StepperList(
+fun KStepperList(
     modifier: Modifier = Modifier,
     content: @Composable RowScope.() -> Unit
 ) {

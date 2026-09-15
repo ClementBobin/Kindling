@@ -10,7 +10,7 @@ import androidx.compose.ui.unit.sp
 
 /** Step title text — mirrors `StepperTitle`. */
 @Composable
-fun StepperTitle(
+fun KStepperTitle(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit
 ) {
@@ -29,7 +29,7 @@ fun StepperTitle(
 
 /** Step description text — mirrors `StepperDescription`. */
 @Composable
-fun StepperDescription(
+fun KStepperDescription(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit
 ) {

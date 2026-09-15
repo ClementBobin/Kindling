@@ -13,19 +13,19 @@ val LocalStepperItemValue = compositionLocalOf { "" }
 /**
  * Container for one step — mirrors `StepperItem`.
  *
- * @param value     Unique step identifier matching one of [StepperState.steps].
- * @param completed Override completion state (auto-derived from [StepperState] by default).
+ * @param value     Unique step identifier matching one of [KStepperState.steps].
+ * @param completed Override completion state (auto-derived from [KStepperState] by default).
  * @param disabled  Disables interaction for this step only.
  */
 @Composable
-fun RowScope.StepperItem(
+fun RowScope.KStepperItem(
     value: String,
     modifier: Modifier = Modifier,
     completed: Boolean? = null,
     disabled: Boolean = false,
     content: @Composable RowScope.() -> Unit
 ) {
-    val state = useStepper()
+    val state = useKStepper()
     val isLast = state.steps.lastOrNull() == value
 
     CompositionLocalProvider(LocalStepperItemValue provides value) {
