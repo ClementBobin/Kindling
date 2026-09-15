@@ -45,7 +45,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun KCarousel(
-    api: CarouselApi,
+    api: KCarouselApi,
     modifier: Modifier = Modifier,
     showArrows: Boolean = true,
     showDots: Boolean = api.slideCount > 1,

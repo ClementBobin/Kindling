@@ -34,7 +34,7 @@ import dev.kindling.core.components.ui.button.KButtonVariant
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun KCarouselContent(
-    api: CarouselApi,
+    api: KCarouselApi,
     modifier: Modifier = Modifier,
     pageSpacing: Dp = 8.dp,
     content: @Composable (page: Int) -> Unit
