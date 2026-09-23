@@ -20,7 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
-import dev.kindling.utils.method.KCounter
+import dev.kindling.core.utils.KCounter
 
 @Composable
 internal fun KLogosContentEngine(

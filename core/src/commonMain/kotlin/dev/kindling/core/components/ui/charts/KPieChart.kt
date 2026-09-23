@@ -90,8 +90,8 @@ fun KPieChart(
                     val isActive = i == activeSegment
                     val midAngle = startAngle + sweep / 2f
                     val expandOffset = if (isActive) activeExpand else 0f
-                    val ox = cx + expandOffset * cos(Math.toRadians(midAngle.toDouble())).toFloat()
-                    val oy = cy + expandOffset * sin(Math.toRadians(midAngle.toDouble())).toFloat()
+                    val ox = cx + expandOffset * cos(midAngle.toDouble() * PI / 180.0).toFloat()
+                    val oy = cy + expandOffset * sin(midAngle.toDouble() * PI / 180.0).toFloat()
 
                     val sliceColor = series.colors.getOrElse(i) { colors.atIndex(i) }
 
@@ -159,7 +159,7 @@ private fun DrawScope.drawLabelLine(
     midAngle: Float,
     color: Color,
 ) {
-    val rad = Math.toRadians(midAngle.toDouble())
+    val rad = midAngle.toDouble() * PI / 180.0
     val innerPt = Offset(
         cx + outerR * cos(rad).toFloat(),
         cy + outerR * sin(rad).toFloat()

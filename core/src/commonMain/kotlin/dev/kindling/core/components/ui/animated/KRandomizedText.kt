@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kotlin.random.Random
+import kotlin.math.pow
 
 // ─── Enums & Defaults ────────────────────────────────────────────────────────
 
@@ -96,7 +97,7 @@ fun KRandomizedText(
             }
 
             // Custom Exponential Out easing function: 1 - 2^(-10 * t)
-            val easedAlpha = if (p >= 1f) 1f else if (p <= 0f) 0f else (1f - Math.pow(2.0, -10.0 * p.toDouble())).toFloat()
+            val easedAlpha = if (p >= 1f) 1f else if (p <= 0f) 0f else (1f - (2.0).pow(-10.0 * p.toDouble())).toFloat()
 
             Box(
                 modifier = Modifier

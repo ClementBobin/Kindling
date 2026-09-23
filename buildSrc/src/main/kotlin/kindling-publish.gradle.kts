@@ -1,3 +1,4 @@
+import com.vanniktech.maven.publish.AndroidSingleVariantLibrary
 import com.vanniktech.maven.publish.SonatypeHost
 
 /**
@@ -15,7 +16,12 @@ import com.vanniktech.maven.publish.SonatypeHost
  */
 plugins {
     id("com.vanniktech.maven.publish")
-    //id("dev.composedoctor")
+}
+
+pluginManager.withPlugin("com.android.library") {
+    mavenPublishing {
+        configure(AndroidSingleVariantLibrary(variant = "release", publishJavadocJar = false))
+    }
 }
 
 afterEvaluate {

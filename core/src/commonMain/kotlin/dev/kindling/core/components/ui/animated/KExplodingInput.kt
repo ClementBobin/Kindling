@@ -27,23 +27,25 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.kindling.core.components.engine.KParticle
+import dev.kindling.core.components.engine.createExplosionBurst
 import kotlinx.coroutines.launch
 
 // ─── Defaults ─────────────────────────────────────────────────────────────────
 
 object KExplodingInputDefaults {
-    val Height: Dp = 56.dp
-    val ParticleCount: Int = 36
-    val ExplosionForce: Float = 450f
+    val Height: Dp get() = 56.dp
+    val ParticleCount: Int get() = 36
+    val ExplosionForce: Float get() = 450f
 
-    val DefaultColors = listOf(
-        Color(0xFFFF5964),
-        Color(0xFFFFAD05),
-        Color(0xFF35A7FF),
-        Color(0xFF38B000),
-        Color(0xFF9D4EDD),
-        Color(0xFFF72585)
-    )
+    val DefaultColors: List<Color>
+        get() = listOf(
+            Color(0xFFFF5964L),
+            Color(0xFFFFAD05L),
+            Color(0xFF35A7FFL),
+            Color(0xFF38B000L),
+            Color(0xFF9D4EDDL),
+            Color(0xFFF72585L)
+        )
 }
 
 // ─── Component Implementation ────────────────────────────────────────────────
@@ -85,10 +87,11 @@ fun KExplodingInput(
     var originOffset by remember { mutableStateOf(Offset.Zero) }
 
     fun triggerExplosion(origin: Offset, count: Int = particleCount, forceMultiplier: Float = 1f) {
-        val newParticles = KParticle.createExplosionBurst(
-            origin = origin,
+        val newParticles = createExplosionBurst(
+            originX = origin.x,
+            originY = origin.y,
             count = count,
-            colors = particleColors,
+            colors = particleColors.map { it.value.toLong() },
             baseForce = KExplodingInputDefaults.ExplosionForce,
             forceMultiplier = forceMultiplier
         )
@@ -214,7 +217,7 @@ fun KExplodingInput(
         Canvas(modifier = Modifier.fillMaxSize()) {
             particles.forEach { p ->
                 drawCircle(
-                    color = p.color.copy(alpha = p.alpha),
+                    color = Color(p.colorValue.toULong()).copy(alpha = p.alpha),
                     radius = p.currentRadius,
                     center = Offset(p.x, p.y)
                 )

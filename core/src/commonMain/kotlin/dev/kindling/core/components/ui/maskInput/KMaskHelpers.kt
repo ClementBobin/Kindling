@@ -1,8 +1,5 @@
 package dev.kindling.core.components.ui.maskInput
 
-import java.text.NumberFormat
-import java.util.Currency
-import java.util.Locale
 import kotlin.text.iterator
 
 /**
@@ -28,20 +25,24 @@ fun applyMask(value: String, pattern: String, allowLetters: Boolean = false): St
 /**
  * Mirrors `applyCurrencyMask` from `mask-input.tsx`.
  *
- * Formats a raw numeric string as a locale-aware currency display value.
+ * Formats a raw numeric string as a currency display value.
  */
 fun applyCurrencyMask(
     value: String,
     currencyCode: String = "USD",
-    locale: Locale = Locale.getDefault()
+    locale: String = "en"
 ): String {
     if (value.isEmpty()) return ""
     val num = value.toDoubleOrNull() ?: return value
     return try {
-        val fmt = NumberFormat.getCurrencyInstance(locale).apply {
-            currency = Currency.getInstance(currencyCode)
+        val symbol = when (currencyCode.uppercase()) {
+            "USD", "CAD", "AUD" -> "$"
+            "EUR" -> "€"
+            "GBP" -> "£"
+            "JPY" -> "¥"
+            else -> currencyCode
         }
-        fmt.format(num)
+        "$symbol$num"
     } catch (_: Exception) {
         value
     }

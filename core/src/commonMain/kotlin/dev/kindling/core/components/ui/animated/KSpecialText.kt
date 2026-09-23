@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
+import kotlin.math.PI
 import kotlin.math.sin
 import kotlin.random.Random
 
@@ -281,7 +282,7 @@ fun KSpecialText(
 
                         repeat(sparkleCount) { index ->
                             val phase = (progress + (index.toFloat() / sparkleCount)) % 1f
-                            val sparkAlpha = (sin(phase * Math.PI * 2) * 0.5f + 0.5f).toFloat()
+                            val sparkAlpha = (sin(phase * PI * 2) * 0.5f + 0.5f).toFloat()
 
                             val x = (width * 0.15f) + ((index * 37) % width.toInt() * 0.7f)
                             val y = (height * 0.1f) + ((index * 23) % height.toInt() * 0.8f)

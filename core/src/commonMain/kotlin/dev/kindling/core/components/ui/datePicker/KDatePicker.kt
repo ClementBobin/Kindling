@@ -7,14 +7,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
@@ -22,26 +15,20 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.kindling.core.components.ui.calendar.KCalendarGrid
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.util.Locale
+import kotlinx.datetime.LocalDate
 
 /**
- * Shadcn/ui-style DatePicker. Requires API 26+ (java.time).
+ * Shadcn/ui-style DatePicker.
  *
  * Uses [AnimatedVisibility] to show/hide an inline calendar card directly
- * below the trigger — no Popup or Skiko dependency.
+ * below the trigger.
  *
  * ```kotlin
  * var date by remember { mutableStateOf<LocalDate?>(null) }
@@ -57,41 +44,45 @@ fun KDatePicker(
     enabled: Boolean = true,
     minDate: LocalDate? = null,
     maxDate: LocalDate? = null,
-    locale: Locale = Locale.getDefault()
+    locale: String = "en"
 ) {
-    val cs  = MaterialTheme.colorScheme
+    val cs = MaterialTheme.colorScheme
     var expanded by remember { mutableStateOf(false) }
-    val fmt = DateTimeFormatter.ofPattern("MMM dd, yyyy", locale)
+
+    val formattedDate = selected?.let {
+        val monthName = it.month.name.lowercase().replaceFirstChar { c -> c.uppercase() }
+        "$monthName ${it.dayOfMonth}, ${it.year}"
+    } ?: placeholder
 
     Column(modifier = modifier) {
         // ── Trigger ──────────────────────────────────────────────────────────
         Surface(
-            onClick      = { if (enabled) expanded = !expanded },
-            enabled      = enabled,
-            shape        = RoundedCornerShape(6.dp),
-            color        = Color.Transparent,
+            onClick = { if (enabled) expanded = !expanded },
+            enabled = enabled,
+            shape = RoundedCornerShape(6.dp),
+            color = Color.Transparent,
             contentColor = cs.onBackground,
-            border       = BorderStroke(1.dp, if (expanded) cs.primary else cs.outline),
-            modifier     = Modifier
+            border = BorderStroke(1.dp, if (expanded) cs.primary else cs.outline),
+            modifier = Modifier
                 .fillMaxWidth()
                 .height(36.dp)
         ) {
             Row(
-                modifier              = Modifier.fillMaxSize().padding(horizontal = 12.dp),
-                verticalAlignment     = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxSize().padding(horizontal = 12.dp),
+                verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text     = selected?.format(fmt) ?: placeholder,
+                    text = formattedDate,
                     fontSize = 14.sp,
-                    color    = if (selected != null) cs.onBackground
+                    color = if (selected != null) cs.onBackground
                     else cs.onSurface.copy(alpha = 0.5f)
                 )
                 Icon(
                     Icons.Default.DateRange,
                     contentDescription = null,
                     modifier = Modifier.size(16.dp),
-                    tint     = cs.onSurfaceVariant
+                    tint = cs.onSurfaceVariant
                 )
             }
         }
@@ -99,8 +90,8 @@ fun KDatePicker(
         // ── Inline calendar (no Popup) ────────────────────────────────────
         AnimatedVisibility(
             visible = expanded,
-            enter   = expandVertically(tween(150)) + fadeIn(tween(150)),
-            exit    = shrinkVertically(tween(150)) + fadeOut(tween(150))
+            enter = expandVertically(tween(150)) + fadeIn(tween(150)),
+            exit = shrinkVertically(tween(150)) + fadeOut(tween(150))
         ) {
             KCalendarGrid(
                 selected = selected,

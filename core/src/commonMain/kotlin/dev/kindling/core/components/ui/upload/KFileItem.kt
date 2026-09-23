@@ -48,7 +48,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.kindling.core.theme.kindlingShapes
-import dev.kindling.utils.method.format.system.bytesToHuman
+import dev.kindling.core.utils.bytesToHuman
 
 /**
  * Resolves an appropriate icon based on file extension or mime type.

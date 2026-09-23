@@ -3,16 +3,7 @@ package dev.kindling.core.components.ui.calendar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -22,11 +13,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,27 +23,52 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import java.time.DayOfWeek
-import java.time.LocalDate
-import java.time.YearMonth
-import java.time.format.TextStyle as JTextStyle
-import java.util.Locale
+import kotlinx.datetime.*
+
+data class YearMonth(val year: Int, val month: Month) {
+    fun plusMonths(months: Int): YearMonth {
+        val totalMonths = (year * 12) + (month.ordinal) + months
+        val newYear = totalMonths / 12
+        val newMonthIndex = totalMonths % 12
+        val normalizedMonthIndex = if (newMonthIndex < 0) newMonthIndex + 12 else newMonthIndex
+        val normalizedYear = if (newMonthIndex < 0) newYear - 1 else newYear
+        return YearMonth(normalizedYear, Month.entries[normalizedMonthIndex])
+    }
+    fun minusMonths(months: Int): YearMonth = plusMonths(-months)
+    val lengthOfMonth: Int get() = lengthOfMonth(year, month)
+    fun atDay(day: Int): LocalDate = LocalDate(year, month, day)
+}
+
+private fun lengthOfMonth(year: Int, month: Month): Int {
+    return when (month) {
+        Month.JANUARY, Month.MARCH, Month.MAY, Month.JULY, Month.AUGUST, Month.OCTOBER, Month.DECEMBER -> 31
+        Month.APRIL, Month.JUNE, Month.SEPTEMBER, Month.NOVEMBER -> 30
+        Month.FEBRUARY -> if (isLeapYear(year)) 29 else 28
+        else -> 31
+    }
+}
+
+private fun isLeapYear(year: Int): Boolean {
+    return (year % 4 == 0) && (year % 100 != 0 || year % 400 == 0)
+}
 
 @Composable
 internal fun KCalendarGrid(
     selected: LocalDate?,
     minDate: LocalDate?,
     maxDate: LocalDate?,
-    locale: Locale,
+    locale: String = "en",
     onSelect: (LocalDate) -> Unit
 ) {
     val cs = MaterialTheme.colorScheme
+    val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
     var currentMonth by remember {
-        mutableStateOf(YearMonth.from(selected ?: LocalDate.now()))
+        mutableStateOf(
+            selected?.let { YearMonth(it.year, it.month) }
+                ?: YearMonth(today.year, today.month)
+        )
     }
-    val today      = LocalDate.now()
-    val monthLabel = currentMonth.month
-        .getDisplayName(JTextStyle.FULL, locale)
+    val monthLabel = currentMonth.month.name.lowercase()
         .replaceFirstChar { it.uppercase() }
 
     Column(
@@ -71,9 +83,9 @@ internal fun KCalendarGrid(
     ) {
         // Month navigation
         Row(
-            modifier              = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment     = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(onClick = { currentMonth = currentMonth.minusMonths(1) }) {
                 Icon(
@@ -85,7 +97,7 @@ internal fun KCalendarGrid(
             Text(
                 "$monthLabel ${currentMonth.year}",
                 fontWeight = FontWeight.SemiBold,
-                fontSize   = 14.sp
+                fontSize = 14.sp
             )
             IconButton(onClick = { currentMonth = currentMonth.plusMonths(1) }) {
                 Icon(
@@ -100,13 +112,14 @@ internal fun KCalendarGrid(
 
         // Weekday headers
         Row(Modifier.fillMaxWidth()) {
-            DayOfWeek.values().forEach { d ->
+            val weekdays = listOf("M", "T", "W", "T", "F", "S", "S")
+            weekdays.forEach { d ->
                 Text(
-                    text       = d.getDisplayName(JTextStyle.NARROW, locale),
-                    modifier   = Modifier.weight(1f),
-                    textAlign  = TextAlign.Center,
-                    fontSize   = 12.sp,
-                    color      = cs.onSurfaceVariant,
+                    text = d,
+                    modifier = Modifier.weight(1f),
+                    textAlign = TextAlign.Center,
+                    fontSize = 12.sp,
+                    color = cs.onSurfaceVariant,
                     fontWeight = FontWeight.Medium
                 )
             }
@@ -115,10 +128,10 @@ internal fun KCalendarGrid(
         Spacer(Modifier.height(4.dp))
 
         // Day cells
-        val firstDay    = currentMonth.atDay(1)
-        val startOffset = firstDay.dayOfWeek.value - 1
-        val daysInMonth = currentMonth.lengthOfMonth()
-        val rowCount    = (startOffset + daysInMonth + 6) / 7
+        val firstDay = currentMonth.atDay(1)
+        val startOffset = firstDay.dayOfWeek.isoDayNumber - 1
+        val daysInMonth = currentMonth.lengthOfMonth
+        val rowCount = (startOffset + daysInMonth + 6) / 7
 
         for (row in 0 until rowCount) {
             Row(Modifier.fillMaxWidth()) {
@@ -127,10 +140,10 @@ internal fun KCalendarGrid(
                     if (dayNum < 1 || dayNum > daysInMonth) {
                         Box(Modifier.weight(1f).aspectRatio(1f))
                     } else {
-                        val date       = currentMonth.atDay(dayNum)
+                        val date = currentMonth.atDay(dayNum)
                         val isSelected = date == selected
-                        val isToday    = date == today
-                        val disabled   = (minDate != null && date < minDate) ||
+                        val isToday = date == today
+                        val disabled = (minDate != null && date < minDate) ||
                                 (maxDate != null && date > maxDate)
 
                         Box(
@@ -148,22 +161,21 @@ internal fun KCalendarGrid(
                                     shape = CircleShape
                                 )
                                 .then(
-                                    if (!disabled) Modifier.clickable { onSelect(date) }
-                                    else Modifier
+                                    if (!disabled) {
+                                        Modifier.clickable { onSelect(date) }
+                                    } else Modifier
                                 ),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                text       = dayNum.toString(),
-                                fontSize   = 13.sp,
-                                color      = when {
+                                text = dayNum.toString(),
+                                fontSize = 13.sp,
+                                color = when {
                                     isSelected -> cs.onPrimary
-                                    disabled   -> cs.onSurface.copy(alpha = 0.3f)
-                                    isToday    -> cs.primary
-                                    else       -> cs.onSurface
+                                    disabled -> cs.onSurface.copy(alpha = 0.3f)
+                                    else -> cs.onSurface
                                 },
-                                fontWeight = if (isSelected || isToday) FontWeight.SemiBold
-                                else FontWeight.Normal
+                                fontWeight = if (isToday || isSelected) FontWeight.Bold else FontWeight.Normal
                             )
                         }
                     }

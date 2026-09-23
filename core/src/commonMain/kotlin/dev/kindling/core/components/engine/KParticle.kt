@@ -1,7 +1,6 @@
 package dev.kindling.core.components.engine
 
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
+import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.random.Random
@@ -9,12 +8,12 @@ import kotlin.random.Random
 /**
  * State container for an individual physics particle in particle-based UI effects.
  */
-data class KParticle(
+class KParticle(
     var x: Float,
     var y: Float,
     val vx: Float,
     val vy: Float,
-    val color: Color,
+    val colorValue: Long,
     val size: Float,
     val maxLife: Float,
     var life: Float = 0f
@@ -45,34 +44,33 @@ data class KParticle(
      */
     val isDead: Boolean
         get() = life >= maxLife
+}
 
-    companion object {
-        /**
-         * Factory function to generate a burst of radial explosion particles.
-         */
-        fun createExplosionBurst(
-            origin: Offset,
-            count: Int,
-            colors: List<Color>,
-            baseForce: Float,
-            forceMultiplier: Float = 1f
-        ): List<KParticle> {
-            return List(count) {
-                val angle = Random.nextFloat() * 2f * Math.PI.toFloat()
-                val speed = (Random.nextFloat() * 0.7f + 0.3f) * baseForce * forceMultiplier
-                val vx = cos(angle) * speed
-                val vy = sin(angle) * speed
+/**
+ * Factory function to generate a burst of radial explosion particles.
+ */
+fun createExplosionBurst(
+    originX: Float,
+    originY: Float,
+    count: Int,
+    colors: List<Long>,
+    baseForce: Float,
+    forceMultiplier: Float = 1f
+): List<KParticle> {
+    return List(count) {
+        val angle = Random.nextFloat() * 2f * PI.toFloat()
+        val speed = (Random.nextFloat() * 0.7f + 0.3f) * baseForce * forceMultiplier
+        val vx = cos(angle) * speed
+        val vy = sin(angle) * speed
 
-                KParticle(
-                    x = origin.x,
-                    y = origin.y,
-                    vx = vx,
-                    vy = vy,
-                    color = colors.random(),
-                    size = Random.nextFloat() * 12f + 6f,
-                    maxLife = Random.nextFloat() * 0.4f + 0.6f
-                )
-            }
-        }
+        KParticle(
+            x = originX,
+            y = originY,
+            vx = vx,
+            vy = vy,
+            colorValue = colors.random(),
+            size = Random.nextFloat() * 12f + 6f,
+            maxLife = Random.nextFloat() * 0.4f + 0.6f
+        )
     }
 }

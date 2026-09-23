@@ -1,23 +1,37 @@
+import io.gitlab.arturbosch.detekt.Detekt
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
+
 plugins {
     kotlin("multiplatform")
     kotlin("plugin.compose")
     id("com.google.devtools.ksp")
-    id("com.android.kotlin.multiplatform.library")
+    id("com.android.library")
     id("org.jetbrains.compose")
     id("dokka-convention")
-    id("kindling-android-library")
     id("kindling-publish")
 }
 
-kotlin {
-    androidLibrary {
-        namespace = "${Versions.group}.${project.name}"
-        compileSdk = 36
+android {
+    namespace = "${Versions.group}.${project.name}"
+    compileSdk = 36
+    defaultConfig {
         minSdk = 21
-
-        // Enable host tests to properly connect commonTest
-        withHostTest {}
     }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+}
+
+kotlin {
+    // Mobile
+    androidTarget()
+    iosX64()
+    iosArm64()
+    iosSimulatorArm64()
+
+    // Desktop
+    jvm("desktop")
 
     sourceSets {
         val commonMain by getting {
@@ -30,20 +44,31 @@ kotlin {
                 implementation(compose.animation)
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.coroutines}")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.serialization}")
+                implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.0")
                 implementation("io.coil-kt.coil3:coil-compose:${Versions.coil}")
-                implementation("io.coil-kt.coil3:coil-network-okhttp:${Versions.coil}")
                 implementation("io.insert-koin:koin-core:${Versions.koin}")
-                implementation("io.insert-koin:koin-compose:${Versions.koin}")
                 implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:${Versions.immutableCollections}")
-                implementation(kotlin("stdlib"))
                 implementation(project(":utils"))
             }
         }
 
-        // Add this block to resolve the warning
         val commonTest by getting {
             dependencies {
                 implementation(kotlin("test"))
+            }
+        }
+
+        // Android-only deps (OkHttp, etc.)
+        val androidMain by getting {
+            dependencies {
+                implementation("io.coil-kt.coil3:coil-network-okhttp:${Versions.coil}")
+            }
+        }
+
+        // Desktop
+        val desktopMain by getting {
+            dependencies {
+                implementation(compose.desktop.currentOs)
             }
         }
     }
@@ -60,15 +85,14 @@ tasks.matching {
     if (kspTask != null) dependsOn(kspTask)
 }
 
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask<*>>().configureEach {
+tasks.withType<KotlinCompilationTask<*>>().configureEach {
     if (name != "kspCommonMainKotlinMetadata") {
         val kspTask = project.tasks.findByName("kspCommonMainKotlinMetadata")
         if (kspTask != null) dependsOn(kspTask)
     }
 }
 
-tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
-    // Make sure Detekt tasks depend on KSP metadata generation if present
+tasks.withType<Detekt>().configureEach {
     if (name.contains("Metadata", ignoreCase = true)) {
         val kspTask = project.tasks.findByName("kspCommonMainKotlinMetadata")
         if (kspTask != null) {

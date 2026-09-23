@@ -4,7 +4,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.unit.LayoutDirection
-import java.util.Locale
 
 /**
  * Singleton for runtime LTR ↔ RTL toggling.
@@ -27,13 +26,13 @@ object KDirectionManager {
 
     fun set(dir: LayoutDirection) { direction = dir }
 
-    fun setFromLocale(locale: Locale) {
-        direction = if (isRtlLocale(locale)) LayoutDirection.Rtl else LayoutDirection.Ltr
+    fun setFromLanguage(language: String) {
+        direction = if (isRtlLanguage(language)) LayoutDirection.Rtl else LayoutDirection.Ltr
     }
 
     val isRtl: Boolean get() = direction == LayoutDirection.Rtl
     val isLtr: Boolean get() = direction == LayoutDirection.Ltr
 }
 
-fun isRtlLocale(locale: Locale = Locale.getDefault()): Boolean =
-    locale.language.lowercase() in setOf("ar", "he", "iw", "fa", "ur", "ps", "sd", "ku", "yi", "dv")
+fun isRtlLanguage(language: String = "en"): Boolean =
+    language.lowercase() in setOf("ar", "he", "iw", "fa", "ur", "ps", "sd", "ku", "yi", "dv")

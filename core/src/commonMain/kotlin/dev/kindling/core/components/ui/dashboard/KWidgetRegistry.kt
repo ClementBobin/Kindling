@@ -28,18 +28,9 @@ object KWidgetRegistry {
         return metadataList
     }
 
-    @Synchronized
     private fun ensureInitialized() {
         if (isInitialized) return
         isInitialized = true
-
-        // Finds and executes all generated KSP initializers in all modules automatically
-        try {
-            val initializerClass = Class.forName("dev.kindling.generated.KWidgetModuleInitializer")
-            initializerClass.getDeclaredField("INSTANCE").get(null)
-        } catch (_: Exception) {
-            // Module initializer not present in classpath or no widgets in module
-        }
     }
 }
 

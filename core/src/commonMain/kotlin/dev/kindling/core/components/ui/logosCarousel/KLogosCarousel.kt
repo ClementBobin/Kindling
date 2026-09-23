@@ -26,7 +26,7 @@ import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
-import dev.kindling.utils.method.KCounter
+import dev.kindling.core.utils.KCounter
 
 @Composable
 fun KLogosCarousel(
