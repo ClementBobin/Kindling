@@ -10,8 +10,8 @@ repositories {
 
 dependencies {
     implementation("org.jetbrains.dokka:dokka-gradle-plugin:2.2.0")
-    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:2.2.0")
-    implementation("org.jetbrains.kotlin:compose-compiler-gradle-plugin:2.2.0")
+    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:2.4.20")
+    implementation("org.jetbrains.kotlin:compose-compiler-gradle-plugin:2.4.20")
     implementation("com.android.tools.build:gradle:8.9.2")
     implementation("com.vanniktech:gradle-maven-publish-plugin:0.31.0")
     implementation("dev.composedoctor:dev.composedoctor.gradle.plugin:0.1.0")
