@@ -4,9 +4,9 @@ package dev.kindling.core.components.ui.upload
  * Represents the current status of an individual file in the uploader.
  */
 sealed interface KUploadStatus {
-    data object Idle : KUploadStatus
-    data object Uploading : KUploadStatus
-    data object Success : KUploadStatus
+    object Idle : KUploadStatus
+    object Uploading : KUploadStatus
+    object Success : KUploadStatus
     data class Error(val message: String) : KUploadStatus
 }
 

@@ -36,9 +36,8 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(kotlin("stdlib"))
             implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.coroutines}")
-            implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.0")
+            implementation("org.jetbrains.kotlinx:kotlinx-datetime:${Versions.datetime}")
         }
 
         androidMain.dependencies {

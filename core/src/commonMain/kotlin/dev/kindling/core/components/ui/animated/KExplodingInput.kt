@@ -39,12 +39,12 @@ object KExplodingInputDefaults {
 
     val DefaultColors: List<Color>
         get() = listOf(
-            Color(0xFFFF5964L),
-            Color(0xFFFFAD05L),
-            Color(0xFF35A7FFL),
-            Color(0xFF38B000L),
-            Color(0xFF9D4EDDL),
-            Color(0xFFF72585L)
+            Color(0xFF, 0x59, 0x64),
+            Color(0xFF, 0xAD, 0x05),
+            Color(0x35, 0xA7, 0xFF),
+            Color(0x38, 0xB0, 0x00),
+            Color(0x9D, 0x4E, 0xDD),
+            Color(0xF7, 0x25, 0x85)
         )
 }
 

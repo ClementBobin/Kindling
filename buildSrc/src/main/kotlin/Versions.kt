@@ -1,5 +1,5 @@
 object Versions {
-    const val kotlin                = "2.2.0"
+    const val kotlin                = "2.3.21"
     const val group                 = "io.github.clementbobin.kindling"
     const val dokka                 = "2.2.0"
     const val junit5                = "6.1.0"
@@ -12,8 +12,12 @@ object Versions {
     const val koin                  = "4.2.1"
     const val ktor                  = "2.3.12"
     const val coil                  = "3.2.0"
-    const val serialization         = "1.6.3"
-    const val immutableCollections  = "0.3.8"
+    const val serialization         = "1.9.0"
+    const val immutableCollections  = "0.4.0"
+    const val datetime              = "0.7.1"
+    // Ktor 3.x is only used for the web image-loading engine (coil-network-ktor3).
+    // The :android module keeps its own Ktor 2.x above.
+    const val ktor3                 = "3.2.3"
     const val playIntegrity         = "1.4.0"
     const val castle                = "1.80"
 
@@ -27,7 +31,7 @@ object Versions {
     const val desugarJdkLibs         = "2.1.4"
 
     // Processor
-    const val ksp = "2.2.0-2.0.2"
+    const val ksp = "2.3.7"
 
     /**
      * Resolved at configuration time from the RELEASE_VERSION environment
