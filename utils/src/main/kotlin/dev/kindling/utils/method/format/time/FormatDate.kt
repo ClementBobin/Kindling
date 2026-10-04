@@ -1,6 +1,6 @@
 @file:Suppress("TooManyFunctions")
 
-package dev.kindling.thod.format.time
+package dev.kindling.utils.method.format.time
 
 import kotlinx.datetime.*
 import kotlinx.datetime.format.*
@@ -88,7 +88,7 @@ fun LocalDate.isWeekday(): Boolean = !isWeekend()
  * Returns the number of days in the month of this date.
  * Example: `LocalDate(2024, 2, 1).daysInMonth()` → `29` (2024 is a leap year)
  */
-fun LocalDate.daysInMonth(): Int {
+fun LocalDate.daysInMonth(): Long {
     val next = if (monthNumber == 12) LocalDate(year + 1, 1, 1)
                else LocalDate(year, monthNumber + 1, 1)
     return next.toEpochDays() - LocalDate(year, monthNumber, 1).toEpochDays()
@@ -103,7 +103,7 @@ fun LocalDate.isLeapYear(): Boolean =
 /**
  * Returns the ISO week number (1–53) for this date.
  */
-fun LocalDate.weekOfYear(): Int {
+fun LocalDate.weekOfYear(): Long {
     // ISO week number is based on the week containing the first Thursday of the year.
     // An ISO week starts on Monday.
     val target = this.plus(3 - (this.dayOfWeek.isoDayNumber - 1), DateTimeUnit.DAY) // Thursday of this week

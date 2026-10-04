@@ -1,6 +1,7 @@
-package dev.kindling.thod.format.time
+package dev.kindling.utils.method.format.time
 
-import kotlinx.datetime.*
+import kotlin.time.*
+import kotlin.math.abs
 
 // ─── FormatTimeDelta ──────────────────────────────────────────────────────────
 
@@ -21,7 +22,7 @@ data class TimeDelta(
  * Example: `startInstant.deltaTo()` → `TimeDelta(days=65, hours=5, ...)`
  */
 fun Instant.deltaTo(other: Instant = Clock.System.now()): TimeDelta {
-    val totalSeconds = kotlin.math.abs((other - this).inWholeSeconds)
+    val totalSeconds = abs((other - this).inWholeSeconds)
     var remaining = totalSeconds
     val days    = (remaining / 86400).toInt();     remaining %= 86400
     val hours   = (remaining / 3600).toInt();      remaining %= 3600

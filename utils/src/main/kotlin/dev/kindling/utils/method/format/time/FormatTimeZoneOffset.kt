@@ -1,6 +1,10 @@
-package dev.kindling.thod.format.time
+package dev.kindling.utils.method.format.time
 
-import kotlinx.datetime.*
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.offsetAt
+import kotlinx.datetime.toLocalDateTime
+import kotlin.time.*
+import kotlin.math.abs
 
 // ─── FormatTimeZoneOffset ─────────────────────────────────────────────────────
 
@@ -11,7 +15,7 @@ import kotlinx.datetime.*
  */
 fun Int.minutesToUtcOffset(): String {
     val sign  = if (this >= 0) "+" else "-"
-    val abs   = kotlin.math.abs(this)
+    val abs   = abs(this)
     val hours = abs / 60
     val mins  = abs % 60
     return "UTC$sign%02d:%02d".format(hours, mins)
@@ -23,7 +27,7 @@ fun Int.minutesToUtcOffset(): String {
  */
 fun Int.secondsToUtcOffset(): String {
     val sign  = if (this >= 0) "+" else "-"
-    val abs   = kotlin.math.abs(this)
+    val abs   = abs(this)
     val hours = abs / 3600
     val mins  = (abs % 3600) / 60
     val secs  = abs % 60
@@ -52,7 +56,7 @@ fun TimeZone.displayName(instant: Instant = Clock.System.now()): String =
 fun TimeZone.shortLabel(instant: Instant = Clock.System.now()): String {
     val totalMins = offsetAt(instant).totalSeconds / 60
     val sign  = if (totalMins >= 0) "+" else "-"
-    val abs   = kotlin.math.abs(totalMins)
+    val abs   = abs(totalMins)
     val hours = abs / 60
     val mins  = abs % 60
     return if (mins == 0) "UTC$sign$hours" else "UTC$sign$hours:${"%02d".format(mins)}"

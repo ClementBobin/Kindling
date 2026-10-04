@@ -1,6 +1,7 @@
-package dev.kindling.thod.format.time
+package dev.kindling.utils.method.format.time
 
-import kotlinx.datetime.*
+import kotlin.math.abs
+import kotlin.time.*
 
 // ─── FormatRelativeTime ───────────────────────────────────────────────────────
 
@@ -20,7 +21,7 @@ import kotlinx.datetime.*
 fun Long.toRelativeTime(now: Instant = Clock.System.now()): String {
     val then = Instant.fromEpochSeconds(this)
     val diffSeconds = (now - then).inWholeSeconds
-    val abs = kotlin.math.abs(diffSeconds)
+    val abs = abs(diffSeconds)
     val future = diffSeconds < 0
 
     if (abs < 45) return "just now"
@@ -56,7 +57,7 @@ fun Instant.toRelativeTime(now: Instant = Clock.System.now()): String =
  * Example: `someInstant.toShortRelativeTime()` → `"3h"`
  */
 fun Instant.toShortRelativeTime(now: Instant = Clock.System.now()): String {
-    val abs = kotlin.math.abs((now - this).inWholeSeconds)
+    val abs = abs((now - this).inWholeSeconds)
     return when {
         abs < 60        -> "${abs}s"
         abs < 3600      -> "${abs / 60}m"
