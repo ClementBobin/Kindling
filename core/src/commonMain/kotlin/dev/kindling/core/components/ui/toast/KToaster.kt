@@ -49,7 +49,7 @@ fun KToaster(
     val toasts = remember { mutableStateListOf<KToastData>() }
 
     LaunchedEffect(Unit) {
-        KToastManager.flow.collect { toast ->
+        KToastManager.displayFlow.collect { toast ->
             toasts.add(0, toast)
             if (toasts.size > maxVisible) toasts.removeLastOrNull()
         }
