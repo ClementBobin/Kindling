@@ -3,11 +3,7 @@ kotlin = "2.3.21"
 dokka = "2.2.0"
 junit5 = "6.1.0"
 coroutines = "1.11.0"
-compose = "1.13.0"
 compose-bom = "1.8.1"
-material3 = "1.3.2"
-navigation-compose = "2.9.8"
-lifecycle = "2.10.0"
 koin = "4.2.1"
 ktor = "2.3.12"
 coil = "3.2.0"
@@ -16,7 +12,7 @@ immutable-collections = "0.4.0"
 datetime = "0.6.2"
 navigation-multiplatform = "2.9.2"
 lifecycle-multiplatform = "2.10.0"
-navigation-event = "1.1.1"
+navigation-event = "1.1.0"
 ktor3 = "3.2.3"
 play-integrity = "1.4.0"
 castle = "1.80"
@@ -34,7 +30,7 @@ desugar-jdk-libs = "2.1.4"
 
 # Compose Multiplatform dependencies from compose/core
 compose-multiplatform = "1.12.1"
-compose-material3-multiplatform = "1.11.1"
+compose-material3-multiplatform = "1.12.0-alpha03"
 compose-material3-core = "1.9.0"
 compose-material-icons = "1.7.3"
 
@@ -43,7 +39,7 @@ ksp = "2.3.7"
 android-gradle = "8.9.2"
 maven-publish = "0.31.0"
 compose-doctor = "0.1.0"
-compose-plugin = "1.11.1"
+compose-plugin = "1.12.1"
 html-mermaid-dokka = "0.6.0"
 
 [libraries]
@@ -82,7 +78,6 @@ androidx-compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling
 # Google / Play Services / Koin / Coil / Ktor
 play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "play-services-location" }
 play-integrity = { module = "com.google.android.play:integrity", version.ref = "play-integrity" }
-desugar-jdk-libs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar-jdk-libs" }
 
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 
@@ -109,6 +104,8 @@ junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "jun
 ksp-api = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }
 dokka-versioning-plugin = { module = "org.jetbrains.dokka:versioning-plugin", version.ref = "dokka" }
 html-mermaid-dokka-plugin = { module = "com.glureau:html-mermaid-dokka-plugin", version.ref = "html-mermaid-dokka" }
+
+desugar-jdk-libs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar-jdk-libs" }
 
 [plugins]
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }

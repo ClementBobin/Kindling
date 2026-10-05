@@ -36,10 +36,15 @@ pluginManager.withPlugin("com.android.library") {
             isCoreLibraryDesugaringEnabled = true
         }
     }
+
     val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
+    val desugarLib = libs.findLibrary("desugar-jdk-libs")
+        .orElseThrow { IllegalStateException("Missing 'desugar-jdk-libs' in libs.versions.toml") }
+
     dependencies {
-        add("coreLibraryDesugaring", libs.findLibrary("desugar-jdk-libs").get())
+        add("coreLibraryDesugaring", desugarLib)
     }
+
     configureSharedKotlin()
 }
 
