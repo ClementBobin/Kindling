@@ -1,34 +1,63 @@
+import com.android.build.api.dsl.androidLibrary
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
+
 plugins {
-    id("com.android.library")
-    id("kindling-android-library")
+    kotlin("multiplatform")
     kotlin("plugin.compose")
-    kotlin("android")
+    id("org.jetbrains.compose")
+    id("com.android.kotlin.multiplatform.library")
+    id("kindling-android-library")
     id("dokka-convention")
     id("kindling-publish")
 }
 
 extra["pomDescription"] = "Type-safe navigation and ViewModel utilities for Kindling"
 
-android {
-    defaultConfig { minSdk = 26 }
-    buildFeatures { compose = true }
-}
+kotlin {
+    androidLibrary {
+        namespace = "${KindlingProperties.group}.${project.name}"
+        compileSdk = 36
+        minSdk = 26
+    }
+    jvm("desktop")
 
-dependencies {
-    implementation(project(":core"))
-    implementation("androidx.compose.ui:ui:${Versions.composeBom}")
-    implementation("androidx.compose.runtime:runtime:${Versions.composeBom}")
-    implementation("androidx.compose.foundation:foundation:${Versions.composeBom}")
-    implementation("androidx.compose.material3:material3:${Versions.material3}")
-    implementation("androidx.compose.ui:ui-tooling-preview:${Versions.composeBom}")
-    debugImplementation("androidx.compose.ui:ui-tooling:${Versions.composeBom}")
-    implementation("androidx.activity:activity-compose:${Versions.compose}")
-    implementation("androidx.navigation:navigation-compose:${Versions.navigationCompose}")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:${Versions.lifecycle}")
-    implementation("androidx.lifecycle:lifecycle-runtime-compose:${Versions.lifecycle}")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.coroutines}")
-    implementation("io.insert-koin:koin-androidx-compose:${Versions.koin}")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:${Versions.kotlin}")
-    testImplementation(kotlin("test"))
-    testImplementation("org.junit.jupiter:junit-jupiter:${Versions.junit5}")
+    // iosX64 is not offered: Compose Multiplatform 1.11 dropped Apple x86_64 targets.
+    iosArm64()
+    iosSimulatorArm64()
+
+    @OptIn(ExperimentalWasmDsl::class)
+    wasmJs { browser() }
+
+    js {
+        browser()
+        nodejs()
+    }
+
+    sourceSets {
+        commonMain.dependencies {
+            implementation(project(":core"))
+            implementation(libs.compose.runtime)
+            implementation(libs.compose.foundation)
+            implementation(libs.compose.material3)
+            implementation(libs.compose.ui)
+            implementation(libs.kotlinx.coroutines.core)
+
+            // Part of the public API (NavController, ViewModel), so exposed as `api`.
+            api(libs.navigation.compose)
+            api(libs.lifecycle.viewmodel.compose)
+
+            // Multiplatform back handling (replaces androidx.activity BackHandler).
+            implementation(libs.navigationevent.compose)
+        }
+
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+        }
+
+        androidMain.dependencies {
+            // Android-only KViewModel (AndroidViewModel + Koin) and the @KPreview annotation.
+            api(libs.koin.core)
+            implementation(libs.androidx.compose.ui.tooling.preview)
+        }
+    }
 }

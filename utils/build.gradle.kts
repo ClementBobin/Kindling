@@ -1,25 +1,25 @@
+import com.android.build.api.dsl.androidLibrary
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
+import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 
 plugins {
     kotlin("multiplatform")
-    id("com.android.library")
+    // Same Android plugin as :core. With `com.android.library` the kindling-publish
+    // convention would switch to single-variant Android publishing and the
+    // iOS/desktop/web artifacts would never be published.
+    id("com.android.kotlin.multiplatform.library")
     id("kindling-android-library")
     id("dokka-convention")
     id("kindling-publish")
 }
 
-android {
-    namespace = "${Versions.group}.${project.name}"
-    compileSdk = 36
-    defaultConfig { minSdk = 21 }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-}
-
 kotlin {
-    androidTarget()
+    androidLibrary {
+        namespace = "${KindlingProperties.group}.${project.name}"
+        compileSdk = 36
+        minSdk = 21
+    }
     jvm("desktop")
 
     iosX64()
@@ -34,22 +34,38 @@ kotlin {
         nodejs()
     }
 
+    // Default hierarchy + one extra shared source set for code that needs the JCA /
+    // Bouncy Castle (KEncrypt): it is shared by Android and desktop only.
+    @OptIn(ExperimentalKotlinGradlePluginApi::class)
+    applyDefaultHierarchyTemplate {
+        common {
+            group("jvmShared") {
+                withCompilations {
+                    val platform = it.target.platformType
+                    platform == KotlinPlatformType.jvm || platform == KotlinPlatformType.androidJvm
+                }
+            }
+        }
+    }
+
     sourceSets {
         commonMain.dependencies {
-            implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.coroutines}")
-            implementation("org.jetbrains.kotlinx:kotlinx-datetime:${Versions.datetime}")
+            implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.kotlinx.datetime)
         }
 
-        androidMain.dependencies {
-            implementation("androidx.annotation:annotation-jvm:1.10.0")
-            implementation("org.bouncycastle:bcpkix-jdk18on:${Versions.castle}")
-            implementation("org.bouncycastle:bcprov-jdk18on:${Versions.castle}")
+        commonTest.dependencies {
+            implementation(kotlin("test"))
         }
 
-        val desktopMain by getting {
-            dependencies {
-                implementation("org.bouncycastle:bcpkix-jdk18on:${Versions.castle}")
-                implementation("org.bouncycastle:bcprov-jdk18on:${Versions.castle}")
+        // The jvmShared source set is created by the hierarchy template above, so it is
+        // configured lazily by name (it may not exist yet when this block runs).
+        configureEach {
+            if (name == "jvmSharedMain") {
+                dependencies {
+                    implementation(libs.bouncycastle.bcpkix)
+                    implementation(libs.bouncycastle.bcprov)
+                }
             }
         }
     }

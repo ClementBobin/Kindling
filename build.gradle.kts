@@ -33,7 +33,7 @@ dokka {
     // The GitHub Actions workflow downloads, populates, and archives this dir.
     pluginsConfiguration {
         versioning {
-            version.set(Versions.libraryVersion)
+            version.set(KindlingProperties.libraryVersion)
             olderVersionsDir.set(rootDir.resolve(".ci-docs-history"))
             renderVersionsNavigationOnAllPages.set(true)
         }
@@ -49,6 +49,6 @@ dependencies {
     // :processor is internal (KSP), not part of the public API
 
     // Dokka plugins — applied at doc-generation time only
-    dokkaPlugin("org.jetbrains.dokka:versioning-plugin:${Versions.dokka}")
-    dokkaPlugin("com.glureau:html-mermaid-dokka-plugin:0.6.0")
+    dokkaPlugin(libs.dokka.versioning.plugin)
+    dokkaPlugin(libs.html.mermaid.dokka.plugin)
 }

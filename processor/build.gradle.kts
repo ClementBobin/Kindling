@@ -8,5 +8,5 @@ kotlin {
 }
 
 dependencies {
-    implementation("com.google.devtools.ksp:symbol-processing-api:${Versions.ksp}")
+    implementation(libs.ksp.api)
 }

@@ -138,7 +138,7 @@ internal fun KCalendarGrid(
             Row(Modifier.fillMaxWidth()) {
                 for (col in 0 until 7) {
                     val dayNum = row * 7 + col - startOffset + 1
-                    if (dayNum < 1 || dayNum > daysInMonth) {
+                    if (dayNum !in 1..daysInMonth) {
                         Box(Modifier.weight(1f).aspectRatio(1f))
                     } else {
                         val date = currentMonth.atDay(dayNum)

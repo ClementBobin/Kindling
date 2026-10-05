@@ -42,7 +42,7 @@ afterEvaluate {
             signAllPublications()
         }
 
-        coordinates(Versions.group, project.name, Versions.libraryVersion)
+        coordinates(KindlingProperties.group, project.name, KindlingProperties.libraryVersion)
 
         pom {
             name.set(project.name)

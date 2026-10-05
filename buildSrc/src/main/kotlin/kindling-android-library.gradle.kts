@@ -11,6 +11,8 @@
  */
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import com.android.build.api.dsl.LibraryExtension
+import org.gradle.api.artifacts.VersionCatalogsExtension
+import org.gradle.kotlin.dsl.getByType
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 
 fun Project.configureSharedKotlin() {
@@ -25,7 +27,7 @@ fun Project.configureSharedKotlin() {
 // Pure Android library: com.android.library exposes LibraryExtension
 pluginManager.withPlugin("com.android.library") {
     extensions.configure<LibraryExtension> {
-        namespace  = "${Versions.group}.${project.name}"
+        namespace  = "${KindlingProperties.group}.${project.name}"
         compileSdk = 36
         defaultConfig { minSdk = 21 }
         compileOptions {
@@ -34,8 +36,9 @@ pluginManager.withPlugin("com.android.library") {
             isCoreLibraryDesugaringEnabled = true
         }
     }
+    val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
     dependencies {
-        add("coreLibraryDesugaring", "com.android.tools:desugar_jdk_libs:${Versions.desugarJdkLibs}")
+        add("coreLibraryDesugaring", libs.findLibrary("desugar-jdk-libs").get())
     }
     configureSharedKotlin()
 }

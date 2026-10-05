@@ -53,19 +53,18 @@ kotlin {
         commonMain.dependencies {
             // No explicit kotlin("stdlib"): the Kotlin Gradle plugin adds the right
             // per-target stdlib (klib for js/wasmJs) at the plugin's own version.
-            implementation("org.jetbrains.compose.runtime:runtime:1.12.1")
-            implementation("org.jetbrains.compose.foundation:foundation:1.12.1")
-            implementation("org.jetbrains.compose.material3:material3:1.9.0")
-            implementation("org.jetbrains.compose.material:material-icons-extended:1.7.3")
-            implementation("org.jetbrains.compose.ui:ui:1.12.1")
-            implementation("org.jetbrains.compose.animation:animation:1.12.1")
-            implementation("org.jetbrains.compose.animation:animation")
-            implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.coroutines}")
-            implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.serialization}")
-            implementation("org.jetbrains.kotlinx:kotlinx-datetime:${Versions.datetime}")
-            implementation("io.coil-kt.coil3:coil-compose:${Versions.coil}")
-            implementation("io.insert-koin:koin-core:${Versions.koin}")
-            implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:${Versions.immutableCollections}")
+            implementation(libs.compose.runtime)
+            implementation(libs.compose.foundation)
+            implementation(libs.compose.material3.core)
+            implementation(libs.compose.material.icons.extended)
+            implementation(libs.compose.ui)
+            implementation(libs.compose.animation)
+            implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.kotlinx.serialization.json)
+            implementation(libs.kotlinx.datetime)
+            implementation(libs.coil.compose)
+            implementation(libs.koin.core)
+            implementation(libs.kotlinx.collections.immutable)
             implementation(project(":utils"))
         }
 
@@ -74,7 +73,7 @@ kotlin {
         }
 
         androidMain.dependencies {
-            implementation("io.coil-kt.coil3:coil-network-okhttp:${Versions.coil}")
+            implementation(libs.coil.network.okhttp)
         }
 
         val desktopMain by getting {
@@ -86,12 +85,12 @@ kotlin {
         // Coil needs a network engine per platform to load URL images
         // (KLogoItem, avatars). Android uses OkHttp above; on the web it is Ktor's JS engine.
         jsMain.dependencies {
-            implementation("io.coil-kt.coil3:coil-network-ktor3:${Versions.coil}")
-            implementation("io.ktor:ktor-client-js:${Versions.ktor3}")
+            implementation(libs.coil.network.ktor3)
+            implementation(libs.ktor.client.js)
         }
         wasmJsMain.dependencies {
-            implementation("io.coil-kt.coil3:coil-network-ktor3:${Versions.coil}")
-            implementation("io.ktor:ktor-client-js:${Versions.ktor3}")
+            implementation(libs.coil.network.ktor3)
+            implementation(libs.ktor.client.js)
         }
     }
 }
