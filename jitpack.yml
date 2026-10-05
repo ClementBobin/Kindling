@@ -2,4 +2,4 @@ jdk:
   - openjdk21
 
 install:
-  - ./gradlew publishToMavenLocal --no-daemon
+  - cd lib/Kindling && ./gradlew publishToMavenLocal --no-daemon
