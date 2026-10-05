@@ -1,8 +1,5 @@
 jdk:
   - openjdk21
 
-before_install:
-  - sdk install gradle
-
 install:
   - ./gradlew publishToMavenLocal --no-daemon
