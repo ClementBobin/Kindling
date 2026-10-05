@@ -2,11 +2,8 @@ jdk:
   - openjdk21
 
 before_install:
-  - ls -l gradle/wrapper/
-  - unzip -tq gradle/wrapper/gradle-wrapper.jar
   - sdk install java 21.0.8-tem
   - sdk use java 21.0.8-tem
-  - java -version
 
 install:
   - ./gradlew publishToMavenLocal --no-daemon
