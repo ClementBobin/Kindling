@@ -6,4 +6,4 @@ before_install:
   - sdk use java 21.0.8-tem
 
 install:
-  - ./gradlew publishToMavenLocal --no-daemon || (sleep 60 && ./gradlew publishToMavenLocal --no-daemon)
+  - ok=0; for i in 1 2 3; do ./gradlew publishToMavenLocal --no-daemon && ok=1 && break; sleep $((i*120)); done; test $ok = 1
