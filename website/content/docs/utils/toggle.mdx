@@ -1,0 +1,49 @@
+---
+title: "Toggle"
+description: "A boolean toggle with optional forced-set support."
+generated: true
+module: "utils"
+---
+
+{/* AUTO-GENERATED from KDoc by website/scripts/docgen.mjs. Set `generated: false` in the frontmatter to take over this page by hand. */}
+
+Port of the `useToggle` React hook.
+
+```kotlin
+val toggle = Toggle(defaultValue = false)
+toggle.toggle()       // → true
+toggle.toggle()       // → false
+toggle.set(true)      // → true
+toggle.set(false)     // → false
+
+toggle.state.collect { enabled -> applyTheme(enabled) }
+```
+
+## Installation
+
+```kotlin
+implementation("io.github.clementbobin.kindling:utils:0.3.0")
+```
+
+```kotlin
+import dev.kindling.utils.method.KToggle
+```
+
+## Types
+
+### KToggle
+
+```kotlin
+class KToggle(defaultValue: Boolean = false)
+```
+
+<TypeTable type={{"defaultValue":{"type":"Boolean","description":"Initial state. Default: false.","default":"false"}}} />
+
+**Members**
+
+- `val state: StateFlow<Boolean>` — The current toggle value as a `StateFlow`.
+- `val value: Boolean get()` — The current toggle value.
+- `fun toggle()` — Flips the current value.
+- `fun set(newValue: Boolean)` — Forces the value to `newValue`.
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/utils/src/commonMain/kotlin/dev/kindling/utils/method/KToggle.kt#L24)

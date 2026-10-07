@@ -1,0 +1,177 @@
+---
+title: "Pagination"
+description: "Root pagination navigation wrapper — mirrors Pagination from pagination.tsx."
+generated: true
+module: "core"
+---
+
+{/* AUTO-GENERATED from KDoc by website/scripts/docgen.mjs. Set `generated: false` in the frontmatter to take over this page by hand. */}
+
+Used to navigate through large collections of content that are split across multiple pages.
+It provides a horizontal row for `PaginationLink`, `PaginationPrevious`, and `PaginationNext`.
+
+Respects `LocalLayoutDirection` for RTL via Compose.
+
+<Tabs items={['Preview', 'Code']}>
+  <Tab value="Preview">
+    <Showcase component="pagination" />
+  </Tab>
+  <Tab value="Code">
+
+```kotlin
+Pagination {
+    PaginationContent {
+        PaginationItem {
+            PaginationPrevious(onClick = { /* Previous */ }, enabled = currentPage > 1)
+        }
+
+        repeat(totalPageCount) { page ->
+            PaginationItem {
+                PaginationLink(
+                    page = page + 1,
+                    isActive = (page + 1) == currentPage,
+                    onClick = { /* Go to page */ }
+                )
+            }
+        }
+
+        PaginationItem {
+            PaginationNext(onClick = { /* Next */ }, enabled = currentPage < totalPageCount)
+        }
+    }
+}
+```
+
+  </Tab>
+</Tabs>
+
+## Installation
+
+```kotlin
+implementation("io.github.clementbobin.kindling:core:0.3.0")
+```
+
+```kotlin
+import dev.kindling.core.components.ui.pagination.Pagination
+```
+
+## Composables
+
+### Pagination
+
+```kotlin
+@Composable
+fun Pagination(
+    modifier: Modifier = Modifier,
+    content: @Composable RowScope.() -> Unit,
+)
+```
+
+<TypeTable type={{"modifier":{"type":"Modifier","description":"The modifier to be applied to the pagination row.","default":"Modifier"},"content":{"type":"@Composable RowScope.() -> Unit","description":"The structured pagination items.","required":true}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/pagination/Pagination.kt#L49)
+
+---
+
+### PaginationContent
+
+```kotlin
+@Composable
+fun PaginationContent(
+    modifier: Modifier = Modifier,
+    content: @Composable RowScope.() -> Unit,
+)
+```
+
+<TypeTable type={{"modifier":{"type":"Modifier","default":"Modifier"},"content":{"type":"@Composable RowScope.() -> Unit","required":true}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/pagination/PaginationLayout.kt#L28)
+
+---
+
+### PaginationItem
+
+```kotlin
+@Composable
+fun PaginationItem(
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit,
+)
+```
+
+<TypeTable type={{"modifier":{"type":"Modifier","default":"Modifier"},"content":{"type":"@Composable () -> Unit","required":true}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/pagination/PaginationLayout.kt#L41)
+
+---
+
+### PaginationLink
+
+A single page link — active page uses `KButtonVariant.Outline`.
+
+```kotlin
+@Composable
+fun PaginationLink(
+    page: Int,
+    isActive: Boolean = false,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+)
+```
+
+<TypeTable type={{"page":{"type":"Int","required":true},"isActive":{"type":"Boolean","default":"false"},"onClick":{"type":"() -> Unit","required":true},"modifier":{"type":"Modifier","default":"Modifier"}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/pagination/PaginationLayout.kt#L52)
+
+---
+
+### PaginationPrevious
+
+Previous-page button. Arrow direction is automatically mirrored in RTL via `LocalLayoutDirection`.
+
+```kotlin
+@Composable
+fun PaginationPrevious(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    text: String = "Previous",
+)
+```
+
+<TypeTable type={{"onClick":{"type":"() -> Unit","required":true},"modifier":{"type":"Modifier","default":"Modifier"},"enabled":{"type":"Boolean","default":"true"},"text":{"type":"String","default":"\"Previous\""}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/pagination/PaginationLayout.kt#L73)
+
+---
+
+### PaginationNext
+
+Next-page button. Arrow direction is automatically mirrored in RTL.
+
+```kotlin
+@Composable
+fun PaginationNext(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    text: String = "Next",
+)
+```
+
+<TypeTable type={{"onClick":{"type":"() -> Unit","required":true},"modifier":{"type":"Modifier","default":"Modifier"},"enabled":{"type":"Boolean","default":"true"},"text":{"type":"String","default":"\"Next\""}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/pagination/PaginationLayout.kt#L103)
+
+---
+
+### PaginationEllipsis
+
+```kotlin
+@Composable
+fun PaginationEllipsis(modifier: Modifier = Modifier)
+```
+
+<TypeTable type={{"modifier":{"type":"Modifier","default":"Modifier"}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/pagination/PaginationLayout.kt#L129)

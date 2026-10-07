@@ -1,0 +1,16 @@
+{
+  "title": "Kindling",
+  "pages": [
+    "index",
+    "installation",
+    "theming",
+    "showcase",
+    "---Reference---",
+    "components",
+    "utils",
+    "compose",
+    "android",
+    "---Project---",
+    "contributing-docs"
+  ]
+}

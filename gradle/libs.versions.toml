@@ -1,6 +1,5 @@
 [versions]
 kotlin = "2.3.21"
-dokka = "2.2.0"
 junit5 = "6.1.0"
 coroutines = "1.11.0"
 compose-bom = "1.8.1"
@@ -40,7 +39,6 @@ android-gradle = "8.9.2"
 maven-publish = "0.31.0"
 compose-doctor = "0.1.0"
 compose-plugin = "1.12.1"
-html-mermaid-dokka = "0.6.0"
 
 [libraries]
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
@@ -100,10 +98,8 @@ bouncycastle-bcprov = { module = "org.bouncycastle:bcprov-jdk18on", version.ref 
 # Testing
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit5" }
 
-# Processor & Dokka plugins
+# Processor plugins
 ksp-api = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }
-dokka-versioning-plugin = { module = "org.jetbrains.dokka:versioning-plugin", version.ref = "dokka" }
-html-mermaid-dokka-plugin = { module = "com.glureau:html-mermaid-dokka-plugin", version.ref = "html-mermaid-dokka" }
 
 desugar-jdk-libs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar-jdk-libs" }
 
@@ -116,7 +112,6 @@ kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", versi
 android-library = { id = "com.android.library", version.ref = "android-gradle" }
 android-kotlin-multiplatform-library = { id = "com.android.kotlin.multiplatform.library", version.ref = "android-gradle" }
 jetbrains-compose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
-dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "maven-publish" }
 compose-doctor = { id = "dev.composedoctor", version.ref = "compose-doctor" }

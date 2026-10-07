@@ -1,0 +1,67 @@
+---
+title: "Textarea"
+description: "Shadcn/ui-style Textarea — mirrors textarea.tsx."
+generated: true
+module: "core"
+---
+
+{/* AUTO-GENERATED from KDoc by website/scripts/docgen.mjs. Set `generated: false` in the frontmatter to take over this page by hand. */}
+
+A multi-line text input component designed for longer entries like messages or descriptions.
+It provides a consistent look and feel with other Kindling input components and handles
+error states, disabled states, and placeholder text.
+
+Respects `LocalLayoutDirection` for RTL text alignment automatically.
+
+<Tabs items={['Preview', 'Code']}>
+  <Tab value="Preview">
+    <Showcase component="textarea" />
+  </Tab>
+  <Tab value="Code">
+
+```kotlin
+var message by remember { mutableStateOf("") }
+KTextarea(
+    value         = message,
+    onValueChange = { message = it },
+    placeholder   = "Type your message here...",
+    minLines      = 3
+)
+```
+
+  </Tab>
+</Tabs>
+
+## Installation
+
+```kotlin
+implementation("io.github.clementbobin.kindling:core:0.3.0")
+```
+
+```kotlin
+import dev.kindling.core.components.ui.KTextarea
+```
+
+## Composables
+
+### KTextarea
+
+```kotlin
+@Composable
+fun KTextarea(
+    value: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    placeholder: String = "",
+    enabled: Boolean = true,
+    isError: Boolean = false,
+    minLines: Int = 2,
+    maxLines: Int = Int.MAX_VALUE,
+    keyboardOptions: KeyboardOptions = KeyboardOptions( keyboardType = KeyboardType.Text, imeAction = ImeAction.Default ),
+    keyboardActions: KeyboardActions = KeyboardActions.Default,
+)
+```
+
+<TypeTable type={{"value":{"type":"String","description":"The current text value to display in the textarea.","required":true},"onValueChange":{"type":"(String) -> Unit","description":"Callback invoked when the text value changes.","required":true},"modifier":{"type":"Modifier","description":"The modifier to be applied to the layout.","default":"Modifier"},"placeholder":{"type":"String","description":"The placeholder text to display when the textarea is empty.","default":"\"\""},"enabled":{"type":"Boolean","description":"Whether the textarea is enabled for user interaction.","default":"true"},"isError":{"type":"Boolean","description":"Whether the textarea should display an error state.","default":"false"},"minLines":{"type":"Int","description":"The minimum number of lines to display.","default":"2"},"maxLines":{"type":"Int","description":"The maximum number of lines to display.","default":"Int.MAX_VALUE"},"keyboardOptions":{"type":"KeyboardOptions","description":"Software keyboard options.","default":"KeyboardOptions( keyboardType = KeyboardType.Text, imeAction = ImeAction.Default )"},"keyboardActions":{"type":"KeyboardActions","description":"Software keyboard actions.","default":"KeyboardActions.Default"}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/KTextarea.kt#L51)

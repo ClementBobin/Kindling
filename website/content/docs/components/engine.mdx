@@ -1,0 +1,67 @@
+---
+title: "Engine"
+description: "State container for an individual physics particle in particle-based UI effects."
+generated: true
+module: "core"
+---
+
+{/* AUTO-GENERATED from KDoc by website/scripts/docgen.mjs. Set `generated: false` in the frontmatter to take over this page by hand. */}
+
+## Installation
+
+```kotlin
+implementation("io.github.clementbobin.kindling:core:0.3.0")
+```
+
+```kotlin
+import dev.kindling.core.components.engine.KParticle
+```
+
+## Types
+
+### KParticle
+
+```kotlin
+class KParticle(
+    var x: Float,
+    var y: Float,
+    val vx: Float,
+    val vy: Float,
+    val colorValue: Long,
+    val size: Float,
+    val maxLife: Float,
+    var life: Float = 0f,
+)
+```
+
+<TypeTable type={{"x":{"type":"Float","required":true},"y":{"type":"Float","required":true},"vx":{"type":"Float","required":true},"vy":{"type":"Float","required":true},"colorValue":{"type":"Long","required":true},"size":{"type":"Float","required":true},"maxLife":{"type":"Float","required":true},"life":{"type":"Float","default":"0f"}}} />
+
+**Members**
+
+- `val alpha: Float` — Calculates the remaining lifecycle ratio from `1.0f` (newly spawned) to `0.0f` (dead).
+- `val currentRadius: Float` — Current scaled radius based on remaining lifecycle alpha.
+- `fun update( deltaTime: Float, gravity: Float = 180f)` — Advance particle physics state by `deltaTime` seconds.
+- `val isDead: Boolean` — True when the particle lifetime has exceeded `maxLife`.
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/engine/KParticle.kt#L11)
+
+## Functions & properties
+
+### createExplosionBurst
+
+Factory function to generate a burst of radial explosion particles.
+
+```kotlin
+fun createExplosionBurst(
+    originX: Float,
+    originY: Float,
+    count: Int,
+    colors: List<Long>,
+    baseForce: Float,
+    forceMultiplier: Float = 1f,
+): List<KParticle>
+```
+
+<TypeTable type={{"originX":{"type":"Float","required":true},"originY":{"type":"Float","required":true},"count":{"type":"Int","required":true},"colors":{"type":"List<Long>","required":true},"baseForce":{"type":"Float","required":true},"forceMultiplier":{"type":"Float","default":"1f"}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/engine/KParticle.kt#L52)

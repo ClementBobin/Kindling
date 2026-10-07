@@ -1,0 +1,143 @@
+---
+title: "Notification"
+description: "Describes a notification channel to be registered with the system."
+generated: true
+module: "android"
+---
+
+{/* AUTO-GENERATED from KDoc by website/scripts/docgen.mjs. Set `generated: false` in the frontmatter to take over this page by hand. */}
+
+Notification channels are required starting from Android O (API 26).
+
+## Usage
+
+```kotlin
+val channel = NotificationChannelConfig(
+    id = "messages",
+    name = "Messages",
+    description = "Notifications for new chat messages",
+    importance = NotificationManager.IMPORTANCE_HIGH
+)
+notificationHelper.registerChannel(channel)
+```
+
+## More examples
+
+**NotificationConfig**
+
+```kotlin
+val config = NotificationConfig(
+    id = 101,
+    channelId = "updates",
+    title = "Update available",
+    body = "A new version of Kindling is ready to install.",
+    smallIcon = R.drawable.ic_notification,
+    autoCancel = true
+)
+notificationHelper.post(config)
+```
+
+## Installation
+
+```kotlin
+implementation("io.github.clementbobin.kindling:android:0.3.0")
+```
+
+```kotlin
+import dev.kindling.android.natif.NotificationChannelConfig
+```
+
+## Types
+
+### NotificationChannelConfig
+
+```kotlin
+data class NotificationChannelConfig(
+    val id: String,
+    val name: String,
+    val description: String = "",
+    val importance: Int = 3,
+)
+```
+
+<TypeTable type={{"id":{"type":"String","required":true},"name":{"type":"String","required":true},"description":{"type":"String","default":"\"\""},"importance":{"type":"Int","default":"3"}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/android/src/main/kotlin/dev/kindling/android/natif/NotificationHelper.kt#L34)
+
+---
+
+### NotificationConfig
+
+Describes a local notification to be posted to the system tray.
+
+Provides semantic presets that align with standard UI states:
+- `NotificationConfig` -> Neutral information
+- `NotificationConfig` -> Operation successful
+- `NotificationConfig` -> High priority warning
+- `NotificationConfig` -> Error or failure notification
+
+```kotlin
+data class NotificationConfig(
+    val id: Int,
+    val channelId: String,
+    val title: String,
+    val body: String,
+    val smallIcon: Int,
+    val priority: Int = NotificationCompat.PRIORITY_DEFAULT,
+    val autoCancel: Boolean = true,
+    val contentIntent: PendingIntent? = null,
+    val ongoing: Boolean = false,
+)
+```
+
+<TypeTable type={{"id":{"type":"Int","required":true},"channelId":{"type":"String","required":true},"title":{"type":"String","required":true},"body":{"type":"String","required":true},"smallIcon":{"type":"Int","required":true},"priority":{"type":"Int","default":"NotificationCompat.PRIORITY_DEFAULT"},"autoCancel":{"type":"Boolean","default":"true"},"contentIntent":{"type":"PendingIntent?","default":"null"},"ongoing":{"type":"Boolean","default":"false"}}} />
+
+**Presets**
+
+- `fun info( id: Int, channelId: String, title: String, body: String, icon: Int)`
+- `fun success( id: Int, channelId: String, title: String, body: String, icon: Int)`
+- `fun warning( id: Int, channelId: String, title: String, body: String, icon: Int)`
+- `fun error( id: Int, channelId: String, title: String, body: String, icon: Int)`
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/android/src/main/kotlin/dev/kindling/android/natif/NotificationHelper.kt#L67)
+
+---
+
+### NotificationHelper
+
+Centralized helper for managing Android local notifications.
+
+This utility simplifies channel registration and notification posting while
+ensuring compliance with Android's notification requirements (API 26+ channels).
+
+**Note:** Apps targeting API 33+ must declare and request the
+`android.permission.POST_NOTIFICATIONS` permission at runtime.
+
+### Initialization:
+```kotlin
+val notificationHelper = NotificationHelper(context)
+
+notificationHelper.registerChannel(
+    NotificationChannelConfig(
+        id = "alerts",
+        name = "System Alerts"
+    )
+)
+```
+
+```kotlin
+class NotificationHelper(context: Context)
+```
+
+<TypeTable type={{"context":{"type":"Context","required":true}}} />
+
+**Members**
+
+- `fun registerChannel(config: NotificationChannelConfig)` — Registers a notification channel (idempotent — safe to call multiple times). This is a no-op on Android versions below API 26 (O).
+- `fun registerChannels(vararg configs: NotificationChannelConfig)` — Enregistre plusieurs canaux en une seule fois.
+- `fun post(config: NotificationConfig)` — Poste la notification décrite par `config`.
+- `fun cancel(id: Int)` — Annule la notification identifiée par `id`.
+- `fun cancelAll()` — Annule toutes les notifications de l'app.
+- `fun areEnabled(): Boolean` — `true` si les notifications sont activées pour l'app.
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/android/src/main/kotlin/dev/kindling/android/natif/NotificationHelper.kt#L142)

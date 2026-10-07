@@ -1,0 +1,75 @@
+---
+title: "Toast"
+description: "Describes a semantic toast style, determining how long the message is displayed."
+generated: true
+module: "android"
+---
+
+{/* AUTO-GENERATED from KDoc by website/scripts/docgen.mjs. Set `generated: false` in the frontmatter to take over this page by hand. */}
+
+Use the provided presets:
+- `ToastStyle.Short` -> 2 seconds (`Toast.LENGTH_SHORT`)
+- `ToastStyle.Long`  -> 3.5 seconds (`Toast.LENGTH_LONG`)
+
+## Usage
+
+```kotlin
+val toastHelper = ToastHelper(context)
+
+toastHelper.show("Copied to clipboard!", ToastStyle.Short)
+toastHelper.success("Profile updated")
+toastHelper.error("Connection failed")
+```
+
+## Installation
+
+```kotlin
+implementation("io.github.clementbobin.kindling:android:0.3.0")
+```
+
+```kotlin
+import dev.kindling.android.natif.ToastStyle
+```
+
+## Types
+
+### ToastStyle
+
+```kotlin
+data class ToastStyle(val duration: Int)
+```
+
+<TypeTable type={{"duration":{"type":"Int","required":true}}} />
+
+**Presets**
+
+- `val Short`
+- `val Long`
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/android/src/main/kotlin/dev/kindling/android/natif/ToastHelper.kt#L17)
+
+---
+
+### ToastHelper
+
+Centralized Toast helper for Android.
+
+Simplifies showing standard Android toasts with semantic shorthands (info, success, etc.).
+
+**Important:** All calls must be made from the main (UI) thread.
+
+```kotlin
+class ToastHelper(context: Context)
+```
+
+<TypeTable type={{"context":{"type":"Context","required":true}}} />
+
+**Members**
+
+- `fun show( message: String, style: ToastStyle = ToastStyle.Short)`
+- `fun info(message: String)`
+- `fun success(message: String)`
+- `fun warning(message: String)`
+- `fun error(message: String)`
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/android/src/main/kotlin/dev/kindling/android/natif/ToastHelper.kt#L44)

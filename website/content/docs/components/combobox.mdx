@@ -1,0 +1,411 @@
+---
+title: "Combobox"
+description: "Shadcn/ui-style Combobox root — mirrors Combobox (Base UI primitive)."
+generated: true
+module: "core"
+---
+
+{/* AUTO-GENERATED from KDoc by website/scripts/docgen.mjs. Set `generated: false` in the frontmatter to take over this page by hand. */}
+
+## Installation
+
+```kotlin
+implementation("io.github.clementbobin.kindling:core:0.3.0")
+```
+
+```kotlin
+import dev.kindling.core.components.ui.combobox.Combobox
+```
+
+## Composables
+
+### Combobox
+
+```kotlin
+@Composable
+fun Combobox(
+    modifier: Modifier = Modifier,
+    content: @Composable BoxScope.() -> Unit,
+)
+```
+
+<TypeTable type={{"modifier":{"type":"Modifier","default":"Modifier"},"content":{"type":"@Composable BoxScope.() -> Unit","required":true}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/combobox/KComboboxTriggers.kt#L40)
+
+---
+
+### ComboboxChips
+
+Chip container shown inside the trigger area for multiple-selection mode.
+
+```kotlin
+@Composable
+fun ComboboxChips(
+    modifier: Modifier = Modifier,
+    content: @Composable RowScope.() -> Unit,
+)
+```
+
+<TypeTable type={{"modifier":{"type":"Modifier","default":"Modifier"},"content":{"type":"@Composable RowScope.() -> Unit","required":true}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/combobox/KComboboxChips.kt#L34)
+
+---
+
+### ComboboxChip
+
+Individual chip rendered inside `ComboboxChips` for each selected item.
+
+```kotlin
+@Composable
+fun ComboboxChip(
+    state: ComboboxState,
+    item: KComboboxItem,
+    modifier: Modifier = Modifier,
+    showRemove: Boolean = true,
+)
+```
+
+<TypeTable type={{"state":{"type":"ComboboxState","required":true},"item":{"type":"KComboboxItem","required":true},"modifier":{"type":"Modifier","default":"Modifier"},"showRemove":{"type":"Boolean","default":"true"}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/combobox/KComboboxChips.kt#L55)
+
+---
+
+### ComboboxChipsInput
+
+Inline search input rendered alongside chips inside `ComboboxChips`.
+
+```kotlin
+@Composable
+fun ComboboxChipsInput(
+    state: ComboboxState,
+    modifier: Modifier = Modifier,
+    placeholder: String = "Search…",
+    enabled: Boolean = true,
+)
+```
+
+<TypeTable type={{"state":{"type":"ComboboxState","required":true},"modifier":{"type":"Modifier","default":"Modifier"},"placeholder":{"type":"String","default":"\"Search…\""},"enabled":{"type":"Boolean","default":"true"}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/combobox/KComboboxChips.kt#L93)
+
+---
+
+### ComboboxContent
+
+The dropdown panel — mirrors `ComboboxContent` (Positioner + Popup).
+
+```kotlin
+@Composable
+fun ComboboxContent(
+    state: ComboboxState,
+    modifier: Modifier = Modifier,
+    maxHeight: Dp = 240.dp,
+    content: @Composable ColumnScope.() -> Unit,
+)
+```
+
+<TypeTable type={{"state":{"type":"ComboboxState","required":true},"modifier":{"type":"Modifier","default":"Modifier"},"maxHeight":{"type":"Dp","default":"240.dp"},"content":{"type":"@Composable ColumnScope.() -> Unit","required":true}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/combobox/KComboboxDropdown.kt#L41)
+
+---
+
+### ComboboxList
+
+Scrollable list container inside `ComboboxContent`.
+
+```kotlin
+@Composable
+fun ComboboxList(
+    modifier: Modifier = Modifier,
+    content: @Composable ColumnScope.() -> Unit,
+)
+```
+
+<TypeTable type={{"modifier":{"type":"Modifier","default":"Modifier"},"content":{"type":"@Composable ColumnScope.() -> Unit","required":true}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/combobox/KComboboxDropdown.kt#L65)
+
+---
+
+### ComboboxEmpty
+
+Empty-state slot shown when no items match the query.
+
+```kotlin
+@Composable
+fun ComboboxEmpty(
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit,
+)
+```
+
+<TypeTable type={{"modifier":{"type":"Modifier","default":"Modifier"},"content":{"type":"@Composable () -> Unit","required":true}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/combobox/KComboboxDropdown.kt#L76)
+
+---
+
+### ComboboxGroup
+
+Groups items under a labelled section.
+
+```kotlin
+@Composable
+fun ComboboxGroup(
+    modifier: Modifier = Modifier,
+    content: @Composable ColumnScope.() -> Unit,
+)
+```
+
+<TypeTable type={{"modifier":{"type":"Modifier","default":"Modifier"},"content":{"type":"@Composable ColumnScope.() -> Unit","required":true}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/combobox/KComboboxDropdown.kt#L97)
+
+---
+
+### ComboboxLabel
+
+Group label — mirrors `ComboboxLabel` (GroupLabel).
+
+```kotlin
+@Composable
+fun ComboboxLabel(
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit,
+)
+```
+
+<TypeTable type={{"modifier":{"type":"Modifier","default":"Modifier"},"content":{"type":"@Composable () -> Unit","required":true}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/combobox/KComboboxDropdown.kt#L106)
+
+---
+
+### ComboboxSeparator
+
+Thin horizontal rule between groups.
+
+```kotlin
+@Composable
+fun ComboboxSeparator(modifier: Modifier = Modifier)
+```
+
+<TypeTable type={{"modifier":{"type":"Modifier","default":"Modifier"}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/combobox/KComboboxDropdown.kt#L123)
+
+---
+
+### ComboboxItem
+
+A single selectable row inside `ComboboxList`.
+
+```kotlin
+@Composable
+fun ComboboxItem(
+    state: ComboboxState,
+    item: KComboboxItem,
+    modifier: Modifier = Modifier,
+    content: (@Composable RowScope.() -> Unit)? = null,
+)
+```
+
+<TypeTable type={{"state":{"type":"ComboboxState","required":true},"item":{"type":"KComboboxItem","required":true},"modifier":{"type":"Modifier","default":"Modifier"},"content":{"type":"(@Composable RowScope.() -> Unit)?","default":"null"}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/combobox/KComboboxDropdown.kt#L135)
+
+---
+
+### ComboboxCollection
+
+Renders all `items` as `ComboboxItem`s, filtered by 'state.query'.
+
+```kotlin
+@Composable
+fun ComboboxCollection(
+    state: ComboboxState,
+    items: List<KComboboxItem>,
+    modifier: Modifier = Modifier,
+    groups: List<KComboboxGroup> = emptyList(),
+    customItem: (@Composable RowScope.(KComboboxItem) -> Unit)? = null,
+)
+```
+
+<TypeTable type={{"state":{"type":"ComboboxState","required":true},"items":{"type":"List<KComboboxItem>","required":true},"modifier":{"type":"Modifier","default":"Modifier"},"groups":{"type":"List<KComboboxGroup>","default":"emptyList()"},"customItem":{"type":"(@Composable RowScope.(KComboboxItem) -> Unit)?","default":"null"}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/combobox/KComboboxDropdown.kt#L185)
+
+---
+
+### rememberComboboxState
+
+Creates and remembers a `ComboboxState`.
+
+```kotlin
+val state = rememberComboboxState(
+    selected = current,
+    onSelect = { current = it }
+)
+Combobox(state = state) { … }
+```
+
+```kotlin
+@Composable
+fun rememberComboboxState(
+    selected: KComboboxItem? = null,
+    onSelect: (KComboboxItem?) -> Unit = {},
+    multiple: Boolean = false,
+    selectedMultiple: List<KComboboxItem> = emptyList(),
+    onSelectMultiple: (List<KComboboxItem>) -> Unit = {},
+): ComboboxState
+```
+
+<TypeTable type={{"selected":{"type":"KComboboxItem?","default":"null"},"onSelect":{"type":"(KComboboxItem?) -> Unit","default":"{}"},"multiple":{"type":"Boolean","default":"false"},"selectedMultiple":{"type":"List<KComboboxItem>","default":"emptyList()"},"onSelectMultiple":{"type":"(List<KComboboxItem>) -> Unit","default":"{}"}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/combobox/KComboboxState.kt#L74)
+
+---
+
+### useComboboxAnchor
+
+```kotlin
+@Composable
+fun useComboboxAnchor(): MutableState<Any?>
+```
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/combobox/KComboboxState.kt#L90)
+
+---
+
+### ComboboxValue
+
+Renders the current selected label (or `placeholder` if nothing selected).
+
+```kotlin
+@Composable
+fun ComboboxValue(
+    modifier: Modifier = Modifier,
+    state: ComboboxState,
+    placeholder: String = "Select…",
+)
+```
+
+<TypeTable type={{"modifier":{"type":"Modifier","default":"Modifier"},"state":{"type":"ComboboxState","required":true},"placeholder":{"type":"String","default":"\"Select…\""}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/combobox/KComboboxTriggers.kt#L51)
+
+---
+
+### ComboboxTrigger
+
+Button-style trigger that opens/closes the dropdown.
+
+```kotlin
+@Composable
+fun ComboboxTrigger(
+    state: ComboboxState,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    isError: Boolean = false,
+    content: @Composable RowScope.() -> Unit = { ComboboxValue(state = state) Spacer(Modifier.weight(1f)) Icon( imageVector = if (state.expanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown, contentDescription = null, modifier = Modifier.size(16.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant ) },
+)
+```
+
+<TypeTable type={{"state":{"type":"ComboboxState","required":true},"modifier":{"type":"Modifier","default":"Modifier"},"enabled":{"type":"Boolean","default":"true"},"isError":{"type":"Boolean","default":"false"},"content":{"type":"@Composable RowScope.() -> Unit","default":"{ ComboboxValue(state = state) Spacer(Modifier.weight(1f)) Icon( imageVector = if (stat…"}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/combobox/KComboboxTriggers.kt#L75)
+
+---
+
+### ComboboxInput
+
+Search-field trigger — mirrors `ComboboxInput`.
+
+```kotlin
+@Composable
+fun ComboboxInput(
+    state: ComboboxState,
+    modifier: Modifier = Modifier,
+    placeholder: String = "Search…",
+    showTrigger: Boolean = true,
+    showClear: Boolean = false,
+    enabled: Boolean = true,
+    isError: Boolean = false,
+)
+```
+
+<TypeTable type={{"state":{"type":"ComboboxState","required":true},"modifier":{"type":"Modifier","default":"Modifier"},"placeholder":{"type":"String","default":"\"Search…\""},"showTrigger":{"type":"Boolean","default":"true"},"showClear":{"type":"Boolean","default":"false"},"enabled":{"type":"Boolean","default":"true"},"isError":{"type":"Boolean","default":"false"}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/combobox/KComboboxTriggers.kt#L126)
+
+## Types
+
+### KComboboxItem
+
+A single selectable item in a `Combobox`.
+
+```kotlin
+data class KComboboxItem(
+    val value: String,
+    val label: String,
+    val group: String? = null,
+)
+```
+
+<TypeTable type={{"value":{"type":"String","description":"Unique key used for equality checks and ComboboxValue.","required":true},"label":{"type":"String","description":"Display text shown in the list and trigger.","required":true},"group":{"type":"String?","description":"Optional key matching a KComboboxGroup to bucket this item.","default":"null"}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/combobox/KComboboxModels.kt#L10)
+
+---
+
+### KComboboxGroup
+
+A labelled group header rendered above its items.
+
+```kotlin
+data class KComboboxGroup(
+    val key: String,
+    val label: String,
+)
+```
+
+<TypeTable type={{"key":{"type":"String","required":true},"label":{"type":"String","required":true}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/combobox/KComboboxModels.kt#L19)
+
+---
+
+### ComboboxState
+
+State holder created by `rememberComboboxState` and passed down to all Combobox slot composables.
+
+Mirrors the controlled / uncontrolled pattern of the web component.
+
+```kotlin
+class ComboboxState(
+    initialSelected: KComboboxItem?,
+    val onSelect: (KComboboxItem?) -> Unit,
+    initialSelectedMultiple: List<KComboboxItem>,
+    val onSelectMultiple: (List<KComboboxItem>) -> Unit,
+    val multiple: Boolean,
+)
+```
+
+<TypeTable type={{"initialSelected":{"type":"KComboboxItem?","required":true},"onSelect":{"type":"(KComboboxItem?) -> Unit","required":true},"initialSelectedMultiple":{"type":"List<KComboboxItem>","required":true},"onSelectMultiple":{"type":"(List<KComboboxItem>) -> Unit","required":true},"multiple":{"type":"Boolean","required":true}}} />
+
+**Members**
+
+- `var expanded by mutableStateOf(false)`
+- `var query by mutableStateOf("")`
+- `var selected by mutableStateOf(initialSelected)`
+- `var selectedMultiple by mutableStateOf(initialSelectedMultiple)`
+- `fun isSelected(item: KComboboxItem)`
+- `fun toggle(item: KComboboxItem)`
+- `fun removeChip(item: KComboboxItem)`
+- `fun close()`
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/combobox/KComboboxState.kt#L19)

@@ -1,0 +1,51 @@
+---
+title: "Aspect Ratio"
+description: "Constrains its content to a given aspect ratio — mirrors shadcn/ui AspectRatio."
+generated: true
+module: "core"
+---
+
+{/* AUTO-GENERATED from KDoc by website/scripts/docgen.mjs. Set `generated: false` in the frontmatter to take over this page by hand. */}
+
+This component is useful for maintaining consistent proportions for images, videos, or
+other media content regardless of their actual dimensions or the parent container's width.
+
+## Usage
+
+```kotlin
+KAspectRatio(ratio = 16f / 9f) {
+    Image(
+        painter = painterResource(Res.drawable.landscape),
+        contentDescription = "Landscape image",
+        modifier = Modifier.fillMaxSize(),
+        contentScale = ContentScale.Crop
+    )
+}
+```
+
+## Installation
+
+```kotlin
+implementation("io.github.clementbobin.kindling:core:0.3.0")
+```
+
+```kotlin
+import dev.kindling.core.components.ui.KAspectRatio
+```
+
+## Composables
+
+### KAspectRatio
+
+```kotlin
+@Composable
+fun KAspectRatio(
+    modifier: Modifier = Modifier,
+    ratio: Float = 1f,
+    content: @Composable () -> Unit,
+)
+```
+
+<TypeTable type={{"modifier":{"type":"Modifier","description":"The modifier to be applied to the layout.","default":"Modifier"},"ratio":{"type":"Float","description":"The width-to-height ratio (e.g., 1.0f for a square, 1.77f for 16:9).","default":"1f"},"content":{"type":"@Composable () -> Unit","description":"The composable content to be constrained by the aspect ratio.","required":true}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/KAspectRatio.kt#L32)

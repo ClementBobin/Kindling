@@ -1,0 +1,102 @@
+---
+title: "Connectivity"
+description: "Centralized network connectivity helper for Android."
+generated: true
+module: "android"
+---
+
+{/* AUTO-GENERATED from KDoc by website/scripts/docgen.mjs. Set `generated: false` in the frontmatter to take over this page by hand. */}
+
+This utility provides synchronous checks and reactive flows for monitoring
+internet availability and transport types (Wifi, Cellular, etc.).
+
+**Requires permission:** `ACCESS_NETWORK_STATE`
+
+## Usage
+
+```kotlin
+val connectivityHelper = ConnectivityHelper(context)
+
+// Synchronous check
+if (connectivityHelper.isOnline()) {
+    refreshContent()
+}
+
+// Reactive observation
+viewModelScope.launch {
+    connectivityHelper.statusFlow.collect { status ->
+        when (status) {
+            is NetworkStatus.Available -> showOnlineMode()
+            is NetworkStatus.Unavailable -> showOfflineBanner()
+            is NetworkStatus.Losing -> Unit
+        }
+    }
+}
+```
+
+## Installation
+
+```kotlin
+implementation("io.github.clementbobin.kindling:android:0.3.0")
+```
+
+```kotlin
+import dev.kindling.android.natif.ConnectivityHelper
+```
+
+## Types
+
+### ConnectivityHelper
+
+```kotlin
+class ConnectivityHelper(context: Context)
+```
+
+<TypeTable type={{"context":{"type":"Context","required":true}}} />
+
+**Members**
+
+- `fun isOnline(): Boolean` — `true` si une connexion réseau validée est disponible.
+- `fun currentTransport(): NetworkTransport?` — Transport actif, ou `null` si hors ligne.
+- `val statusFlow: Flow<NetworkStatus> get()` — A `Flow` that emits `NetworkStatus` whenever the network connectivity changes. It emits the current status immediately upon subscription.
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/android/src/main/kotlin/dev/kindling/android/natif/ConnectivityHelper.kt#L68)
+
+---
+
+### NetworkStatus
+
+Represents the current network connectivity status.
+
+- `NetworkStatus.Available`: Device is online (transport type specified).
+- `NetworkStatus.Unavailable`: Device is offline.
+- `NetworkStatus.Losing`: Connection is currently being lost (e.g., transitioning between networks).
+
+```kotlin
+sealed class NetworkStatus
+```
+
+**Members**
+
+- `data class Available(val transport: NetworkTransport) : NetworkStatus()`
+- `data object Unavailable : NetworkStatus()`
+- `data object Losing : NetworkStatus()`
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/android/src/main/kotlin/dev/kindling/android/natif/ConnectivityHelper.kt#L27)
+
+---
+
+### NetworkTransport
+
+```kotlin
+enum class NetworkTransport
+```
+
+**Values**
+
+- `Wifi`
+- `Cellular`
+- `Ethernet`
+- `Other`
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/android/src/main/kotlin/dev/kindling/android/natif/ConnectivityHelper.kt#L33)

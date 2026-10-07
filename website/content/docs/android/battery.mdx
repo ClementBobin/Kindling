@@ -1,0 +1,128 @@
+---
+title: "Battery"
+description: "Current battery status information."
+generated: true
+module: "android"
+---
+
+{/* AUTO-GENERATED from KDoc by website/scripts/docgen.mjs. Set `generated: false` in the frontmatter to take over this page by hand. */}
+
+## Usage
+
+```kotlin
+val batteryHelper = BatteryHelper(context)
+
+// Synchronous check
+val status = batteryHelper.getStatus()
+println("${status.level}% - ${if (status.isCharging) "Charging" else "On Battery"}")
+
+// Reactive flow
+viewModelScope.launch {
+    batteryHelper.statusFlow.collect { status ->
+        updateBatteryUI(status)
+    }
+}
+
+// Power save mode
+if (batteryHelper.isPowerSaveMode()) {
+    disableExpensiveAnimations()
+}
+```
+
+## Installation
+
+```kotlin
+implementation("io.github.clementbobin.kindling:android:0.3.0")
+```
+
+```kotlin
+import dev.kindling.android.natif.BatteryStatus
+```
+
+## Types
+
+### BatteryStatus
+
+```kotlin
+data class BatteryStatus(
+    val level: Int,
+    val isCharging: Boolean,
+    val chargeType: ChargeType,
+    val health: BatteryHealth,
+    val temperature: Int,
+    val voltage: Int,
+)
+```
+
+<TypeTable type={{"level":{"type":"Int","description":"The battery level percentage 100.","required":true},"isCharging":{"type":"Boolean","description":"Whether the device is currently plugged into a power source.","required":true},"chargeType":{"type":"ChargeType","description":"The specific source of power (AC, USB, Wireless) or None.","required":true},"health":{"type":"BatteryHealth","description":"The physical health state of the battery (e.g., Good, Overheat).","required":true},"temperature":{"type":"Int","description":"The battery temperature in tenths of a degree Celsius (e.g., 250 = 25.0°C).","required":true},"voltage":{"type":"Int","description":"The current battery voltage in millivolts.","required":true}}} />
+
+**Members**
+
+- `val temperatureCelsius: Float get()`
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/android/src/main/kotlin/dev/kindling/android/natif/BatteryHelper.kt#L30)
+
+---
+
+### ChargeType
+
+```kotlin
+enum class ChargeType
+```
+
+**Values**
+
+- `Ac`
+- `Usb`
+- `Wireless`
+- `None`
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/android/src/main/kotlin/dev/kindling/android/natif/BatteryHelper.kt#L41)
+
+---
+
+### BatteryHealth
+
+```kotlin
+enum class BatteryHealth
+```
+
+**Values**
+
+- `Good`
+- `Overheat`
+- `Dead`
+- `OverVoltage`
+- `UnspecifiedFailure`
+- `Cold`
+- `Unknown`
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/android/src/main/kotlin/dev/kindling/android/natif/BatteryHelper.kt#L43)
+
+---
+
+### BatteryHelper
+
+Centralized battery helper for Android.
+
+This utility provides synchronous access and reactive flows for monitoring battery
+status, level, and power-saving modes.
+
+**No permissions required.**
+
+```kotlin
+class BatteryHelper(context: Context)
+```
+
+<TypeTable type={{"context":{"type":"Context","required":true}}} />
+
+**Members**
+
+- `fun getStatus(): BatteryStatus?`
+- `fun getLevel(): Int?`
+- `fun isCharging(): Boolean`
+- `fun isPowerSaveMode(): Boolean`
+- `fun isIgnoringBatteryOptimizations(): Boolean`
+- `val statusFlow: Flow<BatteryStatus>` — A `Flow` that emits a `BatteryStatus` whenever the battery state changes. It emits the current status immediately upon subscription.
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/android/src/main/kotlin/dev/kindling/android/natif/BatteryHelper.kt#L80)

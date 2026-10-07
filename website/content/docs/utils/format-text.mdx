@@ -1,0 +1,280 @@
+---
+title: "Format Text"
+description: "Encodes a Unicode label to Punycode (without the xn-- prefix). Example: \"münchen\".encodePunycode() → \"mnchen-3ya\""
+generated: true
+module: "utils"
+---
+
+{/* AUTO-GENERATED from KDoc by website/scripts/docgen.mjs. Set `generated: false` in the frontmatter to take over this page by hand. */}
+
+## Installation
+
+```kotlin
+implementation("io.github.clementbobin.kindling:utils:0.3.0")
+```
+
+```kotlin
+import dev.kindling.utils.method.format.text.encodePunycode
+```
+
+## API
+
+### encodePunycode
+
+```kotlin
+fun String.encodePunycode(): String
+```
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/utils/src/commonMain/kotlin/dev/kindling/utils/method/format/text/FormatPunycode.kt#L43)
+
+---
+
+### decodePunycode
+
+Decodes a Punycode-encoded label (without the `xn--` prefix) to Unicode. Example: `"mnchen-3ya".decodePunycode()` → `"münchen"`
+
+```kotlin
+fun String.decodePunycode(): String
+```
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/utils/src/commonMain/kotlin/dev/kindling/utils/method/format/text/FormatPunycode.kt#L92)
+
+---
+
+### toAce
+
+Converts a Unicode domain name to its ASCII-compatible encoding (ACE / IDN). Example: `"münchen.de".toAce()` → `"xn--mnchen-3ya.de"`
+
+```kotlin
+fun String.toAce(): String
+```
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/utils/src/commonMain/kotlin/dev/kindling/utils/method/format/text/FormatPunycode.kt#L176)
+
+---
+
+### fromAce
+
+Converts an ACE (xn--) domain name back to Unicode. Example: `"xn--mnchen-3ya.de".fromAce()` → `"münchen.de"`
+
+```kotlin
+fun String.fromAce(): String
+```
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/utils/src/commonMain/kotlin/dev/kindling/utils/method/format/text/FormatPunycode.kt#L186)
+
+---
+
+### isIdn
+
+Returns true if this string is a valid IDN (contains non-ASCII labels).
+
+```kotlin
+fun String.isIdn(): Boolean
+```
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/utils/src/commonMain/kotlin/dev/kindling/utils/method/format/text/FormatPunycode.kt#L196)
+
+---
+
+### toInitials
+
+Extracts initials from a full name string. Example: `"Jean-Claude Van Damme".toInitials()` → `"JVD"`
+
+```kotlin
+fun String.toInitials(maxLetters: Int = 3): String
+```
+
+<TypeTable type={{"maxLetters":{"type":"Int","default":"3"}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/utils/src/commonMain/kotlin/dev/kindling/utils/method/format/text/Initials.kt#L9)
+
+---
+
+### toFirstLastInitials
+
+Extracts exactly the first and last initials from a full name. Example: `"Jean-Claude Van Damme".toFirstLastInitials()` → `"JD"`
+
+```kotlin
+fun String.toFirstLastInitials(): String
+```
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/utils/src/commonMain/kotlin/dev/kindling/utils/method/format/text/Initials.kt#L21)
+
+---
+
+### toTitleCase
+
+Converts a `String` to title case. Example: `"hello world".toTitleCase()` → `"Hello World"`
+
+```kotlin
+fun String.toTitleCase(): String
+```
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/utils/src/commonMain/kotlin/dev/kindling/utils/method/format/text/Initials.kt#L42)
+
+---
+
+### camelToTitle
+
+Converts a camelCase or PascalCase string to a human-readable label. Example: `"firstName".camelToTitle()` → `"First Name"`
+
+```kotlin
+fun String.camelToTitle(): String
+```
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/utils/src/commonMain/kotlin/dev/kindling/utils/method/format/text/Initials.kt#L51)
+
+---
+
+### snakeToTitle
+
+Converts a snake_case string to a human-readable label. Example: `"first_name".snakeToTitle()` → `"First Name"`
+
+```kotlin
+fun String.snakeToTitle(): String
+```
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/utils/src/commonMain/kotlin/dev/kindling/utils/method/format/text/Initials.kt#L60)
+
+---
+
+### kebabToTitle
+
+Converts a kebab-case string to a human-readable label. Example: `"first-name".kebabToTitle()` → `"First Name"`
+
+```kotlin
+fun String.kebabToTitle(): String
+```
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/utils/src/commonMain/kotlin/dev/kindling/utils/method/format/text/Initials.kt#L67)
+
+---
+
+### toSnakeCase
+
+Converts any string to snake_case. Example: `"Hello World".toSnakeCase()` → `"hello_world"`
+
+```kotlin
+fun String.toSnakeCase(): String
+```
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/utils/src/commonMain/kotlin/dev/kindling/utils/method/format/text/Initials.kt#L74)
+
+---
+
+### toKebabCase
+
+Converts any string to kebab-case. Example: `"Hello World".toKebabCase()` → `"hello-world"`
+
+```kotlin
+fun String.toKebabCase(): String
+```
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/utils/src/commonMain/kotlin/dev/kindling/utils/method/format/text/Initials.kt#L84)
+
+---
+
+### toCamelCase
+
+Converts any string to camelCase. Example: `"hello world".toCamelCase()` → `"helloWorld"`
+
+```kotlin
+fun String.toCamelCase(): String
+```
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/utils/src/commonMain/kotlin/dev/kindling/utils/method/format/text/Initials.kt#L90)
+
+---
+
+### truncate
+
+Truncates a `String` to `maxLength` characters, appending `ellipsis` if truncated. Example: `"Hello, World!".truncate(8)` → `"Hello..."`
+
+```kotlin
+fun String.truncate(
+    maxLength: Int,
+    ellipsis: String = "...",
+): String
+```
+
+<TypeTable type={{"maxLength":{"type":"Int","required":true},"ellipsis":{"type":"String","default":"\"...\""}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/utils/src/commonMain/kotlin/dev/kindling/utils/method/format/text/TruncateText.kt#L9)
+
+---
+
+### truncateWords
+
+Truncates a `String` at the nearest word boundary within `maxLength`. Example: `"Hello beautiful world".truncateWords(14)` → `"Hello..."`
+
+```kotlin
+fun String.truncateWords(
+    maxLength: Int,
+    ellipsis: String = "...",
+): String
+```
+
+<TypeTable type={{"maxLength":{"type":"Int","required":true},"ellipsis":{"type":"String","default":"\"...\""}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/utils/src/commonMain/kotlin/dev/kindling/utils/method/format/text/TruncateText.kt#L20)
+
+---
+
+### truncateMiddle
+
+Truncates a `String` in the middle, preserving start and end. Example: `"abcdefghij".truncateMiddle(7)` → `"ab...ij"`
+
+```kotlin
+fun String.truncateMiddle(
+    maxLength: Int,
+    ellipsis: String = "...",
+): String
+```
+
+<TypeTable type={{"maxLength":{"type":"Int","required":true},"ellipsis":{"type":"String","default":"\"...\""}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/utils/src/commonMain/kotlin/dev/kindling/utils/method/format/text/TruncateText.kt#L32)
+
+---
+
+### truncateLines
+
+Truncates to `maxLines` lines, appending `ellipsis` on the last line if truncated. Example: `"a\nb\nc\nd".truncateLines(2)` → `"a\nb..."`
+
+```kotlin
+fun String.truncateLines(
+    maxLines: Int,
+    ellipsis: String = "...",
+): String
+```
+
+<TypeTable type={{"maxLines":{"type":"Int","required":true},"ellipsis":{"type":"String","default":"\"...\""}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/utils/src/commonMain/kotlin/dev/kindling/utils/method/format/text/TruncateText.kt#L45)
+
+---
+
+### collapseWhitespace
+
+Collapses multiple consecutive whitespace characters to a single space. Example: `"hello   world\t!".collapseWhitespace()` → `"hello world !"`
+
+```kotlin
+fun String.collapseWhitespace(): String
+```
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/utils/src/commonMain/kotlin/dev/kindling/utils/method/format/text/TruncateText.kt#L56)
+
+---
+
+### wordWrap
+
+Wraps a `String` to `lineWidth` characters, breaking at spaces. Example: `"Hello world foo bar".wordWrap(10)` → `"Hello\nworld foo\nbar"`
+
+```kotlin
+fun String.wordWrap(lineWidth: Int): String
+```
+
+<TypeTable type={{"lineWidth":{"type":"Int","required":true}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/utils/src/commonMain/kotlin/dev/kindling/utils/method/format/text/TruncateText.kt#L62)

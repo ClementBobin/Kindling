@@ -1,0 +1,69 @@
+---
+title: "Spinner"
+description: "Shadcn/ui-style KSpinner — mirrors spinner.tsx."
+generated: true
+module: "core"
+---
+
+{/* AUTO-GENERATED from KDoc by website/scripts/docgen.mjs. Set `generated: false` in the frontmatter to take over this page by hand. */}
+
+```kotlin
+KSpinner()
+KSpinner(size = KSpinnerSize.Lg)
+```
+
+<Tabs items={['Preview', 'Code']}>
+  <Tab value="Preview">
+    <Showcase component="spinner" />
+  </Tab>
+  <Tab value="Code">
+
+_No code example in the KDoc yet._
+
+  </Tab>
+</Tabs>
+
+## Installation
+
+```kotlin
+implementation("io.github.clementbobin.kindling:core:0.3.0")
+```
+
+```kotlin
+import dev.kindling.core.components.ui.spinner.KSpinner
+```
+
+## Composables
+
+### KSpinner
+
+```kotlin
+@Composable
+fun KSpinner(
+    modifier: Modifier = Modifier,
+    size: KSpinnerSize = KSpinnerSize.Default,
+    color: Color = MaterialTheme.colorScheme.primary,
+    trackColor: Color = color.copy(alpha = 0.15f),
+)
+```
+
+<TypeTable type={{"modifier":{"type":"Modifier","default":"Modifier"},"size":{"type":"KSpinnerSize","default":"KSpinnerSize.Default"},"color":{"type":"Color","default":"MaterialTheme.colorScheme.primary"},"trackColor":{"type":"Color","default":"color.copy(alpha = 0.15f)"}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/spinner/KSpinner.kt#L46)
+
+## Types
+
+### KSpinnerSize
+
+```kotlin
+enum class KSpinnerSize
+```
+
+**Values**
+
+- `Sm`
+- `Default`
+- `Lg`
+- `Xl`
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/spinner/KSpinnerSize.kt#L3)

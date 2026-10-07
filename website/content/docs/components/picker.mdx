@@ -1,0 +1,34 @@
+---
+title: "Picker"
+description: "Picker API reference."
+generated: true
+module: "core"
+---
+
+{/* AUTO-GENERATED from KDoc by website/scripts/docgen.mjs. Set `generated: false` in the frontmatter to take over this page by hand. */}
+
+## Installation
+
+```kotlin
+implementation("io.github.clementbobin.kindling:core:0.3.0")
+```
+
+## Composables
+
+### KRoulettePicker
+
+```kotlin
+@Composable
+fun KRoulettePicker(
+    items: List<String>,
+    selectedIndex: Int,
+    onItemSelected: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+    visibleItemsCount: Int = 5,
+    itemHeight: Dp = 40.dp,
+)
+```
+
+<TypeTable type={{"items":{"type":"List<String>","required":true},"selectedIndex":{"type":"Int","required":true},"onItemSelected":{"type":"(Int) -> Unit","required":true},"modifier":{"type":"Modifier","default":"Modifier"},"visibleItemsCount":{"type":"Int","default":"5"},"itemHeight":{"type":"Dp","default":"40.dp"}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/picker/KRoulettePicker.kt#L33)

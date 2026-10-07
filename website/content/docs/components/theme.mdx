@@ -1,0 +1,291 @@
+---
+title: "Theme"
+description: "Root theme wrapper for any app using Kindling."
+generated: true
+module: "core"
+---
+
+{/* AUTO-GENERATED from KDoc by website/scripts/docgen.mjs. Set `generated: false` in the frontmatter to take over this page by hand. */}
+
+Wraps `MaterialTheme` and provides `KindlingShapes` and `KindlingColors`
+via composition locals so every descendant composable can read them without
+explicit parameter threading.
+
+**Placement**: call once at the top of your NavHost / Activity composition,
+just like `MaterialTheme { … }`.
+
+```kotlin
+// Minimal — library defaults (base = 10.dp, M3-derived chart colors)
+KindlingTheme {
+    Scaffold { … }
+}
+
+// Custom corner radius + branded chart palette
+KindlingTheme(
+    colorScheme = myDarkColorScheme,
+    shapes      = KindlingShapes(base = 4.dp),
+    colors      = KindlingColors(
+        chart1 = Color(0xFFFF6B35),
+        chart2 = Color(0xFF004E89),
+        chart3 = Color(0xFF1A936F),
+        chart4 = Color(0xFFC6AC8F),
+        chart5 = Color(0xFF5C4742),
+    ),
+) { … }
+```
+
+## Installation
+
+```kotlin
+implementation("io.github.clementbobin.kindling:core:0.3.0")
+```
+
+```kotlin
+import dev.kindling.core.theme.KindlingTheme
+```
+
+## Composables
+
+### KindlingTheme
+
+```kotlin
+@Composable
+fun KindlingTheme(
+    colorScheme: ColorScheme = MaterialTheme.colorScheme,
+    typography: Typography = MaterialTheme.typography,
+    shapes: KindlingShapes = KindlingShapes(),
+    colors: KindlingColors = KindlingColors.fromMaterial3(),
+    content: @Composable () -> Unit,
+)
+```
+
+<TypeTable type={{"colorScheme":{"type":"ColorScheme","description":"Material3 color scheme. Defaults to colorScheme so you can nest KindlingTheme inside an existing MaterialTheme.","default":"MaterialTheme.colorScheme"},"typography":{"type":"Typography","description":"Material3 typography.","default":"MaterialTheme.typography"},"shapes":{"type":"KindlingShapes","description":"Kindling shape tokens. Defaults to KindlingShapes (base = 10 dp).","default":"KindlingShapes()"},"colors":{"type":"KindlingColors","description":"Five-slot chart palette. Defaults to fromMaterial3 so dark/light mode is handled automatically when omitted.","default":"KindlingColors.fromMaterial3()"},"content":{"type":"@Composable () -> Unit","description":"The composition subtree.","required":true}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/theme/KindlingTheme.kt#L253)
+
+## Types
+
+### KindlingShapes
+
+Immutable shape token bag consumed by every Kindling component.
+
+All slots default to a value derived from `base` so changing just `base`
+reskins the entire library — the same effect as editing `--radius` in CSS.
+
+```kotlin
+// Sharp / square UI
+KindlingTheme(shapes = KindlingShapes(base = 0.dp)) { … }
+
+// Pill-heavy / very round UI
+KindlingTheme(shapes = KindlingShapes(base = 20.dp)) { … }
+
+// Override one slot while keeping everything else default
+KindlingTheme(shapes = KindlingShapes(base = 10.dp)) { … }
+```
+
+```kotlin
+data class KindlingShapes(val base: Dp = 10.dp)
+```
+
+<TypeTable type={{"base":{"type":"Dp","description":"The global base radius. Defaults to 10 dp (= 0.625 rem × 16).","default":"10.dp"}}} />
+
+**Members**
+
+- `val rounded`
+- `val roundedSm get()`
+- `val roundedMd get()`
+- `val roundedLg get()`
+- `val roundedXl get()`
+- `val rounded2xl get()`
+- `val rounded3xl get()`
+- `val rounded4xl get()`
+- `val radius: Shape get()`
+- `val radiusSm: Shape get()`
+- `val radiusMd: Shape get()`
+- `val radiusLg: Shape get()`
+- `val radiusXl: Shape get()`
+- `val radius2xl: Shape get()`
+- `val radius3xl: Shape get()`
+- `val radius4xl: Shape get()`
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/theme/KindlingTheme.kt#L58)
+
+---
+
+### KindlingColors
+
+Five-slot chart color palette consumed by every Kindling chart renderer.
+
+Pass a custom instance to `KindlingTheme` to brand the entire chart library
+without touching individual composables:
+
+```kotlin
+KindlingTheme(
+    colors = KindlingColors(
+        chart1 = Color(0xFFFF6B35),
+        chart2 = Color(0xFF004E89),
+        chart3 = Color(0xFF1A936F),
+        chart4 = Color(0xFFC6AC8F),
+        chart5 = Color(0xFF5C4742),
+    )
+) { … }
+```
+
+```kotlin
+data class KindlingColors(
+    val chart1: Color,
+    val chart2: Color,
+    val chart3: Color,
+    val chart4: Color,
+    val chart5: Color,
+)
+```
+
+<TypeTable type={{"chart1":{"type":"Color","description":"Equivalent of --chart-1","required":true},"chart2":{"type":"Color","description":"Equivalent of --chart-2","required":true},"chart3":{"type":"Color","description":"Equivalent of --chart-3","required":true},"chart4":{"type":"Color","description":"Equivalent of --chart-4","required":true},"chart5":{"type":"Color","description":"Equivalent of --chart-5","required":true}}} />
+
+**Presets**
+
+- `fun fromMaterial3(): KindlingColors` — Derives a palette from the current `MaterialTheme`. This is the default used by `KindlingTheme` so dark/light mode is handled automatically when no explicit `KindlingColors` is supplied.
+
+**Members**
+
+- `fun atIndex(index: Int): Color` — Returns the color at `index` mod 5, cycling through chart1…chart5.
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/theme/KindlingTheme.kt#L110)
+
+## Functions & properties
+
+### LocalKindlingShapes
+
+Provides `KindlingShapes` down the composition tree.
+
+Read via `MaterialTheme.kindlingShapes` inside any composable.
+
+```kotlin
+val LocalKindlingShapes: ProvidableCompositionLocal<KindlingShapes>
+```
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/theme/KindlingTheme.kt#L160)
+
+---
+
+### LocalKindlingColors
+
+Provides `KindlingColors` down the composition tree.
+
+The static default is a safe fallback for use outside `KindlingTheme`.
+`KindlingTheme` replaces it with M3-derived values at composition time.
+
+Read via `MaterialTheme.kindlingColors` inside any composable.
+
+```kotlin
+val LocalKindlingColors: ProvidableCompositionLocal<KindlingColors>
+```
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/theme/KindlingTheme.kt#L171)
+
+---
+
+### kindlingShapes
+
+Returns the active `KindlingShapes` from the composition tree.
+
+```kotlin
+val shapes = MaterialTheme.kindlingShapes
+Surface(shape = shapes.radius) { … }
+```
+
+```kotlin
+val MaterialTheme.kindlingShapes: KindlingShapes
+```
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/theme/KindlingTheme.kt#L194)
+
+---
+
+### kindlingColors
+
+Returns the active `KindlingColors` from the composition tree.
+
+```kotlin
+val colors = MaterialTheme.kindlingColors
+Canvas { drawCircle(color = colors.chart1, …) }
+```
+
+```kotlin
+val MaterialTheme.kindlingColors: KindlingColors
+```
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/theme/KindlingTheme.kt#L206)
+
+---
+
+### kindlingShadowXs
+
+```kotlin
+fun Modifier.kindlingShadowXs(shape: Shape): Modifier
+```
+
+<TypeTable type={{"shape":{"type":"Shape","required":true}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/theme/KindlingTheme.kt#L276)
+
+---
+
+### kindlingShadowSm
+
+```kotlin
+fun Modifier.kindlingShadowSm(shape: Shape): Modifier
+```
+
+<TypeTable type={{"shape":{"type":"Shape","required":true}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/theme/KindlingTheme.kt#L283)
+
+---
+
+### kindlingShadowMd
+
+```kotlin
+fun Modifier.kindlingShadowMd(shape: Shape): Modifier
+```
+
+<TypeTable type={{"shape":{"type":"Shape","required":true}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/theme/KindlingTheme.kt#L290)
+
+---
+
+### kindlingShadowLg
+
+```kotlin
+fun Modifier.kindlingShadowLg(shape: Shape): Modifier
+```
+
+<TypeTable type={{"shape":{"type":"Shape","required":true}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/theme/KindlingTheme.kt#L297)
+
+---
+
+### kindlingShadowNone
+
+```kotlin
+fun Modifier.kindlingShadowNone(shape: Shape = RoundedCornerShape(0.dp)): Modifier
+```
+
+<TypeTable type={{"shape":{"type":"Shape","default":"RoundedCornerShape(0.dp)"}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/theme/KindlingTheme.kt#L304)
+
+---
+
+### kindlingClipNone
+
+```kotlin
+fun Modifier.kindlingClipNone(shape: Shape = RoundedCornerShape(0.dp)): Modifier
+```
+
+<TypeTable type={{"shape":{"type":"Shape","default":"RoundedCornerShape(0.dp)"}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/theme/KindlingTheme.kt#L311)

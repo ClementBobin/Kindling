@@ -1,0 +1,97 @@
+---
+title: "Preview"
+description: "Preview wrapper that mirrors KindlingTheme exactly."
+generated: true
+module: "compose"
+---
+
+{/* AUTO-GENERATED from KDoc by website/scripts/docgen.mjs. Set `generated: false` in the frontmatter to take over this page by hand. */}
+
+All parameters are optional and fall back to the same defaults as
+`KindlingTheme`, so a bare `KPreviewScreen { }` works out of the box
+whether the caller is using a plain `MaterialTheme` or a full `KindlingTheme`.
+
+```kotlin
+// Bare — works with plain MaterialTheme or KindlingTheme
+@KPreview
+@Composable
+fun ProfilePreview() {
+    KPreviewScreen {
+        ProfileContent(state = ProfileState.preview(), onSave = {})
+    }
+}
+
+// Full override — mirrors a custom KindlingTheme call exactly
+@KPreview
+@Composable
+fun ProfileThemedPreview() {
+    KPreviewScreen(
+        colorScheme = myDarkColorScheme,
+        shapes      = KindlingShapes(base = 4.dp),
+    ) {
+        ProfileContent(state = ProfileState.preview(), onSave = {})
+    }
+}
+```
+
+## Installation
+
+```kotlin
+implementation("io.github.clementbobin.kindling:compose:0.3.0")
+```
+
+```kotlin
+import dev.kindling.compose.preview.KPreviewScreen
+```
+
+## Composables
+
+### KPreviewScreen
+
+```kotlin
+@Composable
+fun KPreviewScreen(
+    colorScheme: ColorScheme = MaterialTheme.colorScheme,
+    typography: Typography = MaterialTheme.typography,
+    shapes: KindlingShapes = KindlingShapes(),
+    content: @Composable () -> Unit,
+)
+```
+
+<TypeTable type={{"colorScheme":{"type":"ColorScheme","default":"MaterialTheme.colorScheme"},"typography":{"type":"Typography","default":"MaterialTheme.typography"},"shapes":{"type":"KindlingShapes","default":"KindlingShapes()"},"content":{"type":"@Composable () -> Unit","required":true}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/compose/src/commonMain/kotlin/dev/kindling/compose/preview/KPreviewScreen.kt#L42)
+
+---
+
+### KPreviewStateGallery
+
+Renders multiple named state variants in a single preview panel.
+
+```kotlin
+@KPreview
+@Composable
+fun ProfileStatesPreview() {
+    KPreviewScreen {
+        KPreviewStateGallery(
+            "Default"  to ProfileState.preview(),
+            "Loading"  to ProfileState.previewLoading(),
+            "Empty"    to ProfileState.previewEmpty(),
+        ) { state ->
+            ProfileContent(state = state, onSave = {}, onDelete = {})
+        }
+    }
+}
+```
+
+```kotlin
+@Composable
+fun <S> KPreviewStateGallery(
+    vararg states: Pair<String, S>,
+    content: @Composable (S) -> Unit,
+)
+```
+
+<TypeTable type={{"states":{"type":"Pair<String, S>"},"content":{"type":"@Composable (S) -> Unit","required":true}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/compose/src/commonMain/kotlin/dev/kindling/compose/preview/KPreviewStateScope.kt#L33)

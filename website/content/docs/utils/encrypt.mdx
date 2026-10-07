@@ -1,0 +1,237 @@
+---
+title: "Encrypt"
+description: "Registers the Bouncy Castle providers required for classical and post-quantum cryptography."
+generated: true
+module: "utils"
+---
+
+{/* AUTO-GENERATED from KDoc by website/scripts/docgen.mjs. Set `generated: false` in the frontmatter to take over this page by hand. */}
+
+Call this once in your `Application.onCreate()`:
+```kotlin
+KEncryptProviders.register()
+```
+
+## Installation
+
+```kotlin
+implementation("io.github.clementbobin.kindling:utils:0.3.0")
+```
+
+```kotlin
+import dev.kindling.utils.method.KEncryptProviders
+```
+
+## Types
+
+### KEncryptProviders
+
+```kotlin
+object KEncryptProviders
+```
+
+**Members**
+
+- `fun register()`
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/utils/src/jvmSharedMain/kotlin/dev/kindling/utils/method/KEncrypt.kt#L32)
+
+---
+
+### KHashAlgorithm
+
+Hash algorithm used to derive the AES key from a passphrase. Only relevant for `KEncryptKeyType.Classical`.
+
+```kotlin
+enum class KHashAlgorithm
+```
+
+**Values**
+
+- `SHA256` — SHA-256 → 256-bit AES key
+- `SHA1` — SHA-1 → truncated to 128-bit AES key (legacy use only)
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/utils/src/jvmSharedMain/kotlin/dev/kindling/utils/method/KEncrypt.kt#L51)
+
+---
+
+### KEncryptKeyType
+
+Selects between a classical passphrase-derived key and a post-quantum asymmetric key pair (CRYSTALS-Kyber via Bouncy Castle).
+
+```kotlin
+sealed class KEncryptKeyType
+```
+
+**Members**
+
+- `data class Classical( val passphrase: String, val hash: KHashAlgorithm = KHashAlgorithm.SHA256) : KEncryptKeyType()` — Classical symmetric encryption.
+- `data class PostQuantum( val publicKeyBase64: String, val privateKeyBase64: String? = null) : KEncryptKeyType()` — Post-quantum asymmetric encryption (CRYSTALS-Kyber / Kyber-1024).
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/utils/src/jvmSharedMain/kotlin/dev/kindling/utils/method/KEncrypt.kt#L63)
+
+---
+
+### KEncryptKeyPair
+
+A Kyber-1024 key pair, both keys Base64-encoded for serialisation.
+
+```kotlin
+val pair = KEncryptKeyPair.generate()
+// Store pair.privateKeyBase64 securely (Android Keystore recommended)
+// Distribute pair.publicKeyBase64 freely
+```
+
+```kotlin
+data class KEncryptKeyPair(
+    val publicKeyBase64: String,
+    val privateKeyBase64: String,
+)
+```
+
+<TypeTable type={{"publicKeyBase64":{"type":"String","required":true},"privateKeyBase64":{"type":"String","required":true}}} />
+
+**Presets**
+
+- `fun generate(): KEncryptKeyPair` — Generates a fresh CRYSTALS-Kyber-1024 key pair.
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/utils/src/jvmSharedMain/kotlin/dev/kindling/utils/method/KEncrypt.kt#L111)
+
+---
+
+### KEncryptException
+
+Thrown when encryption or decryption fails.
+
+Common causes: wrong passphrase, mismatched salt, corrupted ciphertext,
+wrong key pair, or missing provider registration.
+
+```kotlin
+class KEncryptException(
+    message: String,
+    cause: Throwable? = null,
+)
+```
+
+<TypeTable type={{"message":{"type":"String","required":true},"cause":{"type":"Throwable?","default":"null"}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/utils/src/jvmSharedMain/kotlin/dev/kindling/utils/method/KEncrypt.kt#L364)
+
+## Functions & properties
+
+### encrypt
+
+Encrypts a `String` and returns a Base64-encoded ciphertext.
+
+### Classical (AES-GCM) — no salt
+```kotlin
+val cipher = "Hello Kindling!".encrypt(
+    key = KEncryptKeyType.Classical("my-secret")
+)
+```
+
+### Classical with salt
+```kotlin
+val cipher = "Hello Kindling!".encrypt(
+    key  = KEncryptKeyType.Classical("my-secret", KHashAlgorithm.SHA256),
+    salt = "random-salt"
+)
+```
+
+### Post-quantum (Kyber-1024)
+```kotlin
+val pair   = KEncryptKeyPair.generate()
+val cipher = "Hello Kindling!".encrypt(
+    key = KEncryptKeyType.PostQuantum(publicKeyBase64 = pair.publicKeyBase64)
+)
+```
+
+```kotlin
+fun String.encrypt(
+    key: KEncryptKeyType,
+    salt: String? = null,
+): String
+```
+
+<TypeTable type={{"key":{"type":"KEncryptKeyType","description":"The key type and material to use.","required":true},"salt":{"type":"String?","description":"Optional salt string mixed into the key derivation (classical only).","default":"null"}}} />
+
+**Returns** Base64-encoded ciphertext (includes IV/nonce prepended).
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/utils/src/jvmSharedMain/kotlin/dev/kindling/utils/method/KEncrypt.kt#L167)
+
+---
+
+### decrypt
+
+Decrypts a Base64-encoded ciphertext produced by `encrypt`.
+
+### Classical
+```kotlin
+val plain = cipherText.decrypt(
+    key  = KEncryptKeyType.Classical("my-secret"),
+    salt = "random-salt"   // must match the salt used during encryption
+)
+```
+
+### Post-quantum
+```kotlin
+val plain = cipherText.decrypt(
+    key = KEncryptKeyType.PostQuantum(
+        publicKeyBase64  = pair.publicKeyBase64,
+        privateKeyBase64 = pair.privateKeyBase64
+    )
+)
+```
+
+```kotlin
+fun String.decrypt(
+    key: KEncryptKeyType,
+    salt: String? = null,
+): String
+```
+
+<TypeTable type={{"key":{"type":"KEncryptKeyType","description":"The key type and material to use.","required":true},"salt":{"type":"String?","description":"Optional salt; must match the value used during encrypt.","default":"null"}}} />
+
+**Returns** Decrypted plaintext string.
+
+**Throws** `KEncryptException` — if decryption fails (wrong key, wrong salt, corrupted data…).
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/utils/src/jvmSharedMain/kotlin/dev/kindling/utils/method/KEncrypt.kt#L196)
+
+---
+
+### encrypt
+
+Low-level `ByteArray` encryption. Returns raw ciphertext bytes.
+
+Prefer the `String` extension for everyday use.
+
+```kotlin
+fun ByteArray.encrypt(
+    key: KEncryptKeyType,
+    salt: String? = null,
+): ByteArray
+```
+
+<TypeTable type={{"key":{"type":"KEncryptKeyType","required":true},"salt":{"type":"String?","default":"null"}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/utils/src/jvmSharedMain/kotlin/dev/kindling/utils/method/KEncrypt.kt#L208)
+
+---
+
+### decrypt
+
+Low-level `ByteArray` decryption. Returns raw plaintext bytes.
+
+Prefer the `String` extension for everyday use.
+
+```kotlin
+fun ByteArray.decrypt(
+    key: KEncryptKeyType,
+    salt: String? = null,
+): ByteArray
+```
+
+<TypeTable type={{"key":{"type":"KEncryptKeyType","required":true},"salt":{"type":"String?","default":"null"}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/utils/src/jvmSharedMain/kotlin/dev/kindling/utils/method/KEncrypt.kt#L219)

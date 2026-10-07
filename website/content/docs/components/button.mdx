@@ -1,0 +1,148 @@
+---
+title: "Button"
+description: "Shadcn/ui-style Button — mirrors button.tsx."
+generated: true
+module: "core"
+---
+
+{/* AUTO-GENERATED from KDoc by website/scripts/docgen.mjs. Set `generated: false` in the frontmatter to take over this page by hand. */}
+
+A versatile button component that supports various visual variants, sizes, and states
+(including a loading state). It adheres to the Kindling design system and ensures
+proper accessibility and RTL support.
+
+Respects `LocalLayoutDirection` automatically — icon/content order is
+never reversed programmatically; rely on Compose's RTL mirroring.
+
+<Tabs items={['Preview', 'Code']}>
+  <Tab value="Preview">
+    <Showcase component="button" />
+  </Tab>
+  <Tab value="Code">
+
+```kotlin
+// Primary action
+KButton(onClick = { /* Save */ }) {
+    Text("Save")
+}
+
+// Outline variant with small size
+KButton(
+    onClick = { /* Cancel */ },
+    variant = KButtonVariant.Outline,
+    size = KButtonSize.Sm
+) {
+    Text("Cancel")
+}
+
+// Loading state
+KButton(onClick = {}, isLoading = true) {
+    Text("Logging in...")
+}
+```
+
+  </Tab>
+</Tabs>
+
+## More examples
+
+**KButton**
+
+```kotlin
+KButton(text = "Submit", onClick = { /* Submit form */ })
+```
+
+## Installation
+
+```kotlin
+implementation("io.github.clementbobin.kindling:core:0.3.0")
+```
+
+```kotlin
+import dev.kindling.core.components.ui.button.KButton
+```
+
+## Composables
+
+### KButton
+
+```kotlin
+@Composable
+fun KButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    variant: KButtonVariant = KButtonVariant.Default,
+    size: KButtonSize = KButtonSize.Default,
+    enabled: Boolean = true,
+    isLoading: Boolean = false,
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+    content: @Composable RowScope.() -> Unit,
+)
+```
+
+<TypeTable type={{"onClick":{"type":"() -> Unit","description":"Callback invoked when the button is clicked.","required":true},"modifier":{"type":"Modifier","description":"The modifier to be applied to the button.","default":"Modifier"},"variant":{"type":"KButtonVariant","description":"The visual style variant of the button. Defaults to Default.","default":"KButtonVariant.Default"},"size":{"type":"KButtonSize","description":"The size variant of the button. Defaults to Default.","default":"KButtonSize.Default"},"enabled":{"type":"Boolean","description":"Whether the button is enabled for interaction.","default":"true"},"isLoading":{"type":"Boolean","description":"Whether to show a loading indicator instead of the content.","default":"false"},"interactionSource":{"type":"MutableInteractionSource","description":"The MutableInteractionSource to represent the stream of interactions.","default":"remember { MutableInteractionSource() }"},"content":{"type":"@Composable RowScope.() -> Unit","description":"The composable content to display inside the button (typically text or an icon).","required":true}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/button/KButton.kt#L67)
+
+---
+
+### KButton
+
+A convenience overload of `KButton` that accepts a plain string as a label.
+
+```kotlin
+@Composable
+fun KButton(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    variant: KButtonVariant = KButtonVariant.Default,
+    size: KButtonSize = KButtonSize.Default,
+    enabled: Boolean = true,
+    isLoading: Boolean = false,
+)
+```
+
+<TypeTable type={{"text":{"type":"String","description":"The label text to display inside the button.","required":true},"onClick":{"type":"() -> Unit","description":"Callback invoked when the button is clicked.","required":true},"modifier":{"type":"Modifier","description":"The modifier to be applied to the button.","default":"Modifier"},"variant":{"type":"KButtonVariant","description":"The visual style variant of the button.","default":"KButtonVariant.Default"},"size":{"type":"KButtonSize","description":"The size variant of the button.","default":"KButtonSize.Default"},"enabled":{"type":"Boolean","description":"Whether the button is enabled for interaction.","default":"true"},"isLoading":{"type":"Boolean","description":"Whether to show a loading indicator instead of the content.","default":"false"}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/button/KButton.kt#L145)
+
+## Types
+
+### KButtonSize
+
+```kotlin
+enum class KButtonSize
+```
+
+**Values**
+
+- `Default`
+- `Xs`
+- `Sm`
+- `Lg`
+- `Icon`
+- `IconXs`
+- `IconSm`
+- `IconLg`
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/button/KButtonVariant.kt#L3)
+
+---
+
+### KButtonVariant
+
+```kotlin
+enum class KButtonVariant
+```
+
+**Values**
+
+- `Default`
+- `Destructive`
+- `Outline`
+- `Secondary`
+- `Ghost`
+- `Link`
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/button/KButtonVariant.kt#L14)

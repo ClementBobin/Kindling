@@ -1,0 +1,101 @@
+---
+title: "Haptic"
+description: "Décrit un effet haptique sémantique via HapticFeedbackConstants."
+generated: true
+module: "android"
+---
+
+{/* AUTO-GENERATED from KDoc by website/scripts/docgen.mjs. Set `generated: false` in the frontmatter to take over this page by hand. */}
+
+Distincts de `VibrationPattern` : ces effets s'appuient sur les primitives
+haptiques système (calibrées par le constructeur), pas sur des waveforms manuelles.
+
+Presets :
+- `HapticEffect.Click`        → feedback de clic standard
+- `HapticEffect.LongPress`    → feedback d'appui long
+- `HapticEffect.DoubleClick`  → feedback de double-clic (API 27+)
+- `HapticEffect.HeavyClick`   → clic lourd (API 23+)
+- `HapticEffect.Tick`         → tick léger (API 21+)
+- `HapticEffect.Confirm`      → confirmation (API 30+)
+- `HapticEffect.Reject`       → rejet (API 30+)
+- `HapticEffect.TextHandleMove` → déplacement curseur texte (API 27+)
+
+Personnalisé (constante arbitraire) :
+```kotlin
+val effect = HapticEffect(HapticFeedbackConstants.KEYBOARD_TAP)
+hapticHelper.perform(view, effect)
+```
+
+## Installation
+
+```kotlin
+implementation("io.github.clementbobin.kindling:android:0.3.0")
+```
+
+```kotlin
+import dev.kindling.android.natif.HapticEffect
+```
+
+## Types
+
+### HapticEffect
+
+```kotlin
+data class HapticEffect(val constant: Int)
+```
+
+<TypeTable type={{"constant":{"type":"Int","required":true}}} />
+
+**Presets**
+
+- `val Click`
+- `val LongPress`
+- `val DoubleClick`
+- `val HeavyClick`
+- `val Tick`
+- `val Confirm`
+- `val Reject`
+- `val TextHandleMove`
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/android/src/main/kotlin/dev/kindling/android/natif/HapticHelper.kt#L33)
+
+---
+
+### HapticHelper
+
+Helper haptique centralisé basé sur `HapticFeedbackConstants`.
+
+Complémentaire à `VibrationHelper` : utilise les retours haptiques calibrés
+par le constructeur plutôt que des waveforms manuelles — préférable pour les
+interactions UI standard.
+
+Enregistrement Koin :
+```kotlin
+single { HapticHelper() }
+```
+
+Utilisation (Compose — récupérer la view racine) :
+```kotlin
+val view = LocalView.current
+hapticHelper.perform(view, HapticEffect.Click)
+```
+
+La vue doit avoir `android:hapticFeedbackEnabled="true"` (défaut système).
+
+```kotlin
+class HapticHelper
+```
+
+**Members**
+
+- `fun perform( view: View, effect: HapticEffect, ignoreViewSetting: Boolean = true)` — Joue l'`effect` sur la `view` fournie.
+- `fun click(view: View)`
+- `fun longPress(view: View)`
+- `fun doubleClick(view: View)`
+- `fun heavyClick(view: View)`
+- `fun tick(view: View)`
+- `fun confirm(view: View)`
+- `fun reject(view: View)`
+- `fun textHandleMove(view: View)`
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/android/src/main/kotlin/dev/kindling/android/natif/HapticHelper.kt#L88)

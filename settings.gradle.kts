@@ -26,3 +26,6 @@ dependencyResolutionManagement {
 rootProject.name = "kindling"
 
 include(":core", ":utils", ":compose", ":android", ":processor")
+
+// Live docs previews (Compose for Web). Not published; embedded by the website/ docs site.
+include(":showcase")

@@ -1,0 +1,119 @@
+---
+title: "View Model"
+description: "Legacy base ViewModel for Kindling applications that require AndroidViewModel or KoinComponent integration."
+generated: true
+module: "compose"
+---
+
+{/* AUTO-GENERATED from KDoc by website/scripts/docgen.mjs. Set `generated: false` in the frontmatter to take over this page by hand. */}
+
+**Android only.** For a ViewModel that also runs on desktop, iOS and web, use
+`KSimpleViewModel`.
+
+`KViewModel` is the original single-type-parameter tier of the Kindling ViewModel
+hierarchy. It provides state management, one-shot events, and async helpers while
+remaining compatible with Koin's `by inject()` delegation and the `Application` context.
+
+This ViewModel follows a simplified MVI (Model-View-Intent) pattern where:
+- **State** is a single observable object (usually a data class).
+- **Events** are one-shot side effects (navigation, toasts, etc.).
+
+---
+
+## When to use which ViewModel
+
+| Scenario | Recommended base |
+|---|---|
+| Needs `Application` context or Koin `by inject()` | `KViewModel` ← you are here |
+| Simple screen, no framework coupling needed | `KSimpleViewModel` |
+| Feature screen with a typed event contract | `KViewModel` (two-param) |
+| Strict unidirectional MVI flow | `KMviViewModel` |
+
+---
+
+## Basic usage
+
+```kotlin
+data class ProfileState(
+    val isLoading: Boolean = true,
+    val user: User? = null
+)
+
+sealed interface ProfileEvent {
+    data class ShowToast(val message: String) : ProfileEvent
+}
+
+class ProfileViewModel(
+    application: Application,
+    private val repository: UserRepository
+) : KViewModel<ProfileState>(
+    initialState = ProfileState(),
+    application = application
+) {
+    // Koin injection supported
+    private val analytics: AnalyticsService by inject()
+
+    init { 
+        loadProfile() 
+    }
+
+    private fun loadProfile() {
+        fetchData(
+            source = { repository.getUser() },
+            onResult = { result ->
+                result
+                    .onSuccess { user ->
+                        updateState { copy(user = user, isLoading = false) }
+                        analytics.logEvent("profile_loaded")
+                    }
+                    .onFailure {
+                        updateState { copy(isLoading = false) }
+                        sendEvent(ProfileEvent.ShowToast("Failed to load profile"))
+                    }
+            }
+        )
+    }
+
+    fun onLogoutClick() {
+        sendEvent(AppScreen.Login) // Automatic navigation if AppScreen implements KDestination
+    }
+}
+```
+
+## Installation
+
+```kotlin
+implementation("io.github.clementbobin.kindling:compose:0.3.0")
+```
+
+```kotlin
+import dev.kindling.compose.KViewModel
+```
+
+## Types
+
+### KViewModel
+
+```kotlin
+open class KViewModel<State>(
+    initialState: State,
+    application: Application,
+) : AndroidViewModel(application), KoinComponent, KStateHolder<State>
+```
+
+<TypeTable type={{"initialState":{"type":"State","description":"The state emitted immediately to all collectors on subscription.","required":true},"application":{"type":"Application","description":"The Application instance, forwarded to AndroidViewModel.","required":true}}} />
+
+**Members**
+
+- `fun updateState(block: State.() -> State)` — Applies a reducer function to the current state and emits the result atomically.
+- `fun sendEvent(obj: Any)` — Enqueues a one-time event for the UI layer to consume.
+- `fun <T> collectData( source: suspend () -> Flow<T>, onResult: Result<T>.() -> Unit)` — Collects a `Flow` returned by `source` on `Dispatchers.IO` and delivers each `Result` to `onResult` on `Dispatchers.Main`.
+- `fun <T> fetchData( source: suspend () -> T, onResult: Result<T>.() -> Unit)` — Executes a suspending `source` on `Dispatchers.IO` and delivers the `Result` to `onResult` on `Dispatchers.Main`.
+
+**See also** AndroidViewModel
+
+**See also** KoinComponent
+
+**See also** KScreen
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/compose/src/androidMain/kotlin/dev/kindling/compose/KViewModel.kt#L98)

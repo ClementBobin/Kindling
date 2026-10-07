@@ -1,0 +1,85 @@
+---
+title: "Display"
+description: "Informations sur l'écran principal."
+generated: true
+module: "android"
+---
+
+{/* AUTO-GENERATED from KDoc by website/scripts/docgen.mjs. Set `generated: false` in the frontmatter to take over this page by hand. */}
+
+## Installation
+
+```kotlin
+implementation("io.github.clementbobin.kindling:android:0.3.0")
+```
+
+```kotlin
+import dev.kindling.android.natif.DisplayInfo
+```
+
+## Types
+
+### DisplayInfo
+
+```kotlin
+data class DisplayInfo(
+    val widthPx: Int,
+    val heightPx: Int,
+    val densityDpi: Int,
+    val density: Float,
+    val refreshRate: Float,
+    val orientation: Int,
+)
+```
+
+<TypeTable type={{"widthPx":{"type":"Int","description":"Largeur en pixels.","required":true},"heightPx":{"type":"Int","description":"Hauteur en pixels.","required":true},"densityDpi":{"type":"Int","description":"Densité en dpi.","required":true},"density":{"type":"Float","description":"Facteur de densité (ex. 2.0 pour xxhdpi).","required":true},"refreshRate":{"type":"Float","description":"Fréquence de rafraîchissement en Hz.","required":true},"orientation":{"type":"Int","description":"ORIENTATION_PORTRAIT ou ORIENTATION_LANDSCAPE.","required":true}}} />
+
+**Members**
+
+- `val widthDp: Float get()`
+- `val heightDp: Float get()`
+- `val isPortrait: Boolean get()`
+- `val isLandscape: Boolean get()`
+- `val densityBucket: String get()`
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/android/src/main/kotlin/dev/kindling/android/natif/DisplayHelper.kt#L21)
+
+---
+
+### DisplayHelper
+
+Helper d'affichage centralisé.
+
+Aucune permission requise.
+
+Enregistrement Koin :
+```kotlin
+single { DisplayHelper(androidContext()) }
+```
+
+Utilisation :
+```kotlin
+val info = displayHelper.getDisplayInfo()
+println("${info.widthDp} x ${info.heightDp} dp — ${info.densityBucket}")
+
+val isTablet = displayHelper.isTablet()
+val px = displayHelper.dpToPx(16f)
+```
+
+```kotlin
+class DisplayHelper(context: Context)
+```
+
+<TypeTable type={{"context":{"type":"Context","required":true}}} />
+
+**Members**
+
+- `fun getDisplayInfo(): DisplayInfo`
+- `fun isTablet(): Boolean` — `true` si la plus petite dimension de l'écran dépasse 600dp (tablet heuristic).
+- `fun dpToPx(dp: Float): Float`
+- `fun pxToDp(px: Float): Float`
+- `fun spToPx(sp: Float): Float`
+- `fun getSupportedRefreshRates(): FloatArray`
+- `fun getCurrentRefreshRate(): Float`
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/android/src/main/kotlin/dev/kindling/android/natif/DisplayHelper.kt#L62)

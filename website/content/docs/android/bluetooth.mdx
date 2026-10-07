@@ -1,0 +1,108 @@
+---
+title: "Bluetooth"
+description: "Bluetooth API reference."
+generated: true
+module: "android"
+---
+
+{/* AUTO-GENERATED from KDoc by website/scripts/docgen.mjs. Set `generated: false` in the frontmatter to take over this page by hand. */}
+
+## Installation
+
+```kotlin
+implementation("io.github.clementbobin.kindling:android:0.3.0")
+```
+
+```kotlin
+import dev.kindling.android.natif.BluetoothState
+```
+
+## Types
+
+### BluetoothState
+
+```kotlin
+sealed class BluetoothState
+```
+
+**Members**
+
+- `data object On : BluetoothState()`
+- `data object Off : BluetoothState()`
+- `data object TurningOn : BluetoothState()`
+- `data object TurningOff : BluetoothState()`
+- `data object Unavailable : BluetoothState()`
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/android/src/main/kotlin/dev/kindling/android/natif/BluetoothHelper.kt#L23)
+
+---
+
+### BluetoothScanConfig
+
+Décrit une configuration de scan Bluetooth.
+
+Presets :
+- `BluetoothScanConfig.Default` → scan classique sans filtre
+
+```kotlin
+data class BluetoothScanConfig(val durationMs: Long = 12_000L)
+```
+
+<TypeTable type={{"durationMs":{"type":"Long","default":"12_000L"}}} />
+
+**Presets**
+
+- `val Default`
+- `val Quick`
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/android/src/main/kotlin/dev/kindling/android/natif/BluetoothHelper.kt#L41)
+
+---
+
+### BluetoothHelper
+
+Helper Bluetooth centralisé.
+
+Permissions requises (API 31+) :
+- `BLUETOOTH_SCAN`    → découverte d'appareils
+- `BLUETOOTH_CONNECT` → connexion / lecture du nom
+
+API \< 31 : `BLUETOOTH` + `BLUETOOTH_ADMIN`.
+
+Enregistrement Koin :
+```kotlin
+single { BluetoothHelper(androidContext()) }
+```
+
+Utilisation :
+```kotlin
+// État courant
+val state = bluetoothHelper.getState()
+
+// Appareils couplés
+val paired = bluetoothHelper.getPairedDevices()
+
+// Observer l'état
+bluetoothHelper.stateFlow.onEach { state -> … }.launchIn(viewModelScope)
+
+// Scanner (Flow d'appareils découverts)
+bluetoothHelper.scanFlow(BluetoothScanConfig.Quick)
+    .onEach { device -> … }
+    .launchIn(viewModelScope)
+```
+
+```kotlin
+class BluetoothHelper(context: Context)
+```
+
+<TypeTable type={{"context":{"type":"Context","required":true}}} />
+
+**Members**
+
+- `fun isAvailable(): Boolean`
+- `fun getState(): BluetoothState`
+- `val stateFlow: Flow<BluetoothState>`
+- `fun getPairedDevices(): Set<BluetoothDevice>`
+- `fun scanFlow( config: BluetoothScanConfig = BluetoothScanConfig.Default): Flow<BluetoothDevice>`
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/android/src/main/kotlin/dev/kindling/android/natif/BluetoothHelper.kt#L85)

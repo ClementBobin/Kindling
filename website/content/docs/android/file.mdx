@@ -1,0 +1,95 @@
+---
+title: "File"
+description: "Describes the destination of a file in Android's MediaStore."
+generated: true
+module: "android"
+---
+
+{/* AUTO-GENERATED from KDoc by website/scripts/docgen.mjs. Set `generated: false` in the frontmatter to take over this page by hand. */}
+
+Use the provided presets:
+- `FileDestination.Downloads` -> Downloads folder.
+- `FileDestination.Pictures`  -> Pictures folder.
+- `FileDestination.Documents` -> Documents folder.
+
+## Usage
+
+```kotlin
+val fileHelper = FileHelper(context)
+
+// Save to Downloads using MediaStore
+fileHelper.saveToMediaStore(
+    context = context,
+    fileName = "export.csv",
+    mimeType = "text/csv",
+    destination = FileDestination.Downloads
+) { outputStream ->
+    outputStream.write("id,name\n1,Kindling".toByteArray())
+}
+
+// Open system file picker
+val launcher = fileHelper.registerPickerLauncher(activity) { uri ->
+    uri?.let { /* Read file */ }
+}
+fileHelper.openPicker(launcher, mimeType = "application/pdf")
+```
+
+## Installation
+
+```kotlin
+implementation("io.github.clementbobin.kindling:android:0.3.0")
+```
+
+```kotlin
+import dev.kindling.android.natif.FileDestination
+```
+
+## Types
+
+### FileDestination
+
+```kotlin
+data class FileDestination(
+    val collection: Uri,
+    val relativePath: String,
+)
+```
+
+<TypeTable type={{"collection":{"type":"Uri","required":true},"relativePath":{"type":"String","required":true}}} />
+
+**Presets**
+
+- `val Downloads`
+- `val Pictures`
+- `val Documents`
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/android/src/main/kotlin/dev/kindling/android/natif/FileHelper.kt#L29)
+
+---
+
+### FileHelper
+
+Centralized file helper for Android (MediaStore + Storage Access Framework).
+
+Provides two main approaches:
+- **MediaStore** (API 29+): For writing to public folders without explicit storage permissions.
+- **SAF (Storage Access Framework)**: System file picker for reading/creating files.
+
+```kotlin
+class FileHelper(context: Context)
+```
+
+<TypeTable type={{"context":{"type":"Context","required":true}}} />
+
+**Members**
+
+- `fun saveToMediaStore( context: Context, fileName: String, mimeType: String, destination: FileDestination, block: (OutputStream) -> Unit): Uri?` — Crée un fichier dans MediaStore et écrit via `block`. Retourne l'`Uri` du fichier créé, ou `null` en cas d'erreur.
+- `fun readBytes( context: Context, uri: Uri): ByteArray?` — Lit le contenu d'un `Uri` en bytes. Retourne `null` en cas d'erreur.
+- `fun readText( context: Context, uri: Uri, charset: Charset = Charsets.UTF_8): String?` — Lit le contenu d'un `Uri` en texte. Retourne `null` en cas d'erreur.
+- `fun registerPickerLauncher( activity: FragmentActivity, onResult: (Uri?) -> Unit): ActivityResultLauncher<Array<String>>` — Enregistre un launcher SAF pour sélectionner un fichier. À appeler depuis `onCreate`.
+- `fun openPicker( launcher: ActivityResultLauncher<Array<String>>, mimeType: String = "*/*")` — Ouvre le sélecteur de fichiers système.
+- `fun registerCreateLauncher( activity: FragmentActivity, onResult: (Uri?) -> Unit): ActivityResultLauncher<String>` — Enregistre un launcher pour créer un fichier (SAF). À appeler depuis `onCreate`.
+- `fun getCacheDir(): File` — Retourne le répertoire cache interne de l'app (pas de permission requise).
+- `fun createTempFile( prefix: String, suffix: String = ".tmp"): File` — Crée un fichier temporaire dans le cache interne.
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/android/src/main/kotlin/dev/kindling/android/natif/FileHelper.kt#L85)

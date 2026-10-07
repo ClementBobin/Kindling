@@ -1,0 +1,113 @@
+---
+title: "Logos Carousel"
+description: "Logos Carousel API reference."
+generated: true
+module: "core"
+---
+
+{/* AUTO-GENERATED from KDoc by website/scripts/docgen.mjs. Set `generated: false` in the frontmatter to take over this page by hand. */}
+
+## Installation
+
+```kotlin
+implementation("io.github.clementbobin.kindling:core:0.3.0")
+```
+
+```kotlin
+import dev.kindling.core.components.ui.logosCarousel.KLogosCarousel
+```
+
+## Composables
+
+### KLogosCarousel
+
+```kotlin
+@Composable
+fun KLogosCarousel(
+    logos: List<KLogo>,
+    modifier: Modifier = Modifier,
+    direction: KLogosCarouselDirection = KLogosCarouselDirection.FORWARD,
+    velocity: Dp = KLogosCarouselDefaults.Velocity,
+    spacing: Dp = KLogosCarouselDefaults.Spacing,
+    logoHeight: Dp = KLogosCarouselDefaults.LogoHeight,
+    repeatCount: Int = 4,
+    pauseOnTouch: Boolean = true,
+    enableGrayscale: Boolean = true,
+    tint: Color? = null,
+    enableFadeEdges: Boolean = true,
+    fadeColor: Color = Color.Unspecified,
+    fadeWidth: Dp = KLogosCarouselDefaults.FadeWidth,
+    loopCounter: KCounter? = null,
+    speedStepCounter: KCounter? = null,
+    customLogoContent: (@Composable (KLogo) -> Unit)? = null,
+)
+```
+
+<TypeTable type={{"logos":{"type":"List<KLogo>","required":true},"modifier":{"type":"Modifier","default":"Modifier"},"direction":{"type":"KLogosCarouselDirection","default":"KLogosCarouselDirection.FORWARD"},"velocity":{"type":"Dp","default":"KLogosCarouselDefaults.Velocity"},"spacing":{"type":"Dp","default":"KLogosCarouselDefaults.Spacing"},"logoHeight":{"type":"Dp","default":"KLogosCarouselDefaults.LogoHeight"},"repeatCount":{"type":"Int","default":"4"},"pauseOnTouch":{"type":"Boolean","default":"true"},"enableGrayscale":{"type":"Boolean","default":"true"},"tint":{"type":"Color?","default":"null"},"enableFadeEdges":{"type":"Boolean","default":"true"},"fadeColor":{"type":"Color","default":"Color.Unspecified"},"fadeWidth":{"type":"Dp","default":"KLogosCarouselDefaults.FadeWidth"},"loopCounter":{"type":"KCounter?","default":"null"},"speedStepCounter":{"type":"KCounter?","default":"null"},"customLogoContent":{"type":"(@Composable (KLogo) -> Unit)?","default":"null"}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/logosCarousel/KLogosCarousel.kt#L32)
+
+---
+
+### KDefaultLogoItem
+
+```kotlin
+@Composable
+fun KDefaultLogoItem(
+    logo: KLogo,
+    logoHeight: Dp,
+    colorFilter: ColorFilter?,
+)
+```
+
+<TypeTable type={{"logo":{"type":"KLogo","required":true},"logoHeight":{"type":"Dp","required":true},"colorFilter":{"type":"ColorFilter?","required":true}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/logosCarousel/KLogoItem.kt#L16)
+
+## Types
+
+### KLogo
+
+```kotlin
+data class KLogo(
+    val url: String? = null,
+    val resId: Int? = null,
+    val alt: String = "",
+)
+```
+
+<TypeTable type={{"url":{"type":"String?","default":"null"},"resId":{"type":"Int?","default":"null"},"alt":{"type":"String","default":"\"\""}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/logosCarousel/KLogosCarouselModels.kt#L6)
+
+---
+
+### KLogosCarouselDirection
+
+```kotlin
+enum class KLogosCarouselDirection
+```
+
+**Values**
+
+- `FORWARD`
+- `BACKWARD`
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/logosCarousel/KLogosCarouselModels.kt#L12)
+
+---
+
+### KLogosCarouselDefaults
+
+```kotlin
+object KLogosCarouselDefaults
+```
+
+**Members**
+
+- `val Velocity: Dp`
+- `val Spacing: Dp`
+- `val LogoHeight: Dp`
+- `val FadeWidth: Dp`
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/logosCarousel/KLogosCarouselModels.kt#L16)
