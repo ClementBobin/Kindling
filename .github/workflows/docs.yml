@@ -1,16 +1,15 @@
 name: Docs
 
-# Builds the documentation website (website/) and deploys it to GitHub Pages.
-#   - push to main touching code or docs  -> regenerate from KDoc, build, deploy
-#   - release                              -> same, stamped with the release version
-#   - pull request                         -> build + verify generated docs are up to date (no deploy)
-#   - manual (workflow_dispatch)           -> optionally run the AI draft job and open a PR
+# The documentation site is the :showcase module (Compose Multiplatform for Web) fed by docs-gen/.
+#   - push to main / release  -> regenerate from KDoc, build, deploy to GitHub Pages
+#   - pull request            -> verify generated docs are up to date + build (no deploy)
+#   - manual (workflow_dispatch) with ai_drafts -> draft thin pages with Claude and open a PR
 on:
   push:
     branches: [main]
-    paths: ['website/**', 'showcase/**', 'core/**', 'utils/**', 'compose/**', 'android/**', '.github/workflows/docs.yml']
+    paths: ['showcase/**', 'docs-gen/**', 'core/**', 'utils/**', 'compose/**', 'android/**', '.github/workflows/docs.yml']
   pull_request:
-    paths: ['website/**', 'showcase/**', 'core/**', 'utils/**', 'compose/**', 'android/**', '.github/workflows/docs.yml']
+    paths: ['showcase/**', 'docs-gen/**', 'core/**', 'utils/**', 'compose/**', 'android/**', '.github/workflows/docs.yml']
   release:
     types: [released, prereleased]
   workflow_dispatch:
@@ -31,67 +30,42 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # ── 1. Compose for Web showcase (live previews) ───────────────────────────
-  showcase:
-    name: Build Wasm showcase
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
-        with: { distribution: zulu, java-version: 21 }
-      - uses: gradle/actions/setup-gradle@v4
-      - name: Build
-        run: ./gradlew :showcase:wasmJsBrowserDistribution --no-daemon
-      - uses: actions/upload-artifact@v4
-        with:
-          name: showcase
-          path: showcase/build/dist/wasmJs/productionExecutable
-          if-no-files-found: error
-
-  # ── 2. Website ────────────────────────────────────────────────────────────
-  site:
-    name: Build website
-    needs: showcase
+  build:
+    name: Build docs site
+    if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.ai_drafts) }}
     runs-on: ubuntu-latest
     env:
-      NEXT_PUBLIC_BASE_PATH: /${{ github.event.repository.name }}
-      NEXT_PUBLIC_SITE_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
-      NEXT_PUBLIC_LIBRARY_VERSION: ${{ github.event_name == 'release' && github.event.release.tag_name || '' }}
-    defaults:
-      run:
-        working-directory: website
+      RELEASE_VERSION: ${{ github.event_name == 'release' && github.event.release.tag_name || '' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-          cache-dependency-path: website/package-lock.json
-      - run: npm ci
+        with: { node-version: 22 }
+      - uses: actions/setup-java@v4
+        with: { distribution: zulu, java-version: 21 }
+      - uses: gradle/actions/setup-gradle@v4
 
       - name: Verify generated docs are up to date
         if: github.event_name == 'pull_request'
-        run: npm run docs:check
+        run: node docs-gen/scripts/docgen.mjs --check
 
-      - uses: actions/download-artifact@v4
-        with:
-          name: showcase
-          path: website/public/showcase
+      - name: Regenerate docs from KDoc
+        if: github.event_name != 'pull_request'
+        run: node docs-gen/scripts/docgen.mjs
 
-      - name: Build static site
-        run: npm run build   # prebuild regenerates the API pages from KDoc
+      - name: Build Compose Wasm site
+        run: ./gradlew :showcase:wasmJsBrowserDistribution --no-daemon
 
       - uses: actions/configure-pages@v5
         if: github.event_name != 'pull_request'
       - uses: actions/upload-pages-artifact@v3
         if: github.event_name != 'pull_request'
         with:
-          path: website/out
+          path: showcase/build/dist/wasmJs/productionExecutable
 
   deploy:
     name: Deploy to GitHub Pages
     if: github.event_name != 'pull_request' && !(github.event_name == 'workflow_dispatch' && inputs.ai_drafts)
-    needs: site
+    needs: build
     runs-on: ubuntu-latest
     permissions:
       pages: write
@@ -103,7 +77,6 @@ jobs:
       - id: deployment
         uses: actions/deploy-pages@v4
 
-  # ── 3. Optional AI drafts, reviewed through a PR ──────────────────────────
   ai-drafts:
     name: AI drafts → pull request
     if: github.event_name == 'workflow_dispatch' && inputs.ai_drafts
@@ -111,20 +84,13 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-    defaults:
-      run:
-        working-directory: website
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-          cache-dependency-path: website/package-lock.json
-      - run: npm ci
-      - run: npm run docs:generate
+        with: { node-version: 22 }
+      - run: node docs-gen/scripts/docgen.mjs
       - name: Draft pages with Claude
-        run: npm run docs:ai -- --limit=${{ inputs.ai_limit }}
+        run: node docs-gen/scripts/ai-draft.mjs --limit=${{ inputs.ai_limit }}
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
       - uses: peter-evans/create-pull-request@v7
@@ -133,7 +99,7 @@ jobs:
           title: 'docs: AI-drafted pages (review required)'
           commit-message: 'docs: AI-drafted pages'
           body: |
-            Drafted by `website/scripts/ai-draft.mjs` for pages the generator flagged as thin.
-            Drafts live in `website/docs-extra/` and are injected into the generated pages.
-            **Review every page** before merging: edit freely, the generator never overwrites them.
-          add-paths: website/docs-extra/**
+            Drafted by `docs-gen/scripts/ai-draft.mjs` for pages the generator flagged as thin.
+            Drafts live in `docs-gen/extra/` and are injected into the generated pages.
+            **Review every page** before merging; the generator never overwrites them.
+          add-paths: docs-gen/extra/**

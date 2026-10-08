@@ -23,3 +23,5 @@ Thumbs.db
 
 **/.compose-doctor/
 **/bin/
+# docs generator scratch
+docs-gen/.docgen/
