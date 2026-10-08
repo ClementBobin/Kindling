@@ -1,0 +1,120 @@
+---
+title: "Audio"
+description: "Helper audio centralisé."
+generated: true
+module: "android"
+---
+
+{/* AUTO-GENERATED from KDoc by website/scripts/docgen.mjs. Set `generated: false` in the frontmatter to take over this page by hand. */}
+
+Gère deux canaux :
+- **Effets système** (`SystemFxAsset`) via `AudioManager` — sans chargement.
+- **Sons custom** (`SoundAsset`) via `SoundPool` avec chargement lazy et cache interne.
+
+Enregistrement Koin :
+```kotlin
+single { AudioHelper(androidContext()) }
+```
+
+Utilisation :
+```kotlin
+// Effets système (presets)
+audioHelper.play(SystemFxAsset.Click)
+audioHelper.play(SystemFxAsset.KeyPress)
+
+// Son custom (raw resource)
+audioHelper.play(SoundAsset(R.raw.success_chime, volume = 0.7f))
+
+// Libérer les ressources quand plus nécessaire (onDestroy / scope)
+audioHelper.release()
+```
+
+## Installation
+
+```kotlin
+implementation("io.github.clementbobin.kindling:android:0.3.0")
+```
+
+```kotlin
+import dev.kindling.android.natif.AudioHelper
+```
+
+## Types
+
+### AudioHelper
+
+```kotlin
+class AudioHelper(context: Context)
+```
+
+<TypeTable type={{"context":{"type":"Context","required":true}}} />
+
+**Members**
+
+- `fun play(asset: SystemFxAsset)` — Joue un effet sonore système.
+- `fun play(asset: SoundAsset)` — Joue un son custom (raw resource). Le son est chargé de façon lazy et mis en cache pour les lectures suivantes.
+- `fun click()`
+- `fun keyPress()`
+- `fun delete()`
+- `fun returnKey()`
+- `fun focusNav()`
+- `fun release()` — Libère le `SoundPool`. Appeler depuis `onDestroy` ou un scope Koin approprié.
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/android/src/main/kotlin/dev/kindling/android/natif/AudioHelper.kt#L83)
+
+---
+
+### SoundAsset
+
+Décrit un son système sémantique à jouer via `SoundPool`.
+
+Son personnalisé (raw resource) :
+```kotlin
+val asset = SoundAsset(resId = R.raw.my_sound, volume = 0.8f)
+audioHelper.play(asset)
+```
+
+```kotlin
+data class SoundAsset(
+    val resId: Int,
+    val volume: Float = 1f,
+    val rate: Float = 1f,
+    val priority: Int = 1,
+)
+```
+
+<TypeTable type={{"resId":{"type":"Int","description":"Identifiant de la ressource raw (R.raw.*).","required":true},"volume":{"type":"Float","description":"Volume 1f appliqué aux deux canaux (défaut : 1f).","default":"1f"},"rate":{"type":"Float","description":"Taux de lecture 2f (défaut : 1f = vitesse normale).","default":"1f"},"priority":{"type":"Int","description":"Priorité du stream (défaut : 1).","default":"1"}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/android/src/main/kotlin/dev/kindling/android/natif/AudioHelper.kt#L26)
+
+---
+
+### SystemFxAsset
+
+Effet sonore système joué via `AudioManager` — pas de chargement SoundPool requis.
+
+Presets mappés sur les sons système Android :
+- `SystemFxAsset.Click`        → clic UI léger
+- `SystemFxAsset.KeyPress`     → touche clavier
+- `SystemFxAsset.Delete`       → suppression clavier
+- `SystemFxAsset.Return`       → validation clavier
+- `SystemFxAsset.FocusNav`     → navigation focus
+
+```kotlin
+data class SystemFxAsset(
+    val fx: Int,
+    val volume: Float = 1f,
+)
+```
+
+<TypeTable type={{"fx":{"type":"Int","required":true},"volume":{"type":"Float","default":"1f"}}} />
+
+**Presets**
+
+- `val Click`
+- `val KeyPress`
+- `val Delete`
+- `val Return`
+- `val FocusNav`
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/android/src/main/kotlin/dev/kindling/android/natif/AudioHelper.kt#L44)

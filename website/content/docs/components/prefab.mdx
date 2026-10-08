@@ -1,0 +1,242 @@
+---
+title: "Prefab"
+description: "A pre-configured KMaskInput for phone numbers."
+generated: true
+module: "core"
+---
+
+{/* AUTO-GENERATED from KDoc by website/scripts/docgen.mjs. Set `generated: false` in the frontmatter to take over this page by hand. */}
+
+Uses the default phone mask: `(###) ###-####`.
+
+## Installation
+
+```kotlin
+implementation("io.github.clementbobin.kindling:core:0.3.0")
+```
+
+```kotlin
+import dev.kindling.core.components.prefab.PhoneInput
+```
+
+## Composables
+
+### PhoneInput
+
+```kotlin
+@Composable
+fun PhoneInput(
+    value: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    isError: Boolean = false,
+    onValidationChange: ((Boolean) -> Unit)? = null,
+)
+```
+
+<TypeTable type={{"value":{"type":"String","required":true},"onValueChange":{"type":"(String) -> Unit","required":true},"modifier":{"type":"Modifier","default":"Modifier"},"enabled":{"type":"Boolean","default":"true"},"isError":{"type":"Boolean","default":"false"},"onValidationChange":{"type":"((Boolean) -> Unit)?","default":"null"}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/prefab/KMaskConvenienceInputs.kt#L14)
+
+---
+
+### KFieldSimple
+
+```kotlin
+@Composable
+fun KFieldSimple(
+    label: String,
+    value: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    mask: KMaskPattern? = null,
+    customPattern: String? = null,
+    allowLetters: Boolean = mask?.keyboardType == KeyboardType.Text && mask.withoutMask.not(),
+    withoutMask: Boolean = mask?.withoutMask ?: false,
+    placeholder: String = mask?.placeholder ?: customPattern?.replace('#', '0') ?: "",
+    enabled: Boolean = true,
+    autoValidate: Boolean = true,
+    customValidate: ((String) -> Boolean)? = null,
+    onValidationChange: ((Boolean) -> Unit)? = null,
+    isError: Boolean = false,
+    trailingContent: (@Composable () -> Unit)? = null,
+)
+```
+
+<TypeTable type={{"label":{"type":"String","required":true},"value":{"type":"String","required":true},"onValueChange":{"type":"(String) -> Unit","required":true},"modifier":{"type":"Modifier","default":"Modifier"},"mask":{"type":"KMaskPattern?","default":"null"},"customPattern":{"type":"String?","default":"null"},"allowLetters":{"type":"Boolean","default":"mask?.keyboardType == KeyboardType.Text && mask.withoutMask.not()"},"withoutMask":{"type":"Boolean","default":"mask?.withoutMask ?: false"},"placeholder":{"type":"String","default":"mask?.placeholder ?: customPattern?.replace('#', '0') ?: \"\""},"enabled":{"type":"Boolean","default":"true"},"autoValidate":{"type":"Boolean","default":"true"},"customValidate":{"type":"((String) -> Boolean)?","default":"null"},"onValidationChange":{"type":"((Boolean) -> Unit)?","default":"null"},"isError":{"type":"Boolean","default":"false"},"trailingContent":{"type":"(@Composable () -> Unit)?","default":"null"}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/prefab/KFieldSimple.kt#L17)
+
+---
+
+### SsnInput
+
+A pre-configured `KMaskInput` for Social Security Numbers (SSN).
+
+Uses the mask: `###-##-####`.
+
+```kotlin
+@Composable
+fun SsnInput(
+    value: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    isError: Boolean = false,
+    onValidationChange: ((Boolean) -> Unit)? = null,
+)
+```
+
+<TypeTable type={{"value":{"type":"String","required":true},"onValueChange":{"type":"(String) -> Unit","required":true},"modifier":{"type":"Modifier","default":"Modifier"},"enabled":{"type":"Boolean","default":"true"},"isError":{"type":"Boolean","default":"false"},"onValidationChange":{"type":"((Boolean) -> Unit)?","default":"null"}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/prefab/KMaskConvenienceInputs.kt#L37)
+
+---
+
+### DateMaskInput
+
+```kotlin
+@Composable
+fun DateMaskInput(
+    value: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    isError: Boolean = false,
+    onValidationChange: ((Boolean) -> Unit)? = null,
+)
+```
+
+<TypeTable type={{"value":{"type":"String","required":true},"onValueChange":{"type":"(String) -> Unit","required":true},"modifier":{"type":"Modifier","default":"Modifier"},"enabled":{"type":"Boolean","default":"true"},"isError":{"type":"Boolean","default":"false"},"onValidationChange":{"type":"((Boolean) -> Unit)?","default":"null"}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/prefab/KMaskConvenienceInputs.kt#L55)
+
+---
+
+### CreditCardInput
+
+A pre-configured `KMaskInput` for credit card numbers.
+
+Uses a standard 16-digit mask: `#### #### #### ####`.
+
+```kotlin
+@Composable
+fun CreditCardInput(
+    value: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    isError: Boolean = false,
+    onValidationChange: ((Boolean) -> Unit)? = null,
+)
+```
+
+<TypeTable type={{"value":{"type":"String","required":true},"onValueChange":{"type":"(String) -> Unit","required":true},"modifier":{"type":"Modifier","default":"Modifier"},"enabled":{"type":"Boolean","default":"true"},"isError":{"type":"Boolean","default":"false"},"onValidationChange":{"type":"((Boolean) -> Unit)?","default":"null"}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/prefab/KMaskConvenienceInputs.kt#L78)
+
+---
+
+### EinInput
+
+```kotlin
+@Composable
+fun EinInput(
+    value: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    isError: Boolean = false,
+    onValidationChange: ((Boolean) -> Unit)? = null,
+)
+```
+
+<TypeTable type={{"value":{"type":"String","required":true},"onValueChange":{"type":"(String) -> Unit","required":true},"modifier":{"type":"Modifier","default":"Modifier"},"enabled":{"type":"Boolean","default":"true"},"isError":{"type":"Boolean","default":"false"},"onValidationChange":{"type":"((Boolean) -> Unit)?","default":"null"}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/prefab/KMaskConvenienceInputs.kt#L96)
+
+---
+
+### EmailInput
+
+A pre-configured `KMaskInput` for email addresses.
+
+Note: While this uses `KMaskPattern.Email`, email "masking" is typically
+just validation rather than a rigid character-by-character mask.
+
+```kotlin
+@Composable
+fun EmailInput(
+    value: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    isError: Boolean = false,
+    onValidationChange: ((Boolean) -> Unit)? = null,
+)
+```
+
+<TypeTable type={{"value":{"type":"String","required":true},"onValueChange":{"type":"(String) -> Unit","required":true},"modifier":{"type":"Modifier","default":"Modifier"},"enabled":{"type":"Boolean","default":"true"},"isError":{"type":"Boolean","default":"false"},"onValidationChange":{"type":"((Boolean) -> Unit)?","default":"null"}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/prefab/KMaskConvenienceInputs.kt#L120)
+
+---
+
+### UriInput
+
+```kotlin
+@Composable
+fun UriInput(
+    value: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    isError: Boolean = false,
+    onValidationChange: ((Boolean) -> Unit)? = null,
+)
+```
+
+<TypeTable type={{"value":{"type":"String","required":true},"onValueChange":{"type":"(String) -> Unit","required":true},"modifier":{"type":"Modifier","default":"Modifier"},"enabled":{"type":"Boolean","default":"true"},"isError":{"type":"Boolean","default":"false"},"onValidationChange":{"type":"((Boolean) -> Unit)?","default":"null"}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/prefab/KMaskConvenienceInputs.kt#L138)
+
+---
+
+### NumberInput
+
+```kotlin
+@Composable
+fun NumberInput(
+    value: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    isError: Boolean = false,
+    onValidationChange: ((Boolean) -> Unit)? = null,
+)
+```
+
+<TypeTable type={{"value":{"type":"String","required":true},"onValueChange":{"type":"(String) -> Unit","required":true},"modifier":{"type":"Modifier","default":"Modifier"},"enabled":{"type":"Boolean","default":"true"},"isError":{"type":"Boolean","default":"false"},"onValidationChange":{"type":"((Boolean) -> Unit)?","default":"null"}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/prefab/KMaskConvenienceInputs.kt#L156)
+
+---
+
+### DecimalInput
+
+```kotlin
+@Composable
+fun DecimalInput(
+    value: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    isError: Boolean = false,
+    onValidationChange: ((Boolean) -> Unit)? = null,
+)
+```
+
+<TypeTable type={{"value":{"type":"String","required":true},"onValueChange":{"type":"(String) -> Unit","required":true},"modifier":{"type":"Modifier","default":"Modifier"},"enabled":{"type":"Boolean","default":"true"},"isError":{"type":"Boolean","default":"false"},"onValidationChange":{"type":"((Boolean) -> Unit)?","default":"null"}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/prefab/KMaskConvenienceInputs.kt#L174)

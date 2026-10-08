@@ -1,0 +1,440 @@
+---
+title: "Stepper"
+description: "Shadcn/ui-style Stepper root — mirrors Stepper from stepper.tsx."
+generated: true
+module: "core"
+---
+
+{/* AUTO-GENERATED from KDoc by website/scripts/docgen.mjs. Set `generated: false` in the frontmatter to take over this page by hand. */}
+
+Provides `KStepperState` to all child slots via `useKStepper`.
+
+```kotlin
+val state = rememberKStepperState(steps = listOf("step-1", "step-2", "step-3"))
+
+KStepper(state = state) {
+    KStepperList {
+        listOf("Account", "Billing", "Review").forEachIndexed { i, label ->
+            KStepperItem(value = "step-${i+1}") {
+                KStepperTrigger {
+                    KStepperIndicator()
+                    Column {
+                        KStepperTitle { Text(label) }
+                        KStepperDescription { Text("Details") }
+                    }
+                }
+                KStepperSeparator()
+            }
+        }
+    }
+    KStepperContent(value = "step-1") { Text("Step 1 content") }
+    KStepperContent(value = "step-2") { Text("Step 2 content") }
+    KStepperContent(value = "step-3") { Text("Step 3 content") }
+    Row {
+        KStepperPrev { KButton("Back",  onClick = it) }
+        KStepperNext { KButton("Next",  onClick = it) }
+    }
+}
+```
+
+## Installation
+
+```kotlin
+implementation("io.github.clementbobin.kindling:core:0.3.0")
+```
+
+```kotlin
+import dev.kindling.core.components.ui.stepper.KStepper
+```
+
+## Composables
+
+### KStepper
+
+```kotlin
+@Composable
+fun KStepper(
+    state: KStepperState,
+    modifier: Modifier = Modifier,
+    orientation: KStepperOrientation = KStepperOrientation.Horizontal,
+    disabled: Boolean = false,
+    nonInteractive: Boolean = false,
+    content: @Composable ColumnScope.() -> Unit,
+)
+```
+
+<TypeTable type={{"state":{"type":"KStepperState","required":true},"modifier":{"type":"Modifier","default":"Modifier"},"orientation":{"type":"KStepperOrientation","default":"KStepperOrientation.Horizontal"},"disabled":{"type":"Boolean","default":"false"},"nonInteractive":{"type":"Boolean","default":"false"},"content":{"type":"@Composable ColumnScope.() -> Unit","required":true}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/stepper/KStepper.kt#L66)
+
+---
+
+### useKStepper
+
+Reads the nearest `KStepperState` — mirrors `useStepper` from `stepper.tsx`.
+
+```kotlin
+val stepper = useKStepper()
+Text("Step ${stepper.currentIndex + 1} of${stepper.steps.size}")
+```
+
+```kotlin
+@Composable
+fun useKStepper(): KStepperState
+```
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/stepper/KStepper.kt#L28)
+
+---
+
+### KStepperContent
+
+Panel shown only when `value` is the active step. Pass `forceMount` = true to always render (hidden via alpha). Mirrors `StepperContent`.
+
+```kotlin
+@Composable
+fun KStepperContent(
+    value: String,
+    modifier: Modifier = Modifier,
+    forceMount: Boolean = false,
+    content: @Composable BoxScope.() -> Unit,
+)
+```
+
+<TypeTable type={{"value":{"type":"String","required":true},"modifier":{"type":"Modifier","default":"Modifier"},"forceMount":{"type":"Boolean","default":"false"},"content":{"type":"@Composable BoxScope.() -> Unit","required":true}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/stepper/KStepperContent.kt#L15)
+
+---
+
+### KStepperIndicator
+
+Numbered / checkmark bubble — mirrors `StepperIndicator`.
+
+```kotlin
+KStepperIndicator()                                     // auto: number or check
+KStepperIndicator { dataState -> MyIcon(dataState) }  // custom
+```
+
+```kotlin
+@Composable
+fun KStepperIndicator(
+    modifier: Modifier = Modifier,
+    content: (@Composable (KStepState) -> Unit)? = null,
+)
+```
+
+<TypeTable type={{"modifier":{"type":"Modifier","default":"Modifier"},"content":{"type":"(@Composable (KStepState) -> Unit)?","default":"null"}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/stepper/KStepperIndicator.kt#L34)
+
+---
+
+### KStepperItem
+
+Container for one step — mirrors `StepperItem`.
+
+```kotlin
+@Composable
+fun RowScope.KStepperItem(
+    value: String,
+    modifier: Modifier = Modifier,
+    completed: Boolean? = null,
+    disabled: Boolean = false,
+    content: @Composable RowScope.() -> Unit,
+)
+```
+
+<TypeTable type={{"value":{"type":"String","description":"Unique step identifier matching one of steps.","required":true},"modifier":{"type":"Modifier","default":"Modifier"},"completed":{"type":"Boolean?","description":"Override completion state (auto-derived from KStepperState by default).","default":"null"},"disabled":{"type":"Boolean","description":"Disables interaction for this step only.","default":"false"},"content":{"type":"@Composable RowScope.() -> Unit","required":true}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/stepper/KStepperItem.kt#L21)
+
+---
+
+### KStepperList
+
+Horizontal or vertical list of `KStepperItem`s. Mirrors `StepperList`.
+
+```kotlin
+@Composable
+fun KStepperList(
+    modifier: Modifier = Modifier,
+    content: @Composable RowScope.() -> Unit,
+)
+```
+
+<TypeTable type={{"modifier":{"type":"Modifier","default":"Modifier"},"content":{"type":"@Composable RowScope.() -> Unit","required":true}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/stepper/KStepperList.kt#L15)
+
+---
+
+### KStepperSeparator
+
+Connector line between steps — mirrors `StepperSeparator`. Hidden automatically on the last step.
+
+```kotlin
+@Composable
+fun RowScope.KStepperSeparator(modifier: Modifier = Modifier)
+```
+
+<TypeTable type={{"modifier":{"type":"Modifier","default":"Modifier"}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/stepper/KStepperSeparator.kt#L20)
+
+---
+
+### rememberKStepperState
+
+Creates and remembers a `KStepperState`.
+
+```kotlin
+val stepper = rememberKStepperState(
+    steps        = listOf("account", "billing", "review"),
+    defaultValue = "account"
+)
+KStepper(state = stepper) { … }
+```
+
+```kotlin
+@Composable
+fun rememberKStepperState(
+    steps: List<String>,
+    defaultValue: String = steps.firstOrNull() ?: "",
+    value: String? = null,
+    onValueChange: (String) -> Unit = {},
+    onValidate: (suspend (value: String, direction: KNavigationDirection) -> Boolean)? = null,
+): KStepperState
+```
+
+<TypeTable type={{"steps":{"type":"List<String>","required":true},"defaultValue":{"type":"String","default":"steps.firstOrNull() ?: \"\""},"value":{"type":"String?","default":"null"},"onValueChange":{"type":"(String) -> Unit","default":"{}"},"onValidate":{"type":"(suspend (value: String, direction: KNavigationDirection) -> Boolean)?","default":"null"}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/stepper/KStepperState.kt#L68)
+
+---
+
+### KStepperTrigger
+
+Tappable trigger for a step — mirrors `StepperTrigger`.
+
+Navigates to this step on tap (unless `nonInteractive`).
+
+```kotlin
+@Composable
+fun KStepperTrigger(
+    modifier: Modifier = Modifier,
+    hasLabel: Boolean = false,
+    content: @Composable RowScope.() -> Unit,
+)
+```
+
+<TypeTable type={{"modifier":{"type":"Modifier","default":"Modifier"},"hasLabel":{"type":"Boolean","default":"false"},"content":{"type":"@Composable RowScope.() -> Unit","required":true}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/stepper/KStepperTrigger.kt#L24)
+
+---
+
+### KStepperTitle
+
+Step title text — mirrors `StepperTitle`.
+
+```kotlin
+@Composable
+fun KStepperTitle(
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit,
+)
+```
+
+<TypeTable type={{"modifier":{"type":"Modifier","default":"Modifier"},"content":{"type":"@Composable () -> Unit","required":true}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/stepper/KStepperTypography.kt#L13)
+
+---
+
+### KStepperDescription
+
+Step description text — mirrors `StepperDescription`.
+
+```kotlin
+@Composable
+fun KStepperDescription(
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit,
+)
+```
+
+<TypeTable type={{"modifier":{"type":"Modifier","default":"Modifier"},"content":{"type":"@Composable () -> Unit","required":true}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/stepper/KStepperTypography.kt#L32)
+
+---
+
+### KStepperPrev
+
+Navigates to the previous step. `content` receives an `onClick` lambda — wire it to your button. Mirrors `StepperPrev`.
+
+```kotlin
+KStepperPrev { KButton("Back", onClick = onClick) }
+```
+
+```kotlin
+@Composable
+fun KStepperPrev(content: @Composable (onClick: () -> Unit) -> Unit)
+```
+
+<TypeTable type={{"content":{"type":"@Composable (onClick: () -> Unit) -> Unit","required":true}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/stepper/StepperControls.kt#L17)
+
+---
+
+### KStepperNext
+
+Navigates to the next step (runs validation if configured). `content` receives an `onClick` lambda — wire it to your button. Mirrors `StepperNext`.
+
+```kotlin
+KStepperNext { KButton("Continue", onClick = onClick) }
+```
+
+```kotlin
+@Composable
+fun KStepperNext(content: @Composable (onClick: () -> Unit) -> Unit)
+```
+
+<TypeTable type={{"content":{"type":"@Composable (onClick: () -> Unit) -> Unit","required":true}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/stepper/StepperControls.kt#L42)
+
+## Types
+
+### KStepperState
+
+Observable state for a `KStepper`.
+
+Access via `useKStepper` inside any composable that descends from `KStepper`.
+Mirrors the `useStepper` hook from `stepper.tsx`.
+
+```kotlin
+class KStepperState(
+    initialValue: String,
+    val steps: List<String>,
+    val onValueChange: (String) -> Unit,
+    val onValidate: (suspend (value: String, direction: KNavigationDirection) -> Boolean)?,
+)
+```
+
+<TypeTable type={{"initialValue":{"type":"String","required":true},"steps":{"type":"List<String>","required":true},"onValueChange":{"type":"(String) -> Unit","required":true},"onValidate":{"type":"(suspend (value: String, direction: KNavigationDirection) -> Boolean)?","required":true}}} />
+
+**Members**
+
+- `var value by mutableStateOf(initialValue)`
+- `val currentIndex: Int get()`
+- `val canGoNext: Boolean get()`
+- `val canGoPrev: Boolean get()`
+- `fun dataState(stepValue: String): KStepState`
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/stepper/KStepperState.kt#L18)
+
+---
+
+### KNavigationDirection
+
+Navigation direction used during step transitions and validation.
+
+```kotlin
+enum class KNavigationDirection
+```
+
+**Values**
+
+- `Prev`
+- `Next`
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/stepper/StepperModels.kt#L6)
+
+---
+
+### KStepState
+
+Represents the current visual state of an individual step indicator.
+
+```kotlin
+enum class KStepState
+```
+
+**Values**
+
+- `Inactive`
+- `Active`
+- `Completed`
+- `Error`
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/stepper/StepperModels.kt#L14)
+
+---
+
+### KStepperOrientation
+
+Orientation for the stepper component layout.
+
+```kotlin
+enum class KStepperOrientation
+```
+
+**Values**
+
+- `Horizontal`
+- `Vertical`
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/stepper/StepperModels.kt#L24)
+
+## Functions & properties
+
+### LocalStepperState
+
+```kotlin
+val LocalStepperState
+```
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/stepper/KStepper.kt#L14)
+
+---
+
+### LocalStepperDisabled
+
+```kotlin
+val LocalStepperDisabled
+```
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/stepper/KStepper.kt#L15)
+
+---
+
+### LocalStepperNonInteractive
+
+```kotlin
+val LocalStepperNonInteractive
+```
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/stepper/KStepper.kt#L16)
+
+---
+
+### LocalStepperOrientation
+
+```kotlin
+val LocalStepperOrientation
+```
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/stepper/KStepper.kt#L17)
+
+---
+
+### LocalStepperItemValue
+
+```kotlin
+val LocalStepperItemValue
+```
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/stepper/KStepperItem.kt#L11)

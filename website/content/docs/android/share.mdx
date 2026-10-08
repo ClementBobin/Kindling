@@ -1,0 +1,99 @@
+---
+title: "Share"
+description: "Décrit le contenu à partager via le système Android."
+generated: true
+module: "android"
+---
+
+{/* AUTO-GENERATED from KDoc by website/scripts/docgen.mjs. Set `generated: false` in the frontmatter to take over this page by hand. */}
+
+Presets :
+- `ShareContent`  → texte brut
+- `ShareContent`   → lien web
+- `ShareContent`  → fichier unique via FileProvider
+
+Personnalisé :
+```kotlin
+val content = ShareContent(
+    mimeType  = "image/png",
+    subject   = "Ma capture",
+    text      = "Voici ma capture d'écran",
+    fileUri   = uri
+)
+shareHelper.share(content)
+```
+
+## Installation
+
+```kotlin
+implementation("io.github.clementbobin.kindling:android:0.3.0")
+```
+
+```kotlin
+import dev.kindling.android.natif.ShareContent
+```
+
+## Types
+
+### ShareContent
+
+```kotlin
+data class ShareContent(
+    val mimeType: String = "text/plain",
+    val subject: String = "",
+    val text: String = "",
+    val fileUri: Uri? = null,
+    val chooserTitle: String = "Partager via",
+)
+```
+
+<TypeTable type={{"mimeType":{"type":"String","default":"\"text/plain\""},"subject":{"type":"String","default":"\"\""},"text":{"type":"String","default":"\"\""},"fileUri":{"type":"Uri?","default":"null"},"chooserTitle":{"type":"String","default":"\"Partager via\""}}} />
+
+**Presets**
+
+- `fun text( text: String, subject: String = "", chooserTitle: String = "Partager via")`
+- `fun url( url: String, subject: String = "")`
+- `fun file( uri: Uri, mimeType: String, subject: String = "", text: String = "")`
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/android/src/main/kotlin/dev/kindling/android/natif/ShareHelper.kt#L33)
+
+---
+
+### ShareHelper
+
+Helper de partage système centralisé.
+
+Aucune permission requise pour le partage de texte/URL.
+Pour les fichiers, déclarer un FileProvider dans le manifest de l'app.
+
+Enregistrement Koin :
+```kotlin
+single { ShareHelper(androidContext()) }
+```
+
+Utilisation :
+```kotlin
+shareHelper.share(ShareContent.text("Découvrez Kindling !"))
+shareHelper.share(ShareContent.url("https://github.com/ClementBobin/Kindling"))
+
+// Partager un fichier
+val uri = shareHelper.getFileUri(file, "com.example.app.fileprovider")
+shareHelper.share(ShareContent.file(uri, "image/png"))
+
+// Ouvrir directement dans une app spécifique
+shareHelper.shareToApp(ShareContent.text("hello"), "com.whatsapp")
+```
+
+```kotlin
+class ShareHelper(context: Context)
+```
+
+<TypeTable type={{"context":{"type":"Context","required":true}}} />
+
+**Members**
+
+- `fun share(content: ShareContent)` — Ouvre le sélecteur de partage système.
+- `fun shareToApp( content: ShareContent, targetPackage: String)` — Partage directement vers une app spécifique (par package). Tente de lancer l'intent explicitement ; si l'app n'est pas installée ou n'est pas visible (Android 11+), attrape `ActivityNotFoundException` et ouvre le sélecteur standard à la place.
+- `fun getFileUri( file: File, authority: String): Uri` — Convertit un `File` en `Uri` partageable via FileProvider. `authority` doit correspondre à l'authority déclarée dans le manifest.
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/android/src/main/kotlin/dev/kindling/android/natif/ShareHelper.kt#L84)

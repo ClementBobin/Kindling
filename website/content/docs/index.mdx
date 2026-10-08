@@ -1,0 +1,33 @@
+---
+title: Introduction
+description: shadcn/ui-inspired components, typed navigation and utilities for Jetpack Compose and Compose Multiplatform.
+---
+
+Kindling is a Kotlin multi-module library for Jetpack Compose. The components are modelled on
+[shadcn/ui](https://ui.shadcn.com): small, composable, and fully theme-aware through Material3.
+Every component reads its colours from `MaterialTheme.colorScheme`, so light and dark schemes work out of the box.
+
+<Showcase component="badge" height={160} />
+
+## Modules
+
+<Cards>
+  <Card title="core" href="/docs/components">
+    Compose components: Button, Input, Dialog, Carousel, DataTable, DatePicker, Stepper, Toaster and more.
+  </Card>
+  <Card title="utils" href="/docs/utils">
+    Coroutine utilities such as `Debouncer`, `Throttler`, `debounceLeading`, `throttleFirst`, plus formatting helpers.
+  </Card>
+  <Card title="compose" href="/docs/compose">
+    Typed navigation (`Destination`, `KNavHost`) and the `KViewModel` base class.
+  </Card>
+  <Card title="android" href="/docs/android">
+    Native device helpers, a Ktor-based `KHttpClient`, and session/token storage.
+  </Card>
+</Cards>
+
+## How these docs are made
+
+The API reference pages are generated from the KDoc comments in the source code, so they stay in sync with the library.
+Hand-written pages (like this one) live next to them, and previews are rendered live by a Compose for Web app.
+See [Contributing to the docs](/docs/contributing-docs) for how to regenerate, edit or AI-draft a page.

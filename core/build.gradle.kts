@@ -17,7 +17,6 @@ plugins {
 
     // 4. Remaining UI, documentation, and publishing plugins
     id("org.jetbrains.compose")
-    id("dokka-convention")
     id("kindling-publish")
 }
 

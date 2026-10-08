@@ -1,0 +1,110 @@
+---
+title: "Contacts"
+description: "Helper de contacts centralisé."
+generated: true
+module: "android"
+---
+
+{/* AUTO-GENERATED from KDoc by website/scripts/docgen.mjs. Set `generated: false` in the frontmatter to take over this page by hand. */}
+
+Permissions requises :
+- `READ_CONTACTS`  → lecture
+- `WRITE_CONTACTS` → création / suppression
+
+Enregistrement Koin :
+```kotlin
+single { ContactsHelper(androidContext()) }
+```
+
+Utilisation :
+```kotlin
+// Lire tous les contacts
+val contacts = contactsHelper.query(ContactQuery.All)
+
+// Chercher par nom
+val results = contactsHelper.query(ContactQuery.search("Alice"))
+
+// Sélecteur natif (pas de permission requise)
+val launcher = contactsHelper.registerPickerLauncher(activity) { uri ->
+    uri?.let { contactsHelper.resolveContact(context, it) }
+}
+contactsHelper.openPicker(launcher)
+```
+
+## Installation
+
+```kotlin
+implementation("io.github.clementbobin.kindling:android:0.3.0")
+```
+
+```kotlin
+import dev.kindling.android.natif.ContactsHelper
+```
+
+## Types
+
+### ContactsHelper
+
+```kotlin
+class ContactsHelper(context: Context)
+```
+
+<TypeTable type={{"context":{"type":"Context","required":true}}} />
+
+**Members**
+
+- `fun query(query: ContactQuery = ContactQuery.All): List<ContactInfo>`
+- `fun resolveContact( context: Context, uri: Uri): ContactInfo?` — Résout un `Uri` retourné par le sélecteur natif en `ContactInfo`.
+- `fun createContact( displayName: String, phone: String? = null, email: String? = null)` — Crée un contact minimal (nom + téléphone). Requiert `WRITE_CONTACTS`.
+- `fun registerPickerLauncher( activity: FragmentActivity, onResult: (Uri?) -> Unit): ActivityResultLauncher<Void?>` — Enregistre un launcher pour le sélecteur de contact natif.
+- `fun openPicker(launcher: ActivityResultLauncher<Void?>)`
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/android/src/main/kotlin/dev/kindling/android/natif/ContactsHelper.kt#L90)
+
+---
+
+### ContactInfo
+
+Informations d'un contact.
+
+```kotlin
+data class ContactInfo(
+    val id: String,
+    val displayName: String,
+    val phones: List<String> = emptyList(),
+    val emails: List<String> = emptyList(),
+    val photoUri: Uri? = null,
+)
+```
+
+<TypeTable type={{"id":{"type":"String","description":"Identifiant ContactsContract.","required":true},"displayName":{"type":"String","description":"Nom affiché.","required":true},"phones":{"type":"List<String>","description":"Liste des numéros de téléphone.","default":"emptyList()"},"emails":{"type":"List<String>","description":"Liste des adresses email.","default":"emptyList()"},"photoUri":{"type":"Uri?","description":"URI de la photo, ou null.","default":"null"}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/android/src/main/kotlin/dev/kindling/android/natif/ContactsHelper.kt#L28)
+
+---
+
+### ContactQuery
+
+Décrit une requête de recherche de contacts.
+
+Presets :
+- `ContactQuery.All`           → tous les contacts
+- `ContactQuery`     → contacts avec numéro uniquement
+
+```kotlin
+data class ContactQuery(
+    val nameFilter: String? = null,
+    val requirePhone: Boolean = false,
+    val limit: Int = Int.MAX_VALUE,
+)
+```
+
+<TypeTable type={{"nameFilter":{"type":"String?","default":"null"},"requirePhone":{"type":"Boolean","default":"false"},"limit":{"type":"Int","default":"Int.MAX_VALUE"}}} />
+
+**Presets**
+
+- `val All`
+- `fun withPhone()`
+- `fun search(name: String)`
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/android/src/main/kotlin/dev/kindling/android/natif/ContactsHelper.kt#L47)

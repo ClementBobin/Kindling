@@ -4,11 +4,11 @@
 [![](https://jitpack.io/v/ClementBobin/Kindling.svg)](https://jitpack.io/#ClementBobin/Kindling)
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.clementbobin.kindling/core)](https://central.sonatype.com/search?q=io.github.clementbobin.kindling)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
-[![API Docs](https://img.shields.io/badge/API%20docs-Dokka-orange)](https://clementbobin.github.io/Kindling/)
+[![Docs](https://img.shields.io/badge/docs-website-black)](https://clementbobin.github.io/Kindling/)
 
 A production-ready Kotlin multi-module component library for Jetpack Compose — shadcn/ui-inspired UI components, typed navigation, a structured ViewModel base, and coroutine utilities, all fully theme-aware via Material3.
 
-📖 **API reference:** https://clementbobin.github.io/Kindling/
+📖 **Documentation & live component previews:** https://clementbobin.github.io/Kindling/
 
 ---
 

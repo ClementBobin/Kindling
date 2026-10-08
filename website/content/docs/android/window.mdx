@@ -1,0 +1,85 @@
+---
+title: "Window"
+description: "Décrit la configuration d'affichage de la fenêtre."
+generated: true
+module: "android"
+---
+
+{/* AUTO-GENERATED from KDoc by website/scripts/docgen.mjs. Set `generated: false` in the frontmatter to take over this page by hand. */}
+
+Presets :
+- `WindowConfig.Immersive`   → masque barres système (jeux, lecteurs)
+- `WindowConfig.EdgeToEdge`  → contenu plein écran avec insets gérés par l'app
+- `WindowConfig.Normal`      → affichage standard avec barres visibles
+
+## Installation
+
+```kotlin
+implementation("io.github.clementbobin.kindling:android:0.3.0")
+```
+
+```kotlin
+import dev.kindling.android.natif.WindowConfig
+```
+
+## Types
+
+### WindowConfig
+
+```kotlin
+data class WindowConfig(
+    val hideStatusBar: Boolean = false,
+    val hideNavBar: Boolean = false,
+    val lightStatusBarIcons: Boolean? = null,
+    val lightNavBarIcons: Boolean? = null,
+)
+```
+
+<TypeTable type={{"hideStatusBar":{"type":"Boolean","default":"false"},"hideNavBar":{"type":"Boolean","default":"false"},"lightStatusBarIcons":{"type":"Boolean?","default":"null"},"lightNavBarIcons":{"type":"Boolean?","default":"null"}}} />
+
+**Presets**
+
+- `val Normal`
+- `val Immersive`
+- `val EdgeToEdge`
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/android/src/main/kotlin/dev/kindling/android/natif/WindowHelper.kt#L23)
+
+---
+
+### WindowHelper
+
+Helper de gestion de fenêtre centralisé.
+
+Enregistrement Koin :
+```kotlin
+single { WindowHelper(androidContext()) }
+```
+
+Utilisation :
+```kotlin
+windowHelper.apply(activity, WindowConfig.Immersive)
+windowHelper.apply(activity, WindowConfig.EdgeToEdge)
+
+// Icônes sombres sur barre de statut claire
+windowHelper.setStatusBarIconsLight(activity, light = true)
+
+// Activer edge-to-edge (à appeler avant setContentView)
+windowHelper.enableEdgeToEdge(activity)
+```
+
+```kotlin
+class WindowHelper(context: Context)
+```
+
+<TypeTable type={{"context":{"type":"Context","required":true}}} />
+
+**Members**
+
+- `fun apply( activity: Activity, config: WindowConfig)`
+- `fun enableEdgeToEdge(activity: Activity)` — Déclenche le mode edge-to-edge — à appeler avant `setContentView`.
+- `fun setStatusBarIconsLight( activity: Activity, light: Boolean)`
+- `fun setNavBarIconsLight( activity: Activity, light: Boolean)`
+- `fun isStatusBarVisible(activity: Activity): Boolean` — `true` si la barre de statut est actuellement visible.
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/android/src/main/kotlin/dev/kindling/android/natif/WindowHelper.kt#L60)

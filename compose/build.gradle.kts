@@ -7,7 +7,6 @@ plugins {
     id("org.jetbrains.compose")
     id("com.android.kotlin.multiplatform.library")
     id("kindling-android-library")
-    id("dokka-convention")
     id("kindling-publish")
 }
 

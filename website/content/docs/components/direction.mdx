@@ -1,0 +1,105 @@
+---
+title: "Direction"
+description: "Overrides LocalLayoutDirection for the entire subtree."
+generated: true
+module: "core"
+---
+
+{/* AUTO-GENERATED from KDoc by website/scripts/docgen.mjs. Set `generated: false` in the frontmatter to take over this page by hand. */}
+
+```kotlin
+KDirectionProvider(LayoutDirection.Rtl) { MyScreen() }
+```
+
+## Installation
+
+```kotlin
+implementation("io.github.clementbobin.kindling:core:0.3.0")
+```
+
+```kotlin
+import dev.kindling.core.components.ui.direction.KDirectionProvider
+```
+
+## Composables
+
+### KDirectionProvider
+
+```kotlin
+@Composable
+fun KDirectionProvider(
+    direction: LayoutDirection = LayoutDirection.Ltr,
+    content: @Composable () -> Unit,
+)
+```
+
+<TypeTable type={{"direction":{"type":"LayoutDirection","default":"LayoutDirection.Ltr"},"content":{"type":"@Composable () -> Unit","required":true}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/direction/KDirectionProvider.kt#L16)
+
+---
+
+### useKDirection
+
+Reads the current `LayoutDirection` from composition.
+
+```kotlin
+@Composable
+fun useKDirection(): LayoutDirection
+```
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/direction/KDirectionProvider.kt#L25)
+
+---
+
+### isRtl
+
+Returns the current `LayoutDirection` as a boolean. Useful for conditional layout logic inside composables.
+
+```kotlin
+@Composable
+fun isRtl(): Boolean
+```
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/direction/KDirectionProvider.kt#L32)
+
+## Types
+
+### KDirectionManager
+
+Singleton for runtime LTR ↔ RTL toggling.
+
+```kotlin
+// In your root composable:
+KDirectionProvider(direction = KDirectionManager.direction) { NavHost(…) }
+
+// Anywhere:
+KButton("Toggle RTL", onClick = { KDirectionManager.toggle() })
+```
+
+```kotlin
+object KDirectionManager
+```
+
+**Members**
+
+- `var direction by mutableStateOf<LayoutDirection>(LayoutDirection.Ltr)`
+- `fun toggle()`
+- `fun set(dir: LayoutDirection)`
+- `fun setFromLanguage(language: String)`
+- `val isRtl: Boolean get()`
+- `val isLtr: Boolean get()`
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/direction/KDirectionManager.kt#L19)
+
+## Functions & properties
+
+### isRtlLanguage
+
+```kotlin
+fun isRtlLanguage(language: String = "en"): Boolean
+```
+
+<TypeTable type={{"language":{"type":"String","default":"\"en\""}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/direction/KDirectionManager.kt#L37)

@@ -1,0 +1,80 @@
+---
+title: "Account"
+description: "Décrit un type de compte à interroger ou créer."
+generated: true
+module: "android"
+---
+
+{/* AUTO-GENERATED from KDoc by website/scripts/docgen.mjs. Set `generated: false` in the frontmatter to take over this page by hand. */}
+
+Presets :
+- `AccountConfig.Google` → comptes Google
+
+Personnalisé :
+```kotlin
+val config = AccountConfig(accountType = "com.example.app")
+accountHelper.getAccounts(config)
+```
+
+## Installation
+
+```kotlin
+implementation("io.github.clementbobin.kindling:android:0.3.0")
+```
+
+```kotlin
+import dev.kindling.android.natif.AccountConfig
+```
+
+## Types
+
+### AccountConfig
+
+```kotlin
+data class AccountConfig(val accountType: String)
+```
+
+<TypeTable type={{"accountType":{"type":"String","required":true}}} />
+
+**Presets**
+
+- `val Google`
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/android/src/main/kotlin/dev/kindling/android/natif/AccountHelper.kt#L25)
+
+---
+
+### AccountHelper
+
+Helper de gestion de comptes système centralisé.
+
+Nécessite `GET_ACCOUNTS` dans le manifest (normal permission sur API \< 26,
+accordée automatiquement ; signature/système sur API ≥ 26 pour les comptes tiers).
+
+Enregistrement Koin :
+```kotlin
+single { AccountHelper(androidContext()) }
+```
+
+Utilisation :
+```kotlin
+val accounts = accountHelper.getAccounts(AccountConfig.Google)
+val primary  = accountHelper.getPrimaryAccount(AccountConfig.Google)
+val token    = accountHelper.peekAuthToken(account, "oauth2:profile")
+```
+
+```kotlin
+class AccountHelper(context: Context)
+```
+
+<TypeTable type={{"context":{"type":"Context","required":true}}} />
+
+**Members**
+
+- `fun getAccounts(config: AccountConfig): List<Account>` — Retourne tous les comptes du `config.accountType` accessibles. Retourne une liste vide si la permission est absente ou refusée.
+- `fun getPrimaryAccount(config: AccountConfig): Account?` — Retourne le premier compte trouvé, ou `null`.
+- `fun peekAuthToken( account: Account, authTokenType: String): String?` — Lit un token d'auth en cache (sans déclencher de flow d'authentification). Retourne `null` si aucun token n'est mis en cache.
+- `fun invalidateAuthToken( accountType: String, token: String)` — Invalide un token en cache (forcer un refresh au prochain accès).
+- `fun hasAccount(config: AccountConfig): Boolean` — `true` si au moins un compte du `config.accountType` est disponible.
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/android/src/main/kotlin/dev/kindling/android/natif/AccountHelper.kt#L53)

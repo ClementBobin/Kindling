@@ -1,0 +1,68 @@
+---
+title: "Counter"
+description: "A reactive mutable counter with optional min/max bounds and a configurable step."
+generated: true
+module: "utils"
+---
+
+{/* AUTO-GENERATED from KDoc by website/scripts/docgen.mjs. Set `generated: false` in the frontmatter to take over this page by hand. */}
+
+This utility is a Kotlin port of common reactive counter hooks (like `useCounter`).
+It encapsulates the logic for incrementing, decrementing, and clamping values,
+while exposing the current count through a `StateFlow`.
+
+## Usage
+
+```kotlin
+val counter = KCounter(initialValue = 0, min = 0, max = 10, step = 2)
+
+counter.increment()  // count becomes 2
+counter.decrement()  // count becomes 0
+counter.set(7)       // count becomes 7
+counter.increment()  // count becomes 9
+counter.increment()  // count becomes 10 (clamped to max)
+counter.reset()      // count returns to 0
+
+// Reactively observing in a ViewModel or Composable:
+viewModelScope.launch {
+    counter.state.collect { value ->
+        println("Current count: $value")
+    }
+}
+```
+
+## Installation
+
+```kotlin
+implementation("io.github.clementbobin.kindling:utils:0.3.0")
+```
+
+```kotlin
+import dev.kindling.utils.method.KCounter
+```
+
+## Types
+
+### KCounter
+
+```kotlin
+class KCounter(
+    initialValue: Int = 0,
+    val min: Int = Int.MIN_VALUE,
+    val max: Int = Int.MAX_VALUE,
+    val step: Int = 1,
+)
+```
+
+<TypeTable type={{"initialValue":{"type":"Int","description":"Starting value (automatically clamped to [min, max]).","default":"0"},"min":{"type":"Int","description":"Lower bound, inclusive. Default: MIN_VALUE.","default":"Int.MIN_VALUE"},"max":{"type":"Int","description":"Upper bound, inclusive. Default: MAX_VALUE.","default":"Int.MAX_VALUE"},"step":{"type":"Int","description":"The amount to add or subtract on each increment or decrement. Must be positive. Default: 1.","default":"1"}}} />
+
+**Members**
+
+- `val state: StateFlow<Int>` — The current counter value as a `StateFlow`.
+- `val count: Int get()` — The current counter value.
+- `fun increment()` — Increments the counter by `step`, clamped to `max`.
+- `fun decrement()` — Decrements the counter by `step`, clamped to `min`.
+- `fun set(value: Int)` — Sets the counter to `value`, clamped to [`min`, `max`].
+- `fun reset()` — Resets the counter to the original `initialValue`.
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/utils/src/commonMain/kotlin/dev/kindling/utils/method/KCounter.kt#L39)

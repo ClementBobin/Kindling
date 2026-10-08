@@ -1,0 +1,142 @@
+---
+title: "Toast"
+description: "Renders a single toast notification."
+generated: true
+module: "core"
+---
+
+{/* AUTO-GENERATED from KDoc by website/scripts/docgen.mjs. Set `generated: false` in the frontmatter to take over this page by hand. */}
+
+Mirrors the individual toast card from shadcn/ui `sonner.tsx`.
+Typically not used directly — prefer `KToaster` + `KToastManager`.
+
+```kotlin
+Toast(
+    data    = KToastData(message = "Saved!", type = KToastType.Success),
+    onClose = { }
+)
+```
+
+## Installation
+
+```kotlin
+implementation("io.github.clementbobin.kindling:core:0.3.0")
+```
+
+```kotlin
+import dev.kindling.core.components.ui.toast.KToast
+```
+
+## Composables
+
+### KToast
+
+```kotlin
+@Composable
+fun KToast(
+    data: KToastData,
+    onClose: () -> Unit,
+    modifier: Modifier = Modifier,
+)
+```
+
+<TypeTable type={{"data":{"type":"KToastData","required":true},"onClose":{"type":"() -> Unit","required":true},"modifier":{"type":"Modifier","default":"Modifier"}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/toast/KToast.kt#L49)
+
+---
+
+### KToaster
+
+Places the toast stack in your composable tree.
+
+Place **once** at the root, typically overlaid on your Scaffold / NavHost.
+Call `KToastManager` / `KToastManager` etc. from anywhere.
+
+Mirrors shadcn/ui `Toaster` backed by Sonner.
+
+```kotlin
+Box(Modifier.fillMaxSize()) {
+    NavHost(…)
+    KToaster()
+}
+```
+
+```kotlin
+@Composable
+fun KToaster(
+    modifier: Modifier = Modifier,
+    maxVisible: Int = 3,
+    alignment: Alignment = Alignment.BottomCenter,
+)
+```
+
+<TypeTable type={{"modifier":{"type":"Modifier","default":"Modifier"},"maxVisible":{"type":"Int","default":"3"},"alignment":{"type":"Alignment","default":"Alignment.BottomCenter"}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/toast/KToaster.kt#L44)
+
+## Types
+
+### KToastData
+
+```kotlin
+data class KToastData(
+    val id: Long = Random.nextLong(),
+    val message: String,
+    val description: String? = null,
+    val type: KToastType = KToastType.Default,
+    val actionLabel: String? = null,
+    val onAction: (() -> Unit)? = null,
+    val durationMs: Long = 4_000L,
+)
+```
+
+<TypeTable type={{"id":{"type":"Long","default":"Random.nextLong()"},"message":{"type":"String","required":true},"description":{"type":"String?","default":"null"},"type":{"type":"KToastType","default":"KToastType.Default"},"actionLabel":{"type":"String?","default":"null"},"onAction":{"type":"(() -> Unit)?","default":"null"},"durationMs":{"type":"Long","default":"4_000L"}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/toast/KToastData.kt#L5)
+
+---
+
+### KToastManager
+
+Global toast dispatcher — call from anywhere in your app.
+
+```kotlin
+KToastManager.success("Saved!")
+KToastManager.error("Upload failed", "Please try again.")
+KToastManager.show("Event created", actionLabel = "Undo") { /* undo */ }
+```
+
+```kotlin
+object KToastManager
+```
+
+**Members**
+
+- `val flow`
+- `var throttle: Duration` — Minimum delay between two toasts reaching the screen. Toasts emitted while the window is still open are dropped (leading-edge throttle, see `throttleFirst`). `Duration.ZERO` (default) disables the limit.
+- `fun show( message: String, description: String? = null, type: KToastType = KToastType.Default, actionLabel: String? = null, onAction: (() -> Unit)? = null, durationMs: Long = 4_000L)`
+- `fun success( message: String, description: String? = null)`
+- `fun error( message: String, description: String? = null)`
+- `fun warning( message: String, description: String? = null)`
+- `fun info( message: String, description: String? = null)`
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/toast/KToastManager.kt#L18)
+
+---
+
+### KToastType
+
+```kotlin
+enum class KToastType
+```
+
+**Values**
+
+- `Success`
+- `Error`
+- `Warning`
+- `Info`
+- `Default`
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/toast/KToastType.kt#L3)

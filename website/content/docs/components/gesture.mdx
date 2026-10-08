@@ -1,0 +1,126 @@
+---
+title: "Gesture"
+description: "Pull-to-refresh behavior that works from **any edge** and draws **nothing by itself**: the loading UI is whatever you put in indicator."
+generated: true
+module: "core"
+---
+
+{/* AUTO-GENERATED from KDoc by website/scripts/docgen.mjs. Set `generated: false` in the frontmatter to take over this page by hand. */}
+
+The gesture is detected through nested scrolling, so `content` must contain a scrollable
+along the pull axis (`LazyColumn`, `Column(Modifier.verticalScroll(…))`, `LazyRow`, pager…).
+The pull only starts once that scrollable reached its bound on the chosen `edge`.
+
+```kotlin
+var refreshing by remember { mutableStateOf(false) }
+val scope = rememberCoroutineScope()
+
+KEdgeRefresh(
+    isRefreshing = refreshing,
+    onRefresh = {
+        refreshing = true
+        scope.launch { reload(); refreshing = false }
+    },
+    edge = KRefreshEdge.Top,
+    indicator = { state ->
+        // Your own UI. state.progress goes 0f → 1f (threshold) → 2f (max pull).
+        KSpinner(modifier = Modifier.padding(16.dp).alpha(state.progress.coerceIn(0f, 1f)))
+    }
+) {
+    LazyColumn { items(rows) { RowItem(it) } }
+}
+```
+
+## Installation
+
+```kotlin
+implementation("io.github.clementbobin.kindling:core:0.3.0")
+```
+
+```kotlin
+import dev.kindling.core.components.ui.gesture.KEdgeRefresh
+```
+
+## Composables
+
+### KEdgeRefresh
+
+```kotlin
+@Composable
+fun KEdgeRefresh(
+    isRefreshing: Boolean,
+    onRefresh: () -> Unit,
+    modifier: Modifier = Modifier,
+    edge: KRefreshEdge = KRefreshEdge.Top,
+    enabled: Boolean = true,
+    threshold: Dp = 80.dp,
+    dragMultiplier: Float = 0.5f,
+    moveContent: Boolean = true,
+    state: KRefreshState = rememberKRefreshState(),
+    indicator: @Composable (state: KRefreshState) -> Unit,
+    content: @Composable () -> Unit,
+)
+```
+
+<TypeTable type={{"isRefreshing":{"type":"Boolean","description":"Whether a refresh is running. Set it to true **inside** onRefresh; the indicator stays visible until you set it back to false. If it is not set to true within ~250 ms of the release, the indicator retracts on its own.","required":true},"onRefresh":{"type":"() -> Unit","description":"Called once when the user releases after passing threshold.","required":true},"modifier":{"type":"Modifier","default":"Modifier"},"edge":{"type":"KRefreshEdge","description":"Edge to pull from. Start/End respect RTL.","default":"KRefreshEdge.Top"},"enabled":{"type":"Boolean","description":"Disables the gesture when false.","default":"true"},"threshold":{"type":"Dp","description":"Pull distance required to trigger a refresh.","default":"80.dp"},"dragMultiplier":{"type":"Float","description":"Finger-to-indicator ratio (0.5f = the indicator moves half as far as the finger).","default":"0.5f"},"moveContent":{"type":"Boolean","description":"When true, the content slides along with the indicator.","default":"true"},"state":{"type":"KRefreshState","description":"Hoist it to read the pull progress from outside.","default":"rememberKRefreshState()"},"indicator":{"type":"@Composable (state: KRefreshState) -> Unit","description":"Your loading UI. It sits on the chosen edge and slides in from outside the bounds as the user pulls.","required":true},"content":{"type":"@Composable () -> Unit","description":"The refreshable content.","required":true}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/gesture/KEdgeRefresh.kt#L75)
+
+---
+
+### rememberKRefreshState
+
+Creates and remembers a `KRefreshState`.
+
+```kotlin
+@Composable
+fun rememberKRefreshState(): KRefreshState
+```
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/gesture/KRefreshState.kt#L89)
+
+## Types
+
+### KRefreshEdge
+
+Screen edge the user pulls away from to trigger a refresh in `KEdgeRefresh`.
+
+`Start` and `End` follow the layout direction (they swap in RTL), exactly like
+`Alignment.CenterStart` / `Alignment.CenterEnd`.
+
+```kotlin
+enum class KRefreshEdge
+```
+
+**Values**
+
+- `Top` — Pull down from the top edge (YouTube-style).
+- `Bottom` — Pull up from the bottom edge.
+- `Start` — Pull toward the end from the start edge (left in LTR).
+- `End` — Pull toward the start from the end edge (right in LTR).
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/gesture/KRefreshEdge.kt#L9)
+
+---
+
+### KRefreshState
+
+Observable state of a `KEdgeRefresh`. It is handed to the `indicator` slot so the loading UI can react to the gesture.
+
+Every property is Compose state: reading them inside `graphicsLayer { }` / `drawBehind { }`
+avoids recomposing on each frame of the drag.
+
+```kotlin
+class KRefreshState
+```
+
+**Members**
+
+- `var distance: Float by mutableFloatStateOf(0f)` — Current pull distance in pixels, along the pull axis (always >= 0).
+- `var thresholdPx: Float by mutableFloatStateOf(1f)` — Distance in pixels at which releasing triggers a refresh.
+- `var isRefreshing: Boolean by mutableStateOf(false)` — Mirrors the `isRefreshing` parameter of `KEdgeRefresh`.
+- `val progress: Float` — Pull distance relative to the threshold: 0f = idle, 1f = release will refresh, up to 2f.
+- `val isThresholdReached: Boolean` — `true` once the pull passed the threshold (releasing now triggers a refresh).
+- `val isPulling: Boolean` — `true` while the user is pulling (or the indicator is settling) and no refresh is running.
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/gesture/KRefreshState.kt#L27)

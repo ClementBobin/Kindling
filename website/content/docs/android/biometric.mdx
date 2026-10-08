@@ -1,0 +1,84 @@
+---
+title: "Biometric"
+description: "Configuration pour le dialogue biométrique."
+generated: true
+module: "android"
+---
+
+{/* AUTO-GENERATED from KDoc by website/scripts/docgen.mjs. Set `generated: false` in the frontmatter to take over this page by hand. */}
+
+Note : Pour utiliser un `CryptoObject` (nécessaire à la sécurité Keystore),
+`allowedAuthenticators` doit utiliser `Authenticators.BIOMETRIC_STRONG`.
+
+## Installation
+
+```kotlin
+implementation("io.github.clementbobin.kindling:android:0.3.0")
+```
+
+```kotlin
+import dev.kindling.android.natif.BiometricConfig
+```
+
+## Types
+
+### BiometricConfig
+
+```kotlin
+data class BiometricConfig(
+    val title: String,
+    val subtitle: String = "",
+    val description: String = "",
+    val negativeButtonText: String = "Annuler",
+    val allowedAuthenticators: Int = Authenticators.BIOMETRIC_STRONG,
+    val keyAlias: String = "biometric_auth_key",
+)
+```
+
+<TypeTable type={{"title":{"type":"String","required":true},"subtitle":{"type":"String","default":"\"\""},"description":{"type":"String","default":"\"\""},"negativeButtonText":{"type":"String","default":"\"Annuler\""},"allowedAuthenticators":{"type":"Int","default":"Authenticators.BIOMETRIC_STRONG"},"keyAlias":{"type":"String","default":"\"biometric_auth_key\""}}} />
+
+**Presets**
+
+- `fun strong( title: String, subtitle: String = "", description: String = "", keyAlias: String = "biometric_auth_key")`
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/android/src/main/kotlin/dev/kindling/android/natif/BiometricHelper.kt#L22)
+
+---
+
+### BiometricResult
+
+```kotlin
+sealed class BiometricResult
+```
+
+**Members**
+
+- `data object Success : BiometricResult()`
+- `data class SuccessWithEncrypted(val data: EncryptedData) : BiometricResult()`
+- `data class SuccessWithDecrypted(val plaintext: String) : BiometricResult()`
+- `data class Error(val message: String) : BiometricResult()`
+- `data object Failed : BiometricResult()`
+- `data object Unavailable : BiometricResult()`
+- `data object NoneEnrolled : BiometricResult()`
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/android/src/main/kotlin/dev/kindling/android/natif/BiometricHelper.kt#L51)
+
+---
+
+### BiometricHelper
+
+Helper biométrique réutilisant `KeystoreHelper` pour garantir la sécurité des opérations via `CryptoObject`.
+
+```kotlin
+class BiometricHelper(context: android.content.Context)
+```
+
+<TypeTable type={{"context":{"type":"android.content.Context","required":true}}} />
+
+**Members**
+
+- `fun canAuthenticate(config: BiometricConfig): Boolean`
+- `fun availabilityStatus(config: BiometricConfig): Int`
+- `fun authenticate( activity: FragmentActivity, config: BiometricConfig, plaintextToEncrypt: String? = null, dataToDecrypt: EncryptedData? = null, onResult: (BiometricResult) -> Unit)` — Exécute une authentification biométrique sécurisée liée à un `CryptoObject`.
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/android/src/main/kotlin/dev/kindling/android/natif/BiometricHelper.kt#L70)

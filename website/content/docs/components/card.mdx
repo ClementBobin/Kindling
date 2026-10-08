@@ -1,0 +1,204 @@
+---
+title: "Card"
+description: "Shadcn/ui-style Card root — mirrors card.tsx."
+generated: true
+module: "core"
+---
+
+{/* AUTO-GENERATED from KDoc by website/scripts/docgen.mjs. Set `generated: false` in the frontmatter to take over this page by hand. */}
+
+Cards are used to group related information and actions into a single container.
+They support an optional top image and structured sub-components like `KCardHeader`,
+`KCardContent`, and `KCardFooter`.
+
+<Tabs items={['Preview', 'Code']}>
+  <Tab value="Preview">
+    <Showcase component="card" />
+  </Tab>
+  <Tab value="Code">
+
+```kotlin
+KCard(
+    image = painterResource(Res.drawable.card_image),
+    modifier = Modifier.width(300.dp)
+) {
+    KCardHeader {
+        KCardTitle("Kindling Card")
+        KCardDescription("A flexible card component for your UI.")
+    }
+    KCardContent {
+        Text("This is the main content area of the card.")
+    }
+    KCardFooter {
+        KButton("View More", onClick = { /* ... */ })
+    }
+}
+```
+
+  </Tab>
+</Tabs>
+
+## More examples
+
+**KCardHeader**
+
+```kotlin
+KCardHeader(
+    action = {
+        IconButton(onClick = { /* ... */ }) {
+            Icon(Icons.Default.MoreVert, contentDescription = "Settings")
+        }
+    }
+) {
+    KCardTitle("Project Status")
+    KCardDescription("Current progress of the Kindling library.")
+}
+```
+
+## Installation
+
+```kotlin
+implementation("io.github.clementbobin.kindling:core:0.3.0")
+```
+
+```kotlin
+import dev.kindling.core.components.ui.card.KCard
+```
+
+## Composables
+
+### KCard
+
+```kotlin
+@Composable
+fun KCard(
+    modifier: Modifier = Modifier,
+    size: KCardSize = KCardSize.Default,
+    image: Painter? = null,
+    content: @Composable ColumnScope.() -> Unit,
+)
+```
+
+<TypeTable type={{"modifier":{"type":"Modifier","description":"The modifier to be applied to the card surface.","default":"Modifier"},"size":{"type":"KCardSize","description":"The size variant of the card (e.g., Default, Sm).","default":"KCardSize.Default"},"image":{"type":"Painter?","description":"Optional painter for a top-aligned cover image.","default":"null"},"content":{"type":"@Composable ColumnScope.() -> Unit","description":"The structured content of the card.","required":true}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/card/KCard.kt#L57)
+
+---
+
+### KCardContent
+
+```kotlin
+@Composable
+fun KCardContent(
+    modifier: Modifier = Modifier,
+    verticalArrangement: Arrangement.Vertical = Arrangement.Top,
+    content: @Composable ColumnScope.() -> Unit,
+)
+```
+
+<TypeTable type={{"modifier":{"type":"Modifier","default":"Modifier"},"verticalArrangement":{"type":"Arrangement.Vertical","default":"Arrangement.Top"},"content":{"type":"@Composable ColumnScope.() -> Unit","required":true}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/card/KCard.kt#L97)
+
+---
+
+### KCardFooter
+
+```kotlin
+@Composable
+fun KCardFooter(
+    modifier: Modifier = Modifier,
+    horizontalArrangement: Arrangement.Horizontal = Arrangement.spacedBy(8.dp),
+    content: @Composable RowScope.() -> Unit,
+)
+```
+
+<TypeTable type={{"modifier":{"type":"Modifier","default":"Modifier"},"horizontalArrangement":{"type":"Arrangement.Horizontal","default":"Arrangement.spacedBy(8.dp)"},"content":{"type":"@Composable RowScope.() -> Unit","required":true}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/card/KCard.kt#L110)
+
+---
+
+### KCardHeader
+
+A container for card titles and descriptions, with an optional trailing `action` slot.
+
+Respects `LocalLayoutDirection` for proper alignment of content and action.
+
+```kotlin
+@Composable
+fun KCardHeader(
+    modifier: Modifier = Modifier,
+    action: (@Composable () -> Unit)? = null,
+    content: @Composable ColumnScope.() -> Unit,
+)
+```
+
+<TypeTable type={{"modifier":{"type":"Modifier","description":"The modifier to be applied to the header layout.","default":"Modifier"},"action":{"type":"(@Composable () -> Unit)?","description":"Optional trailing composable slot (e.g., for a menu button or badge).","default":"null"},"content":{"type":"@Composable ColumnScope.() -> Unit","description":"The title and description components.","required":true}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/card/KCardHeader.kt#L45)
+
+---
+
+### KCardTitle
+
+```kotlin
+@Composable
+fun KCardTitle(
+    text: String,
+    modifier: Modifier = Modifier,
+)
+```
+
+<TypeTable type={{"text":{"type":"String","required":true},"modifier":{"type":"Modifier","default":"Modifier"}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/card/KCardHeader.kt#L70)
+
+---
+
+### KCardDescription
+
+```kotlin
+@Composable
+fun KCardDescription(
+    text: String,
+    modifier: Modifier = Modifier,
+)
+```
+
+<TypeTable type={{"text":{"type":"String","required":true},"modifier":{"type":"Modifier","default":"Modifier"}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/card/KCardHeader.kt#L83)
+
+---
+
+### KCardAction
+
+Trailing action slot — pass as `action` param of `KCardHeader`.
+
+```kotlin
+@Composable
+fun KCardAction(
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit,
+)
+```
+
+<TypeTable type={{"modifier":{"type":"Modifier","default":"Modifier"},"content":{"type":"@Composable () -> Unit","required":true}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/card/KCardHeader.kt#L97)
+
+## Types
+
+### KCardSize
+
+```kotlin
+enum class KCardSize
+```
+
+**Values**
+
+- `Default`
+- `Sm`
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/card/KCardSize.kt#L3)

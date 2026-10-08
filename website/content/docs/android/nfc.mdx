@@ -1,0 +1,129 @@
+---
+title: "Nfc"
+description: "Nfc API reference."
+generated: true
+module: "android"
+---
+
+{/* AUTO-GENERATED from KDoc by website/scripts/docgen.mjs. Set `generated: false` in the frontmatter to take over this page by hand. */}
+
+## Installation
+
+```kotlin
+implementation("io.github.clementbobin.kindling:android:0.3.0")
+```
+
+```kotlin
+import dev.kindling.android.natif.NfcState
+```
+
+## Types
+
+### NfcState
+
+```kotlin
+sealed class NfcState
+```
+
+**Members**
+
+- `data object Enabled : NfcState()`
+- `data object Disabled : NfcState()`
+- `data object Unavailable : NfcState()`
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/android/src/main/kotlin/dev/kindling/android/natif/NfcHelper.kt#L21)
+
+---
+
+### NfcReadConfig
+
+Décrit la configuration d'une session de lecture NFC.
+
+Presets :
+- `NfcReadConfig.Default` → lecture NDEF standard
+
+```kotlin
+data class NfcReadConfig(
+    val readerFlags: Int = NfcAdapter.FLAG_READER_NFC_A or NfcAdapter.FLAG_READER_NFC_B or NfcAdapter.FLAG_READER_NFC_F or NfcAdapter.FLAG_READER_NFC_V,
+    val presenceCheckDelay: Int = 300,
+)
+```
+
+<TypeTable type={{"readerFlags":{"type":"Int","default":"NfcAdapter.FLAG_READER_NFC_A or NfcAdapter.FLAG_READER_NFC_B or NfcAdapter.FLAG_READER_…"},"presenceCheckDelay":{"type":"Int","default":"300"}}} />
+
+**Presets**
+
+- `val Default`
+- `val NdefOnly`
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/android/src/main/kotlin/dev/kindling/android/natif/NfcHelper.kt#L37)
+
+---
+
+### NfcTagResult
+
+Résultat d'une lecture de tag NFC.
+
+```kotlin
+sealed class NfcTagResult
+```
+
+**Members**
+
+- `data class NdefText(val text: String) : NfcTagResult()`
+- `data class NdefUri(val uri: String) : NfcTagResult()`
+- `data class RawTag(val tag: Tag) : NfcTagResult()`
+- `data class Error(val message: String) : NfcTagResult()`
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/android/src/main/kotlin/dev/kindling/android/natif/NfcHelper.kt#L57)
+
+---
+
+### NfcHelper
+
+Helper NFC centralisé.
+
+Permission requise : `android.permission.NFC`
+
+Enregistrement Koin :
+```kotlin
+single { NfcHelper(androidContext()) }
+```
+
+Utilisation :
+```kotlin
+// Vérifier la disponibilité
+when (nfcHelper.getState()) {
+    NfcState.Enabled     -> startReading()
+    NfcState.Disabled    -> promptEnableNfc()
+    NfcState.Unavailable -> showUnsupported()
+}
+
+// Lire des tags (dans onResume / depuis un scope)
+nfcHelper.tagFlow(activity, NfcReadConfig.Default)
+    .onEach { result -> when (result) {
+        is NfcTagResult.NdefText -> handleText(result.text)
+        is NfcTagResult.NdefUri  -> handleUri(result.uri)
+        is NfcTagResult.RawTag   -> handleRaw(result.tag)
+        is NfcTagResult.Error    -> showError(result.message)
+    }}
+    .launchIn(lifecycleScope)
+```
+
+```kotlin
+class NfcHelper(context: Context)
+```
+
+<TypeTable type={{"context":{"type":"Context","required":true}}} />
+
+**Members**
+
+- `fun getState(): NfcState`
+- `fun isAvailable(): Boolean`
+- `fun isEnabled(): Boolean`
+- `fun openSettings(context: Context)` — Ouvre les réglages NFC système.
+- `fun tagFlow( activity: Activity, config: NfcReadConfig = NfcReadConfig.Default): Flow<NfcTagResult>` — Flow émettant un `NfcTagResult` à chaque tag détecté. Active le reader mode sur l'`activity` à la souscription, le désactive à la fermeture du flow.
+- `fun writeText( tag: Tag, text: String, languageCode: String = "en"): Boolean` — Écrit un message texte NDEF sur le `tag`. Retourne `true` si l'écriture a réussi, `false` si le tag n'est pas NDEF, n'est pas accessible en écriture, ou si une erreur survient.
+- `fun writeUri( tag: Tag, uri: String): Boolean` — Écrit une URI NDEF sur le `tag`. Retourne `true` si l'écriture a réussi, `false` si le tag n'est pas NDEF, n'est pas accessible en écriture, ou si une erreur survient.
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/android/src/main/kotlin/dev/kindling/android/natif/NfcHelper.kt#L98)

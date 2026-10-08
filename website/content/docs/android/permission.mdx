@@ -1,0 +1,120 @@
+---
+title: "Permission"
+description: "Résultat d'une vérification ou d'une demande de permission."
+generated: true
+module: "android"
+---
+
+{/* AUTO-GENERATED from KDoc by website/scripts/docgen.mjs. Set `generated: false` in the frontmatter to take over this page by hand. */}
+
+- `PermissionStatus.Granted`          → accordée
+- `PermissionStatus.Denied`           → refusée (peut re-demander)
+- `PermissionStatus.PermanentlyDenied` → refusée définitivement (ouvrir les réglages)
+
+## Installation
+
+```kotlin
+implementation("io.github.clementbobin.kindling:android:0.3.0")
+```
+
+```kotlin
+import dev.kindling.android.natif.PermissionStatus
+```
+
+## Types
+
+### PermissionStatus
+
+```kotlin
+sealed class PermissionStatus
+```
+
+**Members**
+
+- `data object Granted : PermissionStatus()`
+- `data object Denied : PermissionStatus()`
+- `data object PermanentlyDenied : PermissionStatus()`
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/android/src/main/kotlin/dev/kindling/android/natif/PermissionHelper.kt#L25)
+
+---
+
+### PermissionRequest
+
+Décrit une ou plusieurs permissions à demander.
+
+Presets courants :
+- `PermissionRequest.Camera`
+- `PermissionRequest.Microphone`
+- `PermissionRequest.Notifications`  (API 33+)
+- `PermissionRequest.Vibrate`
+- `PermissionRequest.Internet`
+- `PermissionRequest.Bluetooth`      (API 31+)
+
+Personnalisé :
+```kotlin
+val request = PermissionRequest(android.Manifest.permission.READ_CONTACTS)
+permissionHelper.check(request)
+```
+
+```kotlin
+data class PermissionRequest(val permissions: List<String>)
+```
+
+<TypeTable type={{"permissions":{"type":"List<String>","required":true}}} />
+
+**Presets**
+
+- `val Camera`
+- `val Microphone`
+- `val Vibrate`
+- `val Internet`
+- `val Notifications`
+- `val Bluetooth`
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/android/src/main/kotlin/dev/kindling/android/natif/PermissionHelper.kt#L52)
+
+---
+
+### PermissionHelper
+
+Helper de permissions centralisé.
+
+Deux modes d'utilisation :
+
+**1. Vérification synchrone** (sans Activity) :
+```kotlin
+val status = permissionHelper.check(PermissionRequest.Camera)
+```
+
+**2. Demande runtime** (nécessite une `FragmentActivity`) :
+```kotlin
+// Dans onCreate ou onStart :
+val launcher = permissionHelper.registerLauncher(activity) { results ->
+    results.forEach { (permission, status) -> /* … */ }
+}
+
+// Déclenchement — le callback est toujours invoqué, même si tout est déjà accordé :
+permissionHelper.request(PermissionRequest.Camera, launcher)
+```
+
+Enregistrement Koin :
+```kotlin
+single { PermissionHelper(androidContext()) }
+```
+
+```kotlin
+class PermissionHelper(context: Context)
+```
+
+<TypeTable type={{"context":{"type":"Context","required":true}}} />
+
+**Members**
+
+- `fun check(request: PermissionRequest): PermissionStatus` — Vérifie le statut d'une `PermissionRequest` sans déclencher de dialogue. Pour une request multi-permissions, retourne `PermissionStatus.Granted` seulement si toutes les permissions sont accordées.
+- `fun isGranted(request: PermissionRequest): Boolean` — `true` si toutes les permissions du `request` sont accordées.
+- `fun registerLauncher( activity: FragmentActivity, onResult: (Map<String, PermissionStatus>) -> Unit): ActivityResultLauncher<Array<String>>` — Enregistre un launcher de permission à partir d'une `FragmentActivity`. À appeler dans `onCreate` ou `onStart`, avant que l'Activity soit started.
+- `fun request( request: PermissionRequest, launcher: ActivityResultLauncher<Array<String>>, onAllGranted: () -> Unit = {})` — Déclenche la demande pour le `request` via le `launcher` fourni. Les permissions déjà accordées sont filtrées et ne déclenchent pas de dialogue.
+- `fun openAppSettings(context: Context)` — Ouvre les réglages de l'app — utile après un `PermissionStatus.PermanentlyDenied`.
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/android/src/main/kotlin/dev/kindling/android/natif/PermissionHelper.kt#L108)

@@ -1,0 +1,44 @@
+---
+title: Contributing to the docs
+description: How the documentation is generated, edited by hand, or drafted with AI.
+---
+
+The site lives in `website/` and has three ways to produce content. They compose: you can mix them on the same page.
+
+## 1. Generated from KDoc (automatic)
+
+`website/scripts/docgen.mjs` reads the Kotlin sources of `:core`, `:utils`, `:compose` and `:android` and writes one MDX page per
+component or helper under `content/docs/<module>/`. Write good KDoc and the page writes itself:
+
+- the first paragraph becomes the page description
+- a `### Example usage:` heading followed by a fenced `kotlin` block becomes the usage example
+- `@param` tags fill the props table; defaults and types come from the signature
+- companion-object presets and enum entries are listed automatically
+
+```bash
+cd website
+npm run docs:generate   # regenerate pages
+npm run docs:check      # CI: fail if generated pages are stale
+```
+
+CI runs the generator on every build, so published docs always match the code.
+
+## 2. Written by hand
+
+Add prose next to a generated page by creating `website/docs-extra/<module>/<page>.mdx`. It is injected right after the page intro
+and is **never overwritten**. Pages that are not API reference (like this one) are plain MDX files in `content/docs/`.
+
+Available MDX components: `Tabs`/`Tab`, `Steps`, `Callout`, `Cards`, `TypeTable`, and `Showcase`.
+
+## 3. Drafted with AI
+
+Run the **Docs** workflow manually (Actions → Docs → Run workflow → *ai_drafts*). It finds pages the generator flags as thin
+(no usage example, or less than 60% documented), asks Claude to draft an overview and usage section from the source only, and opens a
+pull request containing files in `docs-extra/`. Nothing is published until a human merges it. Requires the `ANTHROPIC_API_KEY`
+repository secret. Locally: `ANTHROPIC_API_KEY=... npm run docs:ai -- --only=components/dialog`.
+
+## Live previews
+
+Previews are a Compose for Web (Wasm) app in the `:showcase` module. To add one for a component, write a demo composable and register it in
+`showcase/src/wasmJsMain/kotlin/dev/kindling/showcase/Registry.kt` using the page slug as id (`demo("badge", …)`). The generator then adds a
+**Preview / Code** tab to that page. Build locally with `./gradlew :showcase:wasmJsBrowserDistribution` and copy the output to `website/public/showcase/`.

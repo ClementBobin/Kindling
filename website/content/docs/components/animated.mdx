@@ -1,0 +1,592 @@
+---
+title: "Animated"
+description: "An interactive text input that triggers a vibrant particle explosion effect upon submission or text changes (spell.sh / magic UI inspired)."
+generated: true
+module: "core"
+---
+
+{/* AUTO-GENERATED from KDoc by website/scripts/docgen.mjs. Set `generated: false` in the frontmatter to take over this page by hand. */}
+
+## Usage
+
+```kotlin
+KMarquee(
+    direction = KMarqueeDirection.FORWARD,
+    velocity = 40.dp,
+    spacing = 20.dp
+) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        repeat(10) { index ->
+            Text("Item $index", modifier = Modifier.padding(horizontal = 8.dp))
+            Icon(Icons.Default.Star, null)
+        }
+    }
+}
+```
+
+## Installation
+
+```kotlin
+implementation("io.github.clementbobin.kindling:core:0.3.0")
+```
+
+```kotlin
+import dev.kindling.core.components.ui.animated.KExplodingInput
+```
+
+## Composables
+
+### KExplodingInput
+
+```kotlin
+@Composable
+fun KExplodingInput(
+    value: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    placeholder: String = "Type something...",
+    onSubmit: ((String) -> Unit)? = null,
+    particleCount: Int = KExplodingInputDefaults.ParticleCount,
+    particleColors: List<Color> = KExplodingInputDefaults.DefaultColors,
+    explodeOnSubmit: Boolean = true,
+    explodeOnType: Boolean = false,
+    enabled: Boolean = true,
+)
+```
+
+<TypeTable type={{"value":{"type":"String","description":"Current input text value.","required":true},"onValueChange":{"type":"(String) -> Unit","description":"Callback when text changes.","required":true},"modifier":{"type":"Modifier","description":"Applied to the input container layout.","default":"Modifier"},"placeholder":{"type":"String","description":"Placeholder text when value is empty.","default":"\"Type something...\""},"onSubmit":{"type":"((String) -> Unit)?","description":"Triggered when submission key or action button is pressed.","default":"null"},"particleCount":{"type":"Int","description":"Number of particles generated per burst.","default":"KExplodingInputDefaults.ParticleCount"},"particleColors":{"type":"List<Color>","description":"Color palette for exploding particles.","default":"KExplodingInputDefaults.DefaultColors"},"explodeOnSubmit":{"type":"Boolean","description":"Triggers explosion burst when user submits input.","default":"true"},"explodeOnType":{"type":"Boolean","description":"Triggers small micro-bursts on every keystroke.","default":"false"},"enabled":{"type":"Boolean","description":"Controls input enabled state.","default":"true"}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/animated/KExplodingInput.kt#L69)
+
+---
+
+### KHighlightedText
+
+Text component featuring animated highlighter wipe effects (background marker, underline sweep, or sketchy encircled loop) inspired by Spell.sh.
+
+```kotlin
+@Composable
+fun KHighlightedText(
+    text: String,
+    modifier: Modifier = Modifier,
+    visible: Boolean = true,
+    style: KHighlightStyle = KHighlightStyle.BACKGROUND,
+    textStyle: TextStyle = LocalTextStyle.current,
+    highlightColor: Color = KHighlightedTextDefaults.HighlightColor,
+    textColor: Color = Color.Unspecified,
+    strokeWidth: Dp = KHighlightedTextDefaults.Thickness,
+    paddingHorizontal: Dp = KHighlightedTextDefaults.PaddingHorizontal,
+    paddingVertical: Dp = KHighlightedTextDefaults.PaddingVertical,
+    durationMs: Int = KHighlightedTextDefaults.DurationMs,
+    delayMs: Int = KHighlightedTextDefaults.DelayMs,
+)
+```
+
+<TypeTable type={{"text":{"type":"String","description":"The string to render and highlight.","required":true},"modifier":{"type":"Modifier","description":"Applied to the layout container.","default":"Modifier"},"visible":{"type":"Boolean","description":"Triggers or resets the highlight drawing animation.","default":"true"},"style":{"type":"KHighlightStyle","description":"Visual highlight style (BACKGROUND, UNDERLINE, or CIRCLE).","default":"KHighlightStyle.BACKGROUND"},"textStyle":{"type":"TextStyle","description":"Typography style applied to the text.","default":"LocalTextStyle.current"},"highlightColor":{"type":"Color","description":"Color of the marker fill or vector line stroke.","default":"KHighlightedTextDefaults.HighlightColor"},"textColor":{"type":"Color","description":"Custom text color override.","default":"Color.Unspecified"},"strokeWidth":{"type":"Dp","description":"Thickness of underline or circle strokes.","default":"KHighlightedTextDefaults.Thickness"},"paddingHorizontal":{"type":"Dp","description":"Horizontal padding padding around background highlights.","default":"KHighlightedTextDefaults.PaddingHorizontal"},"paddingVertical":{"type":"Dp","description":"Vertical padding around background highlights.","default":"KHighlightedTextDefaults.PaddingVertical"},"durationMs":{"type":"Int","description":"Animation duration in milliseconds.","default":"KHighlightedTextDefaults.DurationMs"},"delayMs":{"type":"Int","description":"Delay before starting the highlight drawing animation.","default":"KHighlightedTextDefaults.DelayMs"}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/animated/KHighlightedText.kt#L67)
+
+---
+
+### KMarquee
+
+A seamless infinite scrolling marquee container.
+
+This component scrolls its content continuously in a specified direction.
+It is ideal for tickers, news feeds, or showcasing a list of logos/items
+that should loop forever.
+
+```kotlin
+@Composable
+fun KMarquee(
+    modifier: Modifier = Modifier,
+    direction: KMarqueeDirection = KMarqueeDirection.FORWARD,
+    velocity: Dp = KMarqueeDefaults.Velocity,
+    spacing: Dp = KMarqueeDefaults.Spacing,
+    repeatCount: Int = 4,
+    pauseOnTouch: Boolean = true,
+    enableFadeEdges: Boolean = true,
+    fadeColor: Color = Color.Unspecified,
+    fadeWidth: Dp = KMarqueeDefaults.FadeWidth,
+    content: @Composable () -> Unit,
+)
+```
+
+<TypeTable type={{"modifier":{"type":"Modifier","description":"Applied to the outer layout wrapper.","default":"Modifier"},"direction":{"type":"KMarqueeDirection","description":"Controls the scroll direction (FORWARD or BACKWARD).","default":"KMarqueeDirection.FORWARD"},"velocity":{"type":"Dp","description":"Base speed in Dp per second.","default":"KMarqueeDefaults.Velocity"},"spacing":{"type":"Dp","description":"Minimum gap between duplicate items during loop.","default":"KMarqueeDefaults.Spacing"},"repeatCount":{"type":"Int","description":"Number of item duplicates to render to guarantee continuous coverage.","default":"4"},"pauseOnTouch":{"type":"Boolean","description":"Pauses animation when user holds down/taps the component.","default":"true"},"enableFadeEdges":{"type":"Boolean","description":"Renders soft gradient fades at start and end edges.","default":"true"},"fadeColor":{"type":"Color","description":"Color for the edge fade gradients (typically matches screen background).","default":"Color.Unspecified"},"fadeWidth":{"type":"Dp","description":"Width of the edge fade gradient overlays.","default":"KMarqueeDefaults.FadeWidth"},"content":{"type":"@Composable () -> Unit","description":"Slot layout to render inside the ticker.","required":true}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/animated/KMarquee.kt#L71)
+
+---
+
+### KRandomizedText
+
+Text component that reveals words or characters with randomized stagger delays and a smooth exponential fade-in transition (Spell.sh / React RandomizedText inspired).
+
+```kotlin
+@Composable
+fun KRandomizedText(
+    text: String,
+    modifier: Modifier = Modifier,
+    visible: Boolean = true,
+    split: KRandomizedSplitMode = KRandomizedTextDefaults.SplitMode,
+    baseDelaySec: Float = KRandomizedTextDefaults.BaseDelaySec,
+    durationMs: Int = KRandomizedTextDefaults.DurationMs,
+    style: TextStyle = LocalTextStyle.current,
+)
+```
+
+<TypeTable type={{"text":{"type":"String","description":"The source string to render and animate.","required":true},"modifier":{"type":"Modifier","description":"Applied to the FlowRow or text wrapper layout.","default":"Modifier"},"visible":{"type":"Boolean","description":"Controls whether the randomized fade-in animation triggers or resets.","default":"true"},"split":{"type":"KRandomizedSplitMode","description":"Specifies whether to break down by WORDS or CHARS.","default":"KRandomizedTextDefaults.SplitMode"},"baseDelaySec":{"type":"Float","description":"Base delay offset in seconds before elements start animating.","default":"KRandomizedTextDefaults.BaseDelaySec"},"durationMs":{"type":"Int","description":"Animation duration per element in milliseconds.","default":"KRandomizedTextDefaults.DurationMs"},"style":{"type":"TextStyle","description":"Typography style applied to the text elements.","default":"LocalTextStyle.current"}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/animated/KRandomizedText.kt#L49)
+
+---
+
+### KSignature
+
+Animated signature handwriting reveal component that simulates a continuous pen stroke drawing text characters across a canvas path (Spell.sh / React Signature inspired).
+
+```kotlin
+@Composable
+fun KSignature(
+    text: String,
+    modifier: Modifier = Modifier,
+    visible: Boolean = true,
+    color: Color = KSignatureDefaults.FontColor,
+    height: Dp = KSignatureDefaults.Height,
+    durationMs: Int = KSignatureDefaults.DurationMs,
+    delayMs: Int = KSignatureDefaults.DelayMs,
+)
+```
+
+<TypeTable type={{"text":{"type":"String","description":"The text string to render as a signature path.","required":true},"modifier":{"type":"Modifier","description":"Applied to the canvas layout container.","default":"Modifier"},"visible":{"type":"Boolean","description":"Controls whether the signature drawing animation runs or resets.","default":"true"},"color":{"type":"Color","description":"Stroke and fill color for the signature text.","default":"KSignatureDefaults.FontColor"},"height":{"type":"Dp","description":"Viewport height of the signature canvas container.","default":"KSignatureDefaults.Height"},"durationMs":{"type":"Int","description":"Animation duration in milliseconds for the drawing sequence.","default":"KSignatureDefaults.DurationMs"},"delayMs":{"type":"Int","description":"Delay before starting the draw animation.","default":"KSignatureDefaults.DelayMs"}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/animated/KSignature.kt#L47)
+
+---
+
+### KSlideUp
+
+Animated slide-up container that translates content upward while fading in (Spell.sh inspired).
+
+```kotlin
+@Composable
+fun KSlideUp(
+    visible: Boolean = true,
+    modifier: Modifier = Modifier,
+    initialYOffset: Dp = KSlideUpTextDefaults.InitialYOffset,
+    clipToBounds: Boolean = false,
+    durationMs: Int = KSlideUpTextDefaults.DurationMs,
+    delayMs: Int = KSlideUpTextDefaults.DelayMs,
+    easing: Easing = KSlideUpTextDefaults.DefaultEasing,
+    content: @Composable () -> Unit,
+)
+```
+
+<TypeTable type={{"visible":{"type":"Boolean","description":"Controls whether the slide-up animation triggers or resets.","default":"true"},"modifier":{"type":"Modifier","description":"Applied to the component wrapper layout.","default":"Modifier"},"initialYOffset":{"type":"Dp","description":"Starting downward Y-axis translation before animating into place.","default":"KSlideUpTextDefaults.InitialYOffset"},"clipToBounds":{"type":"Boolean","description":"Clips sliding content to its layout bounds for a clean mask reveal effect.","default":"false"},"durationMs":{"type":"Int","description":"Animation duration in milliseconds.","default":"KSlideUpTextDefaults.DurationMs"},"delayMs":{"type":"Int","description":"Base delay before the animation starts.","default":"KSlideUpTextDefaults.DelayMs"},"easing":{"type":"Easing","description":"Easing transition curve.","default":"KSlideUpTextDefaults.DefaultEasing"},"content":{"type":"@Composable () -> Unit","description":"Target content to reveal.","required":true}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/animated/KSlideUp.kt#L52)
+
+---
+
+### KSlideUpText
+
+Text component that reveals text upward word-by-word, character-by-character, or as a full block with staggered delays and smooth Y-axis physics (Spell.sh / Magic UI inspired).
+
+```kotlin
+@Composable
+fun KSlideUpText(
+    text: String,
+    modifier: Modifier = Modifier,
+    visible: Boolean = true,
+    mode: KSlideUpMode = KSlideUpMode.WORD,
+    style: TextStyle = LocalTextStyle.current,
+    initialYOffset: Dp = KSlideUpTextDefaults.InitialYOffset,
+    clipToBounds: Boolean = false,
+    durationMs: Int = KSlideUpTextDefaults.DurationMs,
+    staggerMs: Int = KSlideUpTextDefaults.StaggerMs,
+    delayMs: Int = KSlideUpTextDefaults.DelayMs,
+    easing: Easing = KSlideUpTextDefaults.DefaultEasing,
+)
+```
+
+<TypeTable type={{"text":{"type":"String","description":"Source text string to animate.","required":true},"modifier":{"type":"Modifier","description":"Applied to the outer text container layout.","default":"Modifier"},"visible":{"type":"Boolean","description":"Controls whether the animation runs or resets.","default":"true"},"mode":{"type":"KSlideUpMode","description":"Determines sequence division (WORD, CHARACTER, or ALL).","default":"KSlideUpMode.WORD"},"style":{"type":"TextStyle","description":"Typography style applied to text elements.","default":"LocalTextStyle.current"},"initialYOffset":{"type":"Dp","description":"Distance below final position from which characters/words slide up.","default":"KSlideUpTextDefaults.InitialYOffset"},"clipToBounds":{"type":"Boolean","description":"Mask content to container bounds as it slides upward.","default":"false"},"durationMs":{"type":"Int","description":"Animation duration for each individual element.","default":"KSlideUpTextDefaults.DurationMs"},"staggerMs":{"type":"Int","description":"Stagger delay interval between successive words/characters.","default":"KSlideUpTextDefaults.StaggerMs"},"delayMs":{"type":"Int","description":"Initial delay before starting sequence.","default":"KSlideUpTextDefaults.DelayMs"},"easing":{"type":"Easing","description":"Easing transition curve.","default":"KSlideUpTextDefaults.DefaultEasing"}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/animated/KSlideUp.kt#L110)
+
+---
+
+### KSpecialText
+
+Enhanced text component supporting character scramble animations (inspired by Spell.sh / React SpecialText), gradient shimmers, pulsating neon glows, rainbow shifts, and particle sparkles.
+
+```kotlin
+@Composable
+fun KSpecialText(
+    text: String,
+    modifier: Modifier = Modifier,
+    effect: KSpecialEffect = KSpecialEffect.SHIMMER,
+    visible: Boolean = true,
+    style: TextStyle = LocalTextStyle.current,
+    scrambleSpeedMs: Long = KSpecialTextDefaults.ScrambleSpeedMs,
+    scrambleDelayMs: Long = 0L,
+    colors: List<Color> = if (effect == KSpecialEffect.RAINBOW) KSpecialTextDefaults.RainbowColors else KSpecialTextDefaults.ShimmerColors,
+    glowColor: Color = KSpecialTextDefaults.GlowColor,
+    glowRadius: Dp = KSpecialTextDefaults.GlowRadius,
+    speedMs: Int = KSpecialTextDefaults.SpeedMs,
+    sparkleCount: Int = KSpecialTextDefaults.SparkleCount,
+)
+```
+
+<TypeTable type={{"text":{"type":"String","description":"Content string to display.","required":true},"modifier":{"type":"Modifier","description":"Applied to the outer layout box.","default":"Modifier"},"effect":{"type":"KSpecialEffect","description":"Visual effect mode (SCRAMBLE, SHIMMER, RAINBOW, NEON_GLOW, or SPARKLE).","default":"KSpecialEffect.SHIMMER"},"visible":{"type":"Boolean","description":"Controls whether scramble animation runs or resets.","default":"true"},"style":{"type":"TextStyle","description":"Typography style configuration.","default":"LocalTextStyle.current"},"scrambleSpeedMs":{"type":"Long","description":"Interval in milliseconds per frame step during SCRAMBLE.","default":"KSpecialTextDefaults.ScrambleSpeedMs"},"scrambleDelayMs":{"type":"Long","description":"Delay in milliseconds prior to starting the scramble sequence.","default":"0L"},"colors":{"type":"List<Color>","description":"Gradient colors used for shimmer or rainbow sweeps.","default":"if (effect == KSpecialEffect.RAINBOW) KSpecialTextDefaults.RainbowColors else KSpecialT…"},"glowColor":{"type":"Color","description":"Glow tint for NEON_GLOW.","default":"KSpecialTextDefaults.GlowColor"},"glowRadius":{"type":"Dp","description":"Blur radius for NEON_GLOW.","default":"KSpecialTextDefaults.GlowRadius"},"speedMs":{"type":"Int","description":"Animation cycle duration in milliseconds for continuous effects.","default":"KSpecialTextDefaults.SpeedMs"},"sparkleCount":{"type":"Int","description":"Number of floating star sparkles when using SPARKLE.","default":"KSpecialTextDefaults.SparkleCount"}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/animated/KSpecialText.kt#L95)
+
+---
+
+### KTextMarquee
+
+Vertical or horizontal infinite text/content marquee component with edge fade gradient masking (Spell.sh / Magic UI inspired).
+
+```kotlin
+@Composable
+fun KTextMarquee(
+    items: List<@Composable () -> Unit>,
+    modifier: Modifier = Modifier,
+    prefix: (@Composable () -> Unit)? = null,
+    orientation: KMarqueeOrientation = KTextMarqueeDefaults.Orientation,
+    containerHeight: Dp = KTextMarqueeDefaults.Height,
+    itemHeight: Dp = KTextMarqueeDefaults.ItemHeight,
+    speedSecondsPerCycle: Float = KTextMarqueeDefaults.SpeedSecondsPerCycle,
+    enableFadeMask: Boolean = true,
+)
+```
+
+<TypeTable type={{"items":{"type":"List<@Composable () -> Unit>","description":"List of composable content items to scroll continuously.","required":true},"modifier":{"type":"Modifier","description":"Applied to the marquee container layout.","default":"Modifier"},"prefix":{"type":"(@Composable () -> Unit)?","description":"Optional composable displayed statically before the marquee slot.","default":"null"},"orientation":{"type":"KMarqueeOrientation","description":"Direction of continuous scroll (VERTICAL or HORIZONTAL).","default":"KTextMarqueeDefaults.Orientation"},"containerHeight":{"type":"Dp","description":"Viewport height for vertical marquee masking.","default":"KTextMarqueeDefaults.Height"},"itemHeight":{"type":"Dp","description":"Height allotted per item step.","default":"KTextMarqueeDefaults.ItemHeight"},"speedSecondsPerCycle":{"type":"Float","description":"Duration in seconds for one full loop cycle.","default":"KTextMarqueeDefaults.SpeedSecondsPerCycle"},"enableFadeMask":{"type":"Boolean","description":"Applies top/bottom or left/right gradient alpha mask for smooth entry/exit.","default":"true"}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/animated/KTextMarquee.kt#L51)
+
+---
+
+### KTextMarqueeString
+
+Convenience overload for rendering simple string lists in `KTextMarquee`.
+
+```kotlin
+@Composable
+fun KTextMarqueeString(
+    strings: List<String>,
+    modifier: Modifier = Modifier,
+    prefixText: String? = null,
+    style: TextStyle = LocalTextStyle.current,
+    containerHeight: Dp = KTextMarqueeDefaults.Height,
+    itemHeight: Dp = KTextMarqueeDefaults.ItemHeight,
+    speedSecondsPerCycle: Float = KTextMarqueeDefaults.SpeedSecondsPerCycle,
+)
+```
+
+<TypeTable type={{"strings":{"type":"List<String>","required":true},"modifier":{"type":"Modifier","default":"Modifier"},"prefixText":{"type":"String?","default":"null"},"style":{"type":"TextStyle","default":"LocalTextStyle.current"},"containerHeight":{"type":"Dp","default":"KTextMarqueeDefaults.Height"},"itemHeight":{"type":"Dp","default":"KTextMarqueeDefaults.ItemHeight"},"speedSecondsPerCycle":{"type":"Float","default":"KTextMarqueeDefaults.SpeedSecondsPerCycle"}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/animated/KTextMarquee.kt#L178)
+
+---
+
+### KWordsStagger
+
+Animated word-by-word stagger text reveal container combining Y-axis translation, fade, and blur transitions (Spell.sh / React WordsStagger inspired).
+
+```kotlin
+@Composable
+fun KWordsStagger(
+    text: String,
+    modifier: Modifier = Modifier,
+    visible: Boolean = true,
+    autoStart: Boolean = true,
+    style: TextStyle = LocalTextStyle.current,
+    initialYOffset: Dp = KWordsStaggerDefaults.InitialYOffset,
+    initialBlurRadius: Dp = KWordsStaggerDefaults.InitialBlurRadius,
+    durationMs: Int = KWordsStaggerDefaults.DurationMs,
+    staggerMs: Int = KWordsStaggerDefaults.StaggerMs,
+    delayMs: Int = KWordsStaggerDefaults.DelayMs,
+    easing: Easing = KWordsStaggerDefaults.DefaultEasing,
+    onStart: (() -> Unit)? = null,
+    onComplete: (() -> Unit)? = null,
+)
+```
+
+<TypeTable type={{"text":{"type":"String","description":"The string content to split and stagger.","required":true},"modifier":{"type":"Modifier","description":"Applied to the FlowRow container layout.","default":"Modifier"},"visible":{"type":"Boolean","description":"Controls whether the stagger animation runs or resets.","default":"true"},"autoStart":{"type":"Boolean","description":"Automatically triggers animation on initial composition if true.","default":"true"},"style":{"type":"TextStyle","description":"Typography style applied to the text words.","default":"LocalTextStyle.current"},"initialYOffset":{"type":"Dp","description":"Starting downward Y translation for each word.","default":"KWordsStaggerDefaults.InitialYOffset"},"initialBlurRadius":{"type":"Dp","description":"Starting blur radius for each word.","default":"KWordsStaggerDefaults.InitialBlurRadius"},"durationMs":{"type":"Int","description":"Animation duration per word in milliseconds.","default":"KWordsStaggerDefaults.DurationMs"},"staggerMs":{"type":"Int","description":"Stagger interval delay between successive words.","default":"KWordsStaggerDefaults.StaggerMs"},"delayMs":{"type":"Int","description":"Initial base delay before the sequence starts.","default":"KWordsStaggerDefaults.DelayMs"},"easing":{"type":"Easing","description":"Easing transition specification.","default":"KWordsStaggerDefaults.DefaultEasing"},"onStart":{"type":"(() -> Unit)?","description":"Callback triggered when animation starts.","default":"null"},"onComplete":{"type":"(() -> Unit)?","description":"Callback triggered when animation completes.","default":"null"}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/animated/KWordsStagger.kt#L49)
+
+---
+
+### kindlingShimmerBrush
+
+```kotlin
+@Composable
+fun kindlingShimmerBrush(
+    baseColor: Color = MaterialTheme.colorScheme.surfaceVariant,
+    highlightColor: Color = MaterialTheme.colorScheme.surface,
+    durationMillis: Int = 1_200,
+): Brush
+```
+
+<TypeTable type={{"baseColor":{"type":"Color","default":"MaterialTheme.colorScheme.surfaceVariant"},"highlightColor":{"type":"Color","default":"MaterialTheme.colorScheme.surface"},"durationMillis":{"type":"Int","default":"1_200"}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/animated/KindlingShimmer.kt#L17)
+
+## Types
+
+### KExplodingInputDefaults
+
+```kotlin
+object KExplodingInputDefaults
+```
+
+**Members**
+
+- `val Height: Dp get()`
+- `val ParticleCount: Int get()`
+- `val ExplosionForce: Float get()`
+- `val DefaultColors: List<Color>`
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/animated/KExplodingInput.kt#L35)
+
+---
+
+### KHighlightStyle
+
+```kotlin
+enum class KHighlightStyle
+```
+
+**Values**
+
+- `BACKGROUND` — Smooth rectangular background marker wipe.
+- `UNDERLINE` — Animated organic underline beneath the text.
+- `CIRCLE` — Playful freehand sketchy box encircling the text.
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/animated/KHighlightedText.kt#L25)
+
+---
+
+### KHighlightedTextDefaults
+
+```kotlin
+object KHighlightedTextDefaults
+```
+
+**Members**
+
+- `val HighlightColor: Color`
+- `val UnderlineColor: Color`
+- `const val DurationMs: Int`
+- `const val DelayMs: Int`
+- `val Thickness: Dp`
+- `val PaddingHorizontal: Dp`
+- `val PaddingVertical: Dp`
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/animated/KHighlightedText.kt#L36)
+
+---
+
+### KMarqueeDirection
+
+```kotlin
+enum class KMarqueeDirection
+```
+
+**Values**
+
+- `FORWARD`
+- `Right`
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/animated/KMarquee.kt#L23)
+
+---
+
+### KMarqueeDefaults
+
+```kotlin
+object KMarqueeDefaults
+```
+
+**Members**
+
+- `val Spacing: Dp`
+- `val Velocity: Dp`
+- `val FadeWidth: Dp`
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/animated/KMarquee.kt#L28)
+
+---
+
+### KRandomizedSplitMode
+
+```kotlin
+enum class KRandomizedSplitMode
+```
+
+**Values**
+
+- `WORDS` — Splits the text into individual words with randomized delays.
+- `CHARS` — Splits the text into individual characters with randomized delays.
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/animated/KRandomizedText.kt#L19)
+
+---
+
+### KRandomizedTextDefaults
+
+```kotlin
+object KRandomizedTextDefaults
+```
+
+**Members**
+
+- `val SplitMode`
+- `const val BaseDelaySec: Float`
+- `const val DurationMs: Int`
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/animated/KRandomizedText.kt#L27)
+
+---
+
+### KSignatureDefaults
+
+```kotlin
+object KSignatureDefaults
+```
+
+**Members**
+
+- `val FontColor: Color`
+- `const val DurationMs: Int`
+- `const val DelayMs: Int`
+- `val Height: Dp`
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/animated/KSignature.kt#L25)
+
+---
+
+### KSlideUpMode
+
+```kotlin
+enum class KSlideUpMode
+```
+
+**Values**
+
+- `WORD` — Animates text word-by-word with staggered upward translations.
+- `CHARACTER` — Animates text character-by-character with staggered upward translations.
+- `ALL` — Animates the entire block as a single unit sliding up into view.
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/animated/KSlideUp.kt#L18)
+
+---
+
+### KSlideUpTextDefaults
+
+```kotlin
+object KSlideUpTextDefaults
+```
+
+**Members**
+
+- `val InitialYOffset: Dp`
+- `const val DurationMs: Int`
+- `const val StaggerMs: Int`
+- `const val DelayMs: Int`
+- `val DefaultEasing: Easing`
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/animated/KSlideUp.kt#L29)
+
+---
+
+### KSpecialEffect
+
+```kotlin
+enum class KSpecialEffect
+```
+
+**Values**
+
+- `SCRAMBLE` — Matrix-style character scrambling effect that resolves to target text.
+- `SHIMMER` — Smooth animated gradient shimmer sweeping horizontally across text.
+- `RAINBOW` — Continuous animated spectrum hue transition across the text brush.
+- `NEON_GLOW` — Pulsating background light bloom effect behind text.
+- `SPARKLE` — Animated four-point star sparkles floating around text bounds.
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/animated/KSpecialText.kt#L28)
+
+---
+
+### KSpecialTextDefaults
+
+```kotlin
+object KSpecialTextDefaults
+```
+
+**Members**
+
+- `val ShimmerColors`
+- `val RainbowColors`
+- `val GlowColor`
+- `val SparkleColor`
+- `const val SpeedMs: Int`
+- `const val ScrambleSpeedMs: Long`
+- `const val ScrambleRandomChars: String`
+- `val GlowRadius: Dp`
+- `const val SparkleCount: Int`
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/animated/KSpecialText.kt#L45)
+
+---
+
+### KMarqueeOrientation
+
+```kotlin
+enum class KMarqueeOrientation
+```
+
+**Values**
+
+- `VERTICAL`
+- `HORIZONTAL`
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/animated/KTextMarquee.kt#L23)
+
+---
+
+### KTextMarqueeDefaults
+
+```kotlin
+object KTextMarqueeDefaults
+```
+
+**Members**
+
+- `val Height: Dp`
+- `val ItemHeight: Dp`
+- `const val SpeedSecondsPerCycle: Float`
+- `val Orientation`
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/animated/KTextMarquee.kt#L28)
+
+---
+
+### KWordsStaggerDefaults
+
+```kotlin
+object KWordsStaggerDefaults
+```
+
+**Members**
+
+- `val InitialYOffset: Dp`
+- `val InitialBlurRadius: Dp`
+- `val DurationMs: Int`
+- `val StaggerMs: Int`
+- `val DelayMs: Int`
+- `val DefaultEasing: Easing`
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/animated/KWordsStagger.kt#L18)

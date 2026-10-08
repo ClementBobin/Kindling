@@ -1,0 +1,199 @@
+---
+title: "Dashboard"
+description: "A responsive dashboard grid layout engine supporting item dragging, action buttons, dynamic cell sizing, and persistent position callbacks."
+generated: true
+module: "core"
+---
+
+{/* AUTO-GENERATED from KDoc by website/scripts/docgen.mjs. Set `generated: false` in the frontmatter to take over this page by hand. */}
+
+## Installation
+
+```kotlin
+implementation("io.github.clementbobin.kindling:core:0.3.0")
+```
+
+```kotlin
+import dev.kindling.core.components.ui.dashboard.KDashboardGrid
+```
+
+## Composables
+
+### KDashboardGrid
+
+```kotlin
+@Composable
+fun KDashboardGrid(
+    cellSize: Dp = 80.dp,
+    modifier: Modifier = Modifier,
+    onItemMoved: ((id: String, column: Int, row: Int) -> Unit)? = null,
+    content: @Composable KDashboardGridScope.() -> Unit,
+)
+```
+
+<TypeTable type={{"cellSize":{"type":"Dp","description":"The dimension size of a base single cell grid unit (default is 80.dp).","default":"80.dp"},"modifier":{"type":"Modifier","description":"Layout modifiers applied to the outer host container.","default":"Modifier"},"onItemMoved":{"type":"((id: String, column: Int, row: Int) -> Unit)?","description":"Callback invoked when a draggable widget settles into its final coordinates.","default":"null"},"content":{"type":"@Composable KDashboardGridScope.() -> Unit","description":"Declarative DSL scope block for adding grid components and action tiles.","required":true}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/dashboard/KDashboard.kt#L53)
+
+---
+
+### RenderWidgetContent
+
+```kotlin
+@Composable
+fun RenderWidgetContent(widget: KWidgetModel)
+```
+
+<TypeTable type={{"widget":{"type":"KWidgetModel","required":true}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/dashboard/KWidgetRegistry.kt#L38)
+
+## Types
+
+### KDashboardItemState
+
+Represents the current runtime positional state of a dashboard item node.
+
+```kotlin
+data class KDashboardItemState(
+    val id: String,
+    val column: Int,
+    val row: Int,
+    val widthCells: Int = 1,
+    val heightCells: Int = 1,
+)
+```
+
+<TypeTable type={{"id":{"type":"String","description":"Unique identifier for the widget instance.","required":true},"column":{"type":"Int","description":"Current grid column coordinate.","required":true},"row":{"type":"Int","description":"Current grid row coordinate.","required":true},"widthCells":{"type":"Int","description":"Number of horizontal grid units spanned by the widget.","default":"1"},"heightCells":{"type":"Int","description":"Number of vertical grid units spanned by the widget.","default":"1"}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/dashboard/KDashboard.kt#L33)
+
+---
+
+### KDashboardGridScope
+
+DSL scope interface for structuring items inside a `KDashboardGrid`.
+
+```kotlin
+interface KDashboardGridScope
+```
+
+**Members**
+
+- `fun item( id: String, initialColumn: Int, initialRow: Int, widthCells: Int = 1, heightCells: Int = 1, content: @Composable () -> Unit)` — Adds a standard, user-draggable widget node to the dashboard grid.
+- `fun actionItem( id: String, initialColumn: Int, initialRow: Int, widthCells: Int = 1, heightCells: Int = 1, onClick: () -> Unit, content: @Composable () -> Unit)` — Adds a static or click-interactive action cell that cannot be dragged.
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/dashboard/KDashboard.kt#L92)
+
+---
+
+### KDashboardStorage
+
+Persistence manager handling local JSON read and write operations for dashboard layout schemas.
+
+```kotlin
+class KDashboardStorage
+```
+
+**Members**
+
+- `fun saveLayout(widgets: List<KWidgetModel>): Result<Unit>` — Encodes and persists a list of `KWidgetModel` configurations safely.
+- `fun loadLayout(): List<KWidgetModel>?` — Loads and decodes saved widget models from storage, or returns `null` if no configuration exists.
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/dashboard/KDashboardStorage.kt#L9)
+
+---
+
+### KWidgetCatalogManager
+
+```kotlin
+object KWidgetCatalogManager
+```
+
+**Members**
+
+- `fun listAll(limit: Int = Int.MAX_VALUE): List<KWidgetMetadata>`
+- `fun search( query: String = "", tag: String? = null, limit: Int = Int.MAX_VALUE): List<KWidgetMetadata>`
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/dashboard/KWidgetCatalogManager.kt#L3)
+
+---
+
+### KWidget
+
+Annotation marker applied directly to Composable widget functions to register them into the project's central routing registry and metadata catalog via KSP generation.
+
+```kotlin
+annotation class KWidget(
+    val type: String,
+    val title: String = "",
+    val tags: Array<String> = [],
+    val icon: String = "",
+    val widthCells: Int = 1,
+    val heightCells: Int = 1,
+)
+```
+
+<TypeTable type={{"type":{"type":"String","description":"Unique string key matching incoming type parameters.","required":true},"title":{"type":"String","description":"Default display name of the widget for catalog search listings.","default":"\"\""},"tags":{"type":"Array<String>","description":"Categorization tags for filtering.","default":"[]"},"icon":{"type":"String","description":"Optional icon reference string.","default":"\"\""},"widthCells":{"type":"Int","description":"Default horizontal grid cell span.","default":"1"},"heightCells":{"type":"Int","description":"Default vertical grid cell span.","default":"1"}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/dashboard/KWidgetModel.kt#L18)
+
+---
+
+### KWidgetMetadata
+
+Metadata descriptor representing a registered widget available in the application catalog.
+
+```kotlin
+data class KWidgetMetadata(
+    val type: String,
+    val title: String,
+    val tags: List<String>,
+    val icon: String?,
+    val size: String,
+)
+```
+
+<TypeTable type={{"type":{"type":"String","description":"Routing type identifier string.","required":true},"title":{"type":"String","description":"User-friendly display title.","required":true},"tags":{"type":"List<String>","description":"Category classification keywords.","required":true},"icon":{"type":"String?","description":"Visual asset reference identifier or path.","required":true},"size":{"type":"String","description":"Formatted cell dimension footprint string (e.g., \"2*1\").","required":true}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/dashboard/KWidgetModel.kt#L36)
+
+---
+
+### KWidgetModel
+
+Data blueprint representing a persistent layout node model saved to disk storage.
+
+```kotlin
+data class KWidgetModel(
+    val id: String,
+    val type: String,
+    val tags: Array<String>,
+    val icon: String?,
+    val title: String,
+    val initialColumn: Int,
+    val initialRow: Int,
+    val widthCells: Int = 1,
+    val heightCells: Int = 1,
+)
+```
+
+<TypeTable type={{"id":{"type":"String","description":"Unique string identifier for the widget runtime instance.","required":true},"type":{"type":"String","description":"String routing key linking this data model to its registered Composable function.","required":true},"tags":{"type":"Array<String>","description":"Array of string tags for categorizing the widget.","required":true},"icon":{"type":"String?","description":"String path or name reference to the widget's icon resource.","required":true},"title":{"type":"String","description":"Display text header assigned to the widget view instance.","required":true},"initialColumn":{"type":"Int","description":"Grid column positioning coordinate.","required":true},"initialRow":{"type":"Int","description":"Grid row positioning coordinate.","required":true},"widthCells":{"type":"Int","description":"Column width size span.","default":"1"},"heightCells":{"type":"Int","description":"Row height size span.","default":"1"}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/dashboard/KWidgetModel.kt#L58)
+
+---
+
+### KWidgetRegistry
+
+```kotlin
+object KWidgetRegistry
+```
+
+**Members**
+
+- `fun register( metadata: KWidgetMetadata, provider: @Composable (KWidgetModel) -> Unit)`
+- `fun get(type: String): (@Composable (KWidgetModel) -> Unit)?`
+- `fun getAllMetadata(): List<KWidgetMetadata>`
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/dashboard/KWidgetRegistry.kt#L6)

@@ -1,0 +1,186 @@
+---
+title: "Popover"
+description: "Shadcn/ui-style Popover with two display modes:"
+generated: true
+module: "core"
+---
+
+{/* AUTO-GENERATED from KDoc by website/scripts/docgen.mjs. Set `generated: false` in the frontmatter to take over this page by hand. */}
+
+**Inline mode** (default — `overlayZone` = null):
+The panel is positioned adjacent to `trigger`, clamped so it never escapes
+the measured root bounds. `side` and `align` control placement.
+
+**Overlay mode** (`overlayZone` is not null):
+The panel fills a full-screen scrim and is placed at `overlayZone` inside
+it (center, bottom-sheet, drawer, …). Useful for modal-style popovers.
+
+In both modes, `dismissOnClickOutside` = `true` (default) closes the panel
+when the user taps outside the panel area.
+
+```kotlin
+// Inline popover
+var open by remember { mutableStateOf(false) }
+KPopover(
+    open      = open,
+    onDismiss = { open = false },
+    trigger   = { KButton("Open", onClick = { open = !open }) }
+) {
+    KPopoverTitle("Hello")
+}
+
+// Bottom-sheet style overlay
+KPopover(
+    open        = open,
+    onDismiss   = { open = false },
+    overlayZone = KPopoverOverlayPosition.BottomSheet,
+    trigger     = { KButton("Sheet", onClick = { open = !open }) }
+) {
+    Text("Sheet content")
+}
+```
+
+## Installation
+
+```kotlin
+implementation("io.github.clementbobin.kindling:core:0.3.0")
+```
+
+```kotlin
+import dev.kindling.core.components.ui.popover.KPopover
+```
+
+## Composables
+
+### KPopover
+
+```kotlin
+@Composable
+fun KPopover(
+    open: Boolean,
+    onDismiss: () -> Unit,
+    trigger: @Composable () -> Unit,
+    modifier: Modifier = Modifier,
+    side: KPopoverSide = KPopoverSide.Bottom,
+    align: KPopoverAlign = KPopoverAlign.Center,
+    sideOffset: Dp = 4.dp,
+    overlayZone: KPopoverOverlayPosition? = null,
+    dismissOnClickOutside: Boolean = true,
+    content: @Composable ColumnScope.() -> Unit,
+)
+```
+
+<TypeTable type={{"open":{"type":"Boolean","required":true},"onDismiss":{"type":"() -> Unit","required":true},"trigger":{"type":"@Composable () -> Unit","required":true},"modifier":{"type":"Modifier","default":"Modifier"},"side":{"type":"KPopoverSide","default":"KPopoverSide.Bottom"},"align":{"type":"KPopoverAlign","default":"KPopoverAlign.Center"},"sideOffset":{"type":"Dp","default":"4.dp"},"overlayZone":{"type":"KPopoverOverlayPosition?","default":"null"},"dismissOnClickOutside":{"type":"Boolean","default":"true"},"content":{"type":"@Composable ColumnScope.() -> Unit","required":true}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/popover/KPopoverRoot.kt#L46)
+
+---
+
+### KPopoverHeader
+
+Optional header section inside a `KPopover`.
+
+```kotlin
+@Composable
+fun KPopoverHeader(
+    modifier: Modifier = Modifier,
+    content: @Composable ColumnScope.() -> Unit,
+)
+```
+
+<TypeTable type={{"modifier":{"type":"Modifier","default":"Modifier"},"content":{"type":"@Composable ColumnScope.() -> Unit","required":true}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/popover/KPopoverTypography.kt#L15)
+
+---
+
+### KPopoverTitle
+
+Popover title.
+
+```kotlin
+@Composable
+fun KPopoverTitle(
+    text: String,
+    modifier: Modifier = Modifier,
+)
+```
+
+<TypeTable type={{"text":{"type":"String","required":true},"modifier":{"type":"Modifier","default":"Modifier"}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/popover/KPopoverTypography.kt#L28)
+
+---
+
+### KPopoverDescription
+
+Popover description — muted secondary text.
+
+```kotlin
+@Composable
+fun KPopoverDescription(
+    text: String,
+    modifier: Modifier = Modifier,
+)
+```
+
+<TypeTable type={{"text":{"type":"String","required":true},"modifier":{"type":"Modifier","default":"Modifier"}}} />
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/popover/KPopoverTypography.kt#L39)
+
+## Types
+
+### KPopoverSide
+
+Which side of the trigger the inline panel appears on.
+
+```kotlin
+enum class KPopoverSide
+```
+
+**Values**
+
+- `Top`
+- `Bottom`
+- `Left`
+- `Right`
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/popover/KPopoverModels.kt#L4)
+
+---
+
+### KPopoverAlign
+
+Alignment of the panel along the cross-axis of the trigger.
+
+```kotlin
+enum class KPopoverAlign
+```
+
+**Values**
+
+- `Start`
+- `Center`
+- `End`
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/popover/KPopoverModels.kt#L7)
+
+---
+
+### KPopoverOverlayPosition
+
+When `KPopover` is in overlay mode (`overlayZone` is not null), this controls where on screen the panel is placed.
+
+```kotlin
+enum class KPopoverOverlayPosition
+```
+
+**Values**
+
+- `Center` — Horizontally centred, vertically centred.
+- `BottomSheet` — Full width, pinned to the bottom of the screen (sheet style).
+- `TopSheet` — Full width, pinned to the top of the screen.
+- `StartDrawer` — Full height, pinned to the left edge (drawer style).
+- `EndDrawer` — Full height, pinned to the right edge.
+
+[View source](https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/popover/KPopoverModels.kt#L13)
