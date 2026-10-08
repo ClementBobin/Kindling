@@ -8,7 +8,7 @@ permissions:
 
 # Docs are built and deployed by .github/workflows/docs.yml (also triggered on release).
 
-jobs:
+# jobs:
   # publish:
   #   name: Release build and publish
   #   runs-on: macOS-latest
