@@ -27,5 +27,5 @@ rootProject.name = "kindling"
 
 include(":core", ":utils", ":compose", ":android", ":processor")
 
-// Live docs previews (Compose for Web). Not published; embedded by the website/ docs site.
+// Documentation website (Compose for Web), built from docs-gen/. Not published.
 include(":showcase")
