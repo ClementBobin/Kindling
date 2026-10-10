@@ -17,12 +17,37 @@ internal fun page_components_label(): DocPage = DocPage(
         Heading(2, "Usage"),
         CodeBlock("kotlin", "Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {\n    KLabel(\"Email address\")\n    KInput(value = email, onValueChange = { email = it })\n}"),
         Heading(2, "Installation"),
-        CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:0.3.0\")"),
+        CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:{{version}}\")"),
         CodeBlock("kotlin", "import dev.kindling.core.components.ui.KLabel"),
-        Heading(2, "Composables"),
-        Heading(3, "KLabel"),
-        CodeBlock("kotlin", "@Composable\nfun KLabel(\n    text: String,\n    modifier: Modifier = Modifier,\n    disabled: Boolean = false,\n    style: TextStyle = MaterialTheme.typography.labelLarge.copy( fontSize = 14.sp, fontWeight = FontWeight.Medium, lineHeight = 20.sp, letterSpacing = 0.1.sp ),\n    color: Color = if (disabled) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f) else MaterialTheme.colorScheme.onBackground,\n)"),
-        Props(listOf(PropRow("text", "String", "", "The label text to display.", true), PropRow("modifier", "Modifier", "Modifier", "The modifier to be applied to the text.", false), PropRow("disabled", "Boolean", "false", "Whether the label should appear in a disabled state.", false), PropRow("style", "TextStyle", "MaterialTheme.typography.labelLarge.copy( fontSize = 14.sp, fontWeight = FontWeight.Med…", "The text style to apply. Defaults to MaterialTheme.typography.labelLarge with Kindling adjustments.", false), PropRow("color", "Color", "if (disabled) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f) else MaterialThem…", "The text color. Defaults to a color based on the disabled state and current theme.", false))),
-        Source("https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/KLabel.kt#L37"),
+        DeclGroup("Composables", listOf(
+            Decl("KLabel", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/KLabel.kt#L37")), listOf(
+                CodeBlock("kotlin", "@Composable\nfun KLabel(\n    text: String,\n    modifier: Modifier = Modifier,\n    disabled: Boolean = false,\n    style: TextStyle = MaterialTheme.typography.labelLarge.copy( fontSize = 14.sp, fontWeight = FontWeight.Medium, lineHeight = 20.sp, letterSpacing = 0.1.sp ),\n    color: Color = if (disabled) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f) else MaterialTheme.colorScheme.onBackground,\n)"),
+                Props(listOf(PropRow("text", "String", "", "The label text to display.", true), PropRow("modifier", "Modifier", "Modifier", "The modifier to be applied to the text.", false), PropRow("disabled", "Boolean", "false", "Whether the label should appear in a disabled state.", false), PropRow("style", "TextStyle", "MaterialTheme.typography.labelLarge.copy( fontSize = 14.sp, fontWeight = FontWeight.Med…", "The text style to apply. Defaults to MaterialTheme.typography.labelLarge with Kindling adjustments.", false), PropRow("color", "Color", "if (disabled) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f) else MaterialThem…", "The text color. Defaults to a color based on the disabled state and current theme.", false))),
+            )),
+        )),
+    ),
+    since = "4.0.2",
+    available = listOf("4.3.6", "4.3.5", "4.3.4", "4.3.3", "4.3.2", "4.3.1", "4.3.0", "4.2.9", "4.2.8", "4.2.7", "4.2.6", "4.2.5", "4.2.4", "4.2.3", "4.2.2"),
+    headVersions = listOf("4.3.6", "4.3.5", "4.3.4", "4.3.3", "4.3.2", "4.3.1", "4.3.0", "4.2.9", "4.2.8", "4.2.7", "4.2.6", "4.2.5", "4.2.4"),
+    history = listOf(
+        VersionGroup(listOf("4.2.3", "4.2.2")) { page_components_label_h1() },
     ),
 )
+
+internal fun page_components_label_h1(): List<Block> = listOf(
+        Para("A specialized text component used for labeling form fields or other UI elements. It automatically applies standard styling and handles the `disabled` state by adjusting its color to match the theme's disabled surface color."),
+        Para("Respects `LocalLayoutDirection` for RTL text alignment."),
+        Heading(2, "Preview"),
+        Demo("label"),
+        Heading(2, "Usage"),
+        CodeBlock("kotlin", "Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {\n    KLabel(\"Email address\")\n    KInput(value = email, onValueChange = { email = it })\n}"),
+        Heading(2, "Installation"),
+        CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:{{version}}\")"),
+        CodeBlock("kotlin", "import dev.kindling.core.components.ui.KLabel"),
+        DeclGroup("Composables", listOf(
+            Decl("KLabel", listOf("android"), true, true, listOf(Impl("commonMain", "", listOf("android"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/KLabel.kt")), listOf(
+                CodeBlock("kotlin", "@Composable\nfun KLabel(\n    text: String,\n    modifier: Modifier = Modifier,\n    disabled: Boolean = false,\n    style: TextStyle = MaterialTheme.typography.labelLarge.copy( fontSize = 14.sp, fontWeight = FontWeight.Medium, lineHeight = 20.sp, letterSpacing = 0.1.sp ),\n    color: Color = if (disabled) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f) else MaterialTheme.colorScheme.onBackground,\n)"),
+                Props(listOf(PropRow("text", "String", "", "The label text to display.", true), PropRow("modifier", "Modifier", "Modifier", "The modifier to be applied to the text.", false), PropRow("disabled", "Boolean", "false", "Whether the label should appear in a disabled state.", false), PropRow("style", "TextStyle", "MaterialTheme.typography.labelLarge.copy( fontSize = 14.sp, fontWeight = FontWeight.Med…", "The text style to apply. Defaults to MaterialTheme.typography.labelLarge with Kindling adjustments.", false), PropRow("color", "Color", "if (disabled) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f) else MaterialThem…", "The text color. Defaults to a color based on the disabled state and current theme.", false))),
+            )),
+        )),
+    )

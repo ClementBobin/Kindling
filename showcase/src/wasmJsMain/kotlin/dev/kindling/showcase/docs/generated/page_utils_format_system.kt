@@ -11,83 +11,141 @@ internal fun page_utils_format_system(): DocPage = DocPage(
     order = 100,
     blocks = listOf(
         Heading(2, "Installation"),
-        CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:utils:0.3.0\")"),
+        CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:utils:{{version}}\")"),
         CodeBlock("kotlin", "import dev.kindling.utils.method.format.system.toBase64"),
-        Heading(2, "API"),
-        Heading(3, "bytesToHuman"),
-        CodeBlock("kotlin", "fun Long.bytesToHuman(decimals: Int = 1): String"),
-        Props(listOf(PropRow("decimals", "Int", "1", "", false))),
-        Source("https://github.com/ClementBobin/Kindling/blob/main/utils/src/commonMain/kotlin/dev/kindling/utils/method/format/system/FormatBytes.kt#L12"),
-        Rule,
-        Heading(3, "bytesToHuman"),
-        CodeBlock("kotlin", "fun Int.bytesToHuman(decimals: Int = 1): String"),
-        Props(listOf(PropRow("decimals", "Int", "1", "", false))),
-        Source("https://github.com/ClementBobin/Kindling/blob/main/utils/src/commonMain/kotlin/dev/kindling/utils/method/format/system/FormatBytes.kt#L25"),
-        Rule,
-        Heading(3, "bytesToHumanSi"),
-        CodeBlock("kotlin", "fun Long.bytesToHumanSi(decimals: Int = 1): String"),
-        Props(listOf(PropRow("decimals", "Int", "1", "", false))),
-        Source("https://github.com/ClementBobin/Kindling/blob/main/utils/src/commonMain/kotlin/dev/kindling/utils/method/format/system/FormatBytes.kt#L27"),
-        Rule,
-        Heading(3, "toKiB"),
-        CodeBlock("kotlin", "fun Long.toKiB(): Double"),
-        Source("https://github.com/ClementBobin/Kindling/blob/main/utils/src/commonMain/kotlin/dev/kindling/utils/method/format/system/FormatBytes.kt#L40"),
-        Rule,
-        Heading(3, "toMiB"),
-        CodeBlock("kotlin", "fun Long.toMiB(): Double"),
-        Source("https://github.com/ClementBobin/Kindling/blob/main/utils/src/commonMain/kotlin/dev/kindling/utils/method/format/system/FormatBytes.kt#L41"),
-        Rule,
-        Heading(3, "toGiB"),
-        CodeBlock("kotlin", "fun Long.toGiB(): Double"),
-        Source("https://github.com/ClementBobin/Kindling/blob/main/utils/src/commonMain/kotlin/dev/kindling/utils/method/format/system/FormatBytes.kt#L42"),
-        Rule,
-        Heading(3, "toTiB"),
-        CodeBlock("kotlin", "fun Long.toTiB(): Double"),
-        Source("https://github.com/ClementBobin/Kindling/blob/main/utils/src/commonMain/kotlin/dev/kindling/utils/method/format/system/FormatBytes.kt#L43"),
-        Rule,
-        Heading(3, "kiBToBytes"),
-        CodeBlock("kotlin", "fun Double.kiBToBytes(): Long"),
-        Source("https://github.com/ClementBobin/Kindling/blob/main/utils/src/commonMain/kotlin/dev/kindling/utils/method/format/system/FormatBytes.kt#L45"),
-        Rule,
-        Heading(3, "miBToBytes"),
-        CodeBlock("kotlin", "fun Double.miBToBytes(): Long"),
-        Source("https://github.com/ClementBobin/Kindling/blob/main/utils/src/commonMain/kotlin/dev/kindling/utils/method/format/system/FormatBytes.kt#L46"),
-        Rule,
-        Heading(3, "giBToBytes"),
-        CodeBlock("kotlin", "fun Double.giBToBytes(): Long"),
-        Source("https://github.com/ClementBobin/Kindling/blob/main/utils/src/commonMain/kotlin/dev/kindling/utils/method/format/system/FormatBytes.kt#L47"),
-        Rule,
-        Heading(3, "storageTier"),
-        CodeBlock("kotlin", "fun Long.storageTier(): String"),
-        Source("https://github.com/ClementBobin/Kindling/blob/main/utils/src/commonMain/kotlin/dev/kindling/utils/method/format/system/FormatBytes.kt#L49"),
-        Rule,
-        Heading(3, "diskUsageLabel"),
-        CodeBlock("kotlin", "fun Long.diskUsageLabel(total: Long): String"),
-        Props(listOf(PropRow("total", "Long", "", "", true))),
-        Source("https://github.com/ClementBobin/Kindling/blob/main/utils/src/commonMain/kotlin/dev/kindling/utils/method/format/system/FormatBytes.kt#L51"),
-        Rule,
-        Heading(3, "usageRatio"),
-        CodeBlock("kotlin", "fun Long.usageRatio(total: Long): Double"),
-        Props(listOf(PropRow("total", "Long", "", "", true))),
-        Source("https://github.com/ClementBobin/Kindling/blob/main/utils/src/commonMain/kotlin/dev/kindling/utils/method/format/system/FormatBytes.kt#L54"),
-        Rule,
-        Heading(3, "toBase64"),
-        CodeBlock("kotlin", "fun ByteArray.toBase64(): String"),
-        Source("https://github.com/ClementBobin/Kindling/blob/main/utils/src/commonMain/kotlin/dev/kindling/utils/method/format/system/FormatBytes.kt#L61"),
-        Rule,
-        Heading(3, "fromBase64"),
-        Para("Decodes a Base64 string back to a `ByteArray`."),
-        CodeBlock("kotlin", "fun String.fromBase64(): ByteArray"),
-        Source("https://github.com/ClementBobin/Kindling/blob/main/utils/src/commonMain/kotlin/dev/kindling/utils/method/format/system/FormatBytes.kt#L68"),
-        Rule,
-        Heading(3, "toBytesBigEndian"),
-        Para("Converts an `Int` to a 4-byte big-endian `ByteArray`."),
-        CodeBlock("kotlin", "fun Int.toBytesBigEndian(): ByteArray"),
-        Source("https://github.com/ClementBobin/Kindling/blob/main/utils/src/commonMain/kotlin/dev/kindling/utils/method/format/system/FormatBytes.kt#L74"),
-        Rule,
-        Heading(3, "fromBytesBigEndian"),
-        Para("Reads a 4-byte big-endian `ByteArray` back to an `Int`."),
-        CodeBlock("kotlin", "fun ByteArray.fromBytesBigEndian(): Int"),
-        Source("https://github.com/ClementBobin/Kindling/blob/main/utils/src/commonMain/kotlin/dev/kindling/utils/method/format/system/FormatBytes.kt#L84"),
+        DeclGroup("API", listOf(
+            Decl("bytesToHuman", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/utils/src/commonMain/kotlin/dev/kindling/utils/method/format/system/FormatBytes.kt#L12")), listOf(
+                CodeBlock("kotlin", "fun Long.bytesToHuman(decimals: Int = 1): String"),
+                Props(listOf(PropRow("decimals", "Int", "1", "", false))),
+            )),
+            Decl("bytesToHuman", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/utils/src/commonMain/kotlin/dev/kindling/utils/method/format/system/FormatBytes.kt#L25")), listOf(
+                CodeBlock("kotlin", "fun Int.bytesToHuman(decimals: Int = 1): String"),
+                Props(listOf(PropRow("decimals", "Int", "1", "", false))),
+            )),
+            Decl("bytesToHumanSi", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/utils/src/commonMain/kotlin/dev/kindling/utils/method/format/system/FormatBytes.kt#L27")), listOf(
+                CodeBlock("kotlin", "fun Long.bytesToHumanSi(decimals: Int = 1): String"),
+                Props(listOf(PropRow("decimals", "Int", "1", "", false))),
+            )),
+            Decl("toKiB", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/utils/src/commonMain/kotlin/dev/kindling/utils/method/format/system/FormatBytes.kt#L40")), listOf(
+                CodeBlock("kotlin", "fun Long.toKiB(): Double"),
+            )),
+            Decl("toMiB", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/utils/src/commonMain/kotlin/dev/kindling/utils/method/format/system/FormatBytes.kt#L41")), listOf(
+                CodeBlock("kotlin", "fun Long.toMiB(): Double"),
+            )),
+            Decl("toGiB", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/utils/src/commonMain/kotlin/dev/kindling/utils/method/format/system/FormatBytes.kt#L42")), listOf(
+                CodeBlock("kotlin", "fun Long.toGiB(): Double"),
+            )),
+            Decl("toTiB", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/utils/src/commonMain/kotlin/dev/kindling/utils/method/format/system/FormatBytes.kt#L43")), listOf(
+                CodeBlock("kotlin", "fun Long.toTiB(): Double"),
+            )),
+            Decl("kiBToBytes", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/utils/src/commonMain/kotlin/dev/kindling/utils/method/format/system/FormatBytes.kt#L45")), listOf(
+                CodeBlock("kotlin", "fun Double.kiBToBytes(): Long"),
+            )),
+            Decl("miBToBytes", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/utils/src/commonMain/kotlin/dev/kindling/utils/method/format/system/FormatBytes.kt#L46")), listOf(
+                CodeBlock("kotlin", "fun Double.miBToBytes(): Long"),
+            )),
+            Decl("giBToBytes", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/utils/src/commonMain/kotlin/dev/kindling/utils/method/format/system/FormatBytes.kt#L47")), listOf(
+                CodeBlock("kotlin", "fun Double.giBToBytes(): Long"),
+            )),
+            Decl("storageTier", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/utils/src/commonMain/kotlin/dev/kindling/utils/method/format/system/FormatBytes.kt#L49")), listOf(
+                CodeBlock("kotlin", "fun Long.storageTier(): String"),
+            )),
+            Decl("diskUsageLabel", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/utils/src/commonMain/kotlin/dev/kindling/utils/method/format/system/FormatBytes.kt#L51")), listOf(
+                CodeBlock("kotlin", "fun Long.diskUsageLabel(total: Long): String"),
+                Props(listOf(PropRow("total", "Long", "", "", true))),
+            )),
+            Decl("usageRatio", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/utils/src/commonMain/kotlin/dev/kindling/utils/method/format/system/FormatBytes.kt#L54")), listOf(
+                CodeBlock("kotlin", "fun Long.usageRatio(total: Long): Double"),
+                Props(listOf(PropRow("total", "Long", "", "", true))),
+            )),
+            Decl("toBase64", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/utils/src/commonMain/kotlin/dev/kindling/utils/method/format/system/FormatBytes.kt#L61")), listOf(
+                CodeBlock("kotlin", "fun ByteArray.toBase64(): String"),
+            )),
+            Decl("fromBase64", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/utils/src/commonMain/kotlin/dev/kindling/utils/method/format/system/FormatBytes.kt#L68")), listOf(
+                Para("Decodes a Base64 string back to a `ByteArray`."),
+                CodeBlock("kotlin", "fun String.fromBase64(): ByteArray"),
+            )),
+            Decl("toBytesBigEndian", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/utils/src/commonMain/kotlin/dev/kindling/utils/method/format/system/FormatBytes.kt#L74")), listOf(
+                Para("Converts an `Int` to a 4-byte big-endian `ByteArray`."),
+                CodeBlock("kotlin", "fun Int.toBytesBigEndian(): ByteArray"),
+            )),
+            Decl("fromBytesBigEndian", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/utils/src/commonMain/kotlin/dev/kindling/utils/method/format/system/FormatBytes.kt#L84")), listOf(
+                Para("Reads a 4-byte big-endian `ByteArray` back to an `Int`."),
+                CodeBlock("kotlin", "fun ByteArray.fromBytesBigEndian(): Int"),
+            )),
+        )),
+    ),
+    since = "3.3.0",
+    available = listOf("4.3.6", "4.3.5", "4.3.4", "4.3.3", "4.3.2", "4.3.1", "4.3.0", "4.2.9", "4.2.8", "4.2.7", "4.2.6", "4.2.5", "4.2.4", "4.2.3", "4.2.2"),
+    headVersions = listOf("4.3.6", "4.3.5", "4.3.4", "4.3.3", "4.3.2", "4.3.1", "4.3.0", "4.2.9", "4.2.8", "4.2.7", "4.2.6"),
+    history = listOf(
+        VersionGroup(listOf("4.2.5", "4.2.4", "4.2.3", "4.2.2")) { page_utils_format_system_h1() },
     ),
 )
+
+internal fun page_utils_format_system_h1(): List<Block> = listOf(
+        Heading(2, "Installation"),
+        CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:utils:{{version}}\")"),
+        CodeBlock("kotlin", "import dev.kindling.utils.method.format.system.toBase64"),
+        DeclGroup("API", listOf(
+            Decl("bytesToHuman", listOf("android"), false, false, listOf(Impl("main", "", listOf("android"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/utils/src/main/kotlin/dev/kindling/utils/method/format/system/FormatBytes.kt")), listOf(
+                CodeBlock("kotlin", "fun Long.bytesToHuman(decimals: Int = 1): String"),
+                Props(listOf(PropRow("decimals", "Int", "1", "", false))),
+            )),
+            Decl("bytesToHuman", listOf("android"), false, false, listOf(Impl("main", "", listOf("android"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/utils/src/main/kotlin/dev/kindling/utils/method/format/system/FormatBytes.kt")), listOf(
+                CodeBlock("kotlin", "fun Int.bytesToHuman(decimals: Int = 1): String"),
+                Props(listOf(PropRow("decimals", "Int", "1", "", false))),
+            )),
+            Decl("bytesToHumanSi", listOf("android"), false, false, listOf(Impl("main", "", listOf("android"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/utils/src/main/kotlin/dev/kindling/utils/method/format/system/FormatBytes.kt")), listOf(
+                CodeBlock("kotlin", "fun Long.bytesToHumanSi(decimals: Int = 1): String"),
+                Props(listOf(PropRow("decimals", "Int", "1", "", false))),
+            )),
+            Decl("toKiB", listOf("android"), false, false, listOf(Impl("main", "", listOf("android"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/utils/src/main/kotlin/dev/kindling/utils/method/format/system/FormatBytes.kt")), listOf(
+                CodeBlock("kotlin", "fun Long.toKiB(): Double"),
+            )),
+            Decl("toMiB", listOf("android"), false, false, listOf(Impl("main", "", listOf("android"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/utils/src/main/kotlin/dev/kindling/utils/method/format/system/FormatBytes.kt")), listOf(
+                CodeBlock("kotlin", "fun Long.toMiB(): Double"),
+            )),
+            Decl("toGiB", listOf("android"), false, false, listOf(Impl("main", "", listOf("android"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/utils/src/main/kotlin/dev/kindling/utils/method/format/system/FormatBytes.kt")), listOf(
+                CodeBlock("kotlin", "fun Long.toGiB(): Double"),
+            )),
+            Decl("toTiB", listOf("android"), false, false, listOf(Impl("main", "", listOf("android"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/utils/src/main/kotlin/dev/kindling/utils/method/format/system/FormatBytes.kt")), listOf(
+                CodeBlock("kotlin", "fun Long.toTiB(): Double"),
+            )),
+            Decl("kiBToBytes", listOf("android"), false, false, listOf(Impl("main", "", listOf("android"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/utils/src/main/kotlin/dev/kindling/utils/method/format/system/FormatBytes.kt")), listOf(
+                CodeBlock("kotlin", "fun Double.kiBToBytes(): Long"),
+            )),
+            Decl("miBToBytes", listOf("android"), false, false, listOf(Impl("main", "", listOf("android"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/utils/src/main/kotlin/dev/kindling/utils/method/format/system/FormatBytes.kt")), listOf(
+                CodeBlock("kotlin", "fun Double.miBToBytes(): Long"),
+            )),
+            Decl("giBToBytes", listOf("android"), false, false, listOf(Impl("main", "", listOf("android"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/utils/src/main/kotlin/dev/kindling/utils/method/format/system/FormatBytes.kt")), listOf(
+                CodeBlock("kotlin", "fun Double.giBToBytes(): Long"),
+            )),
+            Decl("storageTier", listOf("android"), false, false, listOf(Impl("main", "", listOf("android"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/utils/src/main/kotlin/dev/kindling/utils/method/format/system/FormatBytes.kt")), listOf(
+                CodeBlock("kotlin", "fun Long.storageTier(): String"),
+            )),
+            Decl("diskUsageLabel", listOf("android"), false, false, listOf(Impl("main", "", listOf("android"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/utils/src/main/kotlin/dev/kindling/utils/method/format/system/FormatBytes.kt")), listOf(
+                CodeBlock("kotlin", "fun Long.diskUsageLabel(total: Long): String"),
+                Props(listOf(PropRow("total", "Long", "", "", true))),
+            )),
+            Decl("usageRatio", listOf("android"), false, false, listOf(Impl("main", "", listOf("android"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/utils/src/main/kotlin/dev/kindling/utils/method/format/system/FormatBytes.kt")), listOf(
+                CodeBlock("kotlin", "fun Long.usageRatio(total: Long): Double"),
+                Props(listOf(PropRow("total", "Long", "", "", true))),
+            )),
+            Decl("toBase64", listOf("android"), false, false, listOf(Impl("main", "", listOf("android"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/utils/src/main/kotlin/dev/kindling/utils/method/format/system/FormatBytes.kt")), listOf(
+                CodeBlock("kotlin", "fun ByteArray.toBase64(): String"),
+            )),
+            Decl("fromBase64", listOf("android"), false, false, listOf(Impl("main", "", listOf("android"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/utils/src/main/kotlin/dev/kindling/utils/method/format/system/FormatBytes.kt")), listOf(
+                Para("Decodes a Base64 string back to a `ByteArray`."),
+                CodeBlock("kotlin", "fun String.fromBase64(): ByteArray"),
+            )),
+            Decl("toBytesBigEndian", listOf("android"), false, false, listOf(Impl("main", "", listOf("android"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/utils/src/main/kotlin/dev/kindling/utils/method/format/system/FormatBytes.kt")), listOf(
+                Para("Converts an `Int` to a 4-byte big-endian `ByteArray`."),
+                CodeBlock("kotlin", "fun Int.toBytesBigEndian(): ByteArray"),
+            )),
+            Decl("fromBytesBigEndian", listOf("android"), false, false, listOf(Impl("main", "", listOf("android"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/utils/src/main/kotlin/dev/kindling/utils/method/format/system/FormatBytes.kt")), listOf(
+                Para("Reads a 4-byte big-endian `ByteArray` back to an `Int`."),
+                CodeBlock("kotlin", "fun ByteArray.fromBytesBigEndian(): Int"),
+            )),
+        )),
+    )

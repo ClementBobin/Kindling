@@ -17,20 +17,55 @@ internal fun page_components_badge(): DocPage = DocPage(
         Heading(2, "Usage"),
         CodeBlock("kotlin", "// Simple text badge\nKBadge { Text(\"New\") }\n\n// Destructive variant for errors\nKBadge(variant = KBadgeVariant.Destructive) {\n    Text(\"Critical\")\n}\n\n// Outline variant with an icon\nKBadge(variant = KBadgeVariant.Outline) {\n    Icon(Icons.Default.Info, null, modifier = Modifier.size(12.dp))\n    Text(\"Info\")\n}"),
         Heading(2, "Installation"),
-        CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:0.3.0\")"),
+        CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:{{version}}\")"),
         CodeBlock("kotlin", "import dev.kindling.core.components.ui.badge.KBadge"),
-        Heading(2, "Composables"),
-        Heading(3, "KBadge"),
-        CodeBlock("kotlin", "@Composable\nfun KBadge(\n    modifier: Modifier = Modifier,\n    variant: KBadgeVariant = KBadgeVariant.Default,\n    content: @Composable RowScope.() -> Unit,\n)"),
-        Props(listOf(PropRow("modifier", "Modifier", "Modifier", "The modifier to be applied to the layout.", false), PropRow("variant", "KBadgeVariant", "KBadgeVariant.Default", "The visual style variant of the badge.", false), PropRow("content", "@Composable RowScope.() -> Unit", "", "The composable content to display inside the badge.", true))),
-        Source("https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/badge/KBadge.kt#L51"),
-        Heading(2, "Types"),
-        Heading(3, "KBadgeVariant"),
-        Para("Defines styling configurations and themes for `KBadge`."),
-        CodeBlock("kotlin", "data class KBadgeVariant(\n    val bg: @Composable () -> Color,\n    val fg: @Composable () -> Color,\n    val border: @Composable () -> Color? = { null },\n)"),
-        Props(listOf(PropRow("bg", "@Composable () -> Color", "", "", true), PropRow("fg", "@Composable () -> Color", "", "", true), PropRow("border", "@Composable () -> Color?", "{ null }", "", false))),
-        Para("**Presets**"),
-        Bullets(false, listOf("`val Default: KBadgeVariant`", "`val Secondary: KBadgeVariant`", "`val Destructive: KBadgeVariant`", "`val Outline: KBadgeVariant`", "`val Ghost: KBadgeVariant`", "`val Link: KBadgeVariant`")),
-        Source("https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/badge/KBadgeVariant.kt#L10"),
+        DeclGroup("Composables", listOf(
+            Decl("KBadge", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/badge/KBadge.kt#L51")), listOf(
+                CodeBlock("kotlin", "@Composable\nfun KBadge(\n    modifier: Modifier = Modifier,\n    variant: KBadgeVariant = KBadgeVariant.Default,\n    content: @Composable RowScope.() -> Unit,\n)"),
+                Props(listOf(PropRow("modifier", "Modifier", "Modifier", "The modifier to be applied to the layout.", false), PropRow("variant", "KBadgeVariant", "KBadgeVariant.Default", "The visual style variant of the badge.", false), PropRow("content", "@Composable RowScope.() -> Unit", "", "The composable content to display inside the badge.", true))),
+            )),
+        )),
+        DeclGroup("Types", listOf(
+            Decl("KBadgeVariant", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/badge/KBadgeVariant.kt#L10")), listOf(
+                Para("Defines styling configurations and themes for `KBadge`."),
+                CodeBlock("kotlin", "data class KBadgeVariant(\n    val bg: @Composable () -> Color,\n    val fg: @Composable () -> Color,\n    val border: @Composable () -> Color? = { null },\n)"),
+                Props(listOf(PropRow("bg", "@Composable () -> Color", "", "", true), PropRow("fg", "@Composable () -> Color", "", "", true), PropRow("border", "@Composable () -> Color?", "{ null }", "", false))),
+                Para("**Presets**"),
+                Bullets(false, listOf("`val Default: KBadgeVariant`", "`val Secondary: KBadgeVariant`", "`val Destructive: KBadgeVariant`", "`val Outline: KBadgeVariant`", "`val Ghost: KBadgeVariant`", "`val Link: KBadgeVariant`")),
+            )),
+        )),
+    ),
+    since = "4.0.2",
+    available = listOf("4.3.6", "4.3.5", "4.3.4", "4.3.3", "4.3.2", "4.3.1", "4.3.0", "4.2.9", "4.2.8", "4.2.7", "4.2.6", "4.2.5", "4.2.4", "4.2.3", "4.2.2"),
+    headVersions = listOf("4.3.6", "4.3.5", "4.3.4", "4.3.3", "4.3.2", "4.3.1", "4.3.0", "4.2.9", "4.2.8", "4.2.7", "4.2.6", "4.2.5", "4.2.4"),
+    history = listOf(
+        VersionGroup(listOf("4.2.3", "4.2.2")) { page_components_badge_h1() },
     ),
 )
+
+internal fun page_components_badge_h1(): List<Block> = listOf(
+        Para("A small status indicator used to display labels, categories, or short numbers. Supports several visual variants like `KBadgeVariant.Default`, `KBadgeVariant.Outline`, and `KBadgeVariant.Destructive`."),
+        Para("Respects `LocalLayoutDirection` automatically via Compose RTL support."),
+        Heading(2, "Preview"),
+        Demo("badge"),
+        Heading(2, "Usage"),
+        CodeBlock("kotlin", "// Simple text badge\nKBadge { Text(\"New\") }\n\n// Destructive variant for errors\nKBadge(variant = KBadgeVariant.Destructive) {\n    Text(\"Critical\")\n}\n\n// Outline variant with an icon\nKBadge(variant = KBadgeVariant.Outline) {\n    Icon(Icons.Default.Info, null, modifier = Modifier.size(12.dp))\n    Text(\"Info\")\n}"),
+        Heading(2, "Installation"),
+        CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:{{version}}\")"),
+        CodeBlock("kotlin", "import dev.kindling.core.components.ui.badge.KBadge"),
+        DeclGroup("Composables", listOf(
+            Decl("KBadge", listOf("android"), true, true, listOf(Impl("commonMain", "", listOf("android"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/badge/KBadge.kt")), listOf(
+                CodeBlock("kotlin", "@Composable\nfun KBadge(\n    modifier: Modifier = Modifier,\n    variant: KBadgeVariant = KBadgeVariant.Default,\n    content: @Composable RowScope.() -> Unit,\n)"),
+                Props(listOf(PropRow("modifier", "Modifier", "Modifier", "The modifier to be applied to the layout.", false), PropRow("variant", "KBadgeVariant", "KBadgeVariant.Default", "The visual style variant of the badge.", false), PropRow("content", "@Composable RowScope.() -> Unit", "", "The composable content to display inside the badge.", true))),
+            )),
+        )),
+        DeclGroup("Types", listOf(
+            Decl("KBadgeVariant", listOf("android"), true, true, listOf(Impl("commonMain", "", listOf("android"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/badge/KBadgeVariant.kt")), listOf(
+                Para("Defines styling configurations and themes for `KBadge`."),
+                CodeBlock("kotlin", "data class KBadgeVariant(\n    val bg: @Composable () -> Color,\n    val fg: @Composable () -> Color,\n    val border: @Composable () -> Color? = { null },\n)"),
+                Props(listOf(PropRow("bg", "@Composable () -> Color", "", "", true), PropRow("fg", "@Composable () -> Color", "", "", true), PropRow("border", "@Composable () -> Color?", "{ null }", "", false))),
+                Para("**Presets**"),
+                Bullets(false, listOf("`val Default: KBadgeVariant`", "`val Secondary: KBadgeVariant`", "`val Destructive: KBadgeVariant`", "`val Outline: KBadgeVariant`", "`val Ghost: KBadgeVariant`", "`val Link: KBadgeVariant`")),
+            )),
+        )),
+    )

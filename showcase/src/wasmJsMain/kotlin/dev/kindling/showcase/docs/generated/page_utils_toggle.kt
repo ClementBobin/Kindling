@@ -13,14 +13,37 @@ internal fun page_utils_toggle(): DocPage = DocPage(
         Para("Port of the `useToggle` React hook."),
         CodeBlock("kotlin", "val toggle = Toggle(defaultValue = false)\ntoggle.toggle()       // → true\ntoggle.toggle()       // → false\ntoggle.set(true)      // → true\ntoggle.set(false)     // → false\n\ntoggle.state.collect { enabled -> applyTheme(enabled) }"),
         Heading(2, "Installation"),
-        CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:utils:0.3.0\")"),
+        CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:utils:{{version}}\")"),
         CodeBlock("kotlin", "import dev.kindling.utils.method.KToggle"),
-        Heading(2, "Types"),
-        Heading(3, "KToggle"),
-        CodeBlock("kotlin", "class KToggle(defaultValue: Boolean = false)"),
-        Props(listOf(PropRow("defaultValue", "Boolean", "false", "Initial state. Default: false.", false))),
-        Para("**Members**"),
-        Bullets(false, listOf("`val state: StateFlow<Boolean>` — The current toggle value as a `StateFlow`.", "`val value: Boolean get()` — The current toggle value.", "`fun toggle()` — Flips the current value.", "`fun set(newValue: Boolean)` — Forces the value to `newValue`.")),
-        Source("https://github.com/ClementBobin/Kindling/blob/main/utils/src/commonMain/kotlin/dev/kindling/utils/method/KToggle.kt#L24"),
+        DeclGroup("Types", listOf(
+            Decl("KToggle", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/utils/src/commonMain/kotlin/dev/kindling/utils/method/KToggle.kt#L24")), listOf(
+                CodeBlock("kotlin", "class KToggle(defaultValue: Boolean = false)"),
+                Props(listOf(PropRow("defaultValue", "Boolean", "false", "Initial state. Default: false.", false))),
+                Para("**Members**"),
+                Bullets(false, listOf("`val state: StateFlow<Boolean>` — The current toggle value as a `StateFlow`.", "`val value: Boolean get()` — The current toggle value.", "`fun toggle()` — Flips the current value.", "`fun set(newValue: Boolean)` — Forces the value to `newValue`.")),
+            )),
+        )),
+    ),
+    since = "3.3.0",
+    available = listOf("4.3.6", "4.3.5", "4.3.4", "4.3.3", "4.3.2", "4.3.1", "4.3.0", "4.2.9", "4.2.8", "4.2.7", "4.2.6", "4.2.5", "4.2.4", "4.2.3", "4.2.2"),
+    headVersions = listOf("4.3.6", "4.3.5", "4.3.4", "4.3.3", "4.3.2", "4.3.1", "4.3.0", "4.2.9", "4.2.8", "4.2.7", "4.2.6"),
+    history = listOf(
+        VersionGroup(listOf("4.2.5", "4.2.4", "4.2.3", "4.2.2")) { page_utils_toggle_h1() },
     ),
 )
+
+internal fun page_utils_toggle_h1(): List<Block> = listOf(
+        Para("Port of the `useToggle` React hook."),
+        CodeBlock("kotlin", "val toggle = Toggle(defaultValue = false)\ntoggle.toggle()       // → true\ntoggle.toggle()       // → false\ntoggle.set(true)      // → true\ntoggle.set(false)     // → false\n\ntoggle.state.collect { enabled -> applyTheme(enabled) }"),
+        Heading(2, "Installation"),
+        CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:utils:{{version}}\")"),
+        CodeBlock("kotlin", "import dev.kindling.utils.method.KToggle"),
+        DeclGroup("Types", listOf(
+            Decl("KToggle", listOf("android"), false, false, listOf(Impl("main", "", listOf("android"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/utils/src/main/kotlin/dev/kindling/utils/method/KToggle.kt")), listOf(
+                CodeBlock("kotlin", "class KToggle(defaultValue: Boolean = false)"),
+                Props(listOf(PropRow("defaultValue", "Boolean", "false", "Initial state. Default: false.", false))),
+                Para("**Members**"),
+                Bullets(false, listOf("`val state: StateFlow<Boolean>` — The current toggle value as a `StateFlow`.", "`val value: Boolean get()` — The current toggle value.", "`fun toggle()` — Flips the current value.", "`fun set(newValue: Boolean)` — Forces the value to `newValue`.")),
+            )),
+        )),
+    )

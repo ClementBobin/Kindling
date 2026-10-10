@@ -11,34 +11,71 @@ internal fun page_components_logos_carousel(): DocPage = DocPage(
     order = 100,
     blocks = listOf(
         Heading(2, "Installation"),
-        CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:0.3.0\")"),
+        CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:{{version}}\")"),
         CodeBlock("kotlin", "import dev.kindling.core.components.ui.logosCarousel.KLogosCarousel"),
-        Heading(2, "Composables"),
-        Heading(3, "KLogosCarousel"),
-        CodeBlock("kotlin", "@Composable\nfun KLogosCarousel(\n    logos: List<KLogo>,\n    modifier: Modifier = Modifier,\n    direction: KLogosCarouselDirection = KLogosCarouselDirection.FORWARD,\n    velocity: Dp = KLogosCarouselDefaults.Velocity,\n    spacing: Dp = KLogosCarouselDefaults.Spacing,\n    logoHeight: Dp = KLogosCarouselDefaults.LogoHeight,\n    repeatCount: Int = 4,\n    pauseOnTouch: Boolean = true,\n    enableGrayscale: Boolean = true,\n    tint: Color? = null,\n    enableFadeEdges: Boolean = true,\n    fadeColor: Color = Color.Unspecified,\n    fadeWidth: Dp = KLogosCarouselDefaults.FadeWidth,\n    loopCounter: KCounter? = null,\n    speedStepCounter: KCounter? = null,\n    customLogoContent: (@Composable (KLogo) -> Unit)? = null,\n)"),
-        Props(listOf(PropRow("logos", "List<KLogo>", "", "", true), PropRow("modifier", "Modifier", "Modifier", "", false), PropRow("direction", "KLogosCarouselDirection", "KLogosCarouselDirection.FORWARD", "", false), PropRow("velocity", "Dp", "KLogosCarouselDefaults.Velocity", "", false), PropRow("spacing", "Dp", "KLogosCarouselDefaults.Spacing", "", false), PropRow("logoHeight", "Dp", "KLogosCarouselDefaults.LogoHeight", "", false), PropRow("repeatCount", "Int", "4", "", false), PropRow("pauseOnTouch", "Boolean", "true", "", false), PropRow("enableGrayscale", "Boolean", "true", "", false), PropRow("tint", "Color?", "null", "", false), PropRow("enableFadeEdges", "Boolean", "true", "", false), PropRow("fadeColor", "Color", "Color.Unspecified", "", false), PropRow("fadeWidth", "Dp", "KLogosCarouselDefaults.FadeWidth", "", false), PropRow("loopCounter", "KCounter?", "null", "", false), PropRow("speedStepCounter", "KCounter?", "null", "", false), PropRow("customLogoContent", "(@Composable (KLogo) -> Unit)?", "null", "", false))),
-        Source("https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/logosCarousel/KLogosCarousel.kt#L32"),
-        Rule,
-        Heading(3, "KDefaultLogoItem"),
-        CodeBlock("kotlin", "@Composable\nfun KDefaultLogoItem(\n    logo: KLogo,\n    logoHeight: Dp,\n    colorFilter: ColorFilter?,\n)"),
-        Props(listOf(PropRow("logo", "KLogo", "", "", true), PropRow("logoHeight", "Dp", "", "", true), PropRow("colorFilter", "ColorFilter?", "", "", true))),
-        Source("https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/logosCarousel/KLogoItem.kt#L16"),
-        Heading(2, "Types"),
-        Heading(3, "KLogo"),
-        CodeBlock("kotlin", "data class KLogo(\n    val url: String? = null,\n    val resId: Int? = null,\n    val alt: String = \"\",\n)"),
-        Props(listOf(PropRow("url", "String?", "null", "", false), PropRow("resId", "Int?", "null", "", false), PropRow("alt", "String", "\"\"", "", false))),
-        Source("https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/logosCarousel/KLogosCarouselModels.kt#L6"),
-        Rule,
-        Heading(3, "KLogosCarouselDirection"),
-        CodeBlock("kotlin", "enum class KLogosCarouselDirection"),
-        Para("**Values**"),
-        Bullets(false, listOf("`FORWARD`", "`BACKWARD`")),
-        Source("https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/logosCarousel/KLogosCarouselModels.kt#L12"),
-        Rule,
-        Heading(3, "KLogosCarouselDefaults"),
-        CodeBlock("kotlin", "object KLogosCarouselDefaults"),
-        Para("**Members**"),
-        Bullets(false, listOf("`val Velocity: Dp`", "`val Spacing: Dp`", "`val LogoHeight: Dp`", "`val FadeWidth: Dp`")),
-        Source("https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/logosCarousel/KLogosCarouselModels.kt#L16"),
+        DeclGroup("Composables", listOf(
+            Decl("KLogosCarousel", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/logosCarousel/KLogosCarousel.kt#L32")), listOf(
+                CodeBlock("kotlin", "@Composable\nfun KLogosCarousel(\n    logos: List<KLogo>,\n    modifier: Modifier = Modifier,\n    direction: KLogosCarouselDirection = KLogosCarouselDirection.FORWARD,\n    velocity: Dp = KLogosCarouselDefaults.Velocity,\n    spacing: Dp = KLogosCarouselDefaults.Spacing,\n    logoHeight: Dp = KLogosCarouselDefaults.LogoHeight,\n    repeatCount: Int = 4,\n    pauseOnTouch: Boolean = true,\n    enableGrayscale: Boolean = true,\n    tint: Color? = null,\n    enableFadeEdges: Boolean = true,\n    fadeColor: Color = Color.Unspecified,\n    fadeWidth: Dp = KLogosCarouselDefaults.FadeWidth,\n    loopCounter: KCounter? = null,\n    speedStepCounter: KCounter? = null,\n    customLogoContent: (@Composable (KLogo) -> Unit)? = null,\n)"),
+                Props(listOf(PropRow("logos", "List<KLogo>", "", "", true), PropRow("modifier", "Modifier", "Modifier", "", false), PropRow("direction", "KLogosCarouselDirection", "KLogosCarouselDirection.FORWARD", "", false), PropRow("velocity", "Dp", "KLogosCarouselDefaults.Velocity", "", false), PropRow("spacing", "Dp", "KLogosCarouselDefaults.Spacing", "", false), PropRow("logoHeight", "Dp", "KLogosCarouselDefaults.LogoHeight", "", false), PropRow("repeatCount", "Int", "4", "", false), PropRow("pauseOnTouch", "Boolean", "true", "", false), PropRow("enableGrayscale", "Boolean", "true", "", false), PropRow("tint", "Color?", "null", "", false), PropRow("enableFadeEdges", "Boolean", "true", "", false), PropRow("fadeColor", "Color", "Color.Unspecified", "", false), PropRow("fadeWidth", "Dp", "KLogosCarouselDefaults.FadeWidth", "", false), PropRow("loopCounter", "KCounter?", "null", "", false), PropRow("speedStepCounter", "KCounter?", "null", "", false), PropRow("customLogoContent", "(@Composable (KLogo) -> Unit)?", "null", "", false))),
+            )),
+            Decl("KDefaultLogoItem", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/logosCarousel/KLogoItem.kt#L16")), listOf(
+                CodeBlock("kotlin", "@Composable\nfun KDefaultLogoItem(\n    logo: KLogo,\n    logoHeight: Dp,\n    colorFilter: ColorFilter?,\n)"),
+                Props(listOf(PropRow("logo", "KLogo", "", "", true), PropRow("logoHeight", "Dp", "", "", true), PropRow("colorFilter", "ColorFilter?", "", "", true))),
+            )),
+        )),
+        DeclGroup("Types", listOf(
+            Decl("KLogo", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/logosCarousel/KLogosCarouselModels.kt#L6")), listOf(
+                CodeBlock("kotlin", "data class KLogo(\n    val url: String? = null,\n    val resId: Int? = null,\n    val alt: String = \"\",\n)"),
+                Props(listOf(PropRow("url", "String?", "null", "", false), PropRow("resId", "Int?", "null", "", false), PropRow("alt", "String", "\"\"", "", false))),
+            )),
+            Decl("KLogosCarouselDirection", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/logosCarousel/KLogosCarouselModels.kt#L12")), listOf(
+                CodeBlock("kotlin", "enum class KLogosCarouselDirection"),
+                Para("**Values**"),
+                Bullets(false, listOf("`FORWARD`", "`BACKWARD`")),
+            )),
+            Decl("KLogosCarouselDefaults", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/logosCarousel/KLogosCarouselModels.kt#L16")), listOf(
+                CodeBlock("kotlin", "object KLogosCarouselDefaults"),
+                Para("**Members**"),
+                Bullets(false, listOf("`val Velocity: Dp`", "`val Spacing: Dp`", "`val LogoHeight: Dp`", "`val FadeWidth: Dp`")),
+            )),
+        )),
+    ),
+    since = "4.1.14",
+    available = listOf("4.3.6", "4.3.5", "4.3.4", "4.3.3", "4.3.2", "4.3.1", "4.3.0", "4.2.9", "4.2.8", "4.2.7", "4.2.6", "4.2.5", "4.2.4", "4.2.3", "4.2.2"),
+    headVersions = listOf("4.3.6", "4.3.5", "4.3.4", "4.3.3", "4.3.2", "4.3.1", "4.3.0", "4.2.9", "4.2.8", "4.2.7", "4.2.6", "4.2.5", "4.2.4"),
+    history = listOf(
+        VersionGroup(listOf("4.2.3", "4.2.2")) { page_components_logos_carousel_h1() },
     ),
 )
+
+internal fun page_components_logos_carousel_h1(): List<Block> = listOf(
+        Heading(2, "Installation"),
+        CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:{{version}}\")"),
+        CodeBlock("kotlin", "import dev.kindling.core.components.ui.logosCarousel.KLogosCarousel"),
+        DeclGroup("Composables", listOf(
+            Decl("KLogosCarousel", listOf("android"), true, true, listOf(Impl("commonMain", "", listOf("android"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/logosCarousel/KLogosCarousel.kt")), listOf(
+                CodeBlock("kotlin", "@Composable\nfun KLogosCarousel(\n    logos: List<KLogo>,\n    modifier: Modifier = Modifier,\n    direction: KLogosCarouselDirection = KLogosCarouselDirection.FORWARD,\n    velocity: Dp = KLogosCarouselDefaults.Velocity,\n    spacing: Dp = KLogosCarouselDefaults.Spacing,\n    logoHeight: Dp = KLogosCarouselDefaults.LogoHeight,\n    repeatCount: Int = 4,\n    pauseOnTouch: Boolean = true,\n    enableGrayscale: Boolean = true,\n    tint: Color? = null,\n    enableFadeEdges: Boolean = true,\n    fadeColor: Color = Color.Unspecified,\n    fadeWidth: Dp = KLogosCarouselDefaults.FadeWidth,\n    loopCounter: KCounter? = null,\n    speedStepCounter: KCounter? = null,\n    customLogoContent: (@Composable (KLogo) -> Unit)? = null,\n)"),
+                Props(listOf(PropRow("logos", "List<KLogo>", "", "", true), PropRow("modifier", "Modifier", "Modifier", "", false), PropRow("direction", "KLogosCarouselDirection", "KLogosCarouselDirection.FORWARD", "", false), PropRow("velocity", "Dp", "KLogosCarouselDefaults.Velocity", "", false), PropRow("spacing", "Dp", "KLogosCarouselDefaults.Spacing", "", false), PropRow("logoHeight", "Dp", "KLogosCarouselDefaults.LogoHeight", "", false), PropRow("repeatCount", "Int", "4", "", false), PropRow("pauseOnTouch", "Boolean", "true", "", false), PropRow("enableGrayscale", "Boolean", "true", "", false), PropRow("tint", "Color?", "null", "", false), PropRow("enableFadeEdges", "Boolean", "true", "", false), PropRow("fadeColor", "Color", "Color.Unspecified", "", false), PropRow("fadeWidth", "Dp", "KLogosCarouselDefaults.FadeWidth", "", false), PropRow("loopCounter", "KCounter?", "null", "", false), PropRow("speedStepCounter", "KCounter?", "null", "", false), PropRow("customLogoContent", "(@Composable (KLogo) -> Unit)?", "null", "", false))),
+            )),
+            Decl("KDefaultLogoItem", listOf("android"), true, true, listOf(Impl("commonMain", "", listOf("android"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/logosCarousel/KLogoItem.kt")), listOf(
+                CodeBlock("kotlin", "@Composable\nfun KDefaultLogoItem(\n    logo: KLogo,\n    logoHeight: Dp,\n    colorFilter: ColorFilter?,\n)"),
+                Props(listOf(PropRow("logo", "KLogo", "", "", true), PropRow("logoHeight", "Dp", "", "", true), PropRow("colorFilter", "ColorFilter?", "", "", true))),
+            )),
+        )),
+        DeclGroup("Types", listOf(
+            Decl("KLogo", listOf("android"), true, true, listOf(Impl("commonMain", "", listOf("android"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/logosCarousel/KLogosCarouselModels.kt")), listOf(
+                CodeBlock("kotlin", "data class KLogo(\n    val url: String? = null,\n    val resId: Int? = null,\n    val alt: String = \"\",\n)"),
+                Props(listOf(PropRow("url", "String?", "null", "", false), PropRow("resId", "Int?", "null", "", false), PropRow("alt", "String", "\"\"", "", false))),
+            )),
+            Decl("KLogosCarouselDirection", listOf("android"), true, true, listOf(Impl("commonMain", "", listOf("android"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/logosCarousel/KLogosCarouselModels.kt")), listOf(
+                CodeBlock("kotlin", "enum class KLogosCarouselDirection"),
+                Para("**Values**"),
+                Bullets(false, listOf("`FORWARD`", "`BACKWARD`")),
+            )),
+            Decl("KLogosCarouselDefaults", listOf("android"), true, true, listOf(Impl("commonMain", "", listOf("android"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/logosCarousel/KLogosCarouselModels.kt")), listOf(
+                CodeBlock("kotlin", "object KLogosCarouselDefaults"),
+                Para("**Members**"),
+                Bullets(false, listOf("`val Velocity: Dp`", "`val Spacing: Dp`", "`val LogoHeight: Dp`", "`val FadeWidth: Dp`")),
+            )),
+        )),
+    )

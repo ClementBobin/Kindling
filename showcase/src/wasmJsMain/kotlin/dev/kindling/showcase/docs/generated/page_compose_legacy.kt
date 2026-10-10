@@ -15,14 +15,21 @@ internal fun page_compose_legacy(): DocPage = DocPage(
         Para("Events that implement `KDestination` or `NavigationEvent` are turned into navigation automatically by `KScreen`."),
         Para("`fetchData` / `collectData` run the source on an IO dispatcher (`Dispatchers.IO`, or `Dispatchers.Default` on the web) and deliver results on `Dispatchers.Main`."),
         Heading(2, "Installation"),
-        CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:compose:0.3.0\")"),
+        CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:compose:{{version}}\")"),
         CodeBlock("kotlin", "import dev.kindling.compose.legacy.KSimpleViewModel"),
-        Heading(2, "Types"),
-        Heading(3, "KSimpleViewModel"),
-        CodeBlock("kotlin", "open class KSimpleViewModel<State>(initialState: State) : ViewModel(), KStateHolder<State>"),
-        Props(listOf(PropRow("initialState", "State", "", "State emitted immediately to every collector.", true))),
-        Para("**Members**"),
-        Bullets(false, listOf("`fun updateState(block: State.() -> State)` — Applies a reducer to the current state atomically: `updateState { copy(isLoading = false) }`.", "`fun sendEvent(obj: Any)` — Enqueues a one-shot event for the UI layer. Safe to call from any coroutine context.", "`fun <T> collectData( source: suspend () -> Flow<T>, onResult: Result<T>.() -> Unit)` — Collects the `Flow` returned by `source` on the IO dispatcher and delivers each `Result` to `onResult` on `Dispatchers.Main`. Errors become `Result`.", "`fun <T> fetchData( source: suspend () -> T, onResult: Result<T>.() -> Unit)` — Runs `source` on the IO dispatcher and delivers the `Result` to `onResult` on `Dispatchers.Main`. Errors become `Result`.")),
-        Source("https://github.com/ClementBobin/Kindling/blob/main/compose/src/commonMain/kotlin/dev/kindling/compose/legacy/KSimpleViewModel.kt#L43"),
+        DeclGroup("Types", listOf(
+            Decl("KSimpleViewModel", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/compose/src/commonMain/kotlin/dev/kindling/compose/legacy/KSimpleViewModel.kt#L43")), listOf(
+                CodeBlock("kotlin", "open class KSimpleViewModel<State>(initialState: State) : ViewModel(), KStateHolder<State>"),
+                Props(listOf(PropRow("initialState", "State", "", "State emitted immediately to every collector.", true))),
+                Para("**Members**"),
+                Bullets(false, listOf("`fun updateState(block: State.() -> State)` — Applies a reducer to the current state atomically: `updateState { copy(isLoading = false) }`.", "`fun sendEvent(obj: Any)` — Enqueues a one-shot event for the UI layer. Safe to call from any coroutine context.", "`fun <T> collectData( source: suspend () -> Flow<T>, onResult: Result<T>.() -> Unit)` — Collects the `Flow` returned by `source` on the IO dispatcher and delivers each `Result` to `onResult` on `Dispatchers.Main`. Errors become `Result`.", "`fun <T> fetchData( source: suspend () -> T, onResult: Result<T>.() -> Unit)` — Runs `source` on the IO dispatcher and delivers the `Result` to `onResult` on `Dispatchers.Main`. Errors become `Result`.")),
+            )),
+        )),
+    ),
+    since = "1.0.5",
+    available = listOf("4.3.6", "4.3.5", "4.3.4", "4.3.3", "4.3.2", "4.3.1", "4.3.0", "4.2.9", "4.2.8", "4.2.7", "4.2.6"),
+    headVersions = listOf("4.3.6", "4.3.5", "4.3.4", "4.3.3", "4.3.2", "4.3.1", "4.3.0", "4.2.9", "4.2.8", "4.2.7", "4.2.6"),
+    history = listOf(
+
     ),
 )

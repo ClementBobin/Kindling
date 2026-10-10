@@ -12,35 +12,78 @@ internal fun page_components_direction(): DocPage = DocPage(
     blocks = listOf(
         CodeBlock("kotlin", "KDirectionProvider(LayoutDirection.Rtl) { MyScreen() }"),
         Heading(2, "Installation"),
-        CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:0.3.0\")"),
+        CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:{{version}}\")"),
         CodeBlock("kotlin", "import dev.kindling.core.components.ui.direction.KDirectionProvider"),
-        Heading(2, "Composables"),
-        Heading(3, "KDirectionProvider"),
-        CodeBlock("kotlin", "@Composable\nfun KDirectionProvider(\n    direction: LayoutDirection = LayoutDirection.Ltr,\n    content: @Composable () -> Unit,\n)"),
-        Props(listOf(PropRow("direction", "LayoutDirection", "LayoutDirection.Ltr", "", false), PropRow("content", "@Composable () -> Unit", "", "", true))),
-        Source("https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/direction/KDirectionProvider.kt#L16"),
-        Rule,
-        Heading(3, "useKDirection"),
-        Para("Reads the current `LayoutDirection` from composition."),
-        CodeBlock("kotlin", "@Composable\nfun useKDirection(): LayoutDirection"),
-        Source("https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/direction/KDirectionProvider.kt#L25"),
-        Rule,
-        Heading(3, "isRtl"),
-        Para("Returns the current `LayoutDirection` as a boolean. Useful for conditional layout logic inside composables."),
-        CodeBlock("kotlin", "@Composable\nfun isRtl(): Boolean"),
-        Source("https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/direction/KDirectionProvider.kt#L32"),
-        Heading(2, "Types"),
-        Heading(3, "KDirectionManager"),
-        Para("Singleton for runtime LTR ↔ RTL toggling."),
-        CodeBlock("kotlin", "// In your root composable:\nKDirectionProvider(direction = KDirectionManager.direction) { NavHost(…) }\n\n// Anywhere:\nKButton(\"Toggle RTL\", onClick = { KDirectionManager.toggle() })"),
-        CodeBlock("kotlin", "object KDirectionManager"),
-        Para("**Members**"),
-        Bullets(false, listOf("`var direction by mutableStateOf<LayoutDirection>(LayoutDirection.Ltr)`", "`fun toggle()`", "`fun set(dir: LayoutDirection)`", "`fun setFromLanguage(language: String)`", "`val isRtl: Boolean get()`", "`val isLtr: Boolean get()`")),
-        Source("https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/direction/KDirectionManager.kt#L19"),
-        Heading(2, "Functions & properties"),
-        Heading(3, "isRtlLanguage"),
-        CodeBlock("kotlin", "fun isRtlLanguage(language: String = \"en\"): Boolean"),
-        Props(listOf(PropRow("language", "String", "\"en\"", "", false))),
-        Source("https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/direction/KDirectionManager.kt#L37"),
+        DeclGroup("Composables", listOf(
+            Decl("KDirectionProvider", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/direction/KDirectionProvider.kt#L16")), listOf(
+                CodeBlock("kotlin", "@Composable\nfun KDirectionProvider(\n    direction: LayoutDirection = LayoutDirection.Ltr,\n    content: @Composable () -> Unit,\n)"),
+                Props(listOf(PropRow("direction", "LayoutDirection", "LayoutDirection.Ltr", "", false), PropRow("content", "@Composable () -> Unit", "", "", true))),
+            )),
+            Decl("useKDirection", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/direction/KDirectionProvider.kt#L25")), listOf(
+                Para("Reads the current `LayoutDirection` from composition."),
+                CodeBlock("kotlin", "@Composable\nfun useKDirection(): LayoutDirection"),
+            )),
+            Decl("isRtl", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/direction/KDirectionProvider.kt#L32")), listOf(
+                Para("Returns the current `LayoutDirection` as a boolean. Useful for conditional layout logic inside composables."),
+                CodeBlock("kotlin", "@Composable\nfun isRtl(): Boolean"),
+            )),
+        )),
+        DeclGroup("Types", listOf(
+            Decl("KDirectionManager", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/direction/KDirectionManager.kt#L19")), listOf(
+                Para("Singleton for runtime LTR ↔ RTL toggling."),
+                CodeBlock("kotlin", "// In your root composable:\nKDirectionProvider(direction = KDirectionManager.direction) { NavHost(…) }\n\n// Anywhere:\nKButton(\"Toggle RTL\", onClick = { KDirectionManager.toggle() })"),
+                CodeBlock("kotlin", "object KDirectionManager"),
+                Para("**Members**"),
+                Bullets(false, listOf("`var direction by mutableStateOf<LayoutDirection>(LayoutDirection.Ltr)`", "`fun toggle()`", "`fun set(dir: LayoutDirection)`", "`fun setFromLanguage(language: String)`", "`val isRtl: Boolean get()`", "`val isLtr: Boolean get()`")),
+            )),
+        )),
+        DeclGroup("Functions & properties", listOf(
+            Decl("isRtlLanguage", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/direction/KDirectionManager.kt#L37")), listOf(
+                CodeBlock("kotlin", "fun isRtlLanguage(language: String = \"en\"): Boolean"),
+                Props(listOf(PropRow("language", "String", "\"en\"", "", false))),
+            )),
+        )),
+    ),
+    since = "4.0.2",
+    available = listOf("4.3.6", "4.3.5", "4.3.4", "4.3.3", "4.3.2", "4.3.1", "4.3.0", "4.2.9", "4.2.8", "4.2.7", "4.2.6", "4.2.5", "4.2.4", "4.2.3", "4.2.2"),
+    headVersions = listOf("4.3.6", "4.3.5", "4.3.4", "4.3.3", "4.3.2", "4.3.1", "4.3.0", "4.2.9", "4.2.8", "4.2.7", "4.2.6", "4.2.5", "4.2.4"),
+    history = listOf(
+        VersionGroup(listOf("4.2.3", "4.2.2")) { page_components_direction_h1() },
     ),
 )
+
+internal fun page_components_direction_h1(): List<Block> = listOf(
+        CodeBlock("kotlin", "KDirectionProvider(LayoutDirection.Rtl) { MyScreen() }"),
+        Heading(2, "Installation"),
+        CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:{{version}}\")"),
+        CodeBlock("kotlin", "import dev.kindling.core.components.ui.direction.KDirectionProvider"),
+        DeclGroup("Composables", listOf(
+            Decl("KDirectionProvider", listOf("android"), true, true, listOf(Impl("commonMain", "", listOf("android"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/direction/KDirectionProvider.kt")), listOf(
+                CodeBlock("kotlin", "@Composable\nfun KDirectionProvider(\n    direction: LayoutDirection = LayoutDirection.Ltr,\n    content: @Composable () -> Unit,\n)"),
+                Props(listOf(PropRow("direction", "LayoutDirection", "LayoutDirection.Ltr", "", false), PropRow("content", "@Composable () -> Unit", "", "", true))),
+            )),
+            Decl("useKDirection", listOf("android"), true, true, listOf(Impl("commonMain", "", listOf("android"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/direction/KDirectionProvider.kt")), listOf(
+                Para("Reads the current `LayoutDirection` from composition."),
+                CodeBlock("kotlin", "@Composable\nfun useKDirection(): LayoutDirection"),
+            )),
+            Decl("isRtl", listOf("android"), true, true, listOf(Impl("commonMain", "", listOf("android"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/direction/KDirectionProvider.kt")), listOf(
+                Para("Returns the current `LayoutDirection` as a boolean. Useful for conditional layout logic inside composables."),
+                CodeBlock("kotlin", "@Composable\nfun isRtl(): Boolean"),
+            )),
+        )),
+        DeclGroup("Types", listOf(
+            Decl("KDirectionManager", listOf("android"), true, true, listOf(Impl("commonMain", "", listOf("android"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/direction/KDirectionManager.kt")), listOf(
+                Para("Singleton for runtime LTR ↔ RTL toggling."),
+                CodeBlock("kotlin", "// In your root composable:\nKDirectionProvider(direction = KDirectionManager.direction) { NavHost(…) }\n\n// Anywhere:\nKButton(\"Toggle RTL\", onClick = { KDirectionManager.toggle() })"),
+                CodeBlock("kotlin", "object KDirectionManager"),
+                Para("**Members**"),
+                Bullets(false, listOf("`var direction by mutableStateOf<LayoutDirection>(LayoutDirection.Ltr)`", "`fun toggle()`", "`fun set(dir: LayoutDirection)`", "`fun setFromLocale(locale: Locale)`", "`val isRtl: Boolean get()`", "`val isLtr: Boolean get()`")),
+            )),
+        )),
+        DeclGroup("Functions & properties", listOf(
+            Decl("isRtlLocale", listOf("android"), true, true, listOf(Impl("commonMain", "", listOf("android"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/direction/KDirectionManager.kt")), listOf(
+                CodeBlock("kotlin", "fun isRtlLocale(locale: Locale = Locale.getDefault()): Boolean"),
+                Props(listOf(PropRow("locale", "Locale", "Locale.getDefault()", "", false))),
+            )),
+        )),
+    )

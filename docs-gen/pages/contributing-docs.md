@@ -33,6 +33,19 @@ Run the **Docs** workflow manually with *ai_drafts* enabled. It finds thin pages
 
 Write a demo composable and register it in `showcase/src/wasmJsMain/kotlin/dev/kindling/showcase/Registry.kt` using the page slug as id, for example `demo("badge", "Badge") { BadgeDemo() }`. The generator then adds a live preview to that page.
 
+## Platforms and versions
+
+Every declaration records the source sets it is implemented in (`commonMain`, `androidMain`, `iosMain`, `desktopMain`, `jsMain`, `wasmJsMain`, `jvmSharedMain`, or `main` for `:android`), so pages with platform-specific code get a **Platform** filter and per-implementation source links. Targets come from each module's `build.gradle.kts`.
+
+Each API page also shows the releases it exists in. The generator unpacks the git tags, scans them like the current sources and keeps one snapshot per distinct page, so a version picker can show older content. By default the 15 newest releases get snapshots; the "Available since" label scans every tag.
+
+```bash
+node docs-gen/scripts/docgen.mjs --versions=30   # more releases
+node docs-gen/scripts/docgen.mjs --no-history    # skip versions (fast local loop)
+```
+
+Tags must be present locally (`git fetch --tags`), otherwise `--check` reports the pages as out of date. The workflow fetches full history for this.
+
 ## Run locally
 
 ```bash

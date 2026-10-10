@@ -14,14 +14,38 @@ internal fun page_utils_counter(): DocPage = DocPage(
         Heading(2, "Usage"),
         CodeBlock("kotlin", "val counter = KCounter(initialValue = 0, min = 0, max = 10, step = 2)\n\ncounter.increment()  // count becomes 2\ncounter.decrement()  // count becomes 0\ncounter.set(7)       // count becomes 7\ncounter.increment()  // count becomes 9\ncounter.increment()  // count becomes 10 (clamped to max)\ncounter.reset()      // count returns to 0\n\n// Reactively observing in a ViewModel or Composable:\nviewModelScope.launch {\n    counter.state.collect { value ->\n        println(\"Current count: \$value\")\n    }\n}"),
         Heading(2, "Installation"),
-        CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:utils:0.3.0\")"),
+        CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:utils:{{version}}\")"),
         CodeBlock("kotlin", "import dev.kindling.utils.method.KCounter"),
-        Heading(2, "Types"),
-        Heading(3, "KCounter"),
-        CodeBlock("kotlin", "class KCounter(\n    initialValue: Int = 0,\n    val min: Int = Int.MIN_VALUE,\n    val max: Int = Int.MAX_VALUE,\n    val step: Int = 1,\n)"),
-        Props(listOf(PropRow("initialValue", "Int", "0", "Starting value (automatically clamped to [min, max]).", false), PropRow("min", "Int", "Int.MIN_VALUE", "Lower bound, inclusive. Default: MIN_VALUE.", false), PropRow("max", "Int", "Int.MAX_VALUE", "Upper bound, inclusive. Default: MAX_VALUE.", false), PropRow("step", "Int", "1", "The amount to add or subtract on each increment or decrement. Must be positive. Default: 1.", false))),
-        Para("**Members**"),
-        Bullets(false, listOf("`val state: StateFlow<Int>` — The current counter value as a `StateFlow`.", "`val count: Int get()` — The current counter value.", "`fun increment()` — Increments the counter by `step`, clamped to `max`.", "`fun decrement()` — Decrements the counter by `step`, clamped to `min`.", "`fun set(value: Int)` — Sets the counter to `value`, clamped to [`min`, `max`].", "`fun reset()` — Resets the counter to the original `initialValue`.")),
-        Source("https://github.com/ClementBobin/Kindling/blob/main/utils/src/commonMain/kotlin/dev/kindling/utils/method/KCounter.kt#L39"),
+        DeclGroup("Types", listOf(
+            Decl("KCounter", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/utils/src/commonMain/kotlin/dev/kindling/utils/method/KCounter.kt#L39")), listOf(
+                CodeBlock("kotlin", "class KCounter(\n    initialValue: Int = 0,\n    val min: Int = Int.MIN_VALUE,\n    val max: Int = Int.MAX_VALUE,\n    val step: Int = 1,\n)"),
+                Props(listOf(PropRow("initialValue", "Int", "0", "Starting value (automatically clamped to [min, max]).", false), PropRow("min", "Int", "Int.MIN_VALUE", "Lower bound, inclusive. Default: MIN_VALUE.", false), PropRow("max", "Int", "Int.MAX_VALUE", "Upper bound, inclusive. Default: MAX_VALUE.", false), PropRow("step", "Int", "1", "The amount to add or subtract on each increment or decrement. Must be positive. Default: 1.", false))),
+                Para("**Members**"),
+                Bullets(false, listOf("`val state: StateFlow<Int>` — The current counter value as a `StateFlow`.", "`val count: Int get()` — The current counter value.", "`fun increment()` — Increments the counter by `step`, clamped to `max`.", "`fun decrement()` — Decrements the counter by `step`, clamped to `min`.", "`fun set(value: Int)` — Sets the counter to `value`, clamped to [`min`, `max`].", "`fun reset()` — Resets the counter to the original `initialValue`.")),
+            )),
+        )),
+    ),
+    since = "3.3.0",
+    available = listOf("4.3.6", "4.3.5", "4.3.4", "4.3.3", "4.3.2", "4.3.1", "4.3.0", "4.2.9", "4.2.8", "4.2.7", "4.2.6", "4.2.5", "4.2.4", "4.2.3", "4.2.2"),
+    headVersions = listOf("4.3.6", "4.3.5", "4.3.4", "4.3.3", "4.3.2", "4.3.1", "4.3.0", "4.2.9", "4.2.8", "4.2.7", "4.2.6"),
+    history = listOf(
+        VersionGroup(listOf("4.2.5", "4.2.4", "4.2.3", "4.2.2")) { page_utils_counter_h1() },
     ),
 )
+
+internal fun page_utils_counter_h1(): List<Block> = listOf(
+        Para("This utility is a Kotlin port of common reactive counter hooks (like `useCounter`). It encapsulates the logic for incrementing, decrementing, and clamping values, while exposing the current count through a `StateFlow`."),
+        Heading(2, "Usage"),
+        CodeBlock("kotlin", "val counter = KCounter(initialValue = 0, min = 0, max = 10, step = 2)\n\ncounter.increment()  // count becomes 2\ncounter.decrement()  // count becomes 0\ncounter.set(7)       // count becomes 7\ncounter.increment()  // count becomes 9\ncounter.increment()  // count becomes 10 (clamped to max)\ncounter.reset()      // count returns to 0\n\n// Reactively observing in a ViewModel or Composable:\nviewModelScope.launch {\n    counter.state.collect { value ->\n        println(\"Current count: \$value\")\n    }\n}"),
+        Heading(2, "Installation"),
+        CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:utils:{{version}}\")"),
+        CodeBlock("kotlin", "import dev.kindling.utils.method.KCounter"),
+        DeclGroup("Types", listOf(
+            Decl("KCounter", listOf("android"), false, false, listOf(Impl("main", "", listOf("android"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/utils/src/main/kotlin/dev/kindling/utils/method/KCounter.kt")), listOf(
+                CodeBlock("kotlin", "class KCounter(\n    initialValue: Int = 0,\n    val min: Int = Int.MIN_VALUE,\n    val max: Int = Int.MAX_VALUE,\n    val step: Int = 1,\n)"),
+                Props(listOf(PropRow("initialValue", "Int", "0", "Starting value (automatically clamped to [min, max]).", false), PropRow("min", "Int", "Int.MIN_VALUE", "Lower bound, inclusive. Default: MIN_VALUE.", false), PropRow("max", "Int", "Int.MAX_VALUE", "Upper bound, inclusive. Default: MAX_VALUE.", false), PropRow("step", "Int", "1", "The amount to add or subtract on each increment or decrement. Must be positive. Default: 1.", false))),
+                Para("**Members**"),
+                Bullets(false, listOf("`val state: StateFlow<Int>` — The current counter value as a `StateFlow`.", "`val count: Int get()` — The current counter value.", "`fun increment()` — Increments the counter by `step`, clamped to `max`.", "`fun decrement()` — Decrements the counter by `step`, clamped to `min`.", "`fun set(value: Int)` — Sets the counter to `value`, clamped to [`min`, `max`].", "`fun reset()` — Resets the counter to the original `initialValue`.")),
+            )),
+        )),
+    )

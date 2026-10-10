@@ -14,12 +14,34 @@ internal fun page_components_aspect_ratio(): DocPage = DocPage(
         Heading(2, "Usage"),
         CodeBlock("kotlin", "KAspectRatio(ratio = 16f / 9f) {\n    Image(\n        painter = painterResource(Res.drawable.landscape),\n        contentDescription = \"Landscape image\",\n        modifier = Modifier.fillMaxSize(),\n        contentScale = ContentScale.Crop\n    )\n}"),
         Heading(2, "Installation"),
-        CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:0.3.0\")"),
+        CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:{{version}}\")"),
         CodeBlock("kotlin", "import dev.kindling.core.components.ui.KAspectRatio"),
-        Heading(2, "Composables"),
-        Heading(3, "KAspectRatio"),
-        CodeBlock("kotlin", "@Composable\nfun KAspectRatio(\n    modifier: Modifier = Modifier,\n    ratio: Float = 1f,\n    content: @Composable () -> Unit,\n)"),
-        Props(listOf(PropRow("modifier", "Modifier", "Modifier", "The modifier to be applied to the layout.", false), PropRow("ratio", "Float", "1f", "The width-to-height ratio (e.g., 1.0f for a square, 1.77f for 16:9).", false), PropRow("content", "@Composable () -> Unit", "", "The composable content to be constrained by the aspect ratio.", true))),
-        Source("https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/KAspectRatio.kt#L32"),
+        DeclGroup("Composables", listOf(
+            Decl("KAspectRatio", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/KAspectRatio.kt#L32")), listOf(
+                CodeBlock("kotlin", "@Composable\nfun KAspectRatio(\n    modifier: Modifier = Modifier,\n    ratio: Float = 1f,\n    content: @Composable () -> Unit,\n)"),
+                Props(listOf(PropRow("modifier", "Modifier", "Modifier", "The modifier to be applied to the layout.", false), PropRow("ratio", "Float", "1f", "The width-to-height ratio (e.g., 1.0f for a square, 1.77f for 16:9).", false), PropRow("content", "@Composable () -> Unit", "", "The composable content to be constrained by the aspect ratio.", true))),
+            )),
+        )),
+    ),
+    since = "4.0.2",
+    available = listOf("4.3.6", "4.3.5", "4.3.4", "4.3.3", "4.3.2", "4.3.1", "4.3.0", "4.2.9", "4.2.8", "4.2.7", "4.2.6", "4.2.5", "4.2.4", "4.2.3", "4.2.2"),
+    headVersions = listOf("4.3.6", "4.3.5", "4.3.4", "4.3.3", "4.3.2", "4.3.1", "4.3.0", "4.2.9", "4.2.8", "4.2.7", "4.2.6", "4.2.5", "4.2.4"),
+    history = listOf(
+        VersionGroup(listOf("4.2.3", "4.2.2")) { page_components_aspect_ratio_h1() },
     ),
 )
+
+internal fun page_components_aspect_ratio_h1(): List<Block> = listOf(
+        Para("This component is useful for maintaining consistent proportions for images, videos, or other media content regardless of their actual dimensions or the parent container's width."),
+        Heading(2, "Usage"),
+        CodeBlock("kotlin", "KAspectRatio(ratio = 16f / 9f) {\n    Image(\n        painter = painterResource(Res.drawable.landscape),\n        contentDescription = \"Landscape image\",\n        modifier = Modifier.fillMaxSize(),\n        contentScale = ContentScale.Crop\n    )\n}"),
+        Heading(2, "Installation"),
+        CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:{{version}}\")"),
+        CodeBlock("kotlin", "import dev.kindling.core.components.ui.KAspectRatio"),
+        DeclGroup("Composables", listOf(
+            Decl("KAspectRatio", listOf("android"), true, true, listOf(Impl("commonMain", "", listOf("android"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/KAspectRatio.kt")), listOf(
+                CodeBlock("kotlin", "@Composable\nfun KAspectRatio(\n    modifier: Modifier = Modifier,\n    ratio: Float = 1f,\n    content: @Composable () -> Unit,\n)"),
+                Props(listOf(PropRow("modifier", "Modifier", "Modifier", "The modifier to be applied to the layout.", false), PropRow("ratio", "Float", "1f", "The width-to-height ratio (e.g., 1.0f for a square, 1.77f for 16:9).", false), PropRow("content", "@Composable () -> Unit", "", "The composable content to be constrained by the aspect ratio.", true))),
+            )),
+        )),
+    )

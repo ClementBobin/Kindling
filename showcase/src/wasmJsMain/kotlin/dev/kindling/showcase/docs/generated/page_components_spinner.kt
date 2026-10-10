@@ -14,18 +14,48 @@ internal fun page_components_spinner(): DocPage = DocPage(
         Heading(2, "Preview"),
         Demo("spinner"),
         Heading(2, "Installation"),
-        CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:0.3.0\")"),
+        CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:{{version}}\")"),
         CodeBlock("kotlin", "import dev.kindling.core.components.ui.spinner.KSpinner"),
-        Heading(2, "Composables"),
-        Heading(3, "KSpinner"),
-        CodeBlock("kotlin", "@Composable\nfun KSpinner(\n    modifier: Modifier = Modifier,\n    size: KSpinnerSize = KSpinnerSize.Default,\n    color: Color = MaterialTheme.colorScheme.primary,\n    trackColor: Color = color.copy(alpha = 0.15f),\n)"),
-        Props(listOf(PropRow("modifier", "Modifier", "Modifier", "", false), PropRow("size", "KSpinnerSize", "KSpinnerSize.Default", "", false), PropRow("color", "Color", "MaterialTheme.colorScheme.primary", "", false), PropRow("trackColor", "Color", "color.copy(alpha = 0.15f)", "", false))),
-        Source("https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/spinner/KSpinner.kt#L46"),
-        Heading(2, "Types"),
-        Heading(3, "KSpinnerSize"),
-        CodeBlock("kotlin", "enum class KSpinnerSize"),
-        Para("**Values**"),
-        Bullets(false, listOf("`Sm`", "`Default`", "`Lg`", "`Xl`")),
-        Source("https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/spinner/KSpinnerSize.kt#L3"),
+        DeclGroup("Composables", listOf(
+            Decl("KSpinner", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/spinner/KSpinner.kt#L46")), listOf(
+                CodeBlock("kotlin", "@Composable\nfun KSpinner(\n    modifier: Modifier = Modifier,\n    size: KSpinnerSize = KSpinnerSize.Default,\n    color: Color = MaterialTheme.colorScheme.primary,\n    trackColor: Color = color.copy(alpha = 0.15f),\n)"),
+                Props(listOf(PropRow("modifier", "Modifier", "Modifier", "", false), PropRow("size", "KSpinnerSize", "KSpinnerSize.Default", "", false), PropRow("color", "Color", "MaterialTheme.colorScheme.primary", "", false), PropRow("trackColor", "Color", "color.copy(alpha = 0.15f)", "", false))),
+            )),
+        )),
+        DeclGroup("Types", listOf(
+            Decl("KSpinnerSize", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/spinner/KSpinnerSize.kt#L3")), listOf(
+                CodeBlock("kotlin", "enum class KSpinnerSize"),
+                Para("**Values**"),
+                Bullets(false, listOf("`Sm`", "`Default`", "`Lg`", "`Xl`")),
+            )),
+        )),
+    ),
+    since = "4.0.2",
+    available = listOf("4.3.6", "4.3.5", "4.3.4", "4.3.3", "4.3.2", "4.3.1", "4.3.0", "4.2.9", "4.2.8", "4.2.7", "4.2.6", "4.2.5", "4.2.4", "4.2.3", "4.2.2"),
+    headVersions = listOf("4.3.6", "4.3.5", "4.3.4", "4.3.3", "4.3.2", "4.3.1", "4.3.0", "4.2.9", "4.2.8", "4.2.7", "4.2.6", "4.2.5", "4.2.4"),
+    history = listOf(
+        VersionGroup(listOf("4.2.3", "4.2.2")) { page_components_spinner_h1() },
     ),
 )
+
+internal fun page_components_spinner_h1(): List<Block> = listOf(
+        CodeBlock("kotlin", "KSpinner()\nKSpinner(size = KSpinnerSize.Lg)"),
+        Heading(2, "Preview"),
+        Demo("spinner"),
+        Heading(2, "Installation"),
+        CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:{{version}}\")"),
+        CodeBlock("kotlin", "import dev.kindling.core.components.ui.spinner.KSpinner"),
+        DeclGroup("Composables", listOf(
+            Decl("KSpinner", listOf("android"), true, true, listOf(Impl("commonMain", "", listOf("android"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/spinner/KSpinner.kt")), listOf(
+                CodeBlock("kotlin", "@Composable\nfun KSpinner(\n    modifier: Modifier = Modifier,\n    size: KSpinnerSize = KSpinnerSize.Default,\n    color: Color = MaterialTheme.colorScheme.primary,\n    trackColor: Color = color.copy(alpha = 0.15f),\n)"),
+                Props(listOf(PropRow("modifier", "Modifier", "Modifier", "", false), PropRow("size", "KSpinnerSize", "KSpinnerSize.Default", "", false), PropRow("color", "Color", "MaterialTheme.colorScheme.primary", "", false), PropRow("trackColor", "Color", "color.copy(alpha = 0.15f)", "", false))),
+            )),
+        )),
+        DeclGroup("Types", listOf(
+            Decl("KSpinnerSize", listOf("android"), true, true, listOf(Impl("commonMain", "", listOf("android"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/spinner/KSpinnerSize.kt")), listOf(
+                CodeBlock("kotlin", "enum class KSpinnerSize"),
+                Para("**Values**"),
+                Bullets(false, listOf("`Sm`", "`Default`", "`Lg`", "`Xl`")),
+            )),
+        )),
+    )
