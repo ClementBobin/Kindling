@@ -59,7 +59,8 @@ internal fun page_components_input_group(): DocPage = DocPage(
         Source("https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/inputGroup/KInputGroupModels.kt#L5"),
         Rule,
         Heading(3, "KInputGroupScope"),
-        CodeBlock("kotlin", "open class KInputGroupScope"),
+        CodeBlock("kotlin", "open class KInputGroupScope(val focusRequester: FocusRequester)"),
+        Props(listOf(PropRow("focusRequester", "FocusRequester", "", "", true))),
         Source("https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/inputGroup/KInputGroupModels.kt#L7"),
     ),
 )

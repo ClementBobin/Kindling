@@ -2,7 +2,7 @@
 //
 // Block shapes:
 //   {t:'h', l, s} {t:'p', s} {t:'code', lang, s} {t:'list', ordered, items:[s]} {t:'quote', s}
-//   {t:'props', rows:[{name,type,def,desc,req}]} {t:'demo', id} {t:'gallery'} {t:'hr'} {t:'src', url}
+//   {t:'props', rows:[{name,type,def,desc,req}]} {t:'demo', id} {t:'playground', id} {t:'gallery'} {t:'hr'} {t:'src', url}
 // Inline text (`code`, **bold**, [links](url)) stays as raw Markdown and is parsed in Kotlin.
 
 export function parseFrontmatter(text) {
@@ -39,10 +39,11 @@ export function mdToBlocks(md) {
       flush();
       continue;
     }
-    const dir = line.match(/^\s*\{\{(demo|gallery|props):?(.*)\}\}\s*$/);
+    const dir = line.match(/^\s*\{\{(demo|gallery|props|playground):?(.*)\}\}\s*$/);
     if (dir) {
       flush();
       if (dir[1] === 'demo') out.push({ t: 'demo', id: dir[2].trim() });
+      else if (dir[1] === 'playground') out.push({ t: 'playground', id: dir[2].trim() });
       else if (dir[1] === 'gallery') out.push({ t: 'gallery' });
       else {
         const [n, type, def, ...d] = dir[2].split('|');

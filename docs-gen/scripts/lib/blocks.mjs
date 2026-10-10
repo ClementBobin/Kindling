@@ -129,7 +129,7 @@ export function unitPage(unit, ctx) {
     { t: 'h', l: 2, s: 'Installation' },
     { t: 'code', lang: 'kotlin', s: `implementation("io.github.clementbobin.kindling:${cfg.module}:${ctx.version}")` },
   );
-  const pkg = primary ? packageOf(primary.file) : '';
+  const pkg = primary?.pkg || (primary ? packageOf(primary.file) : '');
   if (pkg) blocks.push({ t: 'code', lang: 'kotlin', s: `import ${pkg}.${primary.name}` });
 
   const section = (title, list) => {

@@ -195,6 +195,7 @@ private fun TopBar(
         if (wide) {
             Row(Modifier.padding(start = 12.dp), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                 NavLink("Docs", active = route == "index" || route == "installation" || route == "theming") { go("index") }
+                NavLink("Playground", active = route.startsWith("playground")) { go("playground-theme") }
                 NavLink("Components", active = route.startsWith("components")) { go("components") }
                 NavLink("Showcase", active = route == "showcase") { go("showcase") }
             }
@@ -299,7 +300,8 @@ private fun PageContent(page: DocPage?, dark: Boolean, flat: List<DocPage>, show
                 }
             } else {
                 SelectionContainer {
-                    Column(Modifier.widthIn(max = 800.dp).fillMaxWidth().padding(horizontal = 28.dp, vertical = 40.dp)) {
+                    val full = page.blocks.any { it is Playground }
+                    Column(Modifier.widthIn(max = if (full) 1400.dp else 800.dp).fillMaxWidth().padding(horizontal = 28.dp, vertical = 40.dp)) {
                         Text(page.section, fontSize = 13.sp, color = colors.onSurfaceVariant, modifier = Modifier.padding(bottom = 6.dp))
                         Text(page.title, fontSize = 34.sp, fontWeight = FontWeight.Bold, color = colors.onBackground)
                         if (page.description.isNotEmpty()) {
@@ -312,7 +314,7 @@ private fun PageContent(page: DocPage?, dark: Boolean, flat: List<DocPage>, show
                 }
             }
         }
-        if (showToc && page != null && page.headings.isNotEmpty()) {
+        if (showToc && page != null && page.headings.isNotEmpty() && page.blocks.none { it is Playground }) {
             Column(
                 Modifier.width(240.dp).fillMaxHeight().verticalScroll(rememberScrollState()).padding(top = 40.dp, end = 16.dp, start = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(2.dp),

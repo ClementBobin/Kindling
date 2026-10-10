@@ -94,9 +94,15 @@ export function discoverUnits(repoRoot, sectionFilter) {
       const u = unitFor(section, rel);
       if (!u) continue;
 
-      const decls = scan(fs.readFileSync(file, 'utf8')).filter((d) => !isHidden(d));
+      const source = fs.readFileSync(file, 'utf8');
+      // Use the declared package, not the folder: they can differ (and in this repo a few do).
+      const pkg = source.match(/^package\s+([\w.]+)/m)?.[1] ?? '';
+      const decls = scan(source).filter((d) => !isHidden(d));
       const repoRel = path.relative(repoRoot, file).split(path.sep).join('/');
-      for (const d of decls) d.file = repoRel;
+      for (const d of decls) {
+        d.file = repoRel;
+        d.pkg = pkg;
+      }
 
       const id = `${section}/${slugify(u.key)}`;
       if (!units.has(id)) {

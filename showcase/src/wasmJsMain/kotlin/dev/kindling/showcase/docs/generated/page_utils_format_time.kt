@@ -12,7 +12,7 @@ internal fun page_utils_format_time(): DocPage = DocPage(
     blocks = listOf(
         Heading(2, "Installation"),
         CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:utils:0.3.0\")"),
-        CodeBlock("kotlin", "import dev.kindling.utils.method.format.time.TimeDelta"),
+        CodeBlock("kotlin", "import dev.kindling.thod.format.time.TimeDelta"),
         Heading(2, "Types"),
         Heading(3, "TimeDelta"),
         CodeBlock("kotlin", "data class TimeDelta(\n    val days: Int,\n    val hours: Int,\n    val minutes: Int,\n    val seconds: Int,\n    val totalSeconds: Long,\n)"),

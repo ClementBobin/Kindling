@@ -370,9 +370,8 @@ export function scan(original, { baseLine = 1, includeNonPublic = false } = {}) 
       rest = g.rest.replace(/^(?:(?:public|private|internal|protected)\s+)?(?:@[\w.]+(?:\([^)]*\))?\s*)*(?:constructor\s*)?(?=\()/, '');
       if (rest.startsWith('(')) {
         const close = matching(rest, '(', 0);
-        decl.params = parseParams(rest.slice(1, close === -1 ? undefined : close), { allowVal: true }).filter(
-          (p) => !p.hidden,
-        );
+        // Keep private ctor properties too: they are still required arguments (e.g. KDebouncer's `scope`).
+        decl.params = parseParams(rest.slice(1, close === -1 ? undefined : close), { allowVal: true });
         rest = close === -1 ? '' : rest.slice(close + 1);
       }
       decl.supertypes = clean(rest.replace(/^\s*:/, '')).replace(/\{[\s\S]*$/, '').trim();

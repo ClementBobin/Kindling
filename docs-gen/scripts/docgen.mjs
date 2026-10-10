@@ -120,6 +120,7 @@ function block(b) {
     case 'quote': return `Quote(${k(b.s)})`;
     case 'props': return `Props(listOf(${b.rows.map((r) => `PropRow(${k(r.name)}, ${k(r.type)}, ${k(r.def)}, ${k(r.desc)}, ${r.req})`).join(', ')}))`;
     case 'demo': return `Demo(${k(b.id)})`;
+    case 'playground': return `Playground(${k(b.id)})`;
     case 'gallery': return 'Gallery';
     case 'hr': return 'Rule';
     case 'src': return `Source(${k(b.url)})`;

@@ -29,6 +29,9 @@ class Quote(val text: String) : Block
 class PropRow(val name: String, val type: String, val default: String, val description: String, val required: Boolean)
 class Props(val rows: List<PropRow>) : Block
 class Demo(val id: String) : Block
+
+/** A full-width interactive tool (`theme` or `utils`), see docs/playground/. */
+class Playground(val id: String) : Block
 class Source(val url: String) : Block
 data object Gallery : Block
 data object Rule : Block
@@ -43,7 +46,7 @@ private fun Block.plainText(): String? = when (this) {
 }
 
 /** Display order of the sidebar groups. */
-internal val sectionOrder = listOf("Getting started", "Components", "Utils", "Compose", "Android", "Project")
+internal val sectionOrder = listOf("Getting started", "Playground", "Components", "Utils", "Compose", "Android", "Project")
 
 /** Pages grouped for the sidebar, in display order. */
 internal fun List<DocPage>.grouped(): List<Pair<String, List<DocPage>>> =

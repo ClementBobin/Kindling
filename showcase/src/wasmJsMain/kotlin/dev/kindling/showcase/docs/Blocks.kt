@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.sp
 import dev.kindling.core.components.ui.button.KButton
 import dev.kindling.core.components.ui.button.KButtonVariant
 import dev.kindling.showcase.demos
+import dev.kindling.showcase.docs.playground.PlaygroundHost
 
 /** What the block renderer needs from the surrounding site. */
 internal class RenderCtx(
@@ -111,6 +112,7 @@ internal fun RenderBlock(index: Int, block: Block, ctx: RenderCtx) {
         }
         is Props -> PropsTable(block, ctx)
         is Demo -> DemoBox(block.id)
+        is Playground -> PlaygroundHost(block.id, ctx.dark)
         is Source -> Text(
             text = rich("[View source on GitHub](${block.url})", ctx),
             fontSize = 13.sp,
