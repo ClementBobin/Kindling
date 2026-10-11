@@ -18,6 +18,7 @@ import { discoverUnits, SECTIONS } from './lib/units.mjs';
 import { indexPage, unitPage } from './lib/blocks.mjs';
 import { mdToBlocks, parseFrontmatter } from './lib/md.mjs';
 import { checkoutTag, label, listTags } from './lib/versions.mjs';
+import { extractDemoSources } from './lib/demosrc.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const genDir = path.resolve(here, '..');
@@ -224,6 +225,12 @@ for (const p of pages) {
     `${HEADER}internal fun ${fn}(): DocPage = DocPage(\n    path = ${k(p.path)},\n    section = ${k(p.section)},\n    title = ${k(p.title)},\n    description = ${k(p.description)},\n    order = ${p.order},\n    blocks = ${blockList(p.blocks, '        ')},\n${versioned})\n${extra}`,
   );
 }
+// Source of every live demo, shown under the "Code" tab next to its preview.
+const demoSrc = extractDemoSources(path.join(repoRoot, 'showcase/src/wasmJsMain/kotlin'));
+files.set(
+  'GeneratedDemos.kt',
+  `${HEADER}/** Demo id -> Kotlin source of the demo (see showcase/.../Registry.kt). */\ninternal val demoSources: Map<String, String> = mapOf(\n${[...demoSrc].sort((a, b) => a[0].localeCompare(b[0])).map(([id, code]) => `    ${k(id)} to ${k(code)},`).join('\n')}\n)\n`,
+);
 files.set(
   'GeneratedDocs.kt',
   `${HEADER}/** Version the docs were generated for (shown in the top bar). */\ninternal const val DOCS_VERSION = ${k(ctx.version)}\n\n/** Git ref the latest version's source links point to; older versions link to their tag. */\ninternal const val DOCS_BRANCH = ${k(ctx.branch)}\n\ninternal fun generatedPages(): List<DocPage> = listOf(\n${pages.map((p) => `    ${fnName(p.path)}(),`).join('\n')}\n)\n`,
