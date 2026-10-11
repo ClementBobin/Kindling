@@ -10,6 +10,8 @@ internal fun page_components_upload(): DocPage = DocPage(
     description = "Complete, ready-to-use upload area preset with file list and drag-drop cues.",
     order = 100,
     blocks = listOf(
+        Heading(2, "Preview"),
+        Demo("upload"),
         Heading(2, "Installation"),
         CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:{{version}}\")"),
         CodeBlock("kotlin", "import dev.kindling.core.components.ui.upload.KUploadArea"),
@@ -73,6 +75,8 @@ internal fun page_components_upload(): DocPage = DocPage(
 )
 
 internal fun page_components_upload_h1(): List<Block> = listOf(
+        Heading(2, "Preview"),
+        Demo("upload"),
         Heading(2, "Installation"),
         CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:{{version}}\")"),
         CodeBlock("kotlin", "import dev.kindling.core.components.ui.upload.KUploadArea"),

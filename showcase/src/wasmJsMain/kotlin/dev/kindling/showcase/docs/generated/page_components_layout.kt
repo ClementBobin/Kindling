@@ -10,6 +10,8 @@ internal fun page_components_layout(): DocPage = DocPage(
     description = "Fills its parent and centres content.",
     order = 100,
     blocks = listOf(
+        Heading(2, "Preview"),
+        Demo("layout"),
         Heading(2, "Installation"),
         CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:{{version}}\")"),
         CodeBlock("kotlin", "import dev.kindling.core.components.ui.layout.KCenteredBox"),
@@ -57,6 +59,8 @@ internal fun page_components_layout(): DocPage = DocPage(
 )
 
 internal fun page_components_layout_h1(): List<Block> = listOf(
+        Heading(2, "Preview"),
+        Demo("layout"),
         Heading(2, "Installation"),
         CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:{{version}}\")"),
         CodeBlock("kotlin", "import dev.kindling.core.components.ui.layout.KCenteredBox"),

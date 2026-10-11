@@ -11,6 +11,8 @@ internal fun page_components_direction(): DocPage = DocPage(
     order = 100,
     blocks = listOf(
         CodeBlock("kotlin", "KDirectionProvider(LayoutDirection.Rtl) { MyScreen() }"),
+        Heading(2, "Preview"),
+        Demo("direction"),
         Heading(2, "Installation"),
         CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:{{version}}\")"),
         CodeBlock("kotlin", "import dev.kindling.core.components.ui.direction.KDirectionProvider"),
@@ -54,6 +56,8 @@ internal fun page_components_direction(): DocPage = DocPage(
 
 internal fun page_components_direction_h1(): List<Block> = listOf(
         CodeBlock("kotlin", "KDirectionProvider(LayoutDirection.Rtl) { MyScreen() }"),
+        Heading(2, "Preview"),
+        Demo("direction"),
         Heading(2, "Installation"),
         CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:{{version}}\")"),
         CodeBlock("kotlin", "import dev.kindling.core.components.ui.direction.KDirectionProvider"),

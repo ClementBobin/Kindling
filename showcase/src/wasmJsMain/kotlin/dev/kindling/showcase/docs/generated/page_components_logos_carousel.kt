@@ -10,6 +10,8 @@ internal fun page_components_logos_carousel(): DocPage = DocPage(
     description = "Logos Carousel API reference.",
     order = 100,
     blocks = listOf(
+        Heading(2, "Preview"),
+        Demo("logos-carousel"),
         Heading(2, "Installation"),
         CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:{{version}}\")"),
         CodeBlock("kotlin", "import dev.kindling.core.components.ui.logosCarousel.KLogosCarousel"),
@@ -49,6 +51,8 @@ internal fun page_components_logos_carousel(): DocPage = DocPage(
 )
 
 internal fun page_components_logos_carousel_h1(): List<Block> = listOf(
+        Heading(2, "Preview"),
+        Demo("logos-carousel"),
         Heading(2, "Installation"),
         CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:{{version}}\")"),
         CodeBlock("kotlin", "import dev.kindling.core.components.ui.logosCarousel.KLogosCarousel"),

@@ -12,6 +12,8 @@ internal fun page_components_carousel(): DocPage = DocPage(
     blocks = listOf(
         Para("Arrows are `KButton` instances rendered beside the pager (not overlaid)."),
         CodeBlock("kotlin", "val api = rememberCarouselApi(pageCount = items.size)\nKCarousel(api = api) {\n    KCarouselContent {\n        items.forEach { item ->\n            KCarouselItem { MySlide(item) }\n        }\n    }\n}\n// Anywhere:\nText(\"Slide \${api.currentSlide + 1} /\${api.slideCount}\")"),
+        Heading(2, "Preview"),
+        Demo("carousel"),
         Heading(2, "Installation"),
         CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:{{version}}\")"),
         CodeBlock("kotlin", "import dev.kindling.core.components.ui.carousel.KCarousel"),
@@ -73,6 +75,8 @@ internal fun page_components_carousel(): DocPage = DocPage(
 internal fun page_components_carousel_h1(): List<Block> = listOf(
         Para("Arrows are `KButton` instances rendered beside the pager (not overlaid)."),
         CodeBlock("kotlin", "val api = rememberCarouselApi(pageCount = items.size)\nKCarousel(api = api) {\n    KCarouselContent {\n        items.forEach { item ->\n            KCarouselItem { MySlide(item) }\n        }\n    }\n}\n// Anywhere:\nText(\"Slide \${api.currentSlide + 1} /\${api.slideCount}\")"),
+        Heading(2, "Preview"),
+        Demo("carousel"),
         Heading(2, "Installation"),
         CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:{{version}}\")"),
         CodeBlock("kotlin", "import dev.kindling.core.components.ui.carousel.KCarousel"),

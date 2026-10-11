@@ -12,6 +12,8 @@ internal fun page_components_stepper(): DocPage = DocPage(
     blocks = listOf(
         Para("Provides `KStepperState` to all child slots via `useKStepper`."),
         CodeBlock("kotlin", "val state = rememberKStepperState(steps = listOf(\"step-1\", \"step-2\", \"step-3\"))\n\nKStepper(state = state) {\n    KStepperList {\n        listOf(\"Account\", \"Billing\", \"Review\").forEachIndexed { i, label ->\n            KStepperItem(value = \"step-\${i+1}\") {\n                KStepperTrigger {\n                    KStepperIndicator()\n                    Column {\n                        KStepperTitle { Text(label) }\n                        KStepperDescription { Text(\"Details\") }\n                    }\n                }\n                KStepperSeparator()\n            }\n        }\n    }\n    KStepperContent(value = \"step-1\") { Text(\"Step 1 content\") }\n    KStepperContent(value = \"step-2\") { Text(\"Step 2 content\") }\n    KStepperContent(value = \"step-3\") { Text(\"Step 3 content\") }\n    Row {\n        KStepperPrev { KButton(\"Back\",  onClick = it) }\n        KStepperNext { KButton(\"Next\",  onClick = it) }\n    }\n}"),
+        Heading(2, "Preview"),
+        Demo("stepper"),
         Heading(2, "Installation"),
         CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:{{version}}\")"),
         CodeBlock("kotlin", "import dev.kindling.core.components.ui.stepper.KStepper"),
@@ -143,6 +145,8 @@ internal fun page_components_stepper(): DocPage = DocPage(
 internal fun page_components_stepper_h1(): List<Block> = listOf(
         Para("Provides `KStepperState` to all child slots via `useKStepper`."),
         CodeBlock("kotlin", "val state = rememberKStepperState(steps = listOf(\"step-1\", \"step-2\", \"step-3\"))\n\nKStepper(state = state) {\n    KStepperList {\n        listOf(\"Account\", \"Billing\", \"Review\").forEachIndexed { i, label ->\n            KStepperItem(value = \"step-\${i+1}\") {\n                KStepperTrigger {\n                    KStepperIndicator()\n                    Column {\n                        KStepperTitle { Text(label) }\n                        KStepperDescription { Text(\"Details\") }\n                    }\n                }\n                KStepperSeparator()\n            }\n        }\n    }\n    KStepperContent(value = \"step-1\") { Text(\"Step 1 content\") }\n    KStepperContent(value = \"step-2\") { Text(\"Step 2 content\") }\n    KStepperContent(value = \"step-3\") { Text(\"Step 3 content\") }\n    Row {\n        KStepperPrev { KButton(\"Back\",  onClick = it) }\n        KStepperNext { KButton(\"Next\",  onClick = it) }\n    }\n}"),
+        Heading(2, "Preview"),
+        Demo("stepper"),
         Heading(2, "Installation"),
         CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:{{version}}\")"),
         CodeBlock("kotlin", "import dev.kindling.core.components.ui.stepper.KStepper"),

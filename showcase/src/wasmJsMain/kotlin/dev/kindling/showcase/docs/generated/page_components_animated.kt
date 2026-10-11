@@ -10,6 +10,8 @@ internal fun page_components_animated(): DocPage = DocPage(
     description = "An interactive text input that triggers a vibrant particle explosion effect upon submission or text changes (spell.sh / magic UI inspired).",
     order = 100,
     blocks = listOf(
+        Heading(2, "Preview"),
+        Demo("animated"),
         Heading(2, "Usage"),
         CodeBlock("kotlin", "KMarquee(\n    direction = KMarqueeDirection.FORWARD,\n    velocity = 40.dp,\n    spacing = 20.dp\n) {\n    Row(verticalAlignment = Alignment.CenterVertically) {\n        repeat(10) { index ->\n            Text(\"Item \$index\", modifier = Modifier.padding(horizontal = 8.dp))\n            Icon(Icons.Default.Star, null)\n        }\n    }\n}"),
         Heading(2, "Installation"),
@@ -163,6 +165,8 @@ internal fun page_components_animated(): DocPage = DocPage(
 )
 
 internal fun page_components_animated_h1(): List<Block> = listOf(
+        Heading(2, "Preview"),
+        Demo("animated"),
         Heading(2, "Usage"),
         CodeBlock("kotlin", "KMarquee(\n    direction = KMarqueeDirection.FORWARD,\n    velocity = 40.dp,\n    spacing = 20.dp\n) {\n    Row(verticalAlignment = Alignment.CenterVertically) {\n        repeat(10) { index ->\n            Text(\"Item \$index\", modifier = Modifier.padding(horizontal = 8.dp))\n            Icon(Icons.Default.Star, null)\n        }\n    }\n}"),
         Heading(2, "Installation"),

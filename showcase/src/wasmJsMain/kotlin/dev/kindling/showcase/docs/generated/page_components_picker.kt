@@ -10,6 +10,8 @@ internal fun page_components_picker(): DocPage = DocPage(
     description = "Picker API reference.",
     order = 100,
     blocks = listOf(
+        Heading(2, "Preview"),
+        Demo("picker"),
         Heading(2, "Installation"),
         CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:{{version}}\")"),
         DeclGroup("Composables", listOf(
@@ -28,6 +30,8 @@ internal fun page_components_picker(): DocPage = DocPage(
 )
 
 internal fun page_components_picker_h1(): List<Block> = listOf(
+        Heading(2, "Preview"),
+        Demo("picker"),
         Heading(2, "Installation"),
         CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:{{version}}\")"),
         DeclGroup("Composables", listOf(

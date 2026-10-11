@@ -10,6 +10,8 @@ internal fun page_components_questionnaire(): DocPage = DocPage(
     description = "A multi-step interactive questionnaire component in Jetpack Compose, supporting single/multi-choice selection, text inputs, error validation, progress tracking, and navigation…",
     order = 100,
     blocks = listOf(
+        Heading(2, "Preview"),
+        Demo("questionnaire"),
         Heading(2, "Installation"),
         CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:{{version}}\")"),
         CodeBlock("kotlin", "import dev.kindling.core.components.ui.questionnaire.KQuestionnaire"),
@@ -48,6 +50,8 @@ internal fun page_components_questionnaire(): DocPage = DocPage(
 )
 
 internal fun page_components_questionnaire_h1(): List<Block> = listOf(
+        Heading(2, "Preview"),
+        Demo("questionnaire"),
         Heading(2, "Installation"),
         CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:{{version}}\")"),
         CodeBlock("kotlin", "import dev.kindling.core.components.ui.questionnaire.KQuestionnaire"),

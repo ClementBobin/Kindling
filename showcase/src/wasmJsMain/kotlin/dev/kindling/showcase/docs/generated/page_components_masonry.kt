@@ -10,6 +10,8 @@ internal fun page_components_masonry(): DocPage = DocPage(
     description = "A responsive masonry grid layout component for Jetpack Compose that distributes cards into columns based on measured item heights, stacking them into the shortest column…",
     order = 100,
     blocks = listOf(
+        Heading(2, "Preview"),
+        Demo("masonry"),
         Heading(2, "Installation"),
         CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:{{version}}\")"),
         CodeBlock("kotlin", "import dev.kindling.core.components.ui.masonry.KMasonryGrid"),
@@ -40,6 +42,8 @@ internal fun page_components_masonry(): DocPage = DocPage(
 )
 
 internal fun page_components_masonry_h1(): List<Block> = listOf(
+        Heading(2, "Preview"),
+        Demo("masonry"),
         Heading(2, "Installation"),
         CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:{{version}}\")"),
         CodeBlock("kotlin", "import dev.kindling.core.components.ui.masonry.KMasonryGrid"),
