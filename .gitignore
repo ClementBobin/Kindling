@@ -25,3 +25,11 @@ Thumbs.db
 **/bin/
 # docs generator scratch
 docs-gen/.docgen/
+
+# Node tooling (docs-gen has no dependencies, but editors/npm may create these)
+node_modules/
+npm-debug.log*
+*.log
+
+# Local Claude Code settings
+.claude/settings.local.json

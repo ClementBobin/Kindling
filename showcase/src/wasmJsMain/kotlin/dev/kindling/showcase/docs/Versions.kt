@@ -46,26 +46,24 @@ internal fun VersionBar(page: DocPage, version: String, platforms: List<String>,
     ) {
         Box {
             KButton(
-                text = "Version $version" + if (version == page.available.first()) "" else "  ·  older",
+                text = "Version " + rangeLabel(page.versionRanges().firstOrNull { version in it } ?: listOf(version)),
                 onClick = { open = true },
                 variant = KButtonVariant.Outline,
                 size = KButtonSize.Sm,
             )
             DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
-                page.available.forEachIndexed { i, v ->
-                    // The oldest release of a group is where that content first appeared.
-                    val group = if (page.sameAsNewest(v)) page.headVersions else page.history.firstOrNull { v in it.versions }?.versions
-                    val introduced = group != null && group.last() == v
+                // One entry per distinct content: releases with an identical page are folded into a range.
+                page.versionRanges().forEachIndexed { i, range ->
+                    val selected = version in range
                     DropdownMenuItem(
                         text = {
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-                                Text(v, fontWeight = if (v == version) FontWeight.SemiBold else FontWeight.Normal, fontSize = 14.sp)
+                                Text(rangeLabel(range), fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal, fontSize = 14.sp)
                                 if (i == 0) Pill("latest", strong = true)
-                                if (introduced && v != page.since) Pill("changed")
-                                if (v == page.since) Pill("added")
+                                if (range.last() == page.since) Pill("added")
                             }
                         },
-                        onClick = { open = false; onVersion(v) },
+                        onClick = { open = false; onVersion(range.first()) },
                     )
                 }
                 if (page.since.isNotEmpty() && page.since !in page.available) {
@@ -143,3 +141,9 @@ internal fun PlatformFilter(decls: List<Decl>, selected: String?, onSelect: (Str
         }
     }
 }
+
+/** `4.3.6` for one release, `4.3.1 – 4.3.6` for a run of releases with the same page (list is newest first). */
+private fun rangeLabel(range: List<String>): String = if (range.size == 1) range.first() else "${range.last()} – ${range.first()}"
+
+/** Releases grouped by identical content, newest group first, each newest release first. */
+internal fun DocPage.versionRanges(): List<List<String>> = listOf(headVersions) + history.map { it.versions }
