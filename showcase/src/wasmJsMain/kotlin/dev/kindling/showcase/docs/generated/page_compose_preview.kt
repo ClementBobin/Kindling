@@ -13,19 +13,45 @@ internal fun page_compose_preview(): DocPage = DocPage(
         Para("All parameters are optional and fall back to the same defaults as `KindlingTheme`, so a bare `KPreviewScreen { }` works out of the box whether the caller is using a plain `MaterialTheme` or a full `KindlingTheme`."),
         CodeBlock("kotlin", "// Bare — works with plain MaterialTheme or KindlingTheme\n@KPreview\n@Composable\nfun ProfilePreview() {\n    KPreviewScreen {\n        ProfileContent(state = ProfileState.preview(), onSave = {})\n    }\n}\n\n// Full override — mirrors a custom KindlingTheme call exactly\n@KPreview\n@Composable\nfun ProfileThemedPreview() {\n    KPreviewScreen(\n        colorScheme = myDarkColorScheme,\n        shapes      = KindlingShapes(base = 4.dp),\n    ) {\n        ProfileContent(state = ProfileState.preview(), onSave = {})\n    }\n}"),
         Heading(2, "Installation"),
-        CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:compose:0.3.0\")"),
+        CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:compose:{{version}}\")"),
         CodeBlock("kotlin", "import dev.kindling.compose.preview.KPreviewScreen"),
-        Heading(2, "Composables"),
-        Heading(3, "KPreviewScreen"),
-        CodeBlock("kotlin", "@Composable\nfun KPreviewScreen(\n    colorScheme: ColorScheme = MaterialTheme.colorScheme,\n    typography: Typography = MaterialTheme.typography,\n    shapes: KindlingShapes = KindlingShapes(),\n    content: @Composable () -> Unit,\n)"),
-        Props(listOf(PropRow("colorScheme", "ColorScheme", "MaterialTheme.colorScheme", "", false), PropRow("typography", "Typography", "MaterialTheme.typography", "", false), PropRow("shapes", "KindlingShapes", "KindlingShapes()", "", false), PropRow("content", "@Composable () -> Unit", "", "", true))),
-        Source("https://github.com/ClementBobin/Kindling/blob/main/compose/src/commonMain/kotlin/dev/kindling/compose/preview/KPreviewScreen.kt#L42"),
-        Rule,
-        Heading(3, "KPreviewStateGallery"),
-        Para("Renders multiple named state variants in a single preview panel."),
-        CodeBlock("kotlin", "@KPreview\n@Composable\nfun ProfileStatesPreview() {\n    KPreviewScreen {\n        KPreviewStateGallery(\n            \"Default\"  to ProfileState.preview(),\n            \"Loading\"  to ProfileState.previewLoading(),\n            \"Empty\"    to ProfileState.previewEmpty(),\n        ) { state ->\n            ProfileContent(state = state, onSave = {}, onDelete = {})\n        }\n    }\n}"),
-        CodeBlock("kotlin", "@Composable\nfun <S> KPreviewStateGallery(\n    vararg states: Pair<String, S>,\n    content: @Composable (S) -> Unit,\n)"),
-        Props(listOf(PropRow("states", "Pair<String, S>", "", "", false), PropRow("content", "@Composable (S) -> Unit", "", "", true))),
-        Source("https://github.com/ClementBobin/Kindling/blob/main/compose/src/commonMain/kotlin/dev/kindling/compose/preview/KPreviewStateScope.kt#L33"),
+        DeclGroup("Composables", listOf(
+            Decl("KPreviewScreen", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/compose/src/commonMain/kotlin/dev/kindling/compose/preview/KPreviewScreen.kt#L42")), listOf(
+                CodeBlock("kotlin", "@Composable\nfun KPreviewScreen(\n    colorScheme: ColorScheme = MaterialTheme.colorScheme,\n    typography: Typography = MaterialTheme.typography,\n    shapes: KindlingShapes = KindlingShapes(),\n    content: @Composable () -> Unit,\n)"),
+                Props(listOf(PropRow("colorScheme", "ColorScheme", "MaterialTheme.colorScheme", "", false), PropRow("typography", "Typography", "MaterialTheme.typography", "", false), PropRow("shapes", "KindlingShapes", "KindlingShapes()", "", false), PropRow("content", "@Composable () -> Unit", "", "", true))),
+            )),
+            Decl("KPreviewStateGallery", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/compose/src/commonMain/kotlin/dev/kindling/compose/preview/KPreviewStateScope.kt#L33")), listOf(
+                Para("Renders multiple named state variants in a single preview panel."),
+                CodeBlock("kotlin", "@KPreview\n@Composable\nfun ProfileStatesPreview() {\n    KPreviewScreen {\n        KPreviewStateGallery(\n            \"Default\"  to ProfileState.preview(),\n            \"Loading\"  to ProfileState.previewLoading(),\n            \"Empty\"    to ProfileState.previewEmpty(),\n        ) { state ->\n            ProfileContent(state = state, onSave = {}, onDelete = {})\n        }\n    }\n}"),
+                CodeBlock("kotlin", "@Composable\nfun <S> KPreviewStateGallery(\n    vararg states: Pair<String, S>,\n    content: @Composable (S) -> Unit,\n)"),
+                Props(listOf(PropRow("states", "Pair<String, S>", "", "", false), PropRow("content", "@Composable (S) -> Unit", "", "", true))),
+            )),
+        )),
+    ),
+    since = "3.1.0",
+    available = listOf("4.3.6", "4.3.5", "4.3.4", "4.3.3", "4.3.2", "4.3.1", "4.3.0", "4.2.9", "4.2.8", "4.2.7", "4.2.6", "4.2.5", "4.2.4", "4.2.3", "4.2.2"),
+    headVersions = listOf("4.3.6", "4.3.5", "4.3.4", "4.3.3", "4.3.2", "4.3.1", "4.3.0", "4.2.9", "4.2.8", "4.2.7", "4.2.6"),
+    history = listOf(
+        VersionGroup(listOf("4.2.5", "4.2.4", "4.2.3", "4.2.2")) { page_compose_preview_h1() },
     ),
 )
+
+internal fun page_compose_preview_h1(): List<Block> = listOf(
+        Para("All parameters are optional and fall back to the same defaults as `KindlingTheme`, so a bare `KPreviewScreen { }` works out of the box whether the caller is using a plain `MaterialTheme` or a full `KindlingTheme`."),
+        CodeBlock("kotlin", "// Bare — works with plain MaterialTheme or KindlingTheme\n@KPreview\n@Composable\nfun ProfilePreview() {\n    KPreviewScreen {\n        ProfileContent(state = ProfileState.preview(), onSave = {})\n    }\n}\n\n// Full override — mirrors a custom KindlingTheme call exactly\n@KPreview\n@Composable\nfun ProfileThemedPreview() {\n    KPreviewScreen(\n        colorScheme = myDarkColorScheme,\n        shapes      = KindlingShapes(base = 4.dp),\n    ) {\n        ProfileContent(state = ProfileState.preview(), onSave = {})\n    }\n}"),
+        Heading(2, "Installation"),
+        CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:compose:{{version}}\")"),
+        CodeBlock("kotlin", "import dev.kindling.compose.preview.KPreviewScreen"),
+        DeclGroup("Composables", listOf(
+            Decl("KPreviewScreen", listOf("android"), false, true, listOf(Impl("debug", "", listOf("android"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/compose/src/debug/kotlin/dev/kindling/compose/preview/KPreviewScreen.kt")), listOf(
+                CodeBlock("kotlin", "@Composable\nfun KPreviewScreen(\n    colorScheme: ColorScheme = MaterialTheme.colorScheme,\n    typography: Typography = MaterialTheme.typography,\n    shapes: KindlingShapes = KindlingShapes(),\n    content: @Composable () -> Unit,\n)"),
+                Props(listOf(PropRow("colorScheme", "ColorScheme", "MaterialTheme.colorScheme", "", false), PropRow("typography", "Typography", "MaterialTheme.typography", "", false), PropRow("shapes", "KindlingShapes", "KindlingShapes()", "", false), PropRow("content", "@Composable () -> Unit", "", "", true))),
+            )),
+            Decl("KPreviewStateGallery", listOf("android"), false, true, listOf(Impl("debug", "", listOf("android"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/compose/src/debug/kotlin/dev/kindling/compose/preview/KPreviewStateScope.kt")), listOf(
+                Para("Renders multiple named state variants in a single preview panel."),
+                CodeBlock("kotlin", "@KPreview\n@Composable\nfun ProfileStatesPreview() {\n    KPreviewScreen {\n        KPreviewStateGallery(\n            \"Default\"  to ProfileState.preview(),\n            \"Loading\"  to ProfileState.previewLoading(),\n            \"Empty\"    to ProfileState.previewEmpty(),\n        ) { state ->\n            ProfileContent(state = state, onSave = {}, onDelete = {})\n        }\n    }\n}"),
+                CodeBlock("kotlin", "@Composable\nfun <S> KPreviewStateGallery(\n    vararg states: Pair<String, S>,\n    content: @Composable (S) -> Unit,\n)"),
+                Props(listOf(PropRow("states", "Pair<String, S>", "", "", false), PropRow("content", "@Composable (S) -> Unit", "", "", true))),
+            )),
+        )),
+    )

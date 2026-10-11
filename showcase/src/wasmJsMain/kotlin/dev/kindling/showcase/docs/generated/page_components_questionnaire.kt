@@ -11,33 +11,69 @@ internal fun page_components_questionnaire(): DocPage = DocPage(
     order = 100,
     blocks = listOf(
         Heading(2, "Installation"),
-        CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:0.3.0\")"),
+        CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:{{version}}\")"),
         CodeBlock("kotlin", "import dev.kindling.core.components.ui.questionnaire.KQuestionnaire"),
-        Heading(2, "Composables"),
-        Heading(3, "KQuestionnaire"),
-        CodeBlock("kotlin", "@Composable\nfun KQuestionnaire(\n    modifier: Modifier = Modifier,\n    progressText: String = \"\",\n    title: String,\n    description: String? = null,\n    errorText: String? = null,\n    content: @Composable ColumnScope.() -> Unit,\n    onPrevious: (() -> Unit)? = null,\n    onSkip: (() -> Unit)? = null,\n    onNext: (() -> Unit)? = null,\n    onSubmit: (() -> Unit)? = null,\n    isLastStep: Boolean = false,\n    canProceed: Boolean = true,\n)"),
-        Props(listOf(PropRow("modifier", "Modifier", "Modifier", "", false), PropRow("progressText", "String", "\"\"", "", false), PropRow("title", "String", "", "", true), PropRow("description", "String?", "null", "", false), PropRow("errorText", "String?", "null", "", false), PropRow("content", "@Composable ColumnScope.() -> Unit", "", "", true), PropRow("onPrevious", "(() -> Unit)?", "null", "", false), PropRow("onSkip", "(() -> Unit)?", "null", "", false), PropRow("onNext", "(() -> Unit)?", "null", "", false), PropRow("onSubmit", "(() -> Unit)?", "null", "", false), PropRow("isLastStep", "Boolean", "false", "", false), PropRow("canProceed", "Boolean", "true", "", false))),
-        Source("https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/questionnaire/KQuestionnaire.kt#L27"),
-        Rule,
-        Heading(3, "KQuestionnaireChoice"),
-        CodeBlock("kotlin", "@Composable\nfun KQuestionnaireChoice(\n    text: String,\n    selected: Boolean,\n    onClick: () -> Unit,\n    modifier: Modifier = Modifier,\n    type: KQuestionnaireChoiceType = KQuestionnaireChoiceType.RADIO,\n    description: String? = null,\n    shortcut: String? = null,\n    enabled: Boolean = true,\n)"),
-        Props(listOf(PropRow("text", "String", "", "", true), PropRow("selected", "Boolean", "", "", true), PropRow("onClick", "() -> Unit", "", "", true), PropRow("modifier", "Modifier", "Modifier", "", false), PropRow("type", "KQuestionnaireChoiceType", "KQuestionnaireChoiceType.RADIO", "", false), PropRow("description", "String?", "null", "", false), PropRow("shortcut", "String?", "null", "", false), PropRow("enabled", "Boolean", "true", "", false))),
-        Source("https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/questionnaire/KQuestionnaireChoice.kt#L25"),
-        Rule,
-        Heading(3, "KQuestionnaireInput"),
-        CodeBlock("kotlin", "@Composable\nfun KQuestionnaireInput(\n    value: String,\n    onValueChange: (String) -> Unit,\n    modifier: Modifier = Modifier,\n    placeholder: String = \"Type your answer here...\",\n    singleLine: Boolean = true,\n    enabled: Boolean = true,\n)"),
-        Props(listOf(PropRow("value", "String", "", "", true), PropRow("onValueChange", "(String) -> Unit", "", "", true), PropRow("modifier", "Modifier", "Modifier", "", false), PropRow("placeholder", "String", "\"Type your answer here...\"", "", false), PropRow("singleLine", "Boolean", "true", "", false), PropRow("enabled", "Boolean", "true", "", false))),
-        Source("https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/questionnaire/KQuestionnaireInput.kt#L11"),
-        Heading(2, "Types"),
-        Heading(3, "KQuestionnaireChoiceType"),
-        CodeBlock("kotlin", "enum class KQuestionnaireChoiceType"),
-        Para("**Values**"),
-        Bullets(false, listOf("`RADIO`", "`CHECKBOX`")),
-        Source("https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/questionnaire/KQuestionnaireTypes.kt#L3"),
-        Rule,
-        Heading(3, "KQuestionnaireChoiceItem"),
-        CodeBlock("kotlin", "data class KQuestionnaireChoiceItem(\n    val id: String,\n    val label: String,\n    val description: String? = null,\n    val shortcut: String? = null,\n    val enabled: Boolean = true,\n)"),
-        Props(listOf(PropRow("id", "String", "", "", true), PropRow("label", "String", "", "", true), PropRow("description", "String?", "null", "", false), PropRow("shortcut", "String?", "null", "", false), PropRow("enabled", "Boolean", "true", "", false))),
-        Source("https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/questionnaire/KQuestionnaireTypes.kt#L7"),
+        DeclGroup("Composables", listOf(
+            Decl("KQuestionnaire", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/questionnaire/KQuestionnaire.kt#L27")), listOf(
+                CodeBlock("kotlin", "@Composable\nfun KQuestionnaire(\n    modifier: Modifier = Modifier,\n    progressText: String = \"\",\n    title: String,\n    description: String? = null,\n    errorText: String? = null,\n    content: @Composable ColumnScope.() -> Unit,\n    onPrevious: (() -> Unit)? = null,\n    onSkip: (() -> Unit)? = null,\n    onNext: (() -> Unit)? = null,\n    onSubmit: (() -> Unit)? = null,\n    isLastStep: Boolean = false,\n    canProceed: Boolean = true,\n)"),
+                Props(listOf(PropRow("modifier", "Modifier", "Modifier", "", false), PropRow("progressText", "String", "\"\"", "", false), PropRow("title", "String", "", "", true), PropRow("description", "String?", "null", "", false), PropRow("errorText", "String?", "null", "", false), PropRow("content", "@Composable ColumnScope.() -> Unit", "", "", true), PropRow("onPrevious", "(() -> Unit)?", "null", "", false), PropRow("onSkip", "(() -> Unit)?", "null", "", false), PropRow("onNext", "(() -> Unit)?", "null", "", false), PropRow("onSubmit", "(() -> Unit)?", "null", "", false), PropRow("isLastStep", "Boolean", "false", "", false), PropRow("canProceed", "Boolean", "true", "", false))),
+            )),
+            Decl("KQuestionnaireChoice", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/questionnaire/KQuestionnaireChoice.kt#L25")), listOf(
+                CodeBlock("kotlin", "@Composable\nfun KQuestionnaireChoice(\n    text: String,\n    selected: Boolean,\n    onClick: () -> Unit,\n    modifier: Modifier = Modifier,\n    type: KQuestionnaireChoiceType = KQuestionnaireChoiceType.RADIO,\n    description: String? = null,\n    shortcut: String? = null,\n    enabled: Boolean = true,\n)"),
+                Props(listOf(PropRow("text", "String", "", "", true), PropRow("selected", "Boolean", "", "", true), PropRow("onClick", "() -> Unit", "", "", true), PropRow("modifier", "Modifier", "Modifier", "", false), PropRow("type", "KQuestionnaireChoiceType", "KQuestionnaireChoiceType.RADIO", "", false), PropRow("description", "String?", "null", "", false), PropRow("shortcut", "String?", "null", "", false), PropRow("enabled", "Boolean", "true", "", false))),
+            )),
+            Decl("KQuestionnaireInput", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/questionnaire/KQuestionnaireInput.kt#L11")), listOf(
+                CodeBlock("kotlin", "@Composable\nfun KQuestionnaireInput(\n    value: String,\n    onValueChange: (String) -> Unit,\n    modifier: Modifier = Modifier,\n    placeholder: String = \"Type your answer here...\",\n    singleLine: Boolean = true,\n    enabled: Boolean = true,\n)"),
+                Props(listOf(PropRow("value", "String", "", "", true), PropRow("onValueChange", "(String) -> Unit", "", "", true), PropRow("modifier", "Modifier", "Modifier", "", false), PropRow("placeholder", "String", "\"Type your answer here...\"", "", false), PropRow("singleLine", "Boolean", "true", "", false), PropRow("enabled", "Boolean", "true", "", false))),
+            )),
+        )),
+        DeclGroup("Types", listOf(
+            Decl("KQuestionnaireChoiceType", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/questionnaire/KQuestionnaireTypes.kt#L3")), listOf(
+                CodeBlock("kotlin", "enum class KQuestionnaireChoiceType"),
+                Para("**Values**"),
+                Bullets(false, listOf("`RADIO`", "`CHECKBOX`")),
+            )),
+            Decl("KQuestionnaireChoiceItem", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/questionnaire/KQuestionnaireTypes.kt#L7")), listOf(
+                CodeBlock("kotlin", "data class KQuestionnaireChoiceItem(\n    val id: String,\n    val label: String,\n    val description: String? = null,\n    val shortcut: String? = null,\n    val enabled: Boolean = true,\n)"),
+                Props(listOf(PropRow("id", "String", "", "", true), PropRow("label", "String", "", "", true), PropRow("description", "String?", "null", "", false), PropRow("shortcut", "String?", "null", "", false), PropRow("enabled", "Boolean", "true", "", false))),
+            )),
+        )),
+    ),
+    since = "4.0.2",
+    available = listOf("4.3.6", "4.3.5", "4.3.4", "4.3.3", "4.3.2", "4.3.1", "4.3.0", "4.2.9", "4.2.8", "4.2.7", "4.2.6", "4.2.5", "4.2.4", "4.2.3", "4.2.2"),
+    headVersions = listOf("4.3.6", "4.3.5", "4.3.4", "4.3.3", "4.3.2", "4.3.1", "4.3.0", "4.2.9", "4.2.8", "4.2.7", "4.2.6", "4.2.5", "4.2.4"),
+    history = listOf(
+        VersionGroup(listOf("4.2.3", "4.2.2")) { page_components_questionnaire_h1() },
     ),
 )
+
+internal fun page_components_questionnaire_h1(): List<Block> = listOf(
+        Heading(2, "Installation"),
+        CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:{{version}}\")"),
+        CodeBlock("kotlin", "import dev.kindling.core.components.ui.questionnaire.KQuestionnaire"),
+        DeclGroup("Composables", listOf(
+            Decl("KQuestionnaire", listOf("android"), true, true, listOf(Impl("commonMain", "", listOf("android"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/questionnaire/KQuestionnaire.kt")), listOf(
+                CodeBlock("kotlin", "@Composable\nfun KQuestionnaire(\n    modifier: Modifier = Modifier,\n    progressText: String = \"\",\n    title: String,\n    description: String? = null,\n    errorText: String? = null,\n    content: @Composable ColumnScope.() -> Unit,\n    onPrevious: (() -> Unit)? = null,\n    onSkip: (() -> Unit)? = null,\n    onNext: (() -> Unit)? = null,\n    onSubmit: (() -> Unit)? = null,\n    isLastStep: Boolean = false,\n    canProceed: Boolean = true,\n)"),
+                Props(listOf(PropRow("modifier", "Modifier", "Modifier", "", false), PropRow("progressText", "String", "\"\"", "", false), PropRow("title", "String", "", "", true), PropRow("description", "String?", "null", "", false), PropRow("errorText", "String?", "null", "", false), PropRow("content", "@Composable ColumnScope.() -> Unit", "", "", true), PropRow("onPrevious", "(() -> Unit)?", "null", "", false), PropRow("onSkip", "(() -> Unit)?", "null", "", false), PropRow("onNext", "(() -> Unit)?", "null", "", false), PropRow("onSubmit", "(() -> Unit)?", "null", "", false), PropRow("isLastStep", "Boolean", "false", "", false), PropRow("canProceed", "Boolean", "true", "", false))),
+            )),
+            Decl("KQuestionnaireChoice", listOf("android"), true, true, listOf(Impl("commonMain", "", listOf("android"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/questionnaire/KQuestionnaireChoice.kt")), listOf(
+                CodeBlock("kotlin", "@Composable\nfun KQuestionnaireChoice(\n    text: String,\n    selected: Boolean,\n    onClick: () -> Unit,\n    modifier: Modifier = Modifier,\n    type: KQuestionnaireChoiceType = KQuestionnaireChoiceType.RADIO,\n    description: String? = null,\n    shortcut: String? = null,\n    enabled: Boolean = true,\n)"),
+                Props(listOf(PropRow("text", "String", "", "", true), PropRow("selected", "Boolean", "", "", true), PropRow("onClick", "() -> Unit", "", "", true), PropRow("modifier", "Modifier", "Modifier", "", false), PropRow("type", "KQuestionnaireChoiceType", "KQuestionnaireChoiceType.RADIO", "", false), PropRow("description", "String?", "null", "", false), PropRow("shortcut", "String?", "null", "", false), PropRow("enabled", "Boolean", "true", "", false))),
+            )),
+            Decl("KQuestionnaireInput", listOf("android"), true, true, listOf(Impl("commonMain", "", listOf("android"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/questionnaire/KQuestionnaireInput.kt")), listOf(
+                CodeBlock("kotlin", "@Composable\nfun KQuestionnaireInput(\n    value: String,\n    onValueChange: (String) -> Unit,\n    modifier: Modifier = Modifier,\n    placeholder: String = \"Type your answer here...\",\n    singleLine: Boolean = true,\n    enabled: Boolean = true,\n)"),
+                Props(listOf(PropRow("value", "String", "", "", true), PropRow("onValueChange", "(String) -> Unit", "", "", true), PropRow("modifier", "Modifier", "Modifier", "", false), PropRow("placeholder", "String", "\"Type your answer here...\"", "", false), PropRow("singleLine", "Boolean", "true", "", false), PropRow("enabled", "Boolean", "true", "", false))),
+            )),
+        )),
+        DeclGroup("Types", listOf(
+            Decl("KQuestionnaireChoiceType", listOf("android"), true, true, listOf(Impl("commonMain", "", listOf("android"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/questionnaire/KQuestionnaireTypes.kt")), listOf(
+                CodeBlock("kotlin", "enum class KQuestionnaireChoiceType"),
+                Para("**Values**"),
+                Bullets(false, listOf("`RADIO`", "`CHECKBOX`")),
+            )),
+            Decl("KQuestionnaireChoiceItem", listOf("android"), true, true, listOf(Impl("commonMain", "", listOf("android"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/questionnaire/KQuestionnaireTypes.kt")), listOf(
+                CodeBlock("kotlin", "data class KQuestionnaireChoiceItem(\n    val id: String,\n    val label: String,\n    val description: String? = null,\n    val shortcut: String? = null,\n    val enabled: Boolean = true,\n)"),
+                Props(listOf(PropRow("id", "String", "", "", true), PropRow("label", "String", "", "", true), PropRow("description", "String?", "null", "", false), PropRow("shortcut", "String?", "null", "", false), PropRow("enabled", "Boolean", "true", "", false))),
+            )),
+        )),
+    )

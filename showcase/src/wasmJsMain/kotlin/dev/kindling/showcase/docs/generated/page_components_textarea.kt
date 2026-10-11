@@ -17,12 +17,37 @@ internal fun page_components_textarea(): DocPage = DocPage(
         Heading(2, "Usage"),
         CodeBlock("kotlin", "var message by remember { mutableStateOf(\"\") }\nKTextarea(\n    value         = message,\n    onValueChange = { message = it },\n    placeholder   = \"Type your message here...\",\n    minLines      = 3\n)"),
         Heading(2, "Installation"),
-        CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:0.3.0\")"),
+        CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:{{version}}\")"),
         CodeBlock("kotlin", "import dev.kindling.core.components.ui.KTextarea"),
-        Heading(2, "Composables"),
-        Heading(3, "KTextarea"),
-        CodeBlock("kotlin", "@Composable\nfun KTextarea(\n    value: String,\n    onValueChange: (String) -> Unit,\n    modifier: Modifier = Modifier,\n    placeholder: String = \"\",\n    enabled: Boolean = true,\n    isError: Boolean = false,\n    minLines: Int = 2,\n    maxLines: Int = Int.MAX_VALUE,\n    keyboardOptions: KeyboardOptions = KeyboardOptions( keyboardType = KeyboardType.Text, imeAction = ImeAction.Default ),\n    keyboardActions: KeyboardActions = KeyboardActions.Default,\n)"),
-        Props(listOf(PropRow("value", "String", "", "The current text value to display in the textarea.", true), PropRow("onValueChange", "(String) -> Unit", "", "Callback invoked when the text value changes.", true), PropRow("modifier", "Modifier", "Modifier", "The modifier to be applied to the layout.", false), PropRow("placeholder", "String", "\"\"", "The placeholder text to display when the textarea is empty.", false), PropRow("enabled", "Boolean", "true", "Whether the textarea is enabled for user interaction.", false), PropRow("isError", "Boolean", "false", "Whether the textarea should display an error state.", false), PropRow("minLines", "Int", "2", "The minimum number of lines to display.", false), PropRow("maxLines", "Int", "Int.MAX_VALUE", "The maximum number of lines to display.", false), PropRow("keyboardOptions", "KeyboardOptions", "KeyboardOptions( keyboardType = KeyboardType.Text, imeAction = ImeAction.Default )", "Software keyboard options.", false), PropRow("keyboardActions", "KeyboardActions", "KeyboardActions.Default", "Software keyboard actions.", false))),
-        Source("https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/KTextarea.kt#L51"),
+        DeclGroup("Composables", listOf(
+            Decl("KTextarea", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/KTextarea.kt#L51")), listOf(
+                CodeBlock("kotlin", "@Composable\nfun KTextarea(\n    value: String,\n    onValueChange: (String) -> Unit,\n    modifier: Modifier = Modifier,\n    placeholder: String = \"\",\n    enabled: Boolean = true,\n    isError: Boolean = false,\n    minLines: Int = 2,\n    maxLines: Int = Int.MAX_VALUE,\n    keyboardOptions: KeyboardOptions = KeyboardOptions( keyboardType = KeyboardType.Text, imeAction = ImeAction.Default ),\n    keyboardActions: KeyboardActions = KeyboardActions.Default,\n)"),
+                Props(listOf(PropRow("value", "String", "", "The current text value to display in the textarea.", true), PropRow("onValueChange", "(String) -> Unit", "", "Callback invoked when the text value changes.", true), PropRow("modifier", "Modifier", "Modifier", "The modifier to be applied to the layout.", false), PropRow("placeholder", "String", "\"\"", "The placeholder text to display when the textarea is empty.", false), PropRow("enabled", "Boolean", "true", "Whether the textarea is enabled for user interaction.", false), PropRow("isError", "Boolean", "false", "Whether the textarea should display an error state.", false), PropRow("minLines", "Int", "2", "The minimum number of lines to display.", false), PropRow("maxLines", "Int", "Int.MAX_VALUE", "The maximum number of lines to display.", false), PropRow("keyboardOptions", "KeyboardOptions", "KeyboardOptions( keyboardType = KeyboardType.Text, imeAction = ImeAction.Default )", "Software keyboard options.", false), PropRow("keyboardActions", "KeyboardActions", "KeyboardActions.Default", "Software keyboard actions.", false))),
+            )),
+        )),
+    ),
+    since = "4.0.2",
+    available = listOf("4.3.6", "4.3.5", "4.3.4", "4.3.3", "4.3.2", "4.3.1", "4.3.0", "4.2.9", "4.2.8", "4.2.7", "4.2.6", "4.2.5", "4.2.4", "4.2.3", "4.2.2"),
+    headVersions = listOf("4.3.6", "4.3.5", "4.3.4", "4.3.3", "4.3.2", "4.3.1", "4.3.0", "4.2.9", "4.2.8", "4.2.7", "4.2.6", "4.2.5", "4.2.4"),
+    history = listOf(
+        VersionGroup(listOf("4.2.3", "4.2.2")) { page_components_textarea_h1() },
     ),
 )
+
+internal fun page_components_textarea_h1(): List<Block> = listOf(
+        Para("A multi-line text input component designed for longer entries like messages or descriptions. It provides a consistent look and feel with other Kindling input components and handles error states, disabled states, and placeholder text."),
+        Para("Respects `LocalLayoutDirection` for RTL text alignment automatically."),
+        Heading(2, "Preview"),
+        Demo("textarea"),
+        Heading(2, "Usage"),
+        CodeBlock("kotlin", "var message by remember { mutableStateOf(\"\") }\nKTextarea(\n    value         = message,\n    onValueChange = { message = it },\n    placeholder   = \"Type your message here...\",\n    minLines      = 3\n)"),
+        Heading(2, "Installation"),
+        CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:{{version}}\")"),
+        CodeBlock("kotlin", "import dev.kindling.core.components.ui.KTextarea"),
+        DeclGroup("Composables", listOf(
+            Decl("KTextarea", listOf("android"), true, true, listOf(Impl("commonMain", "", listOf("android"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/KTextarea.kt")), listOf(
+                CodeBlock("kotlin", "@Composable\nfun KTextarea(\n    value: String,\n    onValueChange: (String) -> Unit,\n    modifier: Modifier = Modifier,\n    placeholder: String = \"\",\n    enabled: Boolean = true,\n    isError: Boolean = false,\n    minLines: Int = 2,\n    maxLines: Int = Int.MAX_VALUE,\n    keyboardOptions: KeyboardOptions = KeyboardOptions( keyboardType = KeyboardType.Text, imeAction = ImeAction.Default ),\n    keyboardActions: KeyboardActions = KeyboardActions.Default,\n)"),
+                Props(listOf(PropRow("value", "String", "", "The current text value to display in the textarea.", true), PropRow("onValueChange", "(String) -> Unit", "", "Callback invoked when the text value changes.", true), PropRow("modifier", "Modifier", "Modifier", "The modifier to be applied to the layout.", false), PropRow("placeholder", "String", "\"\"", "The placeholder text to display when the textarea is empty.", false), PropRow("enabled", "Boolean", "true", "Whether the textarea is enabled for user interaction.", false), PropRow("isError", "Boolean", "false", "Whether the textarea should display an error state.", false), PropRow("minLines", "Int", "2", "The minimum number of lines to display.", false), PropRow("maxLines", "Int", "Int.MAX_VALUE", "The maximum number of lines to display.", false), PropRow("keyboardOptions", "KeyboardOptions", "KeyboardOptions( keyboardType = KeyboardType.Text, imeAction = ImeAction.Default )", "Software keyboard options.", false), PropRow("keyboardActions", "KeyboardActions", "KeyboardActions.Default", "Software keyboard actions.", false))),
+            )),
+        )),
+    )

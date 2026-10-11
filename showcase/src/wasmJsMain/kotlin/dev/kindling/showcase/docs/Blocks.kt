@@ -3,6 +3,7 @@ package dev.kindling.showcase.docs
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -48,7 +49,17 @@ internal class RenderCtx(
     val dark: Boolean,
     val onLink: (String) -> Unit,
     val headingCoords: MutableMap<Int, LayoutCoordinates>,
-)
+    /** Release being shown (fills `{{version}}` in snippets). Empty on unversioned pages. */
+    val version: String = "",
+    /** Git ref for source links (fills `{{ref}}`): the branch for the newest release, the tag otherwise. */
+    val ref: String = "main",
+    /** Active platform filter, used to highlight matching implementations. */
+    val platform: String? = null,
+    /** True when showing a release other than the one the live previews are built from. */
+    val oldVersion: Boolean = false,
+) {
+    fun fill(text: String): String = text.replace("{{version}}", version).replace("{{ref}}", ref)
+}
 
 @Composable
 private fun rich(text: String, ctx: RenderCtx): AnnotatedString {
@@ -111,10 +122,11 @@ internal fun RenderBlock(index: Int, block: Block, ctx: RenderCtx) {
             Text(rich(block.text, ctx), fontSize = 14.sp, lineHeight = 22.sp, color = colors.onBackground, modifier = Modifier.padding(14.dp))
         }
         is Props -> PropsTable(block, ctx)
-        is Demo -> DemoBox(block.id)
+        is Demo -> DemoBox(block.id, ctx.oldVersion)
         is Playground -> PlaygroundHost(block.id, ctx.dark)
+        is DeclGroup -> DeclGroupView(index, block, ctx)
         is Source -> Text(
-            text = rich("[View source on GitHub](${block.url})", ctx),
+            text = rich("[View source on GitHub](${ctx.fill(block.url)})", ctx),
             fontSize = 13.sp,
             color = colors.onSurfaceVariant,
             modifier = Modifier.padding(top = 4.dp, bottom = 8.dp),
@@ -127,7 +139,7 @@ internal fun RenderBlock(index: Int, block: Block, ctx: RenderCtx) {
 @Composable
 private fun CodeBox(block: CodeBlock, ctx: RenderCtx) {
     val colors = MaterialTheme.colorScheme
-    val text = remember(block, ctx.dark) { highlight(block.code, ctx.dark) }
+    val text = remember(block, ctx.dark, ctx.version) { highlight(ctx.fill(block.code), ctx.dark) }
     Surface(
         shape = RoundedCornerShape(10.dp),
         color = colors.surfaceVariant.copy(alpha = if (ctx.dark) 0.5f else 0.6f),
@@ -191,7 +203,7 @@ private fun PropsTable(block: Props, ctx: RenderCtx) {
 
 /** A live, interactive preview of a real Kindling component. */
 @Composable
-private fun DemoBox(id: String) {
+private fun DemoBox(id: String, oldVersion: Boolean = false) {
     val colors = MaterialTheme.colorScheme
     val demo = demos.firstOrNull { it.id == id }
     Box(
@@ -207,6 +219,14 @@ private fun DemoBox(id: String) {
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             if (demo != null) demo.content() else Text("No live preview for this component yet.", color = colors.onSurfaceVariant, fontSize = 13.sp)
+            if (oldVersion) {
+                Text(
+                    "Live preview always renders the newest release.",
+                    fontSize = 11.sp,
+                    color = colors.onSurfaceVariant,
+                    modifier = Modifier.padding(top = 12.dp),
+                )
+            }
         }
     }
 }
@@ -226,5 +246,74 @@ private fun GalleryBox() {
             }
         }
         DemoBox(selected)
+    }
+}
+
+@Composable
+internal fun Pill(text: String, modifier: Modifier = Modifier, strong: Boolean = false, dim: Boolean = false) {
+    val colors = MaterialTheme.colorScheme
+    Text(
+        text,
+        fontSize = 11.sp,
+        fontWeight = FontWeight.Medium,
+        color = if (strong) colors.onPrimary else if (dim) colors.onSurfaceVariant.copy(alpha = 0.6f) else colors.onSurfaceVariant,
+        modifier = modifier
+            .clip(RoundedCornerShape(6.dp))
+            .then(if (strong) Modifier.background(colors.primary) else Modifier.border(1.dp, colors.outline, RoundedCornerShape(6.dp)))
+            .padding(horizontal = 7.dp, vertical = 2.dp),
+    )
+}
+
+@Composable
+private fun DeclGroupView(index: Int, group: DeclGroup, ctx: RenderCtx) {
+    RenderBlock(index, Heading(2, group.title), ctx)
+    group.decls.forEachIndexed { j, d ->
+        if (j > 0) HorizontalDivider(Modifier.padding(vertical = 24.dp), color = MaterialTheme.colorScheme.outline)
+        DeclView(index * 1000 + j, d, ctx)
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun DeclView(key: Int, decl: Decl, ctx: RenderCtx) {
+    val colors = MaterialTheme.colorScheme
+    RenderBlock(key, Heading(3, decl.name), ctx)
+    FlowRow(
+        Modifier.padding(bottom = 12.dp),
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        val expect = decl.impls.any { it.kind == "expect" }
+        if (decl.universal) {
+            Pill(if (decl.common) "Common" else "All platforms", strong = true)
+            if (expect) Pill("expect / actual")
+        } else {
+            decl.platforms.forEach { Pill(platformLabel(it), strong = ctx.platform == it) }
+        }
+    }
+    decl.children.forEachIndexed { k, c -> RenderBlock(key * 1000 + k, c, ctx) }
+    if (decl.impls.isNotEmpty()) {
+        FlowRow(
+            Modifier.padding(top = 4.dp, bottom = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp),
+        ) {
+            Text(if (decl.impls.size > 1) "Implementations" else "Source", fontSize = 13.sp, color = colors.onSurfaceVariant)
+            decl.impls.forEach { impl ->
+                val hit = ctx.platform == null || (ctx.platform == "common" && impl.sourceSet == "commonMain") || ctx.platform in impl.covers
+                val label = impl.sourceSet + if (impl.kind.isNotEmpty()) " · ${impl.kind}" else ""
+                Text(
+                    label,
+                    fontSize = 12.sp,
+                    fontFamily = FontFamily.Monospace,
+                    color = if (hit) colors.onBackground else colors.onSurfaceVariant.copy(alpha = 0.5f),
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(6.dp))
+                        .border(1.dp, if (hit) colors.onSurfaceVariant else colors.outline, RoundedCornerShape(6.dp))
+                        .clickable { ctx.onLink(ctx.fill(impl.url)) }
+                        .padding(horizontal = 8.dp, vertical = 3.dp),
+                )
+            }
+        }
     }
 }

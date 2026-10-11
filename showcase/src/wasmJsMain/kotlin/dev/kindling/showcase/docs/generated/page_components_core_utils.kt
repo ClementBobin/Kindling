@@ -11,23 +11,30 @@ internal fun page_components_core_utils(): DocPage = DocPage(
     order = 100,
     blocks = listOf(
         Heading(2, "Installation"),
-        CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:0.3.0\")"),
-        Heading(2, "Types"),
-        Heading(3, "KCounter"),
-        CodeBlock("kotlin", "class KCounter(\n    initialValue: Int = 0,\n    val min: Int = Int.MIN_VALUE,\n    val max: Int = Int.MAX_VALUE,\n    val step: Int = 1,\n)"),
-        Props(listOf(PropRow("initialValue", "Int", "0", "", false), PropRow("min", "Int", "Int.MIN_VALUE", "", false), PropRow("max", "Int", "Int.MAX_VALUE", "", false), PropRow("step", "Int", "1", "", false))),
-        Para("**Members**"),
-        Bullets(false, listOf("`val state: StateFlow<Int>`", "`val count: Int get()`", "`fun increment()`", "`fun decrement()`", "`fun set(value: Int)`", "`fun reset()`")),
-        Source("https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/utils/KCounter.kt#L8"),
-        Heading(2, "Functions & properties"),
-        Heading(3, "bytesToHuman"),
-        CodeBlock("kotlin", "fun Long.bytesToHuman(decimals: Int = 1): String"),
-        Props(listOf(PropRow("decimals", "Int", "1", "", false))),
-        Source("https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/utils/FormatBytes.kt#L5"),
-        Rule,
-        Heading(3, "bytesToHuman"),
-        CodeBlock("kotlin", "fun Int.bytesToHuman(decimals: Int = 1): String"),
-        Props(listOf(PropRow("decimals", "Int", "1", "", false))),
-        Source("https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/utils/FormatBytes.kt#L18"),
+        CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:{{version}}\")"),
+        DeclGroup("Types", listOf(
+            Decl("KCounter", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/utils/KCounter.kt#L8")), listOf(
+                CodeBlock("kotlin", "class KCounter(\n    initialValue: Int = 0,\n    val min: Int = Int.MIN_VALUE,\n    val max: Int = Int.MAX_VALUE,\n    val step: Int = 1,\n)"),
+                Props(listOf(PropRow("initialValue", "Int", "0", "", false), PropRow("min", "Int", "Int.MIN_VALUE", "", false), PropRow("max", "Int", "Int.MAX_VALUE", "", false), PropRow("step", "Int", "1", "", false))),
+                Para("**Members**"),
+                Bullets(false, listOf("`val state: StateFlow<Int>`", "`val count: Int get()`", "`fun increment()`", "`fun decrement()`", "`fun set(value: Int)`", "`fun reset()`")),
+            )),
+        )),
+        DeclGroup("Functions & properties", listOf(
+            Decl("bytesToHuman", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/utils/FormatBytes.kt#L5")), listOf(
+                CodeBlock("kotlin", "fun Long.bytesToHuman(decimals: Int = 1): String"),
+                Props(listOf(PropRow("decimals", "Int", "1", "", false))),
+            )),
+            Decl("bytesToHuman", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/utils/FormatBytes.kt#L18")), listOf(
+                CodeBlock("kotlin", "fun Int.bytesToHuman(decimals: Int = 1): String"),
+                Props(listOf(PropRow("decimals", "Int", "1", "", false))),
+            )),
+        )),
+    ),
+    since = "4.2.4",
+    available = listOf("4.3.6", "4.3.5", "4.3.4", "4.3.3", "4.3.2", "4.3.1", "4.3.0", "4.2.9", "4.2.8", "4.2.7", "4.2.6", "4.2.5", "4.2.4"),
+    headVersions = listOf("4.3.6", "4.3.5", "4.3.4", "4.3.3", "4.3.2", "4.3.1", "4.3.0", "4.2.9", "4.2.8", "4.2.7", "4.2.6", "4.2.5", "4.2.4"),
+    history = listOf(
+
     ),
 )

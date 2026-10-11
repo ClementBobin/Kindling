@@ -4,7 +4,10 @@ package dev.kindling.showcase.docs.generated
 import dev.kindling.showcase.docs.*
 
 /** Version the docs were generated for (shown in the top bar). */
-internal const val DOCS_VERSION = "0.3.0"
+internal const val DOCS_VERSION = "4.3.6"
+
+/** Git ref the latest version's source links point to; older versions link to their tag. */
+internal const val DOCS_BRANCH = "main"
 
 internal fun generatedPages(): List<DocPage> = listOf(
     page_contributing_docs(),
@@ -112,4 +115,6 @@ internal fun generatedPages(): List<DocPage> = listOf(
     page_android_vibration(),
     page_android_wifi(),
     page_android_window(),
+    page_components_calendar(),
+    page_components_date_picker(),
 )

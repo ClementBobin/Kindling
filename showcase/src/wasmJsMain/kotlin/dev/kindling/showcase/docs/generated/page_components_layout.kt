@@ -11,45 +11,87 @@ internal fun page_components_layout(): DocPage = DocPage(
     order = 100,
     blocks = listOf(
         Heading(2, "Installation"),
-        CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:0.3.0\")"),
+        CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:{{version}}\")"),
         CodeBlock("kotlin", "import dev.kindling.core.components.ui.layout.KCenteredBox"),
-        Heading(2, "Composables"),
-        Heading(3, "KCenteredBox"),
-        CodeBlock("kotlin", "@Composable\nfun KCenteredBox(\n    modifier: Modifier = Modifier,\n    horizontalPadding: Dp = 32.dp,\n    content: @Composable BoxScope.() -> Unit,\n)"),
-        Props(listOf(PropRow("modifier", "Modifier", "Modifier", "", false), PropRow("horizontalPadding", "Dp", "32.dp", "", false), PropRow("content", "@Composable BoxScope.() -> Unit", "", "", true))),
-        Source("https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/layout/KCentered.kt#L19"),
-        Rule,
-        Heading(3, "KCenteredColumn"),
-        Para("Full-width column, content centred by default."),
-        CodeBlock("kotlin", "@Composable\nfun KCenteredColumn(\n    modifier: Modifier = Modifier,\n    horizontalAlignment: Alignment.Horizontal = Alignment.CenterHorizontally,\n    verticalArrangement: Arrangement.Vertical = Arrangement.Center,\n    content: @Composable ColumnScope.() -> Unit,\n)"),
-        Props(listOf(PropRow("modifier", "Modifier", "Modifier", "", false), PropRow("horizontalAlignment", "Alignment.Horizontal", "Alignment.CenterHorizontally", "", false), PropRow("verticalArrangement", "Arrangement.Vertical", "Arrangement.Center", "", false), PropRow("content", "@Composable ColumnScope.() -> Unit", "", "", true))),
-        Source("https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/layout/KCentered.kt#L33"),
-        Rule,
-        Heading(3, "KSmallSpacer"),
-        CodeBlock("kotlin", "@Composable\nfun KSmallSpacer()"),
-        Source("https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/layout/KSpacer.kt#L10"),
-        Rule,
-        Heading(3, "KMediumSpacer"),
-        CodeBlock("kotlin", "@Composable\nfun KMediumSpacer()"),
-        Source("https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/layout/KSpacer.kt#L11"),
-        Rule,
-        Heading(3, "KLargeSpacer"),
-        CodeBlock("kotlin", "@Composable\nfun KLargeSpacer()"),
-        Source("https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/layout/KSpacer.kt#L12"),
-        Rule,
-        Heading(3, "KExtraLargeSpacer"),
-        CodeBlock("kotlin", "@Composable\nfun KExtraLargeSpacer()"),
-        Source("https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/layout/KSpacer.kt#L13"),
-        Rule,
-        Heading(3, "KCustomSpacer"),
-        CodeBlock("kotlin", "@Composable\nfun KCustomSpacer(height: Dp)"),
-        Props(listOf(PropRow("height", "Dp", "", "", true))),
-        Source("https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/layout/KSpacer.kt#L14"),
-        Heading(2, "Functions & properties"),
-        Heading(3, "dashedBorder"),
-        Para("Draws a dashed border around a composable using custom stroke parameters."),
-        CodeBlock("kotlin", "fun Modifier.dashedBorder(\n    color: Color,\n    shape: Shape,\n    strokeWidth: Dp = 1.dp,\n    dashWidth: Dp = 6.dp,\n    gapWidth: Dp = 4.dp,\n): Modifier"),
-        Props(listOf(PropRow("color", "Color", "", "", true), PropRow("shape", "Shape", "", "", true), PropRow("strokeWidth", "Dp", "1.dp", "", false), PropRow("dashWidth", "Dp", "6.dp", "", false), PropRow("gapWidth", "Dp", "4.dp", "", false))),
-        Source("https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/layout/ModifierDashedBorder.kt#L17"),
+        DeclGroup("Composables", listOf(
+            Decl("KCenteredBox", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/layout/KCentered.kt#L19")), listOf(
+                CodeBlock("kotlin", "@Composable\nfun KCenteredBox(\n    modifier: Modifier = Modifier,\n    horizontalPadding: Dp = 32.dp,\n    content: @Composable BoxScope.() -> Unit,\n)"),
+                Props(listOf(PropRow("modifier", "Modifier", "Modifier", "", false), PropRow("horizontalPadding", "Dp", "32.dp", "", false), PropRow("content", "@Composable BoxScope.() -> Unit", "", "", true))),
+            )),
+            Decl("KCenteredColumn", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/layout/KCentered.kt#L33")), listOf(
+                Para("Full-width column, content centred by default."),
+                CodeBlock("kotlin", "@Composable\nfun KCenteredColumn(\n    modifier: Modifier = Modifier,\n    horizontalAlignment: Alignment.Horizontal = Alignment.CenterHorizontally,\n    verticalArrangement: Arrangement.Vertical = Arrangement.Center,\n    content: @Composable ColumnScope.() -> Unit,\n)"),
+                Props(listOf(PropRow("modifier", "Modifier", "Modifier", "", false), PropRow("horizontalAlignment", "Alignment.Horizontal", "Alignment.CenterHorizontally", "", false), PropRow("verticalArrangement", "Arrangement.Vertical", "Arrangement.Center", "", false), PropRow("content", "@Composable ColumnScope.() -> Unit", "", "", true))),
+            )),
+            Decl("KSmallSpacer", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/layout/KSpacer.kt#L10")), listOf(
+                CodeBlock("kotlin", "@Composable\nfun KSmallSpacer()"),
+            )),
+            Decl("KMediumSpacer", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/layout/KSpacer.kt#L11")), listOf(
+                CodeBlock("kotlin", "@Composable\nfun KMediumSpacer()"),
+            )),
+            Decl("KLargeSpacer", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/layout/KSpacer.kt#L12")), listOf(
+                CodeBlock("kotlin", "@Composable\nfun KLargeSpacer()"),
+            )),
+            Decl("KExtraLargeSpacer", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/layout/KSpacer.kt#L13")), listOf(
+                CodeBlock("kotlin", "@Composable\nfun KExtraLargeSpacer()"),
+            )),
+            Decl("KCustomSpacer", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/layout/KSpacer.kt#L14")), listOf(
+                CodeBlock("kotlin", "@Composable\nfun KCustomSpacer(height: Dp)"),
+                Props(listOf(PropRow("height", "Dp", "", "", true))),
+            )),
+        )),
+        DeclGroup("Functions & properties", listOf(
+            Decl("dashedBorder", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/layout/ModifierDashedBorder.kt#L17")), listOf(
+                Para("Draws a dashed border around a composable using custom stroke parameters."),
+                CodeBlock("kotlin", "fun Modifier.dashedBorder(\n    color: Color,\n    shape: Shape,\n    strokeWidth: Dp = 1.dp,\n    dashWidth: Dp = 6.dp,\n    gapWidth: Dp = 4.dp,\n): Modifier"),
+                Props(listOf(PropRow("color", "Color", "", "", true), PropRow("shape", "Shape", "", "", true), PropRow("strokeWidth", "Dp", "1.dp", "", false), PropRow("dashWidth", "Dp", "6.dp", "", false), PropRow("gapWidth", "Dp", "4.dp", "", false))),
+            )),
+        )),
+    ),
+    since = "4.0.2",
+    available = listOf("4.3.6", "4.3.5", "4.3.4", "4.3.3", "4.3.2", "4.3.1", "4.3.0", "4.2.9", "4.2.8", "4.2.7", "4.2.6", "4.2.5", "4.2.4", "4.2.3", "4.2.2"),
+    headVersions = listOf("4.3.6", "4.3.5", "4.3.4", "4.3.3", "4.3.2", "4.3.1", "4.3.0", "4.2.9", "4.2.8", "4.2.7", "4.2.6", "4.2.5", "4.2.4"),
+    history = listOf(
+        VersionGroup(listOf("4.2.3", "4.2.2")) { page_components_layout_h1() },
     ),
 )
+
+internal fun page_components_layout_h1(): List<Block> = listOf(
+        Heading(2, "Installation"),
+        CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:{{version}}\")"),
+        CodeBlock("kotlin", "import dev.kindling.core.components.ui.layout.KCenteredBox"),
+        DeclGroup("Composables", listOf(
+            Decl("KCenteredBox", listOf("android"), true, true, listOf(Impl("commonMain", "", listOf("android"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/layout/KCentered.kt")), listOf(
+                CodeBlock("kotlin", "@Composable\nfun KCenteredBox(\n    modifier: Modifier = Modifier,\n    horizontalPadding: Dp = 32.dp,\n    content: @Composable BoxScope.() -> Unit,\n)"),
+                Props(listOf(PropRow("modifier", "Modifier", "Modifier", "", false), PropRow("horizontalPadding", "Dp", "32.dp", "", false), PropRow("content", "@Composable BoxScope.() -> Unit", "", "", true))),
+            )),
+            Decl("KCenteredColumn", listOf("android"), true, true, listOf(Impl("commonMain", "", listOf("android"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/layout/KCentered.kt")), listOf(
+                Para("Full-width column, content centred by default."),
+                CodeBlock("kotlin", "@Composable\nfun KCenteredColumn(\n    modifier: Modifier = Modifier,\n    horizontalAlignment: Alignment.Horizontal = Alignment.CenterHorizontally,\n    verticalArrangement: Arrangement.Vertical = Arrangement.Center,\n    content: @Composable ColumnScope.() -> Unit,\n)"),
+                Props(listOf(PropRow("modifier", "Modifier", "Modifier", "", false), PropRow("horizontalAlignment", "Alignment.Horizontal", "Alignment.CenterHorizontally", "", false), PropRow("verticalArrangement", "Arrangement.Vertical", "Arrangement.Center", "", false), PropRow("content", "@Composable ColumnScope.() -> Unit", "", "", true))),
+            )),
+            Decl("KSmallSpacer", listOf("android"), true, true, listOf(Impl("commonMain", "", listOf("android"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/layout/KSpacer.kt")), listOf(
+                CodeBlock("kotlin", "@Composable\nfun KSmallSpacer()"),
+            )),
+            Decl("KMediumSpacer", listOf("android"), true, true, listOf(Impl("commonMain", "", listOf("android"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/layout/KSpacer.kt")), listOf(
+                CodeBlock("kotlin", "@Composable\nfun KMediumSpacer()"),
+            )),
+            Decl("KLargeSpacer", listOf("android"), true, true, listOf(Impl("commonMain", "", listOf("android"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/layout/KSpacer.kt")), listOf(
+                CodeBlock("kotlin", "@Composable\nfun KLargeSpacer()"),
+            )),
+            Decl("KExtraLargeSpacer", listOf("android"), true, true, listOf(Impl("commonMain", "", listOf("android"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/layout/KSpacer.kt")), listOf(
+                CodeBlock("kotlin", "@Composable\nfun KExtraLargeSpacer()"),
+            )),
+            Decl("KCustomSpacer", listOf("android"), true, true, listOf(Impl("commonMain", "", listOf("android"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/layout/KSpacer.kt")), listOf(
+                CodeBlock("kotlin", "@Composable\nfun KCustomSpacer(height: Dp)"),
+                Props(listOf(PropRow("height", "Dp", "", "", true))),
+            )),
+        )),
+        DeclGroup("Functions & properties", listOf(
+            Decl("dashedBorder", listOf("android"), true, true, listOf(Impl("commonMain", "", listOf("android"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/layout/ModifierDashedBorder.kt")), listOf(
+                Para("Draws a dashed border around a composable using custom stroke parameters."),
+                CodeBlock("kotlin", "fun Modifier.dashedBorder(\n    color: Color,\n    shape: Shape,\n    strokeWidth: Dp = 1.dp,\n    dashWidth: Dp = 6.dp,\n    gapWidth: Dp = 4.dp,\n): Modifier"),
+                Props(listOf(PropRow("color", "Color", "", "", true), PropRow("shape", "Shape", "", "", true), PropRow("strokeWidth", "Dp", "1.dp", "", false), PropRow("dashWidth", "Dp", "6.dp", "", false), PropRow("gapWidth", "Dp", "4.dp", "", false))),
+            )),
+        )),
+    )

@@ -67,6 +67,7 @@ import dev.kindling.core.components.ui.button.KButtonVariant
 import dev.kindling.core.theme.KindlingTheme
 import dev.kindling.showcase.ShadcnDark
 import dev.kindling.showcase.ShadcnLight
+import dev.kindling.showcase.docs.generated.DOCS_BRANCH
 import dev.kindling.showcase.docs.generated.DOCS_VERSION
 import dev.kindling.showcase.docs.generated.generatedPages
 import kotlinx.browser.window
@@ -74,16 +75,32 @@ import kotlinx.coroutines.launch
 
 private const val GITHUB = "https://github.com/ClementBobin/Kindling"
 
-private fun readRoute(): String =
-    window.location.hash.removePrefix("#").trim('/').ifEmpty { "index" }
+/** Hash location: `#/components/button?v=4.2.0&p=ios` (version and platform filter are optional). */
+internal class Loc(val path: String, val version: String?, val platform: String?)
+
+private var currentLoc = Loc("index", null, null)
+
+private fun readLoc(): Loc {
+    val raw = window.location.hash.removePrefix("#").trimStart('/')
+    val q = raw.indexOf('?')
+    val path = (if (q >= 0) raw.substring(0, q) else raw).trim('/').ifEmpty { "index" }
+    val params = if (q >= 0) {
+        raw.substring(q + 1).split('&').mapNotNull { kv -> kv.indexOf('=').takeIf { it > 0 }?.let { kv.substring(0, it) to kv.substring(it + 1) } }.toMap()
+    } else emptyMap()
+    return Loc(path, params["v"]?.ifEmpty { null }, params["p"]?.ifEmpty { null }).also { currentLoc = it }
+}
+
+private fun navigate(path: String, version: String?, platform: String?) {
+    val q = listOfNotNull(version?.let { "v=$it" }, platform?.let { "p=$it" }).joinToString("&")
+    window.location.hash = "#/$path" + if (q.isNotEmpty()) "?$q" else ""
+}
 
 /** In-page links look like `/docs/components/badge`; the router uses `components/badge`. */
 private fun normalizeLink(url: String): String =
     url.removePrefix("/docs").trim('/').ifEmpty { "index" }
 
-private fun go(path: String) {
-    window.location.hash = "#/$path"
-}
+/** Opens a page, keeping the chosen version (the platform filter only makes sense per page). */
+private fun go(path: String) = navigate(path, currentLoc.version, null)
 
 /** The whole documentation website. Hash-routed so it works on GitHub Pages without server rewrites. */
 @OptIn(ExperimentalComposeUiApi::class)
@@ -96,12 +113,13 @@ fun DocsSite() {
 
     val system = isSystemInDarkTheme()
     var dark by remember { mutableStateOf(system) }
-    var route by remember { mutableStateOf(readRoute()) }
+    var loc by remember { mutableStateOf(readLoc()) }
+    val route = loc.path
     var searchOpen by remember { mutableStateOf(false) }
     var menuOpen by remember { mutableStateOf(false) }
 
     DisposableEffect(Unit) {
-        val listener: (org.w3c.dom.events.Event) -> Unit = { route = readRoute(); menuOpen = false }
+        val listener: (org.w3c.dom.events.Event) -> Unit = { loc = readLoc(); menuOpen = false }
         window.addEventListener("hashchange", listener)
         onDispose { window.removeEventListener("hashchange", listener) }
     }
@@ -143,6 +161,7 @@ fun DocsSite() {
                             }
                             PageContent(
                                 page = page,
+                                loc = loc,
                                 dark = dark,
                                 flat = flat,
                                 showToc = xl,
@@ -249,7 +268,11 @@ private fun Sidebar(groups: List<Pair<String, List<DocPage>>>, route: String, mo
                         text = if (p.order == 0) "Overview" else p.title,
                         fontSize = 14.sp,
                         fontWeight = if (active) FontWeight.Medium else FontWeight.Normal,
-                        color = if (active) colors.onBackground else colors.onSurfaceVariant,
+                        color = when {
+                            active -> colors.onBackground
+                            p.versioned && p.available.first() != DOCS_VERSION -> colors.onSurfaceVariant.copy(alpha = 0.55f)
+                            else -> colors.onSurfaceVariant
+                        },
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier
@@ -267,21 +290,38 @@ private fun Sidebar(groups: List<Pair<String, List<DocPage>>>, route: String, mo
 }
 
 @Composable
-private fun PageContent(page: DocPage?, dark: Boolean, flat: List<DocPage>, showToc: Boolean, modifier: Modifier) {
+private fun PageContent(page: DocPage?, loc: Loc, dark: Boolean, flat: List<DocPage>, showToc: Boolean, modifier: Modifier) {
     val colors = MaterialTheme.colorScheme
     val scroll = rememberScrollState()
     val scope = rememberCoroutineScope()
-    val coords = remember(page) { mutableMapOf<Int, LayoutCoordinates>() }
+    // Release shown: the requested one if this page has it, else the page's newest.
+    val version = when {
+        page == null || !page.versioned -> ""
+        loc.version != null && loc.version in page.available -> loc.version
+        else -> page.available.first()
+    }
+    val rawBlocks = page?.blocksFor(version.ifEmpty { null }) ?: emptyList()
+    val filterable = remember(rawBlocks) { rawBlocks.hasPlatformVariants() }
+    val platform = loc.platform.takeIf { filterable }
+    val blocks = remember(rawBlocks, platform) { rawBlocks.forPlatform(platform) }
+    val headings = remember(blocks) { headingsOf(blocks) }
+
+    val coords = remember(page, version, platform) { mutableMapOf<Int, LayoutCoordinates>() }
     var viewport by remember { mutableStateOf<LayoutCoordinates?>(null) }
     LaunchedEffect(page) { scroll.scrollTo(0) }
 
-    val ctx = remember(dark, page) {
+    val ctx = remember(dark, page, version, platform, coords) {
         RenderCtx(
             dark = dark,
             onLink = { url -> if (url.startsWith("http")) window.open(url, "_blank") else go(normalizeLink(url)) },
             headingCoords = coords,
+            version = version.ifEmpty { DOCS_VERSION },
+            ref = if (version.isEmpty() || version == DOCS_VERSION) DOCS_BRANCH else version,
+            platform = platform,
+            oldVersion = page != null && version.isNotEmpty() && version != page.available.first(),
         )
     }
+    val here = page?.path ?: ""
 
     Row(modifier) {
         Box(
@@ -300,27 +340,34 @@ private fun PageContent(page: DocPage?, dark: Boolean, flat: List<DocPage>, show
                 }
             } else {
                 SelectionContainer {
-                    val full = page.blocks.any { it is Playground }
+                    val full = blocks.any { it is Playground }
                     Column(Modifier.widthIn(max = if (full) 1400.dp else 800.dp).fillMaxWidth().padding(horizontal = 28.dp, vertical = 40.dp)) {
                         Text(page.section, fontSize = 13.sp, color = colors.onSurfaceVariant, modifier = Modifier.padding(bottom = 6.dp))
                         Text(page.title, fontSize = 34.sp, fontWeight = FontWeight.Bold, color = colors.onBackground)
                         if (page.description.isNotEmpty()) {
                             Text(page.description, fontSize = 17.sp, lineHeight = 26.sp, color = colors.onSurfaceVariant, modifier = Modifier.padding(top = 8.dp, bottom = 16.dp))
                         }
+                        if (page.versioned) {
+                            VersionBar(page, version, rawBlocks.decls().flatMap { it.platforms }.distinct().sortedBy { p -> PLATFORMS.indexOfFirst { it.first == p } }) {
+                                navigate(here, it, platform)
+                            }
+                            VersionBanner(page, loc.version, version) { navigate(here, it, platform) }
+                        }
                         HorizontalDivider(Modifier.padding(bottom = 16.dp), color = colors.outline)
-                        page.blocks.forEachIndexed { i, b -> RenderBlock(i, b, ctx) }
+                        if (filterable) PlatformFilter(rawBlocks.decls(), platform) { navigate(here, loc.version, it) }
+                        blocks.forEachIndexed { i, b -> RenderBlock(i, b, ctx) }
                         PrevNext(page, flat)
                     }
                 }
             }
         }
-        if (showToc && page != null && page.headings.isNotEmpty() && page.blocks.none { it is Playground }) {
+        if (showToc && page != null && headings.isNotEmpty() && blocks.none { it is Playground }) {
             Column(
                 Modifier.width(240.dp).fillMaxHeight().verticalScroll(rememberScrollState()).padding(top = 40.dp, end = 16.dp, start = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(2.dp),
             ) {
                 Text("On this page", fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = colors.onBackground, modifier = Modifier.padding(bottom = 8.dp))
-                page.headings.forEach { (index, h) ->
+                headings.forEach { (index, h) ->
                     Text(
                         h.text.replace("`", ""),
                         fontSize = 13.sp,

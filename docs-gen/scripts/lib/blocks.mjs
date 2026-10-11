@@ -66,8 +66,8 @@ function memberList(label, list) {
   return [{ t: 'p', s: `**${label}**` }, { t: 'list', ordered: false, items }];
 }
 
-function declBlocks(d, ctx, isPrimary) {
-  const b = [{ t: 'h', l: 3, s: d.name }];
+function declBlock(d, ctx, isPrimary) {
+  const b = [];
   const dep = d.annotations.find((a) => /^@Deprecated\b/.test(a));
   if (dep) b.push({ t: 'quote', s: `**Deprecated.** ${inline(dep.match(/"([^"]*)"/)?.[1] ?? 'This API is deprecated.')}` });
   if (d.annotations.some((a) => /^@(Experimental\w*|ExperimentalKindlingApi|RequiresOptIn)\b/.test(a))) {
@@ -92,8 +92,13 @@ function declBlocks(d, ctx, isPrimary) {
       if (m) b.push({ t: 'p', s: `**Throws** \`${m[1]}\`${m[2] ? ` — ${inline(m[2])}` : ''}` });
     } else if (t.tag === 'see') b.push({ t: 'p', s: `**See also** ${inline(t.text)}` });
   }
-  b.push({ t: 'src', url: `https://github.com/${ctx.repo}/blob/${ctx.branch}/${d.file}#L${d.line}` });
-  return b;
+  const impls = d.impls.map((i) => ({
+    set: i.set,
+    kind: i.kind,
+    covers: i.covers,
+    url: `https://github.com/${ctx.repo}/blob/{{ref}}/${i.file}${ctx.lines ? `#L${i.line}` : ''}`,
+  }));
+  return { t: 'decl', name: d.name, platforms: d.platforms, common: d.common, universal: d.universal, impls, children: b };
 }
 
 function packageOf(file) {
@@ -127,18 +132,14 @@ export function unitPage(unit, ctx) {
   }
   blocks.push(
     { t: 'h', l: 2, s: 'Installation' },
-    { t: 'code', lang: 'kotlin', s: `implementation("io.github.clementbobin.kindling:${cfg.module}:${ctx.version}")` },
+    { t: 'code', lang: 'kotlin', s: `implementation("io.github.clementbobin.kindling:${cfg.module}:{{version}}")` },
   );
   const pkg = primary?.pkg || (primary ? packageOf(primary.file) : '');
   if (pkg) blocks.push({ t: 'code', lang: 'kotlin', s: `import ${pkg}.${primary.name}` });
 
   const section = (title, list) => {
     if (!list.length) return;
-    blocks.push({ t: 'h', l: 2, s: title });
-    list.forEach((d, i) => {
-      if (i) blocks.push({ t: 'hr' });
-      blocks.push(...declBlocks(d, ctx, d === primary));
-    });
+    blocks.push({ t: 'declgroup', title, decls: list.map((d) => declBlock(d, ctx, d === primary)) });
   };
   section('Composables', unit.composables);
   section('Types', unit.types);

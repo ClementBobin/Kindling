@@ -11,20 +11,44 @@ internal fun page_components_engine(): DocPage = DocPage(
     order = 100,
     blocks = listOf(
         Heading(2, "Installation"),
-        CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:0.3.0\")"),
+        CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:{{version}}\")"),
         CodeBlock("kotlin", "import dev.kindling.core.components.engine.KParticle"),
-        Heading(2, "Types"),
-        Heading(3, "KParticle"),
-        CodeBlock("kotlin", "class KParticle(\n    var x: Float,\n    var y: Float,\n    val vx: Float,\n    val vy: Float,\n    val colorValue: Long,\n    val size: Float,\n    val maxLife: Float,\n    var life: Float = 0f,\n)"),
-        Props(listOf(PropRow("x", "Float", "", "", true), PropRow("y", "Float", "", "", true), PropRow("vx", "Float", "", "", true), PropRow("vy", "Float", "", "", true), PropRow("colorValue", "Long", "", "", true), PropRow("size", "Float", "", "", true), PropRow("maxLife", "Float", "", "", true), PropRow("life", "Float", "0f", "", false))),
-        Para("**Members**"),
-        Bullets(false, listOf("`val alpha: Float` — Calculates the remaining lifecycle ratio from `1.0f` (newly spawned) to `0.0f` (dead).", "`val currentRadius: Float` — Current scaled radius based on remaining lifecycle alpha.", "`fun update( deltaTime: Float, gravity: Float = 180f)` — Advance particle physics state by `deltaTime` seconds.", "`val isDead: Boolean` — True when the particle lifetime has exceeded `maxLife`.")),
-        Source("https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/engine/KParticle.kt#L11"),
-        Heading(2, "Functions & properties"),
-        Heading(3, "createExplosionBurst"),
-        Para("Factory function to generate a burst of radial explosion particles."),
-        CodeBlock("kotlin", "fun createExplosionBurst(\n    originX: Float,\n    originY: Float,\n    count: Int,\n    colors: List<Long>,\n    baseForce: Float,\n    forceMultiplier: Float = 1f,\n): List<KParticle>"),
-        Props(listOf(PropRow("originX", "Float", "", "", true), PropRow("originY", "Float", "", "", true), PropRow("count", "Int", "", "", true), PropRow("colors", "List<Long>", "", "", true), PropRow("baseForce", "Float", "", "", true), PropRow("forceMultiplier", "Float", "1f", "", false))),
-        Source("https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/engine/KParticle.kt#L52"),
+        DeclGroup("Types", listOf(
+            Decl("KParticle", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/engine/KParticle.kt#L11")), listOf(
+                CodeBlock("kotlin", "class KParticle(\n    var x: Float,\n    var y: Float,\n    val vx: Float,\n    val vy: Float,\n    val colorValue: Long,\n    val size: Float,\n    val maxLife: Float,\n    var life: Float = 0f,\n)"),
+                Props(listOf(PropRow("x", "Float", "", "", true), PropRow("y", "Float", "", "", true), PropRow("vx", "Float", "", "", true), PropRow("vy", "Float", "", "", true), PropRow("colorValue", "Long", "", "", true), PropRow("size", "Float", "", "", true), PropRow("maxLife", "Float", "", "", true), PropRow("life", "Float", "0f", "", false))),
+                Para("**Members**"),
+                Bullets(false, listOf("`val alpha: Float` — Calculates the remaining lifecycle ratio from `1.0f` (newly spawned) to `0.0f` (dead).", "`val currentRadius: Float` — Current scaled radius based on remaining lifecycle alpha.", "`fun update( deltaTime: Float, gravity: Float = 180f)` — Advance particle physics state by `deltaTime` seconds.", "`val isDead: Boolean` — True when the particle lifetime has exceeded `maxLife`.")),
+            )),
+        )),
+        DeclGroup("Functions & properties", listOf(
+            Decl("createExplosionBurst", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/engine/KParticle.kt#L52")), listOf(
+                Para("Factory function to generate a burst of radial explosion particles."),
+                CodeBlock("kotlin", "fun createExplosionBurst(\n    originX: Float,\n    originY: Float,\n    count: Int,\n    colors: List<Long>,\n    baseForce: Float,\n    forceMultiplier: Float = 1f,\n): List<KParticle>"),
+                Props(listOf(PropRow("originX", "Float", "", "", true), PropRow("originY", "Float", "", "", true), PropRow("count", "Int", "", "", true), PropRow("colors", "List<Long>", "", "", true), PropRow("baseForce", "Float", "", "", true), PropRow("forceMultiplier", "Float", "1f", "", false))),
+            )),
+        )),
+    ),
+    since = "4.0.2",
+    available = listOf("4.3.6", "4.3.5", "4.3.4", "4.3.3", "4.3.2", "4.3.1", "4.3.0", "4.2.9", "4.2.8", "4.2.7", "4.2.6", "4.2.5", "4.2.4", "4.2.3", "4.2.2"),
+    headVersions = listOf("4.3.6", "4.3.5", "4.3.4", "4.3.3", "4.3.2", "4.3.1", "4.3.0", "4.2.9", "4.2.8", "4.2.7", "4.2.6", "4.2.5", "4.2.4"),
+    history = listOf(
+        VersionGroup(listOf("4.2.3", "4.2.2")) { page_components_engine_h1() },
     ),
 )
+
+internal fun page_components_engine_h1(): List<Block> = listOf(
+        Heading(2, "Installation"),
+        CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:{{version}}\")"),
+        CodeBlock("kotlin", "import dev.kindling.core.components.engine.KParticle"),
+        DeclGroup("Types", listOf(
+            Decl("KParticle", listOf("android"), true, true, listOf(Impl("commonMain", "", listOf("android"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/engine/KParticle.kt")), listOf(
+                CodeBlock("kotlin", "data class KParticle(\n    var x: Float,\n    var y: Float,\n    val vx: Float,\n    val vy: Float,\n    val color: Color,\n    val size: Float,\n    val maxLife: Float,\n    var life: Float = 0f,\n)"),
+                Props(listOf(PropRow("x", "Float", "", "", true), PropRow("y", "Float", "", "", true), PropRow("vx", "Float", "", "", true), PropRow("vy", "Float", "", "", true), PropRow("color", "Color", "", "", true), PropRow("size", "Float", "", "", true), PropRow("maxLife", "Float", "", "", true), PropRow("life", "Float", "0f", "", false))),
+                Para("**Presets**"),
+                Bullets(false, listOf("`fun createExplosionBurst( origin: Offset, count: Int, colors: List<Color>, baseForce: Float, forceMultiplier: Float = 1f): List<KParticle>` — Factory function to generate a burst of radial explosion particles.")),
+                Para("**Members**"),
+                Bullets(false, listOf("`val alpha: Float` — Calculates the remaining lifecycle ratio from `1.0f` (newly spawned) to `0.0f` (dead).", "`val currentRadius: Float` — Current scaled radius based on remaining lifecycle alpha.", "`fun update( deltaTime: Float, gravity: Float = 180f)` — Advance particle physics state by `deltaTime` seconds.", "`val isDead: Boolean` — True when the particle lifetime has exceeded `maxLife`.")),
+            )),
+        )),
+    )

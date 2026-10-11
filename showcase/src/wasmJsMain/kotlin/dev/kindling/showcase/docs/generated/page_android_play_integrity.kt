@@ -14,15 +14,22 @@ internal fun page_android_play_integrity(): DocPage = DocPage(
         Para("Typical usage:"),
         CodeBlock("kotlin", "val token = playIntegrityHelper.requestToken()\nintegrityRepository.verify(token)"),
         Heading(2, "Installation"),
-        CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:android:0.3.0\")"),
+        CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:android:{{version}}\")"),
         CodeBlock("kotlin", "import dev.kindling.android.natif.PlayIntegrityHelper"),
-        Heading(2, "Types"),
-        Heading(3, "PlayIntegrityHelper"),
-        CodeBlock("kotlin", "class PlayIntegrityHelper(val context: Context)"),
-        Props(listOf(PropRow("context", "Context", "", "An Android Context used to initialise the IntegrityManagerFactory. An application context is preferred to avoid Activity leaks.", true))),
-        Para("**Members**"),
-        Bullets(false, listOf("`suspend fun requestToken(): String` — Requests a Play Integrity token from the Google Play Integrity API.")),
-        Para("**See also** \\<a href=\"https://developer.android.com/google/play/integrity/overview\">Play Integrity API\\</a>"),
-        Source("https://github.com/ClementBobin/Kindling/blob/main/android/src/main/kotlin/dev/kindling/android/natif/PlayIntegrityHelper.kt#L30"),
+        DeclGroup("Types", listOf(
+            Decl("PlayIntegrityHelper", listOf("android"), false, true, listOf(Impl("main", "", listOf("android"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/android/src/main/kotlin/dev/kindling/android/natif/PlayIntegrityHelper.kt#L30")), listOf(
+                CodeBlock("kotlin", "class PlayIntegrityHelper(val context: Context)"),
+                Props(listOf(PropRow("context", "Context", "", "An Android Context used to initialise the IntegrityManagerFactory. An application context is preferred to avoid Activity leaks.", true))),
+                Para("**Members**"),
+                Bullets(false, listOf("`suspend fun requestToken(): String` — Requests a Play Integrity token from the Google Play Integrity API.")),
+                Para("**See also** \\<a href=\"https://developer.android.com/google/play/integrity/overview\">Play Integrity API\\</a>"),
+            )),
+        )),
+    ),
+    since = "4.1.0",
+    available = listOf("4.3.6", "4.3.5", "4.3.4", "4.3.3", "4.3.2", "4.3.1", "4.3.0", "4.2.9", "4.2.8", "4.2.7", "4.2.6", "4.2.5", "4.2.4", "4.2.3", "4.2.2"),
+    headVersions = listOf("4.3.6", "4.3.5", "4.3.4", "4.3.3", "4.3.2", "4.3.1", "4.3.0", "4.2.9", "4.2.8", "4.2.7", "4.2.6", "4.2.5", "4.2.4", "4.2.3", "4.2.2"),
+    history = listOf(
+
     ),
 )

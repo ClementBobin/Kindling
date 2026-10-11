@@ -11,23 +11,53 @@ internal fun page_components_masonry(): DocPage = DocPage(
     order = 100,
     blocks = listOf(
         Heading(2, "Installation"),
-        CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:0.3.0\")"),
+        CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:{{version}}\")"),
         CodeBlock("kotlin", "import dev.kindling.core.components.ui.masonry.KMasonryGrid"),
-        Heading(2, "Composables"),
-        Heading(3, "KMasonryGrid"),
-        CodeBlock("kotlin", "@Composable\nfun KMasonryGrid(\n    items: List<KMasonryItem>,\n    modifier: Modifier = Modifier,\n    columns: Int = KMasonryGridDefaults.Columns,\n    gap: Dp = KMasonryGridDefaults.Gap,\n    cardPadding: Dp = KMasonryGridDefaults.CardPadding,\n)"),
-        Props(listOf(PropRow("items", "List<KMasonryItem>", "", "List of masonry items containing title and text content.", true), PropRow("modifier", "Modifier", "Modifier", "Applied to the outer masonry grid container.", false), PropRow("columns", "Int", "KMasonryGridDefaults.Columns", "Number of columns in the grid.", false), PropRow("gap", "Dp", "KMasonryGridDefaults.Gap", "Spacing gap between cards in DP.", false), PropRow("cardPadding", "Dp", "KMasonryGridDefaults.CardPadding", "Internal padding applied inside each masonry card.", false))),
-        Source("https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/masonry/KMasonryGrid.kt#L30"),
-        Heading(2, "Types"),
-        Heading(3, "KMasonryItem"),
-        CodeBlock("kotlin", "data class KMasonryItem(\n    val text: String,\n    val title: String? = null,\n)"),
-        Props(listOf(PropRow("text", "String", "", "Text content of the card.", true), PropRow("title", "String?", "null", "Optional title above the text.", false))),
-        Source("https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/masonry/KMasonryTypes.kt#L6"),
-        Rule,
-        Heading(3, "KMasonryGridDefaults"),
-        CodeBlock("kotlin", "object KMasonryGridDefaults"),
-        Para("**Members**"),
-        Bullets(false, listOf("`const val Columns: Int`", "`val Gap: Dp`", "`val CardPadding: Dp`")),
-        Source("https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/masonry/KMasonryTypes.kt#L13"),
+        DeclGroup("Composables", listOf(
+            Decl("KMasonryGrid", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/masonry/KMasonryGrid.kt#L30")), listOf(
+                CodeBlock("kotlin", "@Composable\nfun KMasonryGrid(\n    items: List<KMasonryItem>,\n    modifier: Modifier = Modifier,\n    columns: Int = KMasonryGridDefaults.Columns,\n    gap: Dp = KMasonryGridDefaults.Gap,\n    cardPadding: Dp = KMasonryGridDefaults.CardPadding,\n)"),
+                Props(listOf(PropRow("items", "List<KMasonryItem>", "", "List of masonry items containing title and text content.", true), PropRow("modifier", "Modifier", "Modifier", "Applied to the outer masonry grid container.", false), PropRow("columns", "Int", "KMasonryGridDefaults.Columns", "Number of columns in the grid.", false), PropRow("gap", "Dp", "KMasonryGridDefaults.Gap", "Spacing gap between cards in DP.", false), PropRow("cardPadding", "Dp", "KMasonryGridDefaults.CardPadding", "Internal padding applied inside each masonry card.", false))),
+            )),
+        )),
+        DeclGroup("Types", listOf(
+            Decl("KMasonryItem", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/masonry/KMasonryTypes.kt#L6")), listOf(
+                CodeBlock("kotlin", "data class KMasonryItem(\n    val text: String,\n    val title: String? = null,\n)"),
+                Props(listOf(PropRow("text", "String", "", "Text content of the card.", true), PropRow("title", "String?", "null", "Optional title above the text.", false))),
+            )),
+            Decl("KMasonryGridDefaults", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/masonry/KMasonryTypes.kt#L13")), listOf(
+                CodeBlock("kotlin", "object KMasonryGridDefaults"),
+                Para("**Members**"),
+                Bullets(false, listOf("`const val Columns: Int`", "`val Gap: Dp`", "`val CardPadding: Dp`")),
+            )),
+        )),
+    ),
+    since = "4.0.2",
+    available = listOf("4.3.6", "4.3.5", "4.3.4", "4.3.3", "4.3.2", "4.3.1", "4.3.0", "4.2.9", "4.2.8", "4.2.7", "4.2.6", "4.2.5", "4.2.4", "4.2.3", "4.2.2"),
+    headVersions = listOf("4.3.6", "4.3.5", "4.3.4", "4.3.3", "4.3.2", "4.3.1", "4.3.0", "4.2.9", "4.2.8", "4.2.7", "4.2.6", "4.2.5", "4.2.4"),
+    history = listOf(
+        VersionGroup(listOf("4.2.3", "4.2.2")) { page_components_masonry_h1() },
     ),
 )
+
+internal fun page_components_masonry_h1(): List<Block> = listOf(
+        Heading(2, "Installation"),
+        CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:{{version}}\")"),
+        CodeBlock("kotlin", "import dev.kindling.core.components.ui.masonry.KMasonryGrid"),
+        DeclGroup("Composables", listOf(
+            Decl("KMasonryGrid", listOf("android"), true, true, listOf(Impl("commonMain", "", listOf("android"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/masonry/KMasonryGrid.kt")), listOf(
+                CodeBlock("kotlin", "@Composable\nfun KMasonryGrid(\n    items: List<KMasonryItem>,\n    modifier: Modifier = Modifier,\n    columns: Int = KMasonryGridDefaults.Columns,\n    gap: Dp = KMasonryGridDefaults.Gap,\n    cardPadding: Dp = KMasonryGridDefaults.CardPadding,\n)"),
+                Props(listOf(PropRow("items", "List<KMasonryItem>", "", "List of masonry items containing title and text content.", true), PropRow("modifier", "Modifier", "Modifier", "Applied to the outer masonry grid container.", false), PropRow("columns", "Int", "KMasonryGridDefaults.Columns", "Number of columns in the grid.", false), PropRow("gap", "Dp", "KMasonryGridDefaults.Gap", "Spacing gap between cards in DP.", false), PropRow("cardPadding", "Dp", "KMasonryGridDefaults.CardPadding", "Internal padding applied inside each masonry card.", false))),
+            )),
+        )),
+        DeclGroup("Types", listOf(
+            Decl("KMasonryItem", listOf("android"), true, true, listOf(Impl("commonMain", "", listOf("android"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/masonry/KMasonryTypes.kt")), listOf(
+                CodeBlock("kotlin", "data class KMasonryItem(\n    val text: String,\n    val title: String? = null,\n)"),
+                Props(listOf(PropRow("text", "String", "", "Text content of the card.", true), PropRow("title", "String?", "null", "Optional title above the text.", false))),
+            )),
+            Decl("KMasonryGridDefaults", listOf("android"), true, true, listOf(Impl("commonMain", "", listOf("android"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/masonry/KMasonryTypes.kt")), listOf(
+                CodeBlock("kotlin", "object KMasonryGridDefaults"),
+                Para("**Members**"),
+                Bullets(false, listOf("`const val Columns: Int`", "`val Gap: Dp`", "`val CardPadding: Dp`")),
+            )),
+        )),
+    )

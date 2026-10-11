@@ -13,13 +13,20 @@ internal fun page_compose_state_holder(): DocPage = DocPage(
         Para("Implemented by every Kindling state-holding ViewModel:"),
         Bullets(false, listOf("`KSimpleViewModel` on all platforms,", "`KViewModel` on Android (when an `Application` or Koin is needed).")),
         Heading(2, "Installation"),
-        CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:compose:0.3.0\")"),
+        CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:compose:{{version}}\")"),
         CodeBlock("kotlin", "import dev.kindling.compose.KStateHolder"),
-        Heading(2, "Types"),
-        Heading(3, "KStateHolder"),
-        CodeBlock("kotlin", "interface KStateHolder<State>"),
-        Para("**Members**"),
-        Bullets(false, listOf("`val state: StateFlow<State>` — Observable UI state; always holds the latest value.", "`val events: Flow<Any>` — One-shot events (navigation, toasts…), each delivered once and in order.")),
-        Source("https://github.com/ClementBobin/Kindling/blob/main/compose/src/commonMain/kotlin/dev/kindling/compose/KStateHolder.kt#L15"),
+        DeclGroup("Types", listOf(
+            Decl("KStateHolder", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/compose/src/commonMain/kotlin/dev/kindling/compose/KStateHolder.kt#L15")), listOf(
+                CodeBlock("kotlin", "interface KStateHolder<State>"),
+                Para("**Members**"),
+                Bullets(false, listOf("`val state: StateFlow<State>` — Observable UI state; always holds the latest value.", "`val events: Flow<Any>` — One-shot events (navigation, toasts…), each delivered once and in order.")),
+            )),
+        )),
+    ),
+    since = "4.2.6",
+    available = listOf("4.3.6", "4.3.5", "4.3.4", "4.3.3", "4.3.2", "4.3.1", "4.3.0", "4.2.9", "4.2.8", "4.2.7", "4.2.6"),
+    headVersions = listOf("4.3.6", "4.3.5", "4.3.4", "4.3.3", "4.3.2", "4.3.1", "4.3.0", "4.2.9", "4.2.8", "4.2.7", "4.2.6"),
+    history = listOf(
+
     ),
 )

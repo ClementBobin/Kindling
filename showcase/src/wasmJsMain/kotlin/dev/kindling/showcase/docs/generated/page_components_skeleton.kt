@@ -16,12 +16,36 @@ internal fun page_components_skeleton(): DocPage = DocPage(
         Heading(2, "Usage"),
         CodeBlock("kotlin", "Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {\n    // Placeholder for a profile image\n    KSkeleton(modifier = Modifier.size(40.dp).clip(CircleShape))\n\n    // Placeholder for a title\n    KSkeleton(modifier = Modifier.fillMaxWidth(0.6f).height(20.dp))\n\n    // Placeholder for a description\n    KSkeleton(modifier = Modifier.fillMaxWidth().height(16.dp))\n}"),
         Heading(2, "Installation"),
-        CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:0.3.0\")"),
+        CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:{{version}}\")"),
         CodeBlock("kotlin", "import dev.kindling.core.components.ui.KSkeleton"),
-        Heading(2, "Composables"),
-        Heading(3, "KSkeleton"),
-        CodeBlock("kotlin", "@Composable\nfun KSkeleton(modifier: Modifier = Modifier)"),
-        Props(listOf(PropRow("modifier", "Modifier", "Modifier", "The modifier to be applied to the layout, determining the skeleton's size and position.", false))),
-        Source("https://github.com/ClementBobin/Kindling/blob/main/core/src/commonMain/kotlin/dev/kindling/core/components/ui/KSkeleton.kt#L34"),
+        DeclGroup("Composables", listOf(
+            Decl("KSkeleton", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/KSkeleton.kt#L34")), listOf(
+                CodeBlock("kotlin", "@Composable\nfun KSkeleton(modifier: Modifier = Modifier)"),
+                Props(listOf(PropRow("modifier", "Modifier", "Modifier", "The modifier to be applied to the layout, determining the skeleton's size and position.", false))),
+            )),
+        )),
+    ),
+    since = "4.0.2",
+    available = listOf("4.3.6", "4.3.5", "4.3.4", "4.3.3", "4.3.2", "4.3.1", "4.3.0", "4.2.9", "4.2.8", "4.2.7", "4.2.6", "4.2.5", "4.2.4", "4.2.3", "4.2.2"),
+    headVersions = listOf("4.3.6", "4.3.5", "4.3.4", "4.3.3", "4.3.2", "4.3.1", "4.3.0", "4.2.9", "4.2.8", "4.2.7", "4.2.6", "4.2.5", "4.2.4"),
+    history = listOf(
+        VersionGroup(listOf("4.2.3", "4.2.2")) { page_components_skeleton_h1() },
     ),
 )
+
+internal fun page_components_skeleton_h1(): List<Block> = listOf(
+        Para("Used to display a placeholder preview while content is loading. It uses a shimmering animation to provide visual feedback that the app is still active."),
+        Heading(2, "Preview"),
+        Demo("skeleton"),
+        Heading(2, "Usage"),
+        CodeBlock("kotlin", "Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {\n    // Placeholder for a profile image\n    KSkeleton(modifier = Modifier.size(40.dp).clip(CircleShape))\n\n    // Placeholder for a title\n    KSkeleton(modifier = Modifier.fillMaxWidth(0.6f).height(20.dp))\n\n    // Placeholder for a description\n    KSkeleton(modifier = Modifier.fillMaxWidth().height(16.dp))\n}"),
+        Heading(2, "Installation"),
+        CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:{{version}}\")"),
+        CodeBlock("kotlin", "import dev.kindling.core.components.ui.KSkeleton"),
+        DeclGroup("Composables", listOf(
+            Decl("KSkeleton", listOf("android"), true, true, listOf(Impl("commonMain", "", listOf("android"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/KSkeleton.kt")), listOf(
+                CodeBlock("kotlin", "@Composable\nfun KSkeleton(modifier: Modifier = Modifier)"),
+                Props(listOf(PropRow("modifier", "Modifier", "Modifier", "The modifier to be applied to the layout, determining the skeleton's size and position.", false))),
+            )),
+        )),
+    )

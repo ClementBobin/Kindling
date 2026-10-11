@@ -20,14 +20,44 @@ internal fun page_compose_screen(): DocPage = DocPage(
         Para("Any event emitted by the ViewModel that implements `KDestination` is automatically intercepted and used to navigate via the provided `navController`."),
         Rule,
         Heading(2, "Installation"),
-        CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:compose:0.3.0\")"),
+        CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:compose:{{version}}\")"),
         CodeBlock("kotlin", "import dev.kindling.compose.KScreen"),
-        Heading(2, "Composables"),
-        Heading(3, "KScreen"),
-        CodeBlock("kotlin", "@Composable\nfun <State, VM : KStateHolder<State>> KScreen(\n    viewModel: VM,\n    navController: NavController,\n    onBack: ((state: State, viewModel: VM) -> Unit)? = null,\n    onEvent: (state: State, viewModel: VM, event: Any) -> Unit = { _, _, _ -> },\n    content: @Composable (state: State, viewModel: VM) -> Unit,\n)"),
-        Props(listOf(PropRow("viewModel", "VM", "", "The KStateHolder (ViewModel) instance driving this screen.", true), PropRow("navController", "NavController", "", "NavController used for automatic navigation when KDestination events occur.", true), PropRow("onBack", "((state: State, viewModel: VM) -> Unit)?", "null", "Optional back press handler. Receives the latest state and ViewModel. Focus is cleared automatically before this callback is invoked.", false), PropRow("onEvent", "(state: State, viewModel: VM, event: Any) -> Unit", "{ _, _, _ -> }", "Handler for non-navigation events emitted by viewModel. Receives the latest state, the ViewModel, and the event object.", false), PropRow("content", "@Composable (state: State, viewModel: VM) -> Unit", "", "The main UI content of the screen.", true))),
-        Para("**See also** KStateHolder"),
-        Para("**See also** KDestination"),
-        Source("https://github.com/ClementBobin/Kindling/blob/main/compose/src/commonMain/kotlin/dev/kindling/compose/KScreen.kt#L83"),
+        DeclGroup("Composables", listOf(
+            Decl("KScreen", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/compose/src/commonMain/kotlin/dev/kindling/compose/KScreen.kt#L83")), listOf(
+                CodeBlock("kotlin", "@Composable\nfun <State, VM : KStateHolder<State>> KScreen(\n    viewModel: VM,\n    navController: NavController,\n    onBack: ((state: State, viewModel: VM) -> Unit)? = null,\n    onEvent: (state: State, viewModel: VM, event: Any) -> Unit = { _, _, _ -> },\n    content: @Composable (state: State, viewModel: VM) -> Unit,\n)"),
+                Props(listOf(PropRow("viewModel", "VM", "", "The KStateHolder (ViewModel) instance driving this screen.", true), PropRow("navController", "NavController", "", "NavController used for automatic navigation when KDestination events occur.", true), PropRow("onBack", "((state: State, viewModel: VM) -> Unit)?", "null", "Optional back press handler. Receives the latest state and ViewModel. Focus is cleared automatically before this callback is invoked.", false), PropRow("onEvent", "(state: State, viewModel: VM, event: Any) -> Unit", "{ _, _, _ -> }", "Handler for non-navigation events emitted by viewModel. Receives the latest state, the ViewModel, and the event object.", false), PropRow("content", "@Composable (state: State, viewModel: VM) -> Unit", "", "The main UI content of the screen.", true))),
+                Para("**See also** KStateHolder"),
+                Para("**See also** KDestination"),
+            )),
+        )),
+    ),
+    since = "0.3.1",
+    available = listOf("4.3.6", "4.3.5", "4.3.4", "4.3.3", "4.3.2", "4.3.1", "4.3.0", "4.2.9", "4.2.8", "4.2.7", "4.2.6", "4.2.5", "4.2.4", "4.2.3", "4.2.2"),
+    headVersions = listOf("4.3.6", "4.3.5", "4.3.4", "4.3.3", "4.3.2", "4.3.1", "4.3.0", "4.2.9", "4.2.8", "4.2.7", "4.2.6"),
+    history = listOf(
+        VersionGroup(listOf("4.2.5", "4.2.4", "4.2.3", "4.2.2")) { page_compose_screen_h1() },
     ),
 )
+
+internal fun page_compose_screen_h1(): List<Block> = listOf(
+        Para("`KScreen` is the original screen wrapper in the Kindling hierarchy. It centralizes the boilerplate required for a standard feature screen:"),
+        Bullets(false, listOf("**State collection**: Automatically collects the ViewModel's `KViewModel` and provides it to the content block.", "**Event dispatching**: One-shot side effects emitted via `KViewModel` are handled here. If an event implements `KDestination`, it triggers automatic navigation.", "**Back press handling**: Optional custom handling for the system back button, with automatic focus clearing.")),
+        Rule,
+        Heading(2, "Basic usage"),
+        CodeBlock("kotlin", "@Composable\nfun ProfileScreen(\n    viewModel: ProfileViewModel,\n    navController: NavController\n) {\n    KScreen(\n        viewModel = viewModel,\n        navController = navController,\n        onEvent = { state, vm, event ->\n            when (event) {\n                is ProfileEvent.ShowToast -> {\n                    // Handle toast\n                }\n            }\n        }\n    ) { state, vm ->\n        // Screen content\n        ProfileContent(\n            name = state.name,\n            onLogout = vm::onLogoutClick\n        )\n    }\n}"),
+        Rule,
+        Heading(2, "Automatic Navigation"),
+        Para("Any event emitted by the ViewModel that implements `KDestination` is automatically intercepted and used to navigate via the provided `navController`."),
+        Rule,
+        Heading(2, "Installation"),
+        CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:compose:{{version}}\")"),
+        CodeBlock("kotlin", "import dev.kindling.compose.KScreen"),
+        DeclGroup("Composables", listOf(
+            Decl("KScreen", listOf("android"), false, true, listOf(Impl("main", "", listOf("android"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/compose/src/main/kotlin/dev/kindling/compose/KScreen.kt")), listOf(
+                CodeBlock("kotlin", "@Composable\nfun <State, VM : KViewModel<State>> KScreen(\n    viewModel: VM,\n    navController: NavController,\n    onBack: ((state: State, viewModel: VM) -> Unit)? = null,\n    onEvent: (state: State, viewModel: VM, event: Any) -> Unit = { _, _, _ -> },\n    content: @Composable (state: State, viewModel: VM) -> Unit,\n)"),
+                Props(listOf(PropRow("viewModel", "VM", "", "The KViewModel instance driving this screen.", true), PropRow("navController", "NavController", "", "NavController used for automatic navigation when KDestination events occur.", true), PropRow("onBack", "((state: State, viewModel: VM) -> Unit)?", "null", "Optional back press handler. Receives the latest state and ViewModel. Focus is cleared automatically before this callback is invoked.", false), PropRow("onEvent", "(state: State, viewModel: VM, event: Any) -> Unit", "{ _, _, _ -> }", "Handler for non-navigation events emitted by viewModel. Receives the latest state, the ViewModel, and the event object.", false), PropRow("content", "@Composable (state: State, viewModel: VM) -> Unit", "", "The main UI content of the screen.", true))),
+                Para("**See also** KViewModel"),
+                Para("**See also** KDestination"),
+            )),
+        )),
+    )
