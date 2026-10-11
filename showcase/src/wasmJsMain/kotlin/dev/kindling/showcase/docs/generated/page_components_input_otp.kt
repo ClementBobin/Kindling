@@ -11,6 +11,8 @@ internal fun page_components_input_otp(): DocPage = DocPage(
     order = 100,
     blocks = listOf(
         Para("Place `InputOTPGroup`s (with `InputOTPSlot`s) and `InputOTPSeparator`s inside."),
+        Heading(2, "Preview"),
+        Demo("input-otp"),
         Heading(2, "Installation"),
         CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:{{version}}\")"),
         CodeBlock("kotlin", "import dev.kindling.core.components.ui.inputOTP.InputOTP"),
@@ -70,6 +72,8 @@ internal fun page_components_input_otp(): DocPage = DocPage(
 
 internal fun page_components_input_otp_h1(): List<Block> = listOf(
         Para("Place `InputOTPGroup`s (with `InputOTPSlot`s) and `InputOTPSeparator`s inside."),
+        Heading(2, "Preview"),
+        Demo("input-otp"),
         Heading(2, "Installation"),
         CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:{{version}}\")"),
         CodeBlock("kotlin", "import dev.kindling.core.components.ui.inputOTP.InputOTP"),

@@ -11,6 +11,8 @@ internal fun page_components_mask_input(): DocPage = DocPage(
     order = 100,
     blocks = listOf(
         Para("Applies a `#`-placeholder `mask` or `customPattern` on every keystroke. `onValueChange` receives the **masked** display value; use `getUnmaskedValue` to strip formatting before storing."),
+        Heading(2, "Preview"),
+        Demo("mask-input"),
         Heading(2, "Installation"),
         CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:{{version}}\")"),
         CodeBlock("kotlin", "import dev.kindling.core.components.ui.maskInput.KMaskInput"),
@@ -76,6 +78,8 @@ internal fun page_components_mask_input(): DocPage = DocPage(
 
 internal fun page_components_mask_input_h1(): List<Block> = listOf(
         Para("Applies a `#`-placeholder `mask` or `customPattern` on every keystroke. `onValueChange` receives the **masked** display value; use `getUnmaskedValue` to strip formatting before storing."),
+        Heading(2, "Preview"),
+        Demo("mask-input"),
         Heading(2, "Installation"),
         CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:{{version}}\")"),
         CodeBlock("kotlin", "import dev.kindling.core.components.ui.maskInput.KMaskInput"),

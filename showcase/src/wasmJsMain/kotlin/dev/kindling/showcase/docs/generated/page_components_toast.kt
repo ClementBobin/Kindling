@@ -12,6 +12,8 @@ internal fun page_components_toast(): DocPage = DocPage(
     blocks = listOf(
         Para("Mirrors the individual toast card from shadcn/ui `sonner.tsx`. Typically not used directly — prefer `KToaster` + `KToastManager`."),
         CodeBlock("kotlin", "Toast(\n    data    = KToastData(message = \"Saved!\", type = KToastType.Success),\n    onClose = { }\n)"),
+        Heading(2, "Preview"),
+        Demo("toast"),
         Heading(2, "Installation"),
         CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:{{version}}\")"),
         CodeBlock("kotlin", "import dev.kindling.core.components.ui.toast.KToast"),
@@ -60,6 +62,8 @@ internal fun page_components_toast(): DocPage = DocPage(
 internal fun page_components_toast_h1(): List<Block> = listOf(
         Para("Mirrors the individual toast card from shadcn/ui `sonner.tsx`. Typically not used directly — prefer `KToaster` + `KToastManager`."),
         CodeBlock("kotlin", "Toast(\n    data    = KToastData(message = \"Saved!\", type = KToastType.Success),\n    onClose = { }\n)"),
+        Heading(2, "Preview"),
+        Demo("toast"),
         Heading(2, "Installation"),
         CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:{{version}}\")"),
         CodeBlock("kotlin", "import dev.kindling.core.components.ui.toast.KToast"),
@@ -100,6 +104,8 @@ internal fun page_components_toast_h1(): List<Block> = listOf(
 internal fun page_components_toast_h2(): List<Block> = listOf(
         Para("Mirrors the individual toast card from shadcn/ui `sonner.tsx`. Typically not used directly — prefer `KToaster` + `KToastManager`."),
         CodeBlock("kotlin", "Toast(\n    data    = KToastData(message = \"Saved!\", type = KToastType.Success),\n    onClose = { }\n)"),
+        Heading(2, "Preview"),
+        Demo("toast"),
         Heading(2, "Installation"),
         CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:{{version}}\")"),
         CodeBlock("kotlin", "import dev.kindling.core.components.ui.toast.KToast"),

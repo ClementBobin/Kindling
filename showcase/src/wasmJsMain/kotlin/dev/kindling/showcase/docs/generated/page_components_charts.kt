@@ -10,6 +10,8 @@ internal fun page_components_charts(): DocPage = DocPage(
     description = "A fully-themed area chart that mirrors the shadcn <AreaChart> component.",
     order = 100,
     blocks = listOf(
+        Heading(2, "Preview"),
+        Demo("charts"),
         Heading(2, "Installation"),
         CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:{{version}}\")"),
         CodeBlock("kotlin", "import dev.kindling.core.components.ui.charts.KAreaChart"),
@@ -121,6 +123,8 @@ internal fun page_components_charts(): DocPage = DocPage(
 )
 
 internal fun page_components_charts_h1(): List<Block> = listOf(
+        Heading(2, "Preview"),
+        Demo("charts"),
         Heading(2, "Installation"),
         CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:{{version}}\")"),
         CodeBlock("kotlin", "import dev.kindling.core.components.ui.charts.KAreaChart"),

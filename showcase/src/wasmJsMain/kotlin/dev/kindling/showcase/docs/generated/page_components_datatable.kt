@@ -12,6 +12,8 @@ internal fun page_components_datatable(): DocPage = DocPage(
     blocks = listOf(
         Para("For full structural control, use `Table` / `TableHeader` / `TableBody` directly."),
         CodeBlock("kotlin", "val columns = listOf(\n    KTableColumn<Payment>(\"email\",  \"Email\",  sortable = true) { Text(it.email) },\n    KTableColumn<Payment>(\"amount\", \"Amount\") { Text(\"\$\${it.amount}\") },\n)\nKDataTable(columns = columns, data = payments)"),
+        Heading(2, "Preview"),
+        Demo("datatable"),
         Heading(2, "Installation"),
         CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:{{version}}\")"),
         CodeBlock("kotlin", "import dev.kindling.core.components.ui.datatable.KDataTable"),
@@ -90,6 +92,8 @@ internal fun page_components_datatable(): DocPage = DocPage(
 internal fun page_components_datatable_h1(): List<Block> = listOf(
         Para("For full structural control, use `Table` / `TableHeader` / `TableBody` directly."),
         CodeBlock("kotlin", "val columns = listOf(\n    KTableColumn<Payment>(\"email\",  \"Email\",  sortable = true) { Text(it.email) },\n    KTableColumn<Payment>(\"amount\", \"Amount\") { Text(\"\$\${it.amount}\") },\n)\nKDataTable(columns = columns, data = payments)"),
+        Heading(2, "Preview"),
+        Demo("datatable"),
         Heading(2, "Installation"),
         CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:{{version}}\")"),
         CodeBlock("kotlin", "import dev.kindling.core.components.ui.datatable.KDataTable"),

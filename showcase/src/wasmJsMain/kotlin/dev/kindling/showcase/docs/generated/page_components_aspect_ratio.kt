@@ -11,6 +11,8 @@ internal fun page_components_aspect_ratio(): DocPage = DocPage(
     order = 100,
     blocks = listOf(
         Para("This component is useful for maintaining consistent proportions for images, videos, or other media content regardless of their actual dimensions or the parent container's width."),
+        Heading(2, "Preview"),
+        Demo("aspect-ratio"),
         Heading(2, "Usage"),
         CodeBlock("kotlin", "KAspectRatio(ratio = 16f / 9f) {\n    Image(\n        painter = painterResource(Res.drawable.landscape),\n        contentDescription = \"Landscape image\",\n        modifier = Modifier.fillMaxSize(),\n        contentScale = ContentScale.Crop\n    )\n}"),
         Heading(2, "Installation"),
@@ -33,6 +35,8 @@ internal fun page_components_aspect_ratio(): DocPage = DocPage(
 
 internal fun page_components_aspect_ratio_h1(): List<Block> = listOf(
         Para("This component is useful for maintaining consistent proportions for images, videos, or other media content regardless of their actual dimensions or the parent container's width."),
+        Heading(2, "Preview"),
+        Demo("aspect-ratio"),
         Heading(2, "Usage"),
         CodeBlock("kotlin", "KAspectRatio(ratio = 16f / 9f) {\n    Image(\n        painter = painterResource(Res.drawable.landscape),\n        contentDescription = \"Landscape image\",\n        modifier = Modifier.fillMaxSize(),\n        contentScale = ContentScale.Crop\n    )\n}"),
         Heading(2, "Installation"),

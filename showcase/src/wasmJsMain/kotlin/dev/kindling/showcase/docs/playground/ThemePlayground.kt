@@ -45,6 +45,22 @@ import dev.kindling.core.theme.KindlingColors
 import dev.kindling.core.theme.KindlingShapes
 import dev.kindling.core.theme.KindlingTheme
 import dev.kindling.core.theme.kindlingColors
+import dev.kindling.showcase.AnimatedDemo
+import dev.kindling.showcase.ChartsDemo
+import dev.kindling.showcase.CarouselDemo
+import dev.kindling.showcase.ComboboxDemo
+import dev.kindling.showcase.ConsentDemo
+import dev.kindling.showcase.DashboardDemo
+import dev.kindling.showcase.DataTableDemo
+import dev.kindling.showcase.InputGroupDemo
+import dev.kindling.showcase.InputOTPDemo
+import dev.kindling.showcase.MaskInputDemo
+import dev.kindling.showcase.PickerDemo
+import dev.kindling.showcase.PopoverDemo
+import dev.kindling.showcase.QuestionnaireDemo
+import dev.kindling.showcase.StepperDemo
+import dev.kindling.showcase.ToastDemo
+import dev.kindling.showcase.UploadDemo
 import dev.kindling.showcase.AvatarDemo
 import dev.kindling.showcase.BadgeDemo
 import dev.kindling.showcase.ButtonDemo
@@ -389,23 +405,54 @@ private fun PreviewSurface() {
         border = androidx.compose.foundation.BorderStroke(1.dp, colors.outline),
         modifier = Modifier.fillMaxWidth(),
     ) {
-        FlowRow(
-            Modifier.padding(20.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
-            Tile("Buttons", 380.dp) { ButtonDemo() }
-            Tile("Card", 380.dp) { CardDemo() }
-            Tile("Badges", 380.dp) { BadgeDemo() }
-            Tile("Inputs", 380.dp) { InputDemo() }
-            Tile("Avatars", 240.dp) { AvatarDemo() }
-            Tile("Spinner", 240.dp) { SpinnerDemo() }
-            Tile("Dialog", 240.dp) { DialogDemo() }
-            Tile("Pagination", 380.dp) { PaginationDemo() }
-            Tile("Skeleton", 380.dp) { SkeletonDemo() }
-            Tile("Empty state", 380.dp) { EmptyDemo() }
-            Tile("Chart palette", 380.dp) { ChartStrip() }
+        Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(28.dp)) {
+            PreviewSection("Actions & forms") {
+                Tile("Buttons", 380.dp) { ButtonDemo() }
+                Tile("Inputs", 380.dp) { InputDemo() }
+                Tile("Input group", 380.dp) { InputGroupDemo() }
+                Tile("Input OTP", 380.dp) { InputOTPDemo() }
+                Tile("Mask input", 380.dp) { MaskInputDemo() }
+                Tile("Combobox", 380.dp) { ComboboxDemo() }
+                Tile("Picker", 380.dp) { PickerDemo() }
+                Tile("Upload", 380.dp) { UploadDemo() }
+            }
+            PreviewSection("Display") {
+                Tile("Card", 380.dp) { CardDemo() }
+                Tile("Badges", 380.dp) { BadgeDemo() }
+                Tile("Avatars", 240.dp) { AvatarDemo() }
+                Tile("Spinner", 240.dp) { SpinnerDemo() }
+                Tile("Skeleton", 380.dp) { SkeletonDemo() }
+                Tile("Empty state", 380.dp) { EmptyDemo() }
+                Tile("Animated text", 380.dp) { AnimatedDemo() }
+            }
+            PreviewSection("Navigation") {
+                Tile("Pagination", 380.dp) { PaginationDemo() }
+                Tile("Stepper", 380.dp) { StepperDemo() }
+                Tile("Carousel", 380.dp) { CarouselDemo() }
+            }
+            PreviewSection("Overlays & feedback") {
+                Tile("Dialog", 240.dp) { DialogDemo() }
+                Tile("Popover", 380.dp) { PopoverDemo() }
+                Tile("Toast", 380.dp) { ToastDemo() }
+                Tile("Consent", 380.dp) { ConsentDemo() }
+            }
+            PreviewSection("Data & charts") {
+                Tile("Chart palette", 380.dp) { ChartStrip() }
+                Tile("Charts", 780.dp) { ChartsDemo() }
+                Tile("Data table", 780.dp) { DataTableDemo() }
+                Tile("Dashboard", 380.dp) { DashboardDemo() }
+                Tile("Questionnaire", 380.dp) { QuestionnaireDemo() }
+            }
         }
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun PreviewSection(title: String, content: @Composable () -> Unit) {
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Text(title, fontSize = 15.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onBackground)
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) { content() }
     }
 }
 

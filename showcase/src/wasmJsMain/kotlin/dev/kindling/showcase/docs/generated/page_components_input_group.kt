@@ -12,6 +12,8 @@ internal fun page_components_input_group(): DocPage = DocPage(
     blocks = listOf(
         Para("A single shared border wraps the field and any inline/block addons. Highlights the border on focus; applies error styling when `isError` = true. Respects `LocalLayoutDirection` for RTL."),
         CodeBlock("kotlin", "InputGroup {\n    InputGroupAddon(align = KInputGroupAlign.InlineStart) {\n        Icon(Icons.Default.Search, null)\n    }\n    InputGroupInput(value = query, onValueChange = { query = it }, placeholder = \"Search…\")\n}"),
+        Heading(2, "Preview"),
+        Demo("input-group"),
         Heading(2, "Installation"),
         CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:{{version}}\")"),
         CodeBlock("kotlin", "import dev.kindling.core.components.ui.inputGroup.InputGroup"),
@@ -70,6 +72,8 @@ internal fun page_components_input_group(): DocPage = DocPage(
 internal fun page_components_input_group_h1(): List<Block> = listOf(
         Para("A single shared border wraps the field and any inline/block addons. Highlights the border on focus; applies error styling when `isError` = true. Respects `LocalLayoutDirection` for RTL."),
         CodeBlock("kotlin", "InputGroup {\n    InputGroupAddon(align = KInputGroupAlign.InlineStart) {\n        Icon(Icons.Default.Search, null)\n    }\n    InputGroupInput(value = query, onValueChange = { query = it }, placeholder = \"Search…\")\n}"),
+        Heading(2, "Preview"),
+        Demo("input-group"),
         Heading(2, "Installation"),
         CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:{{version}}\")"),
         CodeBlock("kotlin", "import dev.kindling.core.components.ui.inputGroup.InputGroup"),

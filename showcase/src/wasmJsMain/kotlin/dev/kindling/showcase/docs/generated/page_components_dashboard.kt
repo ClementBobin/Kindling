@@ -10,6 +10,8 @@ internal fun page_components_dashboard(): DocPage = DocPage(
     description = "A responsive dashboard grid layout engine supporting item dragging, action buttons, dynamic cell sizing, and persistent position callbacks.",
     order = 100,
     blocks = listOf(
+        Heading(2, "Preview"),
+        Demo("dashboard"),
         Heading(2, "Installation"),
         CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:{{version}}\")"),
         CodeBlock("kotlin", "import dev.kindling.core.components.ui.dashboard.KDashboardGrid"),
@@ -78,6 +80,8 @@ internal fun page_components_dashboard(): DocPage = DocPage(
 )
 
 internal fun page_components_dashboard_h1(): List<Block> = listOf(
+        Heading(2, "Preview"),
+        Demo("dashboard"),
         Heading(2, "Installation"),
         CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:{{version}}\")"),
         CodeBlock("kotlin", "import dev.kindling.core.components.ui.dashboard.KDashboardGrid"),

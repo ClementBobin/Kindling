@@ -10,6 +10,8 @@ internal fun page_components_consent(): DocPage = DocPage(
     description = "Complete, ready-to-use c15t-style Privacy & Consent Banner / Card component.",
     order = 100,
     blocks = listOf(
+        Heading(2, "Preview"),
+        Demo("consent"),
         Heading(2, "Installation"),
         CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:{{version}}\")"),
         CodeBlock("kotlin", "import dev.kindling.core.components.ui.consent.KConsentBanner"),
@@ -83,6 +85,8 @@ internal fun page_components_consent(): DocPage = DocPage(
 )
 
 internal fun page_components_consent_h1(): List<Block> = listOf(
+        Heading(2, "Preview"),
+        Demo("consent"),
         Heading(2, "Installation"),
         CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:{{version}}\")"),
         CodeBlock("kotlin", "import dev.kindling.core.components.ui.consent.KConsentBanner"),
