@@ -27,7 +27,8 @@ const args = process.argv.slice(2);
 const check = args.includes('--check');
 const verbose = args.includes('--verbose');
 const history = !args.includes('--no-history') && process.env.DOCS_HISTORY !== '0';
-const emitN = Number(args.find((a) => a.startsWith('--versions='))?.split('=')[1] ?? process.env.DOCS_MAX_VERSIONS ?? 15);
+const rawN = Number(args.find((a) => a.startsWith('--versions='))?.split('=')[1] ?? process.env.DOCS_MAX_VERSIONS ?? 15);
+const emitN = Number.isFinite(rawN) && rawN >= 0 ? rawN : 15;
 const tags = history ? listTags(repoRoot) : [];
 
 function readVersion() {
