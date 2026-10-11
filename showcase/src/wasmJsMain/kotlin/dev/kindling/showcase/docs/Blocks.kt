@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
@@ -33,6 +34,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.layout.LayoutCoordinates
@@ -45,6 +48,7 @@ import androidx.compose.ui.unit.sp
 import dev.kindling.core.components.ui.button.KButton
 import dev.kindling.core.components.ui.button.KButtonVariant
 import dev.kindling.showcase.demos
+import dev.kindling.showcase.docs.generated.demoSources
 import dev.kindling.showcase.docs.playground.PlaygroundHost
 import dev.kindling.showcase.docs.playground.copyToClipboard
 import kotlinx.coroutines.delay
@@ -127,7 +131,7 @@ internal fun RenderBlock(index: Int, block: Block, ctx: RenderCtx) {
             Text(rich(block.text, ctx), fontSize = 14.sp, lineHeight = 22.sp, color = colors.onBackground, modifier = Modifier.padding(14.dp))
         }
         is Props -> PropsTable(block, ctx)
-        is Demo -> DemoBox(block.id, ctx.oldVersion)
+        is Demo -> DemoBox(block.id, ctx)
         is Playground -> PlaygroundHost(block.id, ctx.dark)
         is DeclGroup -> DeclGroupView(index, block, ctx)
         is Source -> Text(
@@ -136,13 +140,13 @@ internal fun RenderBlock(index: Int, block: Block, ctx: RenderCtx) {
             color = colors.onSurfaceVariant,
             modifier = Modifier.padding(top = 4.dp, bottom = 8.dp),
         )
-        Gallery -> GalleryBox()
+        Gallery -> GalleryBox(ctx)
         Rule -> HorizontalDivider(Modifier.padding(vertical = 24.dp), color = colors.outline)
     }
 }
 
 @Composable
-private fun CodeBox(block: CodeBlock, ctx: RenderCtx) {
+private fun CodeBox(block: CodeBlock, ctx: RenderCtx, flat: Boolean = false) {
     val colors = MaterialTheme.colorScheme
     val filled = ctx.fill(block.code)
     val text = remember(block, ctx.dark, ctx.version) { highlight(filled, ctx.dark) }
@@ -154,10 +158,10 @@ private fun CodeBox(block: CodeBlock, ctx: RenderCtx) {
         }
     }
     Surface(
-        shape = RoundedCornerShape(10.dp),
+        shape = if (flat) RectangleShape else RoundedCornerShape(10.dp),
         color = colors.surfaceVariant.copy(alpha = if (ctx.dark) 0.5f else 0.6f),
-        border = BorderStroke(1.dp, colors.outline),
-        modifier = Modifier.padding(bottom = 16.dp).fillMaxWidth(),
+        border = if (flat) null else BorderStroke(1.dp, colors.outline),
+        modifier = (if (flat) Modifier else Modifier.padding(bottom = 16.dp)).fillMaxWidth(),
     ) {
         Column {
             Row(Modifier.fillMaxWidth().padding(start = 14.dp, end = 6.dp, top = 4.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -220,39 +224,73 @@ private fun PropsTable(block: Props, ctx: RenderCtx) {
     }
 }
 
-/** A live, interactive preview of a real Kindling component. */
+/** A live, interactive preview of a real Kindling component, with a tab for the code that builds it. */
 @Composable
-private fun DemoBox(id: String, oldVersion: Boolean = false) {
+private fun DemoBox(id: String, ctx: RenderCtx) {
     val colors = MaterialTheme.colorScheme
     val demo = demos.firstOrNull { it.id == id }
-    Box(
+    val source = demoSources[id]
+    var tab by remember(id) { mutableStateOf(0) }
+    Column(
         Modifier
             .padding(bottom = 16.dp)
             .fillMaxWidth()
             .clip(RoundedCornerShape(10.dp))
-            .border(1.dp, colors.outline, RoundedCornerShape(10.dp))
-            .background(colors.background)
-            .heightIn(min = 160.dp)
-            .padding(24.dp),
-        contentAlignment = Alignment.Center,
+            .border(1.dp, colors.outline, RoundedCornerShape(10.dp)),
     ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            if (demo != null) demo.content() else Text("No live preview for this component yet.", color = colors.onSurfaceVariant, fontSize = 13.sp)
-            if (oldVersion) {
-                Text(
-                    "Live preview always renders the newest release.",
-                    fontSize = 11.sp,
-                    color = colors.onSurfaceVariant,
-                    modifier = Modifier.padding(top = 12.dp),
-                )
+        if (source != null) {
+            Row(Modifier.fillMaxWidth().background(colors.surfaceVariant.copy(alpha = 0.4f)).padding(horizontal = 8.dp)) {
+                DemoTab("Preview", tab == 0) { tab = 0 }
+                DemoTab("Code", tab == 1) { tab = 1 }
+            }
+            HorizontalDivider(color = colors.outline)
+        }
+        if (tab == 1 && source != null) {
+            Box(Modifier.heightIn(max = 480.dp).verticalScroll(rememberScrollState())) {
+                CodeBox(CodeBlock("kotlin", source), ctx, flat = true)
+            }
+        } else {
+            Box(
+                Modifier.fillMaxWidth().background(colors.background).heightIn(min = 160.dp).padding(24.dp),
+                contentAlignment = Alignment.Center,
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    if (demo != null) demo.content() else Text("No live preview for this component yet.", color = colors.onSurfaceVariant, fontSize = 13.sp)
+                    if (ctx.oldVersion) {
+                        Text(
+                            "Live preview always renders the newest release.",
+                            fontSize = 11.sp,
+                            color = colors.onSurfaceVariant,
+                            modifier = Modifier.padding(top = 12.dp),
+                        )
+                    }
+                }
             }
         }
     }
 }
 
+@Composable
+private fun DemoTab(title: String, selected: Boolean, onClick: () -> Unit) {
+    val colors = MaterialTheme.colorScheme
+    Column(
+        Modifier.clickable(onClick = onClick).pointerHoverIcon(PointerIcon.Hand),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Text(
+            title,
+            fontSize = 13.sp,
+            fontWeight = FontWeight.Medium,
+            color = if (selected) colors.onBackground else colors.onSurfaceVariant,
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
+        )
+        Box(Modifier.height(2.dp).fillMaxWidth().background(if (selected) colors.onBackground else Color.Transparent))
+    }
+}
+
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun GalleryBox() {
+private fun GalleryBox(ctx: RenderCtx) {
     var selected by remember { mutableStateOf(demos.first().id) }
     Column(Modifier.padding(bottom = 16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
         FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -264,7 +302,7 @@ private fun GalleryBox() {
                 )
             }
         }
-        DemoBox(selected)
+        DemoBox(selected, ctx)
     }
 }
 
