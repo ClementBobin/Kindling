@@ -3,10 +3,10 @@ package dev.kindling.showcase.docs.generated
 
 import dev.kindling.showcase.docs.*
 
-internal fun page_playground_utils(): DocPage = DocPage(
-    path = "playground-utils",
-    section = "Playground",
-    title = "Utils playground",
+internal fun page_playground(): DocPage = DocPage(
+    path = "playground",
+    section = "Tools",
+    title = "Playground",
     description = "Try the formatting helpers and the debounce/throttle utilities with your own input, then copy the code.",
     order = 2,
     blocks = listOf(

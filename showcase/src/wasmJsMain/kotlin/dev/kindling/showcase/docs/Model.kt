@@ -31,6 +31,9 @@ class DocPage(
 
     val versioned: Boolean get() = available.isNotEmpty()
 
+    /** Tool pages (Create, Playground, Showcase): top-bar destinations with no sidebar or table of contents. */
+    val fullWidth: Boolean by lazy { blocks.any { it is Playground || it === Gallery } }
+
     /** Content of [version]; falls back to the newest content. */
     fun blocksFor(version: String?): List<Block> =
         if (version == null || version in headVersions) blocks else history.firstOrNull { version in it.versions }?.blocks ?: blocks
@@ -86,11 +89,12 @@ private fun Block.plainText(): String? = when (this) {
 }
 
 /** Display order of the sidebar groups. */
-internal val sectionOrder = listOf("Getting started", "Playground", "Components", "Utils", "Compose", "Android", "Project")
+internal val sectionOrder = listOf("Getting started", "Components", "Utils", "Compose", "Android", "Project")
 
 /** Pages grouped for the sidebar, in display order. */
 internal fun List<DocPage>.grouped(): List<Pair<String, List<DocPage>>> =
-    groupBy { it.section }
+    filterNot { it.fullWidth }
+        .groupBy { it.section }
         .toList()
         .sortedBy { (s, _) -> sectionOrder.indexOf(s).let { if (it < 0) Int.MAX_VALUE else it } }
         .map { (s, pages) -> s to pages.sortedWith(compareBy({ it.order }, { it.title })) }

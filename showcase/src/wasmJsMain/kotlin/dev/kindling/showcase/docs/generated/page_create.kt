@@ -3,10 +3,10 @@ package dev.kindling.showcase.docs.generated
 
 import dev.kindling.showcase.docs.*
 
-internal fun page_playground_theme(): DocPage = DocPage(
-    path = "playground-theme",
-    section = "Playground",
-    title = "Theme playground",
+internal fun page_create(): DocPage = DocPage(
+    path = "create",
+    section = "Tools",
+    title = "Create",
     description = "Tune colours, radius and chart palette, preview real Kindling components, then copy the theme as Kotlin.",
     order = 1,
     blocks = listOf(

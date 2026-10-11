@@ -5,7 +5,7 @@ import dev.kindling.showcase.docs.*
 
 internal fun page_showcase(): DocPage = DocPage(
     path = "showcase",
-    section = "Getting started",
+    section = "Tools",
     title = "Showcase",
     description = "Every component, running live in your browser.",
     order = 4,
