@@ -1,7 +1,7 @@
 ---
-title: Theme playground
+title: Create
 description: Tune colours, radius and chart palette, preview real Kindling components, then copy the theme as Kotlin.
-section: Playground
+section: Tools
 order: 1
 ---
 

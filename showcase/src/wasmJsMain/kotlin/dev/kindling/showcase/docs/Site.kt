@@ -21,11 +21,13 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -110,6 +112,7 @@ fun DocsSite() {
     val byPath = remember(pages) { pages.associateBy { it.path } }
     val groups = remember(pages) { pages.grouped() }
     val flat = remember(groups) { groups.flatMap { it.second } }
+    val tree = remember(groups) { buildNav(groups) }
 
     val system = isSystemInDarkTheme()
     var dark by remember { mutableStateOf(system) }
@@ -125,6 +128,7 @@ fun DocsSite() {
     }
 
     val page = byPath[route]
+    val full = page?.fullWidth == true
     val focus = remember { FocusRequester() }
     LaunchedEffect(Unit) { runCatching { focus.requestFocus() } }
 
@@ -143,147 +147,41 @@ fun DocsSite() {
             ) {
                 BoxWithConstraints(Modifier.fillMaxSize()) {
                     val wide = maxWidth >= 800.dp
-                    val xl = maxWidth >= 1200.dp
+                    val xl = maxWidth >= 1100.dp
                     Column(Modifier.fillMaxSize()) {
                         TopBar(
                             wide = wide,
                             dark = dark,
+                            active = if (full) route else "docs",
+                            onNavigate = { go(it) },
                             onToggleTheme = { dark = !dark },
                             onSearch = { searchOpen = true },
                             onMenu = { menuOpen = !menuOpen },
-                            route = route,
+                            onGithub = { window.open(GITHUB, "_blank") },
                         )
-                        HorizontalDivider(color = MaterialTheme.colorScheme.outline)
-                        Row(Modifier.weight(1f).fillMaxWidth()) {
-                            if (wide) {
-                                Sidebar(groups, route, Modifier.width(264.dp).fillMaxHeight())
-                                VerticalDivider(color = MaterialTheme.colorScheme.outline)
+                        Box(Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.TopCenter) {
+                            Row(Modifier.widthIn(max = SITE_MAX_WIDTH).fillMaxSize()) {
+                                if (wide && !full) Sidebar(tree, route, ::go, Modifier.width(256.dp).fillMaxHeight())
+                                PageContent(
+                                    page = page,
+                                    loc = loc,
+                                    dark = dark,
+                                    flat = flat,
+                                    showToc = xl && !full,
+                                    modifier = Modifier.weight(1f).fillMaxHeight(),
+                                )
                             }
-                            PageContent(
-                                page = page,
-                                loc = loc,
-                                dark = dark,
-                                flat = flat,
-                                showToc = xl,
-                                modifier = Modifier.weight(1f).fillMaxHeight(),
-                            )
                         }
                     }
                     if (!wide && menuOpen) {
-                        Box(Modifier.fillMaxSize().padding(top = 57.dp).background(MaterialTheme.colorScheme.background)) {
-                            Sidebar(groups, route, Modifier.fillMaxSize())
+                        Column(Modifier.fillMaxSize().padding(top = 57.dp).background(MaterialTheme.colorScheme.background)) {
+                            MobileLinks(if (full) route else "docs") { go(it) }
+                            HorizontalDivider(color = MaterialTheme.colorScheme.outline)
+                            Sidebar(tree, route, ::go, Modifier.weight(1f).fillMaxWidth())
                         }
                     }
                 }
                 if (searchOpen) SearchOverlay(pages, onClose = { searchOpen = false }, onPick = { go(it); searchOpen = false })
-            }
-        }
-    }
-}
-
-@Composable
-private fun TopBar(
-    wide: Boolean,
-    dark: Boolean,
-    onToggleTheme: () -> Unit,
-    onSearch: () -> Unit,
-    onMenu: () -> Unit,
-    route: String,
-) {
-    val colors = MaterialTheme.colorScheme
-    Row(
-        Modifier.fillMaxWidth().height(56.dp).padding(horizontal = 16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
-        if (!wide) KButton(text = "Menu", onClick = onMenu, variant = KButtonVariant.Ghost, size = KButtonSize.Sm)
-        Row(
-            Modifier.clickable { go("index") }.pointerHoverIcon(PointerIcon.Hand),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            Box(Modifier.height(20.dp).width(20.dp).clip(RoundedCornerShape(6.dp)).background(colors.primary))
-            Text("Kindling", fontWeight = FontWeight.SemiBold, fontSize = 16.sp, color = colors.onBackground)
-            Text(
-                "v$DOCS_VERSION",
-                fontSize = 11.sp,
-                color = colors.onSurfaceVariant,
-                modifier = Modifier.border(1.dp, colors.outline, RoundedCornerShape(6.dp)).padding(horizontal = 6.dp, vertical = 2.dp),
-            )
-        }
-        if (wide) {
-            Row(Modifier.padding(start = 12.dp), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                NavLink("Docs", active = route == "index" || route == "installation" || route == "theming") { go("index") }
-                NavLink("Playground", active = route.startsWith("playground")) { go("playground-theme") }
-                NavLink("Components", active = route.startsWith("components")) { go("components") }
-                NavLink("Showcase", active = route == "showcase") { go("showcase") }
-            }
-        }
-        Box(Modifier.weight(1f))
-        KButton(text = if (wide) "Search...  Ctrl K" else "Search", onClick = onSearch, variant = KButtonVariant.Outline, size = KButtonSize.Sm)
-        KButton(text = if (dark) "Light" else "Dark", onClick = onToggleTheme, variant = KButtonVariant.Ghost, size = KButtonSize.Sm)
-        if (wide) KButton(text = "GitHub", onClick = { window.open(GITHUB, "_blank") }, variant = KButtonVariant.Ghost, size = KButtonSize.Sm)
-    }
-}
-
-@Composable
-private fun NavLink(text: String, active: Boolean, onClick: () -> Unit) {
-    val colors = MaterialTheme.colorScheme
-    Text(
-        text,
-        fontSize = 14.sp,
-        fontWeight = FontWeight.Medium,
-        color = if (active) colors.onBackground else colors.onSurfaceVariant,
-        modifier = Modifier
-            .clip(RoundedCornerShape(6.dp))
-            .clickable(onClick = onClick)
-            .pointerHoverIcon(PointerIcon.Hand)
-            .padding(horizontal = 10.dp, vertical = 6.dp),
-    )
-}
-
-@Composable
-private fun Sidebar(groups: List<Pair<String, List<DocPage>>>, route: String, modifier: Modifier) {
-    val colors = MaterialTheme.colorScheme
-    val collapsed = remember { mutableStateMapOf<String, Boolean>() }
-    Column(modifier.verticalScroll(rememberScrollState()).padding(12.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-        groups.forEach { (section, items) ->
-            val isCollapsed = collapsed[section] ?: false
-            Text(
-                section,
-                fontSize = 12.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = colors.onSurfaceVariant,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(6.dp))
-                    .clickable { collapsed[section] = !isCollapsed }
-                    .pointerHoverIcon(PointerIcon.Hand)
-                    .padding(horizontal = 8.dp, vertical = 8.dp),
-            )
-            if (!isCollapsed) {
-                items.forEach { p ->
-                    val active = p.path == route
-                    Text(
-                        text = if (p.order == 0) "Overview" else p.title,
-                        fontSize = 14.sp,
-                        fontWeight = if (active) FontWeight.Medium else FontWeight.Normal,
-                        color = when {
-                            active -> colors.onBackground
-                            p.versioned && p.available.first() != DOCS_VERSION -> colors.onSurfaceVariant.copy(alpha = 0.55f)
-                            else -> colors.onSurfaceVariant
-                        },
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(6.dp))
-                            .background(if (active) colors.secondaryContainer else Color.Transparent)
-                            .clickable { go(p.path) }
-                            .pointerHoverIcon(PointerIcon.Hand)
-                            .padding(horizontal = 8.dp, vertical = 6.dp),
-                    )
-                }
             }
         }
     }
@@ -323,6 +221,28 @@ private fun PageContent(page: DocPage?, loc: Loc, dark: Boolean, flat: List<DocP
     }
     val here = page?.path ?: ""
 
+    // Scroll-spy: the last heading that has reached the top of the viewport (or the last one at the bottom).
+    val activeHeading by remember(headings) {
+        derivedStateOf {
+            val top = viewport?.takeIf { it.isAttached }?.positionInRoot()?.y ?: 0f
+            val atEnd = scroll.maxValue > 0 && scroll.value >= scroll.maxValue - 4
+            var active = headings.firstOrNull()?.first
+            for ((index, _) in headings) {
+                val c = coords[index]?.takeIf { it.isAttached } ?: continue
+                if (c.positionInRoot().y - top <= 110f) active = index else break
+            }
+            if (atEnd) headings.lastOrNull()?.first ?: active else active
+        }
+    }
+    val scrollTo: (Int) -> Unit = { index ->
+        val target = coords[index]
+        val top = viewport
+        if (target != null && target.isAttached && top != null) {
+            val y = target.positionInRoot().y - top.positionInRoot().y
+            scope.launch { scroll.animateScrollTo((scroll.value + y - 24f).toInt().coerceAtLeast(0)) }
+        }
+    }
+
     Row(modifier) {
         Box(
             Modifier
@@ -340,12 +260,27 @@ private fun PageContent(page: DocPage?, loc: Loc, dark: Boolean, flat: List<DocP
                 }
             } else {
                 SelectionContainer {
-                    val full = blocks.any { it is Playground }
-                    Column(Modifier.widthIn(max = if (full) 1400.dp else 800.dp).fillMaxWidth().padding(horizontal = 28.dp, vertical = 40.dp)) {
-                        Text(page.section, fontSize = 13.sp, color = colors.onSurfaceVariant, modifier = Modifier.padding(bottom = 6.dp))
-                        Text(page.title, fontSize = 34.sp, fontWeight = FontWeight.Bold, color = colors.onBackground)
+                    Column(Modifier.widthIn(max = if (page.fullWidth) SITE_MAX_WIDTH else 760.dp).fillMaxWidth().padding(horizontal = 28.dp, vertical = 36.dp)) {
+                        Breadcrumb(page)
+                        val i = flat.indexOfFirst { it.path == page.path }
+                        Row(verticalAlignment = Alignment.Top) {
+                            Text(
+                                page.title,
+                                fontSize = 32.sp,
+                                lineHeight = 38.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = colors.onBackground,
+                                modifier = Modifier.weight(1f),
+                            )
+                            if (i >= 0) {
+                                Row(Modifier.padding(top = 4.dp), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                    flat.getOrNull(i - 1)?.let { prev -> IconBox(Icons.AutoMirrored.Filled.ArrowBack, "Previous: ${prev.title}") { go(prev.path) } }
+                                    flat.getOrNull(i + 1)?.let { next -> IconBox(Icons.AutoMirrored.Filled.ArrowForward, "Next: ${next.title}") { go(next.path) } }
+                                }
+                            }
+                        }
                         if (page.description.isNotEmpty()) {
-                            Text(page.description, fontSize = 17.sp, lineHeight = 26.sp, color = colors.onSurfaceVariant, modifier = Modifier.padding(top = 8.dp, bottom = 16.dp))
+                            Text(page.description, fontSize = 16.sp, lineHeight = 25.sp, color = colors.onSurfaceVariant, modifier = Modifier.padding(top = 8.dp, bottom = 20.dp))
                         }
                         if (page.versioned) {
                             VersionBar(page, version, rawBlocks.decls().flatMap { it.platforms }.distinct().sortedBy { p -> PLATFORMS.indexOfFirst { it.first == p } }) {
@@ -353,55 +288,27 @@ private fun PageContent(page: DocPage?, loc: Loc, dark: Boolean, flat: List<DocP
                             }
                             VersionBanner(page, loc.version, version) { navigate(here, it, platform) }
                         }
-                        HorizontalDivider(Modifier.padding(bottom = 16.dp), color = colors.outline)
                         if (filterable) PlatformFilter(rawBlocks.decls(), platform) { navigate(here, loc.version, it) }
                         blocks.forEachIndexed { i, b -> RenderBlock(i, b, ctx) }
-                        PrevNext(page, flat)
                     }
                 }
             }
         }
-        if (showToc && page != null && headings.isNotEmpty() && blocks.none { it is Playground }) {
-            Column(
-                Modifier.width(240.dp).fillMaxHeight().verticalScroll(rememberScrollState()).padding(top = 40.dp, end = 16.dp, start = 8.dp),
-                verticalArrangement = Arrangement.spacedBy(2.dp),
-            ) {
-                Text("On this page", fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = colors.onBackground, modifier = Modifier.padding(bottom = 8.dp))
-                headings.forEach { (index, h) ->
-                    Text(
-                        h.text.replace("`", ""),
-                        fontSize = 13.sp,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        color = colors.onSurfaceVariant,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable {
-                                val target = coords[index]
-                                val top = viewport
-                                if (target != null && target.isAttached && top != null) {
-                                    val y = target.positionInRoot().y - top.positionInRoot().y
-                                    scope.launch { scroll.animateScrollTo((scroll.value + y - 16f).toInt().coerceAtLeast(0)) }
-                                }
-                            }
-                            .pointerHoverIcon(PointerIcon.Hand)
-                            .padding(start = if (h.level == 3) 12.dp else 0.dp, top = 3.dp, bottom = 3.dp),
-                    )
-                }
-            }
+        if (showToc && page != null && headings.isNotEmpty()) {
+            Toc(headings, activeHeading, scrollTo, Modifier.width(240.dp).fillMaxHeight())
         }
     }
 }
 
 @Composable
-private fun PrevNext(page: DocPage, flat: List<DocPage>) {
-    val i = flat.indexOfFirst { it.path == page.path }
-    if (i < 0) return
-    val prev = flat.getOrNull(i - 1)
-    val next = flat.getOrNull(i + 1)
-    Row(Modifier.fillMaxWidth().padding(top = 48.dp), horizontalArrangement = Arrangement.SpaceBetween) {
-        if (prev != null) KButton(text = "Previous: ${prev.title}", onClick = { go(prev.path) }, variant = KButtonVariant.Outline) else Box {}
-        if (next != null) KButton(text = "Next: ${next.title}", onClick = { go(next.path) }, variant = KButtonVariant.Outline) else Box {}
+private fun Breadcrumb(page: DocPage) {
+    val colors = MaterialTheme.colorScheme
+    Row(Modifier.padding(bottom = 12.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+        Text("Docs", fontSize = 13.sp, color = colors.onSurfaceVariant)
+        if (!page.fullWidth && page.section != "Getting started") {
+            Text("/", fontSize = 13.sp, color = colors.onSurfaceVariant.copy(alpha = 0.5f))
+            Text(page.section, fontSize = 13.sp, color = colors.onSurfaceVariant)
+        }
     }
 }
 

@@ -11,10 +11,10 @@ internal const val DOCS_BRANCH = "main"
 
 internal fun generatedPages(): List<DocPage> = listOf(
     page_contributing_docs(),
+    page_create(),
     page_index(),
     page_installation(),
-    page_playground_theme(),
-    page_playground_utils(),
+    page_playground(),
     page_showcase(),
     page_theming(),
     page_components(),

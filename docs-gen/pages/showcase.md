@@ -1,7 +1,7 @@
 ---
 title: Showcase
 description: Every component, running live in your browser.
-section: Getting started
+section: Tools
 order: 4
 ---
 

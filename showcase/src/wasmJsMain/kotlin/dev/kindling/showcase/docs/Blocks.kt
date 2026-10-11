@@ -25,6 +25,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,6 +33,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.pointer.PointerIcon
+import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.AnnotatedString
@@ -43,6 +46,8 @@ import dev.kindling.core.components.ui.button.KButton
 import dev.kindling.core.components.ui.button.KButtonVariant
 import dev.kindling.showcase.demos
 import dev.kindling.showcase.docs.playground.PlaygroundHost
+import dev.kindling.showcase.docs.playground.copyToClipboard
+import kotlinx.coroutines.delay
 
 /** What the block renderer needs from the surrounding site. */
 internal class RenderCtx(
@@ -139,7 +144,15 @@ internal fun RenderBlock(index: Int, block: Block, ctx: RenderCtx) {
 @Composable
 private fun CodeBox(block: CodeBlock, ctx: RenderCtx) {
     val colors = MaterialTheme.colorScheme
-    val text = remember(block, ctx.dark, ctx.version) { highlight(ctx.fill(block.code), ctx.dark) }
+    val filled = ctx.fill(block.code)
+    val text = remember(block, ctx.dark, ctx.version) { highlight(filled, ctx.dark) }
+    var copied by remember { mutableStateOf(false) }
+    LaunchedEffect(copied) {
+        if (copied) {
+            delay(1500)
+            copied = false
+        }
+    }
     Surface(
         shape = RoundedCornerShape(10.dp),
         color = colors.surfaceVariant.copy(alpha = if (ctx.dark) 0.5f else 0.6f),
@@ -147,13 +160,19 @@ private fun CodeBox(block: CodeBlock, ctx: RenderCtx) {
         modifier = Modifier.padding(bottom = 16.dp).fillMaxWidth(),
     ) {
         Column {
-            Text(
-                block.lang,
-                fontSize = 11.sp,
-                color = colors.onSurfaceVariant,
-                fontFamily = FontFamily.Monospace,
-                modifier = Modifier.padding(start = 14.dp, top = 8.dp),
-            )
+            Row(Modifier.fillMaxWidth().padding(start = 14.dp, end = 6.dp, top = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+                Text(block.lang, fontSize = 11.sp, color = colors.onSurfaceVariant, fontFamily = FontFamily.Monospace, modifier = Modifier.weight(1f))
+                Text(
+                    if (copied) "Copied" else "Copy",
+                    fontSize = 12.sp,
+                    color = colors.onSurfaceVariant,
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(6.dp))
+                        .clickable { copyToClipboard(filled); copied = true }
+                        .pointerHoverIcon(PointerIcon.Hand)
+                        .padding(horizontal = 8.dp, vertical = 4.dp),
+                )
+            }
             Text(
                 text = text,
                 fontFamily = FontFamily.Monospace,
