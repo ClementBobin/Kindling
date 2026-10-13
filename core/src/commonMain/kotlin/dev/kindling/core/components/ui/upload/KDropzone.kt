@@ -44,6 +44,7 @@ fun KDropzone(
     content: @Composable ColumnScope.() -> Unit
 ) {
     val cs = MaterialTheme.colorScheme
+    val shapes = MaterialTheme.kindlingShapes
     val interactionSource = remember { MutableInteractionSource() }
 
     val borderColor = when {
@@ -65,7 +66,7 @@ fun KDropzone(
             .dashedBorder(
                 color = borderColor,
                 shape = shape,
-                strokeWidth = if (isHoveredOrDragging) 2.dp else 1.dp
+                strokeWidth = if (isHoveredOrDragging) shapes.borderWidthThick else shapes.borderWidth
             )
             .clickable(
                 interactionSource = interactionSource,

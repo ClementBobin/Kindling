@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,6 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.Dp
+import dev.kindling.core.components.ui.layout.KDivider
 import dev.kindling.core.theme.kindlingShapes
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -131,15 +131,15 @@ fun KRoulettePicker(
                 .height(itemHeight)
                 .padding(horizontal = 16.dp)
         ) {
-            HorizontalDivider(
+            KDivider(
                 modifier = Modifier.align(Alignment.TopCenter),
                 color = MaterialTheme.colorScheme.outlineVariant,
-                thickness = 1.dp
+                thickness = MaterialTheme.kindlingShapes.borderWidth
             )
-            HorizontalDivider(
+            KDivider(
                 modifier = Modifier.align(Alignment.BottomCenter),
                 color = MaterialTheme.colorScheme.outlineVariant,
-                thickness = 1.dp
+                thickness = MaterialTheme.kindlingShapes.borderWidth
             )
         }
     }

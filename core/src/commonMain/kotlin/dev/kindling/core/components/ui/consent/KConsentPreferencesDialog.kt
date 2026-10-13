@@ -14,7 +14,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Cookie
 import androidx.compose.material3.Button
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -33,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import dev.kindling.core.components.ui.layout.KDivider
 import dev.kindling.core.theme.kindlingShapes
 
 /**
@@ -109,7 +109,7 @@ fun KConsentPreferencesDialog(
                     lineHeight = 18.sp
                 )
 
-                HorizontalDivider(color = cs.outlineVariant.copy(alpha = 0.5f))
+                KDivider(color = cs.outlineVariant.copy(alpha = 0.5f), thickness = MaterialTheme.kindlingShapes.borderWidth)
 
                 // Scrollable List of Categories
                 Column(
@@ -130,7 +130,7 @@ fun KConsentPreferencesDialog(
                     }
                 }
 
-                HorizontalDivider(color = cs.outlineVariant.copy(alpha = 0.5f))
+                KDivider(color = cs.outlineVariant.copy(alpha = 0.5f), thickness = MaterialTheme.kindlingShapes.borderWidth)
 
                 // Action Footer
                 Row(
@@ -140,7 +140,8 @@ fun KConsentPreferencesDialog(
                 ) {
                     OutlinedButton(
                         onClick = { onSavePreferences(KConsentPreferences.onlyNecessary(categories)) },
-                        shape = MaterialTheme.kindlingShapes.radiusMd
+                        shape = MaterialTheme.kindlingShapes.radiusMd,
+                        border = MaterialTheme.kindlingShapes.borderStroke(MaterialTheme.colorScheme.outline)
                     ) {
                         Text("Reject Optional", fontSize = 13.sp)
                     }

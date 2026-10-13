@@ -7,7 +7,6 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.RowScope
@@ -27,6 +26,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.kindling.core.theme.LocalKindlingShapes
+import dev.kindling.core.theme.kindlingBorder
 
 /**
  * Individual digit slot — mirrors `InputOTPSlot`.
@@ -50,13 +50,14 @@ fun RowScope.InputOTPSlot(
     val cs         = MaterialTheme.colorScheme
     val slotState    = state.slots.getOrNull(index) ?: return
     val focusRequest = LocalOTPFocusRequester.current
-    val rounded      = LocalKindlingShapes.current.roundedLg
+    val shapes       = LocalKindlingShapes.current
+    val rounded      = shapes.roundedLg
 
     val borderColor = when {
         slotState.isActive -> cs.primary
         else               -> cs.outline
     }
-    val borderWidth = if (slotState.isActive) 2.dp else 1.dp
+    val borderWidth = if (slotState.isActive) shapes.borderWidthThick else shapes.borderWidth
 
     val shape = RoundedCornerShape(
         topStart    = if (isFirst) rounded else 0.dp,
@@ -70,7 +71,7 @@ fun RowScope.InputOTPSlot(
             .size(width = 32.dp, height = 40.dp)
             .clip(shape)
             .background(cs.surface)
-            .border(borderWidth, borderColor, shape)
+            .kindlingBorder(borderWidth, borderColor, shape)
             .clickable { focusRequest?.requestFocus() },
         contentAlignment = Alignment.Center
     ) {

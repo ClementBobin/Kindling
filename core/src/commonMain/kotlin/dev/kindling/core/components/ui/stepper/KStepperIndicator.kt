@@ -3,7 +3,6 @@ package dev.kindling.core.components.ui.stepper
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -21,6 +20,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.kindling.core.theme.LocalKindlingShapes
+import dev.kindling.core.theme.kindlingBorder
 
 /**
  * Numbered / checkmark bubble — mirrors `StepperIndicator`.
@@ -40,6 +41,7 @@ fun KStepperIndicator(
     val dsState = state.dataState(itemValue)
     val stepPos = state.steps.indexOf(itemValue) + 1
     val cs = MaterialTheme.colorScheme
+    val shapes = LocalKindlingShapes.current
 
     val bg by animateColorAsState(
         when (dsState) {
@@ -66,7 +68,7 @@ fun KStepperIndicator(
             .size(28.dp)
             .clip(CircleShape)
             .background(bg)
-            .border(if (dsState == KStepState.Inactive) 2.dp else 0.dp, border, CircleShape),
+            .kindlingBorder(if (dsState == KStepState.Inactive) shapes.borderWidthThick else 0.dp, border, CircleShape),
         contentAlignment = Alignment.Center
     ) {
         when {

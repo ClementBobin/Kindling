@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.kindling.core.components.engine.KParticle
+import dev.kindling.core.theme.kindlingShapes
 import dev.kindling.core.components.engine.createExplosionBurst
 import kotlinx.coroutines.launch
 
@@ -125,10 +126,7 @@ fun KExplodingInput(
             modifier = Modifier.fillMaxSize(),
             shape = MaterialTheme.shapes.extraLarge,
             color = cs.surfaceVariant.copy(alpha = 0.4f),
-            border = androidx.compose.foundation.BorderStroke(
-                1.dp,
-                cs.outline.copy(alpha = 0.3f)
-            )
+            border = MaterialTheme.kindlingShapes.borderStroke(cs.outline.copy(alpha = 0.3f))
         ) {
             Row(
                 modifier = Modifier

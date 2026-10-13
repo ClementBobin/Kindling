@@ -2,7 +2,6 @@ package dev.kindling.core.components.ui
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
@@ -18,6 +17,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.kindling.core.components.ui.layout.kindlingFieldBorder
 import dev.kindling.core.theme.LocalKindlingShapes
 
 /**
@@ -86,7 +86,13 @@ fun KInput(
         modifier             = modifier
             .fillMaxWidth()
             .defaultMinSize(minHeight = 32.dp)
-            .clip(shape),
+            .clip(shape)
+            .kindlingFieldBorder(
+                interactionSource = interactionSource,
+                shape             = shape,
+                enabled           = enabled,
+                isError           = isError
+            ),
         enabled              = enabled,
         isError              = isError,
         singleLine           = singleLine,
@@ -106,12 +112,13 @@ fun KInput(
             fontWeight = FontWeight.Normal,
             color      = if (enabled) cs.onBackground else cs.onSurface.copy(.38f)
         ),
-        shape  = RoundedCornerShape(8.dp),
+        shape  = shape,
         colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor         = cs.primary,
-            unfocusedBorderColor       = cs.outline,
-            disabledBorderColor        = cs.outline.copy(.38f),
-            errorBorderColor           = cs.error,
+            // Border is drawn by kindlingFieldBorder so its width follows KindlingShapes.borderWidth.
+            focusedBorderColor         = Color.Transparent,
+            unfocusedBorderColor       = Color.Transparent,
+            disabledBorderColor        = Color.Transparent,
+            errorBorderColor           = Color.Transparent,
             focusedContainerColor      = Color.Transparent,
             unfocusedContainerColor    = Color.Transparent,
             disabledContainerColor     = cs.onSurface.copy(.04f),

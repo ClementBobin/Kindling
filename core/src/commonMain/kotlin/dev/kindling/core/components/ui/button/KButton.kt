@@ -21,6 +21,7 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.kindling.core.theme.LocalKindlingShapes
 
 /**
  * Shadcn/ui-style Button — mirrors `button.tsx`.
@@ -78,9 +79,10 @@ fun KButton(
     val dims   = resolveDimensions(size)
     val shape = resolveShape(size)
 
+    val shapes = LocalKindlingShapes.current
     val border: BorderStroke? = when {
-        colors.border != null && enabled  -> BorderStroke(1.dp, colors.border)
-        colors.border != null && !enabled -> BorderStroke(1.dp, colors.border.copy(alpha = .38f))
+        colors.border != null && enabled  -> shapes.borderStroke(colors.border)
+        colors.border != null && !enabled -> shapes.borderStroke(colors.border.copy(alpha = .38f))
         else -> null
     }
 

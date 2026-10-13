@@ -18,7 +18,7 @@ internal fun page_components_input_group(): DocPage = DocPage(
         CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:{{version}}\")"),
         CodeBlock("kotlin", "import dev.kindling.core.components.ui.inputGroup.InputGroup"),
         DeclGroup("Composables", listOf(
-            Decl("InputGroup", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/inputGroup/InputGroupRoot.kt#L34")), listOf(
+            Decl("InputGroup", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/inputGroup/InputGroupRoot.kt#L33")), listOf(
                 CodeBlock("kotlin", "@Composable\nfun InputGroup(\n    modifier: Modifier = Modifier,\n    isError: Boolean = false,\n    content: @Composable KInputGroupScope.() -> Unit,\n)"),
                 Props(listOf(PropRow("modifier", "Modifier", "Modifier", "", false), PropRow("isError", "Boolean", "false", "", false), PropRow("content", "@Composable KInputGroupScope.() -> Unit", "", "", true))),
             )),

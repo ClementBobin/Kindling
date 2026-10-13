@@ -1,6 +1,5 @@
 package dev.kindling.core.components.ui.datatable
 
-import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -16,6 +15,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import dev.kindling.core.theme.LocalKindlingShapes
+import dev.kindling.core.theme.kindlingBorder
 
 /**
  * Shadcn/ui-style Table root — mirrors `Table` from `table.tsx`.
@@ -54,6 +55,7 @@ fun Table(
     content: @Composable ColumnScope.() -> Unit
 ) {
     val cs = MaterialTheme.colorScheme
+    val borderWidth = LocalKindlingShapes.current.borderWidth
     // Rows lay cells out with weights, which need a bounded width: inside a horizontalScroll they collapse to
     // zero. So the table gets the container's width (at least minWidth) and scrolls only when that is narrower.
     BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
@@ -63,7 +65,7 @@ fun Table(
                 modifier = Modifier
                     .width(tableWidth)
                     .clip(RoundedCornerShape(8.dp))
-                    .border(1.dp, cs.outline, RoundedCornerShape(8.dp)),
+                    .kindlingBorder(borderWidth, cs.outline, RoundedCornerShape(8.dp)),
                 content = content
             )
         }

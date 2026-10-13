@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,7 +19,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import dev.kindling.core.theme.LocalKindlingShapes
 import androidx.compose.ui.unit.sp
+import dev.kindling.core.components.ui.layout.KDivider
 import dev.kindling.core.components.ui.pagination.Pagination
 import dev.kindling.core.components.ui.pagination.PaginationContent
 import dev.kindling.core.components.ui.pagination.PaginationEllipsis
@@ -101,9 +102,9 @@ fun <T> KDataTable(
                     emptyContent()
                 } else {
                     displayData.forEachIndexed { i, row ->
-                        if (i > 0) HorizontalDivider(
+                        if (i > 0) KDivider(
                             color = MaterialTheme.colorScheme.outline.copy(.5f),
-                            thickness = 1.dp
+                            thickness = LocalKindlingShapes.current.borderWidth
                         )
                         TableRow(striped = striped && i % 2 == 1) {
                             columns.forEach { col ->

@@ -147,6 +147,12 @@ private val chartPresets = listOf(
 
 private val radii = listOf(0, 4, 8, 10, 14, 20)
 
+/** Border widths in dp, in half-dp steps (matches the slider). `0` turns every border off. */
+private val borderWidths = listOf(0f, 0.5f, 1f, 2f, 3f)
+
+/** `1f` -> "1", `0.5f` -> "0.5": whole numbers print without a decimal so the generated code stays tidy. */
+private fun fmtDp(v: Float): String = if (v % 1f == 0f) v.toInt().toString() else v.toString()
+
 private const val ERROR_LIGHT = 0xFFE7000BL
 private const val ERROR_DARK = 0xFFFF6467L
 
@@ -222,7 +228,7 @@ private fun scheme(spec: List<Pair<String, Long>>, dark: Boolean): ColorScheme {
 
 private fun hex(v: Long) = "Color(0x" + (v and 0xFFFFFFFFL).toString(16).uppercase().padStart(8, '0') + ")"
 
-private fun generateCode(base: BaseColor, accent: Accent, radius: Int, chart: ChartPreset): String {
+private fun generateCode(base: BaseColor, accent: Accent, radius: Int, borderWidth: Float, chart: ChartPreset): String {
     fun block(name: String, fn: String, dark: Boolean) = buildString {
         appendLine("val $name = $fn(")
         for ((k, v) in colorSpec(base, accent, dark)) appendLine("    $k = ${hex(v)},")
@@ -235,7 +241,7 @@ private fun generateCode(base: BaseColor, accent: Accent, radius: Int, chart: Ch
     } ?: "        colors = KindlingColors.fromMaterial3(),\n"
 
     return buildString {
-        appendLine("// Kindling theme: ${base.name} base, ${accent.name} accent, ${radius}dp radius")
+        appendLine("// Kindling theme: ${base.name} base, ${accent.name} accent, ${radius}dp radius, ${fmtDp(borderWidth)}dp border")
         appendLine("import androidx.compose.foundation.isSystemInDarkTheme")
         appendLine("import androidx.compose.material3.darkColorScheme")
         appendLine("import androidx.compose.material3.lightColorScheme")
@@ -257,7 +263,7 @@ private fun generateCode(base: BaseColor, accent: Accent, radius: Int, chart: Ch
         appendLine(") {")
         appendLine("    KindlingTheme(")
         appendLine("        colorScheme = if (darkTheme) AppDarkColors else AppLightColors,")
-        appendLine("        shapes = KindlingShapes(base = ${radius}.dp),")
+        appendLine("        shapes = KindlingShapes(base = ${radius}.dp, borderWidth = ${fmtDp(borderWidth)}.dp),")
         append(chartArg)
         appendLine("    ) { content() }")
         append("}")
@@ -272,10 +278,11 @@ internal fun ThemePlayground(siteDark: Boolean) {
     var base by remember { mutableStateOf(bases.first()) }
     var accent by remember { mutableStateOf(accents.first()) }
     var radius by remember { mutableStateOf(10) }
+    var borderWidth by remember { mutableStateOf(1f) }
     var chart by remember { mutableStateOf(chartPresets.first()) }
     var dark by remember { mutableStateOf(false) }
 
-    val code = remember(base, accent, radius, chart) { generateCode(base, accent, radius, chart) }
+    val code = remember(base, accent, radius, borderWidth, chart) { generateCode(base, accent, radius, borderWidth, chart) }
     val previewScheme = remember(base, accent, dark) { scheme(colorSpec(base, accent, dark), dark) }
     val previewColors = chart.colors?.let { cs ->
         KindlingColors(Color(cs[0]), Color(cs[1]), Color(cs[2]), Color(cs[3]), Color(cs[4]))
@@ -289,13 +296,14 @@ internal fun ThemePlayground(siteDark: Boolean) {
                 base = base, onBase = { base = it },
                 accent = accent, onAccent = { accent = it },
                 radius = radius, onRadius = { radius = it },
+                borderWidth = borderWidth, onBorderWidth = { borderWidth = it },
                 chart = chart, onChart = { chart = it },
                 dark = dark, onDark = { dark = it },
                 onReset = {
-                    base = bases.first(); accent = accents.first(); radius = 10; chart = chartPresets.first()
+                    base = bases.first(); accent = accents.first(); radius = 10; borderWidth = 1f; chart = chartPresets.first()
                 },
                 onShuffle = {
-                    base = bases.random(); accent = accents.random(); radius = radii.random(); chart = chartPresets.random()
+                    base = bases.random(); accent = accents.random(); radius = radii.random(); borderWidth = borderWidths.random(); chart = chartPresets.random()
                 },
             )
         }
@@ -305,7 +313,7 @@ internal fun ThemePlayground(siteDark: Boolean) {
                 MaterialTheme(colorScheme = previewScheme) {
                     KindlingTheme(
                         colorScheme = previewScheme,
-                        shapes = KindlingShapes(base = radius.dp),
+                        shapes = KindlingShapes(base = radius.dp, borderWidth = borderWidth.dp),
                         colors = previewColors ?: KindlingColors.fromMaterial3(),
                     ) {
                         PreviewSurface()
@@ -335,6 +343,7 @@ private fun Controls(
     base: BaseColor, onBase: (BaseColor) -> Unit,
     accent: Accent, onAccent: (Accent) -> Unit,
     radius: Int, onRadius: (Int) -> Unit,
+    borderWidth: Float, onBorderWidth: (Float) -> Unit,
     chart: ChartPreset, onChart: (ChartPreset) -> Unit,
     dark: Boolean, onDark: (Boolean) -> Unit,
     onReset: () -> Unit, onShuffle: () -> Unit,
@@ -379,6 +388,16 @@ private fun Controls(
         Slider(value = radius.toFloat(), onValueChange = { onRadius(it.roundToInt()) }, valueRange = 0f..24f)
         FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
             radii.forEach { Chip("$it", selected = it == radius) { onRadius(it) } }
+        }
+
+        ControlLabel("BORDER: ${fmtDp(borderWidth).uppercase()}DP")
+        Slider(
+            value = borderWidth,
+            onValueChange = { onBorderWidth((it * 2).roundToInt() / 2f) },
+            valueRange = 0f..4f,
+        )
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            borderWidths.forEach { Chip(fmtDp(it), selected = it == borderWidth) { onBorderWidth(it) } }
         }
 
         ControlLabel("CHART COLORS")

@@ -1,6 +1,5 @@
 package dev.kindling.core.components.ui.questionnaire
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
+import dev.kindling.core.theme.kindlingShapes
 
 @Composable
 fun KQuestionnaireChoice(
@@ -53,8 +53,7 @@ fun KQuestionnaireChoice(
             ),
         shape = MaterialTheme.shapes.medium,
         color = if (selected) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
-        border = BorderStroke(
-            width = 1.dp,
+        border = MaterialTheme.kindlingShapes.borderStroke(
             color = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
         )
     ) {

@@ -1,6 +1,5 @@
 package dev.kindling.core.components.ui.inputGroup
 
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.MaterialTheme
@@ -11,8 +10,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.unit.dp
 import dev.kindling.core.theme.LocalKindlingShapes
+import dev.kindling.core.theme.kindlingBorder
 
 /**
  * Shadcn/ui-style InputGroup — mirrors `input-group.tsx`.
@@ -36,7 +35,8 @@ fun InputGroup(
     isError: Boolean = false,
     content: @Composable KInputGroupScope.() -> Unit
 ) {
-    val shape = LocalKindlingShapes.current.radiusXl
+    val shapes = LocalKindlingShapes.current
+    val shape = shapes.radiusXl
     val cs             = MaterialTheme.colorScheme
     val focusRequester = remember { FocusRequester() }
     val scope          = remember(focusRequester) { KInputGroupScope(focusRequester) }
@@ -47,12 +47,12 @@ fun InputGroup(
         focused -> cs.primary
         else    -> cs.outline
     }
-    val borderWidth = if (focused || isError) 2.dp else 1.dp
+    val borderWidth = if (focused || isError) shapes.borderWidthThick else shapes.borderWidth
 
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .border(borderWidth, borderColor, shape)
+            .kindlingBorder(borderWidth, borderColor, shape)
     ) {
         scope.content()
     }

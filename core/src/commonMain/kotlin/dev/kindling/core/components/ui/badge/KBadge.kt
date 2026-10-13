@@ -1,6 +1,5 @@
 package dev.kindling.core.components.ui.badge
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
@@ -56,16 +55,15 @@ fun KBadge(
     val bg     = variant.bg()
     val fg     = variant.fg()
     val border = variant.border()
-    val shape  = LocalKindlingShapes.current.radius4xl
+    val shapes = LocalKindlingShapes.current
+    val shape  = shapes.radius4xl
 
     Surface(
         modifier     = modifier,
         shape        = shape,
         color        = bg,
         contentColor = fg,
-        border       = if (border != null)
-            BorderStroke(1.dp, border)
-        else null
+        border       = border?.let { shapes.borderStroke(it) }
     ) {
         Row(
             modifier = Modifier

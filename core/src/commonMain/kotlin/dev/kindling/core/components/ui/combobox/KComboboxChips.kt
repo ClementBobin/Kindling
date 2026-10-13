@@ -1,7 +1,6 @@
 package dev.kindling.core.components.ui.combobox
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
@@ -23,6 +22,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.kindling.core.theme.LocalKindlingShapes
+import dev.kindling.core.theme.kindlingBorder
 import dev.kindling.core.components.ui.button.KButton
 import dev.kindling.core.components.ui.button.KButtonSize
 import dev.kindling.core.components.ui.button.KButtonVariant
@@ -36,11 +36,12 @@ fun ComboboxChips(
     content: @Composable RowScope.() -> Unit
 ) {
     val cs = MaterialTheme.colorScheme
-    val shape = LocalKindlingShapes.current.radiusLg
+    val shapes = LocalKindlingShapes.current
+    val shape = shapes.radiusLg
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .border(1.dp, cs.outline, shape)
+            .kindlingBorder(shapes.borderWidth, cs.outline, shape)
             .padding(horizontal = 8.dp, vertical = 4.dp),
         verticalAlignment     = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp),

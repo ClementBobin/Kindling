@@ -32,7 +32,7 @@ internal fun page_components_stepper(): DocPage = DocPage(
                 CodeBlock("kotlin", "@Composable\nfun KStepperContent(\n    value: String,\n    modifier: Modifier = Modifier,\n    forceMount: Boolean = false,\n    content: @Composable BoxScope.() -> Unit,\n)"),
                 Props(listOf(PropRow("value", "String", "", "", true), PropRow("modifier", "Modifier", "Modifier", "", false), PropRow("forceMount", "Boolean", "false", "", false), PropRow("content", "@Composable BoxScope.() -> Unit", "", "", true))),
             )),
-            Decl("KStepperIndicator", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/stepper/KStepperIndicator.kt#L34")), listOf(
+            Decl("KStepperIndicator", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/stepper/KStepperIndicator.kt#L35")), listOf(
                 Para("Numbered / checkmark bubble — mirrors `StepperIndicator`."),
                 CodeBlock("kotlin", "KStepperIndicator()                                     // auto: number or check\nKStepperIndicator { dataState -> MyIcon(dataState) }  // custom"),
                 CodeBlock("kotlin", "@Composable\nfun KStepperIndicator(\n    modifier: Modifier = Modifier,\n    content: (@Composable (KStepState) -> Unit)? = null,\n)"),

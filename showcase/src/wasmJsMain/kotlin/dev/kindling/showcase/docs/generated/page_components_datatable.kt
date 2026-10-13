@@ -18,7 +18,7 @@ internal fun page_components_datatable(): DocPage = DocPage(
         CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:{{version}}\")"),
         CodeBlock("kotlin", "import dev.kindling.core.components.ui.datatable.KDataTable"),
         DeclGroup("Composables", listOf(
-            Decl("KDataTable", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/datatable/KDataTable.kt#L46")), listOf(
+            Decl("KDataTable", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/datatable/KDataTable.kt#L47")), listOf(
                 CodeBlock("kotlin", "@Composable\nfun <T> KDataTable(\n    columns: List<KTableColumn<T>>,\n    data: List<T>,\n    modifier: Modifier = Modifier,\n    striped: Boolean = false,\n    pageSize: Int = Int.MAX_VALUE,\n    onSort: ((key: String, direction: KSortDirection) -> Unit)? = null,\n    emptyContent: @Composable () -> Unit = { Box( modifier = Modifier.fillMaxWidth().padding(32.dp), contentAlignment = Alignment.Center ) { Text(\"No results.\", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp) } },\n)"),
                 Props(listOf(PropRow("columns", "List<KTableColumn<T>>", "", "", true), PropRow("data", "List<T>", "", "", true), PropRow("modifier", "Modifier", "Modifier", "", false), PropRow("striped", "Boolean", "false", "", false), PropRow("pageSize", "Int", "Int.MAX_VALUE", "", false), PropRow("onSort", "((key: String, direction: KSortDirection) -> Unit)?", "null", "", false), PropRow("emptyContent", "@Composable () -> Unit", "{ Box( modifier = Modifier.fillMaxWidth().padding(32.dp), contentAlignment = Alignment.…", "", false))),
             )),
@@ -37,31 +37,31 @@ internal fun page_components_datatable(): DocPage = DocPage(
                 CodeBlock("kotlin", "@Composable\nfun TableCaption(\n    modifier: Modifier = Modifier,\n    content: @Composable () -> Unit,\n)"),
                 Props(listOf(PropRow("modifier", "Modifier", "Modifier", "", false), PropRow("content", "@Composable () -> Unit", "", "", true))),
             )),
-            Decl("Table", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/datatable/TableRoot.kt#L51")), listOf(
+            Decl("Table", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/datatable/TableRoot.kt#L52")), listOf(
                 Para("Shadcn/ui-style Table root — mirrors `Table` from `table.tsx`."),
                 Para("Wraps content in a rounded border. It fills the available width (so weighted cells work) and scrolls horizontally when that is narrower than `minWidth`. Respects `LocalLayoutDirection` for RTL."),
                 CodeBlock("kotlin", "Table {\n    TableHeader {\n        TableRow {\n            TableHead { Text(\"Name\") }\n            TableHead { Text(\"Amount\") }\n        }\n    }\n    TableBody {\n        rows.forEach { row ->\n            TableRow {\n                TableCell { Text(row.name) }\n                TableCell { Text(row.amount) }\n            }\n        }\n    }\n    TableFooter {\n        TableRow { TableHead(colSpan = 2) { Text(\"Total: \$100\") } }\n    }\n    TableCaption { Text(\"Payment history\") }\n}"),
                 CodeBlock("kotlin", "@Composable\nfun Table(\n    modifier: Modifier = Modifier,\n    minWidth: Dp = 0.dp,\n    content: @Composable ColumnScope.() -> Unit,\n)"),
                 Props(listOf(PropRow("modifier", "Modifier", "Modifier", "", false), PropRow("minWidth", "Dp", "0.dp", "", false), PropRow("content", "@Composable ColumnScope.() -> Unit", "", "", true))),
             )),
-            Decl("TableHeader", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/datatable/TableSections.kt#L23")), listOf(
+            Decl("TableHeader", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/datatable/TableSections.kt#L24")), listOf(
                 Para("Wraps header `TableRow`s — mirrors `TableHeader` (`<thead>`)."),
                 CodeBlock("kotlin", "@Composable\nfun TableHeader(\n    modifier: Modifier = Modifier,\n    content: @Composable ColumnScope.() -> Unit,\n)"),
                 Props(listOf(PropRow("modifier", "Modifier", "Modifier", "", false), PropRow("content", "@Composable ColumnScope.() -> Unit", "", "", true))),
             )),
-            Decl("TableBody", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/datatable/TableSections.kt#L42")), listOf(
+            Decl("TableBody", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/datatable/TableSections.kt#L43")), listOf(
                 Para("Wraps body `TableRow`s — mirrors `TableBody` (`<tbody>`)."),
                 Para("Renders rows lazily for large datasets when `lazy` = true (default false). For large lists, prefer the `KDataTable` preset which handles pagination."),
                 CodeBlock("kotlin", "@Composable\nfun TableBody(\n    modifier: Modifier = Modifier,\n    content: @Composable ColumnScope.() -> Unit,\n)"),
                 Props(listOf(PropRow("modifier", "Modifier", "Modifier", "", false), PropRow("content", "@Composable ColumnScope.() -> Unit", "", "", true))),
             )),
-            Decl("TableFooter", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/datatable/TableSections.kt#L55")), listOf(
+            Decl("TableFooter", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/datatable/TableSections.kt#L56")), listOf(
                 Para("Footer section — mirrors `TableFooter` (`<tfoot>`)."),
                 Para("Rendered with a muted background and top border."),
                 CodeBlock("kotlin", "@Composable\nfun TableFooter(\n    modifier: Modifier = Modifier,\n    content: @Composable ColumnScope.() -> Unit,\n)"),
                 Props(listOf(PropRow("modifier", "Modifier", "Modifier", "", false), PropRow("content", "@Composable ColumnScope.() -> Unit", "", "", true))),
             )),
-            Decl("TableRow", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/datatable/TableSections.kt#L77")), listOf(
+            Decl("TableRow", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/datatable/TableSections.kt#L78")), listOf(
                 Para("A table row — mirrors `TableRow` (`<tr>`)."),
                 CodeBlock("kotlin", "@Composable\nfun TableRow(\n    modifier: Modifier = Modifier,\n    selected: Boolean = false,\n    striped: Boolean = false,\n    onClick: (() -> Unit)? = null,\n    content: @Composable RowScope.() -> Unit,\n)"),
                 Props(listOf(PropRow("modifier", "Modifier", "Modifier", "", false), PropRow("selected", "Boolean", "false", "Applies selected-row background (muted).", false), PropRow("striped", "Boolean", "false", "Applies alternate-row background (pass index % 2 == 1).", false), PropRow("onClick", "(() -> Unit)?", "null", "Makes the row clickable when non-null.", false), PropRow("content", "@Composable RowScope.() -> Unit", "", "", true))),

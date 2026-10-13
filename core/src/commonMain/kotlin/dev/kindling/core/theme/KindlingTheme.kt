@@ -1,5 +1,7 @@
 package dev.kindling.core.theme
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
@@ -35,6 +37,15 @@ import androidx.compose.ui.unit.dp
 //
 //  Per-component slots keep the API close to shadcn token names and give
 //  fine-grained override power when needed.
+//
+//  Border width
+//  ────────────
+//  `borderWidth` is the matching token for stroke thickness (shadcn's `border`
+//  utility = 1px).  Components never hardcode a border Dp: they read
+//  `borderWidth` for resting borders, `borderWidthThin` for subtle separators
+//  (card/dialog footers) and `borderWidthThick` for focus / active / error
+//  emphasis.  Thin and thick are derived from `borderWidth` with `calc`, so
+//  one value restyles every outline in the library.
 // ─────────────────────────────────────────────────────────────────────────────
 
 /**
@@ -50,15 +61,31 @@ import androidx.compose.ui.unit.dp
  * // Pill-heavy / very round UI
  * KindlingTheme(shapes = KindlingShapes(base = 20.dp)) { … }
  *
- * // Override one slot while keeping everything else default
- * KindlingTheme(shapes = KindlingShapes(base = 10.dp)) { … }
+ * // Heavier borders on every component (default is 1.dp)
+ * KindlingTheme(shapes = KindlingShapes(borderWidth = 2.dp)) { … }
+ *
+ * // Flat, borderless UI: no border or divider is drawn at all
+ * KindlingTheme(shapes = KindlingShapes(base = 12.dp, borderWidth = 0.dp)) { … }
  * ```
+ *
+ * `borderWidth` also drives two derived widths, so a single value keeps the
+ * visual hierarchy intact: [borderWidthThin] (0.5×) for subtle separators and
+ * [borderWidthThick] (2×) for focus, active and error states.
  */
 @Immutable
 data class KindlingShapes(
     /** The global base radius.  Defaults to 10 dp (= 0.625 rem × 16). */
     val base: Dp = 10.dp,
+    /**
+     * The global border width used by every component outline.  Defaults to 1 dp.
+     * Use `0.dp` to turn borders (and border-like dividers) off entirely.
+     */
+    val borderWidth: Dp = 1.dp,
 ) {
+    init {
+        require(borderWidth >= 0.dp) { "borderWidth must be >= 0.dp, was $borderWidth" }
+    }
+
     // Derived Shape helpers used internally by components.
     // Components call these to avoid repeating RoundedCornerShape() everywhere.
     val rounded    = base
@@ -77,6 +104,20 @@ data class KindlingShapes(
     val radius2xl: Shape get() = RoundedCornerShape(rounded2xl)
     val radius3xl: Shape get() = RoundedCornerShape(rounded3xl)
     val radius4xl: Shape get() = RoundedCornerShape(rounded4xl)
+
+    /** Subtle separators (card / dialog footer rules): [borderWidth] × 0.5. */
+    val borderWidthThin  get() = calc(borderWidth, 0.5f)
+
+    /** Emphasis for focus, active and error states: [borderWidth] × 2. */
+    val borderWidthThick get() = calc(borderWidth, 2f)
+
+    /**
+     * Builds a [BorderStroke] for [color], or `null` when [width] is zero so that
+     * `Surface(border = …)` draws nothing.  (A `0.dp` stroke would otherwise be
+     * rendered as a one-pixel hairline.)
+     */
+    fun borderStroke(color: Color, width: Dp = borderWidth): BorderStroke? =
+        if (width > 0.dp) BorderStroke(width, color) else null
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -227,10 +268,10 @@ val MaterialTheme.kindlingColors: KindlingColors
  *     Scaffold { … }
  * }
  *
- * // Custom corner radius + branded chart palette
+ * // Custom corner radius + border width + branded chart palette
  * KindlingTheme(
  *     colorScheme = myDarkColorScheme,
- *     shapes      = KindlingShapes(base = 4.dp),
+ *     shapes      = KindlingShapes(base = 4.dp, borderWidth = 2.dp),
  *     colors      = KindlingColors(
  *         chart1 = Color(0xFFFF6B35),
  *         chart2 = Color(0xFF004E89),
@@ -244,7 +285,8 @@ val MaterialTheme.kindlingColors: KindlingColors
  * @param colorScheme  Material3 color scheme.  Defaults to [MaterialTheme.colorScheme]
  *                     so you can nest [KindlingTheme] inside an existing [MaterialTheme].
  * @param typography   Material3 typography.
- * @param shapes       Kindling shape tokens.  Defaults to [KindlingShapes] (base = 10 dp).
+ * @param shapes       Kindling shape tokens (corner radius and border width).  Defaults to
+ *                     [KindlingShapes] (base = 10 dp, borderWidth = 1 dp).
  * @param colors       Five-slot chart palette.  Defaults to [KindlingColors.fromMaterial3]
  *                     so dark/light mode is handled automatically when omitted.
  * @param content      The composition subtree.
@@ -272,6 +314,25 @@ fun KindlingTheme(
 // ─────────────────────────────────────────────────────────────────────────────
 //  Modifier shadow helpers
 // ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Draws a border around the node, or nothing when the width is zero.
+ *
+ * Drop-in replacement for `Modifier.border` that treats `0.dp` as "no border"
+ * instead of a hairline.  Pair it with `KindlingShapes.borderWidth`.
+ *
+ * ### Example usage:
+ * ```kotlin
+ * val shapes = MaterialTheme.kindlingShapes
+ * Box(Modifier.kindlingBorder(shapes.borderWidth, MaterialTheme.colorScheme.outline, shapes.radius))
+ * ```
+ *
+ * @param width Border thickness.  `0.dp` (or less) draws nothing.
+ * @param color Border colour.
+ * @param shape Shape the border follows.
+ */
+fun Modifier.kindlingBorder(width: Dp, color: Color, shape: Shape): Modifier =
+    if (width > 0.dp) this.border(width, color, shape) else this
 
 fun Modifier.kindlingShadowXs(shape: Shape): Modifier = this.shadow(
     elevation    = 1.dp,

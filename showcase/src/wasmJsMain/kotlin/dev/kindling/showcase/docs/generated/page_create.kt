@@ -7,7 +7,7 @@ internal fun page_create(): DocPage = DocPage(
     path = "create",
     section = "Tools",
     title = "Create",
-    description = "Tune colours, radius and chart palette, preview real Kindling components, then copy the theme as Kotlin.",
+    description = "Tune colours, radius, border width and chart palette, preview real Kindling components, then copy the theme as Kotlin.",
     order = 1,
     blocks = listOf(
         Playground("theme"),

@@ -8,13 +8,14 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import dev.kindling.core.components.ui.layout.KDivider
+import dev.kindling.core.theme.LocalKindlingShapes
 
 /**
  * Wraps header [TableRow]s — mirrors `TableHeader` (`<thead>`).
@@ -29,7 +30,7 @@ fun TableHeader(
         modifier = modifier.fillMaxWidth(),
         content  = content
     )
-    HorizontalDivider(color = cs.outline, thickness = 1.dp)
+    KDivider(color = cs.outline, thickness = LocalKindlingShapes.current.borderWidth)
 }
 
 /**
@@ -57,7 +58,7 @@ fun TableFooter(
     content: @Composable ColumnScope.() -> Unit
 ) {
     val cs = MaterialTheme.colorScheme
-    HorizontalDivider(color = cs.outline, thickness = 1.dp)
+    KDivider(color = cs.outline, thickness = LocalKindlingShapes.current.borderWidth)
     Column(
         modifier = modifier
             .fillMaxWidth()

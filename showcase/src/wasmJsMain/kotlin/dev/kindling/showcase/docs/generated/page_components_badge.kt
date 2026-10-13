@@ -20,7 +20,7 @@ internal fun page_components_badge(): DocPage = DocPage(
         CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:{{version}}\")"),
         CodeBlock("kotlin", "import dev.kindling.core.components.ui.badge.KBadge"),
         DeclGroup("Composables", listOf(
-            Decl("KBadge", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/badge/KBadge.kt#L51")), listOf(
+            Decl("KBadge", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/badge/KBadge.kt#L50")), listOf(
                 CodeBlock("kotlin", "@Composable\nfun KBadge(\n    modifier: Modifier = Modifier,\n    variant: KBadgeVariant = KBadgeVariant.Default,\n    content: @Composable RowScope.() -> Unit,\n)"),
                 Props(listOf(PropRow("modifier", "Modifier", "Modifier", "The modifier to be applied to the layout.", false), PropRow("variant", "KBadgeVariant", "KBadgeVariant.Default", "The visual style variant of the badge.", false), PropRow("content", "@Composable RowScope.() -> Unit", "", "The composable content to display inside the badge.", true))),
             )),

@@ -13,6 +13,8 @@ import androidx.compose.ui.unit.dp
 
 /**
  * Draws a dashed border around a composable using custom stroke parameters.
+ *
+ * A [strokeWidth] of `0.dp` draws nothing (rather than a one-pixel hairline).
  */
 fun Modifier.dashedBorder(
     color: Color,
@@ -20,7 +22,7 @@ fun Modifier.dashedBorder(
     strokeWidth: Dp = 1.dp,
     dashWidth: Dp = 6.dp,
     gapWidth: Dp = 4.dp
-): Modifier = this.drawWithContent {
+): Modifier = if (strokeWidth <= 0.dp) this else this.drawWithContent {
     val strokeWidthPx = strokeWidth.toPx()
     val dashWidthPx = dashWidth.toPx()
     val gapWidthPx = gapWidth.toPx()

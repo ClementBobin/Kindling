@@ -7,7 +7,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -35,6 +34,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import dev.kindling.core.theme.LocalKindlingShapes
+import dev.kindling.core.theme.kindlingBorder
 import dev.kindling.core.theme.kindlingShadowMd
 import kotlin.math.roundToInt
 
@@ -51,7 +51,8 @@ internal fun KPopoverInline(
     content: @Composable ColumnScope.() -> Unit
 ) {
     val cs      = MaterialTheme.colorScheme
-    val shape = LocalKindlingShapes.current.radiusLg
+    val shapes = LocalKindlingShapes.current
+    val shape = shapes.radiusLg
     val density = LocalDensity.current
 
     var triggerW  by remember { mutableStateOf(0) }
@@ -155,7 +156,7 @@ internal fun KPopoverInline(
                     .kindlingShadowMd(shape)
                     .clip(shape)
                     .background(cs.surface)
-                    .border(1.dp, cs.outline.copy(alpha = 0.4f), shape)
+                    .kindlingBorder(shapes.borderWidth, cs.outline.copy(alpha = 0.4f), shape)
                     .padding(horizontal = 12.dp, vertical = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(4.dp),
                 content             = content

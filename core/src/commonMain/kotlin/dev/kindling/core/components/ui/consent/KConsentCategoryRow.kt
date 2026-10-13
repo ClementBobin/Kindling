@@ -1,6 +1,5 @@
 package dev.kindling.core.components.ui.consent
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -38,7 +37,7 @@ fun KConsentCategoryRow(
         modifier = modifier.fillMaxWidth(),
         shape = shape,
         color = cs.surfaceVariant.copy(alpha = 0.35f),
-        border = BorderStroke(1.dp, cs.outlineVariant.copy(alpha = 0.4f))
+        border = MaterialTheme.kindlingShapes.borderStroke(cs.outlineVariant.copy(alpha = 0.4f))
     ) {
         Row(
             modifier = Modifier

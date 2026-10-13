@@ -1,7 +1,6 @@
 package dev.kindling.core.components.ui.empty
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,6 +13,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
+import dev.kindling.core.theme.LocalKindlingShapes
+import dev.kindling.core.theme.kindlingBorder
 
 /**
  * Shadcn/ui-style Empty state root.
@@ -40,11 +41,12 @@ fun KEmpty(
     content: @Composable ColumnScope.() -> Unit
 ) {
     val cs = MaterialTheme.colorScheme
+    val borderWidth = LocalKindlingShapes.current.borderWidth
     Column(
         modifier = modifier
             .fillMaxWidth()
             .then(if (showBackground) Modifier.clip(shape).background(cs.surfaceVariant.copy(alpha = 0.4f)) else Modifier)
-            .then(if (outlined) Modifier.clip(shape).border(1.dp, cs.outline, shape) else Modifier)
+            .then(if (outlined) Modifier.clip(shape).kindlingBorder(borderWidth, cs.outline, shape) else Modifier)
             .padding(if (outlined || showBackground) 32.dp else 0.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         content = content

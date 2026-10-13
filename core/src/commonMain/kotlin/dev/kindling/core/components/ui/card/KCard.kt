@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -20,6 +19,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import dev.kindling.core.components.ui.layout.KDivider
 import dev.kindling.core.theme.LocalKindlingShapes
 
 /**
@@ -112,8 +112,9 @@ fun KCardFooter(
     horizontalArrangement: Arrangement.Horizontal = Arrangement.spacedBy(8.dp),
     content: @Composable RowScope.() -> Unit
 ) {
-    val rounded = LocalKindlingShapes.current.roundedXl
-    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant, thickness = 0.5.dp)
+    val shapes = LocalKindlingShapes.current
+    val rounded = shapes.roundedXl
+    KDivider(color = MaterialTheme.colorScheme.outlineVariant, thickness = shapes.borderWidthThin)
     Row(
         modifier              = modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp).clip(RoundedCornerShape(topEnd = rounded)),
         horizontalArrangement = horizontalArrangement,

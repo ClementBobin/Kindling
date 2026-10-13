@@ -17,7 +17,7 @@ internal fun page_components_empty(): DocPage = DocPage(
         CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:{{version}}\")"),
         CodeBlock("kotlin", "import dev.kindling.core.components.ui.empty.KEmpty"),
         DeclGroup("Composables", listOf(
-            Decl("KEmpty", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/empty/KEmpty.kt#L35")), listOf(
+            Decl("KEmpty", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/empty/KEmpty.kt#L36")), listOf(
                 CodeBlock("kotlin", "@Composable\nfun KEmpty(\n    modifier: Modifier = Modifier,\n    outlined: Boolean = false,\n    showBackground: Boolean = false,\n    shape: Shape = RoundedCornerShape(12.dp),\n    content: @Composable ColumnScope.() -> Unit,\n)"),
                 Props(listOf(PropRow("modifier", "Modifier", "Modifier", "", false), PropRow("outlined", "Boolean", "false", "", false), PropRow("showBackground", "Boolean", "false", "", false), PropRow("shape", "Shape", "RoundedCornerShape(12.dp)", "", false), PropRow("content", "@Composable ColumnScope.() -> Unit", "", "", true))),
             )),

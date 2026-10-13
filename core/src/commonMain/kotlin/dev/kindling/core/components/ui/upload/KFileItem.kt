@@ -6,7 +6,6 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -87,7 +86,7 @@ fun KFileItem(
         shape = shape,
         color = cs.surface,
         tonalElevation = 1.dp,
-        border = BorderStroke(1.dp, cs.outlineVariant.copy(alpha = 0.5f))
+        border = MaterialTheme.kindlingShapes.borderStroke(cs.outlineVariant.copy(alpha = 0.5f))
     ) {
         Column(
             modifier = Modifier

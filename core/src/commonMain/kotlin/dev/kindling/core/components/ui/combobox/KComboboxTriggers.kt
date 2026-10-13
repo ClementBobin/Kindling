@@ -1,6 +1,5 @@
 package dev.kindling.core.components.ui.combobox
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -28,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
+import dev.kindling.core.theme.LocalKindlingShapes
 import androidx.compose.ui.unit.sp
 import dev.kindling.core.components.ui.button.KButton
 import dev.kindling.core.components.ui.button.KButtonSize
@@ -90,20 +90,21 @@ fun ComboboxTrigger(
     }
 ) {
     val cs = MaterialTheme.colorScheme
+    val shapes = LocalKindlingShapes.current
     Surface(
         onClick      = { if (enabled) state.expanded = !state.expanded },
         enabled      = enabled,
         shape        = RoundedCornerShape(8.dp),
         color        = Color.Transparent,
         contentColor = if (enabled) cs.onBackground else cs.onBackground.copy(.38f),
-        border       = BorderStroke(
-            if (isError) 2.dp else 1.dp,
-            when {
+        border       = shapes.borderStroke(
+            color = when {
                 !enabled -> cs.outline.copy(.38f)
                 isError  -> cs.error
                 state.expanded -> cs.primary
                 else     -> cs.outline
-            }
+            },
+            width = if (isError) shapes.borderWidthThick else shapes.borderWidth
         ),
         modifier = modifier
             .fillMaxWidth()
@@ -133,17 +134,18 @@ fun ComboboxInput(
     isError: Boolean = false
 ) {
     val cs = MaterialTheme.colorScheme
+    val shapes = LocalKindlingShapes.current
     Surface(
         shape  = RoundedCornerShape(8.dp),
         color  = Color.Transparent,
-        border = BorderStroke(
-            if (isError) 2.dp else 1.dp,
-            when {
+        border = shapes.borderStroke(
+            color = when {
                 !enabled    -> cs.outline.copy(.38f)
                 isError     -> cs.error
                 state.expanded -> cs.primary
                 else        -> cs.outline
-            }
+            },
+            width = if (isError) shapes.borderWidthThick else shapes.borderWidth
         ),
         modifier = modifier.fillMaxWidth().heightIn(min = 32.dp)
     ) {

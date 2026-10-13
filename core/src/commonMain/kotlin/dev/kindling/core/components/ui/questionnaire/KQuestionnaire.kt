@@ -1,6 +1,5 @@
 package dev.kindling.core.components.ui.questionnaire
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -18,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import dev.kindling.core.theme.kindlingShapes
 
 /**
  * A multi-step interactive questionnaire component in Jetpack Compose, supporting
@@ -42,7 +42,7 @@ fun KQuestionnaire(
         modifier = modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.large,
         tonalElevation = 2.dp,
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f))
+        border = MaterialTheme.kindlingShapes.borderStroke(MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f))
     ) {
         Column(
             modifier = Modifier
@@ -102,7 +102,8 @@ fun KQuestionnaire(
                 if (onPrevious != null) {
                     OutlinedButton(
                         onClick = onPrevious,
-                        modifier = Modifier.height(44.dp)
+                        modifier = Modifier.height(44.dp),
+                        border = MaterialTheme.kindlingShapes.borderStroke(MaterialTheme.colorScheme.outline)
                     ) {
                         Text("Previous")
                     }
@@ -111,7 +112,8 @@ fun KQuestionnaire(
                 if (onSkip != null) {
                     OutlinedButton(
                         onClick = onSkip,
-                        modifier = Modifier.height(44.dp)
+                        modifier = Modifier.height(44.dp),
+                        border = MaterialTheme.kindlingShapes.borderStroke(MaterialTheme.colorScheme.outline)
                     ) {
                         Text("Skip")
                     }

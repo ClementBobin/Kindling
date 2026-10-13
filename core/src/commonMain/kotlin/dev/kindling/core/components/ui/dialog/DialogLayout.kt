@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -19,6 +18,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.kindling.core.components.ui.layout.KDivider
 import dev.kindling.core.theme.LocalKindlingShapes
 import dev.kindling.core.components.ui.button.KButton
 import dev.kindling.core.components.ui.button.KButtonVariant
@@ -72,10 +72,11 @@ fun DialogFooter(
     onDismiss: (() -> Unit)? = null,
     content: @Composable RowScope.() -> Unit
 ) {
-    val rounded = LocalKindlingShapes.current.roundedXl
+    val shapes = LocalKindlingShapes.current
+    val rounded = shapes.roundedXl
     val cs = MaterialTheme.colorScheme
     Column(modifier = modifier.fillMaxWidth().clip(RoundedCornerShape(bottomStart = rounded, bottomEnd = rounded))) {
-        HorizontalDivider(color = cs.outlineVariant, thickness = 0.5.dp)
+        KDivider(color = cs.outlineVariant, thickness = shapes.borderWidthThin)
         Row(
             modifier              = Modifier
                 .fillMaxWidth()

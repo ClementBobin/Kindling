@@ -1,6 +1,5 @@
 package dev.kindling.core.components.ui.consent
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -62,7 +61,7 @@ fun KConsentBanner(
         color = cs.surface,
         tonalElevation = elevation,
         shadowElevation = elevation,
-        border = BorderStroke(1.dp, cs.outlineVariant.copy(alpha = 0.6f))
+        border = MaterialTheme.kindlingShapes.borderStroke(cs.outlineVariant.copy(alpha = 0.6f))
     ) {
         Column(
             modifier = Modifier
@@ -132,7 +131,8 @@ fun KConsentBanner(
                 OutlinedButton(
                     onClick = onRejectOptional,
                     modifier = Modifier.weight(1f),
-                    shape = MaterialTheme.kindlingShapes.radiusMd
+                    shape = MaterialTheme.kindlingShapes.radiusMd,
+                    border = MaterialTheme.kindlingShapes.borderStroke(MaterialTheme.colorScheme.outline)
                 ) {
                     Text("Decline Optional", fontSize = 12.5.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 }

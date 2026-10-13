@@ -1,11 +1,12 @@
 package dev.kindling.core.components.ui
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -14,6 +15,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.kindling.core.components.ui.layout.kindlingFieldBorder
 import dev.kindling.core.theme.LocalKindlingShapes
 
 /**
@@ -65,6 +67,7 @@ fun KTextarea(
 ) {
     val cs = MaterialTheme.colorScheme
     val shape = LocalKindlingShapes.current.radiusLg
+    val interactionSource = remember { MutableInteractionSource() }
 
     OutlinedTextField(
         value           = value,
@@ -72,12 +75,19 @@ fun KTextarea(
         modifier        = modifier
             .fillMaxWidth()
             .defaultMinSize(minHeight = 64.dp)
-            .clip(shape),
+            .clip(shape)
+            .kindlingFieldBorder(
+                interactionSource = interactionSource,
+                shape             = shape,
+                enabled           = enabled,
+                isError           = isError
+            ),
         enabled         = enabled,
         isError         = isError,
         singleLine      = false,
         minLines        = minLines,
         maxLines        = maxLines,
+        interactionSource = interactionSource,
         placeholder     = if (placeholder.isNotEmpty()) {
             { Text(placeholder, style = TextStyle(fontSize = 14.sp, color = cs.onSurface.copy(.5f))) }
         } else null,
@@ -88,12 +98,13 @@ fun KTextarea(
             color      = if (enabled) cs.onBackground else cs.onSurface.copy(.38f),
             lineHeight = 20.sp
         ),
-        shape  = RoundedCornerShape(8.dp),
+        shape  = shape,
         colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor      = cs.primary,
-            unfocusedBorderColor    = cs.outline,
-            disabledBorderColor     = cs.outline.copy(.38f),
-            errorBorderColor        = cs.error,
+            // Border is drawn by kindlingFieldBorder so its width follows KindlingShapes.borderWidth.
+            focusedBorderColor      = Color.Transparent,
+            unfocusedBorderColor    = Color.Transparent,
+            disabledBorderColor     = Color.Transparent,
+            errorBorderColor        = Color.Transparent,
             focusedContainerColor   = Color.Transparent,
             unfocusedContainerColor = Color.Transparent,
             disabledContainerColor  = cs.onSurface.copy(.04f),

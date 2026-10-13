@@ -16,7 +16,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProvideTextStyle
@@ -31,6 +30,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.kindling.core.components.ui.layout.KDivider
 import dev.kindling.core.theme.LocalKindlingShapes
 import dev.kindling.core.theme.kindlingShadowMd
 
@@ -121,9 +121,9 @@ fun ComboboxLabel(
 /** Thin horizontal rule between groups. */
 @Composable
 fun ComboboxSeparator(modifier: Modifier = Modifier) {
-    HorizontalDivider(
+    KDivider(
         modifier  = modifier.padding(vertical = 4.dp),
-        thickness = 0.5.dp,
+        thickness = LocalKindlingShapes.current.borderWidthThin,
         color     = MaterialTheme.colorScheme.outlineVariant
     )
 }
