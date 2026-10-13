@@ -25,6 +25,7 @@ Thumbs.db
 **/bin/
 # docs generator scratch
 docs-gen/.docgen/
+showcase/src/wasmJsMain/kotlin/dev/kindling/showcase/docs/generated/
 
 # Node tooling (docs-gen has no dependencies, but editors/npm may create these)
 node_modules/

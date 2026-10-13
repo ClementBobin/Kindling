@@ -155,7 +155,6 @@ private const val COM = "dev.kindling.utils.method.format.communication"
 private const val SYS = "dev.kindling.utils.method.format.system"
 private const val UNIT = "dev.kindling.utils.method.format.unit"
 private const val TIME = "dev.kindling.utils.method.format.time"
-private const val NET = "dev.kindling.utils.method.format.network"
 
 private val functions: List<Fn> = listOf(
     // Text
@@ -278,14 +277,6 @@ private val functions: List<Fn> = listOf(
         listOf(num("v", "Minutes", "90")), { it.i("v").minutesToHuman() }, { "${it.il("v")}.minutesToHuman()" }),
     Fn("Time", "String.hhMmSsToSeconds()", "Parses HH:MM:SS to total seconds.", TIME,
         listOf(text("v", "Duration", "01:02:03")), { it.s("v").hhMmSsToSeconds().toString() }, { "${q(it.s("v"))}.hhMmSsToSeconds()" }),
-
-    // HTTP
-    Fn("HTTP", "Int.toHttpStatus()", "Status code with its reason phrase.", NET,
-        listOf(num("v", "Status code", "404")), { it.i("v").toHttpStatus() }, { "${it.il("v")}.toHttpStatus()" }),
-    Fn("HTTP", "Int.httpCategory()", "Category of an HTTP status code.", NET,
-        listOf(num("v", "Status code", "503")), { it.i("v").httpCategory() }, { "${it.il("v")}.httpCategory()" }),
-    Fn("HTTP", "Int.isHttpError()", "True for 4xx and 5xx codes.", NET,
-        listOf(num("v", "Status code", "418")), { it.i("v").isHttpError().toString() }, { "${it.il("v")}.isHttpError()" }),
 )
 
 private val groups = listOf("All") + functions.map { it.group }.distinct()
