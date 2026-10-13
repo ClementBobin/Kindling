@@ -15,7 +15,7 @@ internal fun page_components_picker(): DocPage = DocPage(
         Heading(2, "Installation"),
         CodeBlock("kotlin", "implementation(\"io.github.clementbobin.kindling:core:{{version}}\")"),
         DeclGroup("Composables", listOf(
-            Decl("KRoulettePicker", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/picker/KRoulettePicker.kt#L33")), listOf(
+            Decl("KRoulettePicker", listOf("android", "ios", "desktop", "web"), true, true, listOf(Impl("commonMain", "", listOf("android", "ios", "desktop", "web"), "https://github.com/ClementBobin/Kindling/blob/{{ref}}/core/src/commonMain/kotlin/dev/kindling/core/components/ui/picker/KRoulettePicker.kt#L35")), listOf(
                 CodeBlock("kotlin", "@Composable\nfun KRoulettePicker(\n    items: List<String>,\n    selectedIndex: Int,\n    onItemSelected: (Int) -> Unit,\n    modifier: Modifier = Modifier,\n    visibleItemsCount: Int = 5,\n    itemHeight: Dp = 40.dp,\n)"),
                 Props(listOf(PropRow("items", "List<String>", "", "", true), PropRow("selectedIndex", "Int", "", "", true), PropRow("onItemSelected", "(Int) -> Unit", "", "", true), PropRow("modifier", "Modifier", "Modifier", "", false), PropRow("visibleItemsCount", "Int", "5", "", false), PropRow("itemHeight", "Dp", "40.dp", "", false))),
             )),

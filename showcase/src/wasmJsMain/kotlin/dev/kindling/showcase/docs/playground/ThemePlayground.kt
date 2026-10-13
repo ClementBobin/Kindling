@@ -25,6 +25,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.foundation.layout.width
+import androidx.compose.ui.unit.Dp
+import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -278,7 +282,7 @@ internal fun ThemePlayground(siteDark: Boolean) {
     }
 
     BoxWithConstraints(Modifier.fillMaxWidth()) {
-        val wide = maxWidth >= 900.dp
+        val wide = maxWidth >= 840.dp
         val controls: @Composable (Modifier) -> Unit = { mod ->
             Controls(
                 modifier = mod,
@@ -312,7 +316,7 @@ internal fun ThemePlayground(siteDark: Boolean) {
         }
         if (wide) {
             Row(horizontalArrangement = Arrangement.spacedBy(24.dp), verticalAlignment = Alignment.Top) {
-                controls(Modifier.widthIn(max = 320.dp).fillMaxWidth(0.3f))
+                controls(Modifier.width(280.dp))
                 preview(Modifier.weight(1f))
             }
         } else {
@@ -407,61 +411,76 @@ private fun PreviewSurface() {
     ) {
         Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(28.dp)) {
             PreviewSection("Actions & forms") {
-                Tile("Buttons", 380.dp) { ButtonDemo() }
-                Tile("Inputs", 380.dp) { InputDemo() }
-                Tile("Input group", 380.dp) { InputGroupDemo() }
-                Tile("Input OTP", 380.dp) { InputOTPDemo() }
-                Tile("Mask input", 380.dp) { MaskInputDemo() }
-                Tile("Combobox", 380.dp) { ComboboxDemo() }
-                Tile("Picker", 380.dp) { PickerDemo() }
-                Tile("Upload", 380.dp) { UploadDemo() }
+                Tile("Buttons") { ButtonDemo() }
+                Tile("Inputs") { InputDemo() }
+                Tile("Input group") { InputGroupDemo() }
+                Tile("Input OTP") { InputOTPDemo() }
+                Tile("Mask input") { MaskInputDemo() }
+                Tile("Combobox") { ComboboxDemo() }
+                Tile("Picker") { PickerDemo() }
+                Tile("Upload") { UploadDemo() }
             }
             PreviewSection("Display") {
-                Tile("Card", 380.dp) { CardDemo() }
-                Tile("Badges", 380.dp) { BadgeDemo() }
-                Tile("Avatars", 240.dp) { AvatarDemo() }
-                Tile("Spinner", 240.dp) { SpinnerDemo() }
-                Tile("Skeleton", 380.dp) { SkeletonDemo() }
-                Tile("Empty state", 380.dp) { EmptyDemo() }
-                Tile("Animated text", 380.dp) { AnimatedDemo() }
+                Tile("Card") { CardDemo() }
+                Tile("Badges") { BadgeDemo() }
+                Tile("Avatars") { AvatarDemo() }
+                Tile("Spinner") { SpinnerDemo() }
+                Tile("Skeleton") { SkeletonDemo() }
+                Tile("Empty state") { EmptyDemo() }
+                Tile("Animated text") { AnimatedDemo() }
             }
             PreviewSection("Navigation") {
-                Tile("Pagination", 380.dp) { PaginationDemo() }
-                Tile("Stepper", 380.dp) { StepperDemo() }
-                Tile("Carousel", 380.dp) { CarouselDemo() }
+                Tile("Pagination") { PaginationDemo() }
+                Tile("Stepper") { StepperDemo() }
+                Tile("Carousel") { CarouselDemo() }
             }
             PreviewSection("Overlays & feedback") {
-                Tile("Dialog", 240.dp) { DialogDemo() }
-                Tile("Popover", 380.dp) { PopoverDemo() }
-                Tile("Toast", 380.dp) { ToastDemo() }
-                Tile("Consent", 380.dp) { ConsentDemo() }
+                Tile("Dialog") { DialogDemo() }
+                Tile("Popover") { PopoverDemo() }
+                Tile("Toast") { ToastDemo() }
+                Tile("Consent") { ConsentDemo() }
             }
             PreviewSection("Data & charts") {
-                Tile("Chart palette", 380.dp) { ChartStrip() }
-                Tile("Charts", 780.dp) { ChartsDemo() }
-                Tile("Data table", 780.dp) { DataTableDemo() }
-                Tile("Dashboard", 380.dp) { DashboardDemo() }
-                Tile("Questionnaire", 380.dp) { QuestionnaireDemo() }
+                Tile("Chart palette") { ChartStrip() }
+                Tile("Charts", wide = true) { ChartsDemo() }
+                Tile("Data table", wide = true) { DataTableDemo() }
+                Tile("Dashboard") { DashboardDemo() }
+                Tile("Questionnaire") { QuestionnaireDemo() }
             }
         }
     }
 }
+
+
+/** Column width the preview grid currently uses, so tiles shrink on narrow screens instead of overflowing. */
+private class TileGrid(val columnWidth: Dp, val columns: Int)
+
+private val LocalTileGrid = compositionLocalOf { TileGrid(380.dp, 1) }
+private val TileGap = 16.dp
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun PreviewSection(title: String, content: @Composable () -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Text(title, fontSize = 15.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onBackground)
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) { content() }
+        BoxWithConstraints(Modifier.fillMaxWidth()) {
+            val columns = maxOf(1, ((maxWidth + TileGap) / (380.dp + TileGap)).toInt())
+            val columnWidth = (maxWidth - TileGap * (columns - 1)) / columns
+            CompositionLocalProvider(LocalTileGrid provides TileGrid(columnWidth, columns)) {
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(TileGap), verticalArrangement = Arrangement.spacedBy(TileGap)) { content() }
+            }
+        }
     }
 }
 
 @Composable
-private fun Tile(title: String, width: androidx.compose.ui.unit.Dp, content: @Composable () -> Unit) {
+private fun Tile(title: String, wide: Boolean = false, content: @Composable () -> Unit) {
     val colors = MaterialTheme.colorScheme
+    val grid = LocalTileGrid.current
+    val span = if (wide) minOf(2, grid.columns) else 1
     Column(
         Modifier
-            .widthIn(min = width, max = width)
+            .width(grid.columnWidth * span + TileGap * (span - 1))
             .clip(RoundedCornerShape(10.dp))
             .border(1.dp, colors.outline, RoundedCornerShape(10.dp))
             .padding(16.dp),

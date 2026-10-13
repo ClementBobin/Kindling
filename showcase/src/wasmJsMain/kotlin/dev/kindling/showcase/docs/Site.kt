@@ -129,6 +129,7 @@ fun DocsSite() {
 
     val page = byPath[route]
     val full = page?.fullWidth == true
+    val dev = route == "dev" // hidden smoke-test page, see DevPage.kt
     val focus = remember { FocusRequester() }
     LaunchedEffect(Unit) { runCatching { focus.requestFocus() } }
 
@@ -152,7 +153,7 @@ fun DocsSite() {
                         TopBar(
                             wide = wide,
                             dark = dark,
-                            active = if (full) route else "docs",
+                            active = if (full) route else if (dev) "" else "docs",
                             onNavigate = { go(it) },
                             onToggleTheme = { dark = !dark },
                             onSearch = { searchOpen = true },
@@ -161,15 +162,19 @@ fun DocsSite() {
                         )
                         Box(Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.TopCenter) {
                             Row(Modifier.widthIn(max = SITE_MAX_WIDTH).fillMaxSize()) {
-                                if (wide && !full) Sidebar(tree, route, ::go, Modifier.width(256.dp).fillMaxHeight())
-                                PageContent(
-                                    page = page,
-                                    loc = loc,
-                                    dark = dark,
-                                    flat = flat,
-                                    showToc = xl && !full,
-                                    modifier = Modifier.weight(1f).fillMaxHeight(),
-                                )
+                                if (wide && !full && !dev) Sidebar(tree, route, ::go, Modifier.width(256.dp).fillMaxHeight())
+                                if (dev) {
+                                    DevPage(onOpenPage = { go(it) }, modifier = Modifier.weight(1f).fillMaxHeight())
+                                } else {
+                                    PageContent(
+                                        page = page,
+                                        loc = loc,
+                                        dark = dark,
+                                        flat = flat,
+                                        showToc = xl && !full,
+                                        modifier = Modifier.weight(1f).fillMaxHeight(),
+                                    )
+                                }
                             }
                         }
                     }
