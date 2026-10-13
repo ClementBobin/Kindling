@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -273,8 +274,9 @@ private fun DemoBox(id: String, ctx: RenderCtx) {
 @Composable
 private fun DemoTab(title: String, selected: Boolean, onClick: () -> Unit) {
     val colors = MaterialTheme.colorScheme
+    // IntrinsicSize.Max: the underline's fillMaxWidth must match the label, not swallow the whole row.
     Column(
-        Modifier.clickable(onClick = onClick).pointerHoverIcon(PointerIcon.Hand),
+        Modifier.width(IntrinsicSize.Max).clickable(onClick = onClick).pointerHoverIcon(PointerIcon.Hand),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
