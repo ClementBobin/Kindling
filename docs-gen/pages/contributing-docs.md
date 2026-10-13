@@ -49,5 +49,18 @@ Tags must be present locally (`git fetch --tags`), otherwise `--check` reports t
 ## Run locally
 
 ```bash
+node docs-gen/scripts/dev.mjs
+```
+
+This regenerates the docs whenever you edit a page, an `extra/` file, KDoc, a demo or the registry, and runs the Gradle dev server in continuous mode, so the browser reloads after each rebuild. Open http://localhost:8080. To keep changes fast it skips the per-version history; run `node docs-gen/scripts/docgen.mjs` once before committing to restore it.
+
+Two shortcuts for checking your work:
+
+- **`#/dev`** (for example http://localhost:8080/#/dev) shows every live demo on one page. Pick a width (280 to 720dp) to see how they behave when narrow, filter by name, and click a title to jump to its docs page. It is a quick way to spot clipped, empty or overlapping previews.
+- **`?component=<id>`** renders a single demo on its own, for example `?component=combobox`.
+
+If you only want the generated Kotlin kept up to date, use `node docs-gen/scripts/dev.mjs --no-serve` and run Gradle yourself:
+
+```bash
 ./gradlew :showcase:wasmJsBrowserDevelopmentRun
 ```

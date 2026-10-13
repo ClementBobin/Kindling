@@ -21,6 +21,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
@@ -79,6 +81,8 @@ fun KRoulettePicker(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(totalHeight)
+                // DstIn punches through whatever is already on the canvas; an offscreen layer keeps it to this list.
+                .graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
                 .drawWithCache {
                     val gradient = Brush.verticalGradient(
                         colors = listOf(Color.Transparent, Color.Black, Color.Transparent),

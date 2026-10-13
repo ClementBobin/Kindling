@@ -203,9 +203,7 @@ fun ComboboxCollection(
                 ComboboxGroup {
                     ComboboxLabel { Text(group.label) }
                     groupItems.forEach { item ->
-                        ComboboxItem(state = state, item = item) {
-                            customItem?.invoke(this, item)
-                        }
+                        ComboboxItem(state = state, item = item, content = itemContent(customItem, item))
                     }
                 }
             }
@@ -213,17 +211,21 @@ fun ComboboxCollection(
             if (ungrouped.isNotEmpty()) {
                 if (groups.isNotEmpty()) ComboboxSeparator()
                 ungrouped.forEach { item ->
-                    ComboboxItem(state = state, item = item) {
-                        customItem?.invoke(this, item)
-                    }
+                    ComboboxItem(state = state, item = item, content = itemContent(customItem, item))
                 }
             }
         } else {
             filtered.forEach { item ->
-                ComboboxItem(state = state, item = item) {
-                    customItem?.invoke(this, item)
-                }
+                ComboboxItem(state = state, item = item, content = itemContent(customItem, item))
             }
         }
     }
+}
+/** Custom row content for [item], or null so [ComboboxItem] renders its default label. */
+private fun itemContent(
+    custom: (@Composable RowScope.(KComboboxItem) -> Unit)?,
+    item: KComboboxItem
+): (@Composable RowScope.() -> Unit)? {
+    if (custom == null) return null
+    return { custom(item) }
 }

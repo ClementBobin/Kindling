@@ -29,6 +29,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -57,7 +58,8 @@ internal fun KPopoverInline(
     var triggerH  by remember { mutableStateOf(0) }
     var panelW    by remember { mutableStateOf(0) }
     var panelH    by remember { mutableStateOf(0) }
-    var rootW     by remember { mutableStateOf(Int.MAX_VALUE) }
+    // The panel is kept inside the window; the root box only wraps the trigger, so it cannot be used for this.
+    val rootW = LocalWindowInfo.current.containerSize.width.takeIf { it > 0 } ?: Int.MAX_VALUE
     var triggerRootX by remember { mutableStateOf(0f) }
 
     val sideOffsetPx = with(density) { sideOffset.toPx().roundToInt() }
@@ -109,11 +111,7 @@ internal fun KPopoverInline(
         return IntOffset(clampedX, raw.y)
     }
 
-    Box(
-        modifier = modifier.onGloballyPositioned { coords ->
-            rootW = coords.size.width
-        }
-    ) {
+    Box(modifier = modifier) {
         Box(
             modifier = Modifier.onGloballyPositioned { coords ->
                 triggerW     = coords.size.width

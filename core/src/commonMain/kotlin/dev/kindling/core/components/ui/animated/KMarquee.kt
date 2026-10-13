@@ -127,9 +127,8 @@ fun KMarquee(
                 width = constraints.maxWidth,
                 height = if (constraints.hasBoundedHeight) constraints.maxHeight else contentHeight
             ) {
-                actualPlaceables.forEach { placeable ->
-                    placeable.place(0, 0)
-                }
+                // Measured for sizing only: the moving copies are drawn by KMarqueeContentEngine. Placing these
+                // as well drew a second, static copy on top of the animated one.
             }
         }
 
@@ -145,7 +144,7 @@ fun KMarquee(
 
         // Gradient Fades
         if (enableFadeEdges) {
-            val resolvedFadeColor = if (fadeColor != Color.Unspecified) fadeColor else Color.Black
+            val resolvedFadeColor = if (fadeColor != Color.Unspecified) fadeColor else MaterialTheme.colorScheme.background
 
             // Left Fade
             Box(
