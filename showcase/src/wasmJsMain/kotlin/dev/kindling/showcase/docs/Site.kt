@@ -229,12 +229,12 @@ private fun PageContent(page: DocPage?, loc: Loc, dark: Boolean, flat: List<DocP
     // Scroll-spy: the last heading that has reached the top of the viewport (or the last one at the bottom).
     val activeHeading by remember(headings) {
         derivedStateOf {
-            val top = viewport?.takeIf { it.isAttached }?.positionInRoot()?.y ?: 0f
+            val top = viewport.safeY() ?: 0f
             val atEnd = scroll.maxValue > 0 && scroll.value >= scroll.maxValue - 4
             var active = headings.firstOrNull()?.first
             for ((index, _) in headings) {
-                val c = coords[index]?.takeIf { it.isAttached } ?: continue
-                if (c.positionInRoot().y - top <= 110f) active = index else break
+                val y = coords[index].safeY() ?: continue
+                if (y - top <= 110f) active = index else break
             }
             if (atEnd) headings.lastOrNull()?.first ?: active else active
         }
@@ -242,8 +242,10 @@ private fun PageContent(page: DocPage?, loc: Loc, dark: Boolean, flat: List<DocP
     val scrollTo: (Int) -> Unit = { index ->
         val target = coords[index]
         val top = viewport
-        if (target != null && target.isAttached && top != null) {
-            val y = target.positionInRoot().y - top.positionInRoot().y
+        val ty = target.safeY()
+        val vy = top.safeY()
+        if (ty != null && vy != null) {
+            val y = ty - vy
             scope.launch { scroll.animateScrollTo((scroll.value + y - 24f).toInt().coerceAtLeast(0)) }
         }
     }
@@ -381,3 +383,7 @@ private fun SearchOverlay(pages: List<DocPage>, onClose: () -> Unit, onPick: (St
         }
     }
 }
+
+/** Position in the root, or null when the layout is detached (it can be removed between the check and the read). */
+private fun LayoutCoordinates?.safeY(): Float? =
+    if (this == null || !isAttached) null else try { positionInRoot().y } catch (_: IllegalArgumentException) { null }
