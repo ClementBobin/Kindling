@@ -18,6 +18,10 @@ This whole site is a Compose Multiplatform (Wasm) app built with Kindling itself
 - [compose](/docs/compose): typed navigation (`Destination`, `KNavHost`) and the `KViewModel` base class.
 - [android](/docs/android): native device helpers, a Ktor-based `KHttpClient`, and session/token storage.
 
+## AI-ready
+
+Kindling is built to be easy for AI tools to work with. The components are open code with a consistent API, so a model can read how they work, suggest improvements, and generate new components that fit your existing theme. See [AI-ready](/docs/ai-ready) for how to give your assistant the docs.
+
 ## How these docs are made
 
 API pages are generated from the KDoc in the source code, so they stay in sync with the library. Hand-written pages (like this one) live next to them. See [Contributing to the docs](/docs/contributing-docs).

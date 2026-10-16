@@ -1,0 +1,134 @@
+# Kindling
+
+> shadcn/ui-inspired components, typed navigation and utilities for Jetpack Compose and Compose Multiplatform.
+
+Every docs page can be copied as Markdown with the "Copy page" button on https://clementbobin.github.io/Kindling/.
+
+## Getting started
+
+- [Introduction](https://clementbobin.github.io/Kindling/#/index): shadcn/ui-inspired components, typed navigation and utilities for Jetpack Compose and Compose Multiplatform.
+- [Installation](https://clementbobin.github.io/Kindling/#/installation): Add Kindling to your project with Gradle.
+- [AI-ready](https://clementbobin.github.io/Kindling/#/ai-ready): Give your AI assistant the Kindling docs so it can use, extend and generate components.
+- [Theming](https://clementbobin.github.io/Kindling/#/theming): Wrap your app in KindlingTheme to customise corner radius, border width, colours and typography.
+
+## Project
+
+- [Contributing to the docs](https://clementbobin.github.io/Kindling/#/contributing-docs): How the documentation is generated, edited by hand, or drafted with AI.
+
+## Tools
+
+- [Create](https://clementbobin.github.io/Kindling/#/create): Tune colours, radius, border width and chart palette, preview real Kindling components, then copy the theme as Kotlin.
+- [Playground](https://clementbobin.github.io/Kindling/#/playground): Try the formatting helpers and the debounce/throttle utilities with your own input, then copy the code.
+- [Showcase](https://clementbobin.github.io/Kindling/#/showcase): Every component, running live in your browser.
+
+## Components
+
+- [Components](https://clementbobin.github.io/Kindling/#/components): Compose components and design tokens from :core.
+- [Animated](https://clementbobin.github.io/Kindling/#/components/animated): An interactive text input that triggers a vibrant particle explosion effect upon submission or text changes (spell.sh / magic UI inspired).
+- [Aspect Ratio](https://clementbobin.github.io/Kindling/#/components/aspect-ratio): Constrains its content to a given aspect ratio — mirrors shadcn/ui AspectRatio.
+- [Avatar](https://clementbobin.github.io/Kindling/#/components/avatar): Root avatar container — mirrors shadcn/ui Avatar.
+- [Badge](https://clementbobin.github.io/Kindling/#/components/badge): Shadcn/ui-style Badge — mirrors badge.tsx.
+- [Button](https://clementbobin.github.io/Kindling/#/components/button): Shadcn/ui-style Button — mirrors button.tsx.
+- [Calendar](https://clementbobin.github.io/Kindling/#/components/calendar): Calendar API reference.
+- [Card](https://clementbobin.github.io/Kindling/#/components/card): Shadcn/ui-style Card root — mirrors card.tsx.
+- [Carousel](https://clementbobin.github.io/Kindling/#/components/carousel): Shadcn/ui-style Carousel — mirrors carousel.tsx.
+- [Charts](https://clementbobin.github.io/Kindling/#/components/charts): A fully-themed area chart that mirrors the shadcn <AreaChart> component.
+- [Combobox](https://clementbobin.github.io/Kindling/#/components/combobox): Shadcn/ui-style Combobox root — mirrors Combobox (Base UI primitive).
+- [Consent](https://clementbobin.github.io/Kindling/#/components/consent): Complete, ready-to-use c15t-style Privacy & Consent Banner / Card component.
+- [Core Utils](https://clementbobin.github.io/Kindling/#/components/core-utils): Core Utils API reference.
+- [Dashboard](https://clementbobin.github.io/Kindling/#/components/dashboard): A responsive dashboard grid layout engine supporting item dragging, action buttons, dynamic cell sizing, and persistent position callbacks.
+- [Datatable](https://clementbobin.github.io/Kindling/#/components/datatable): Convenience data-table built on top of the primitive Table slots.
+- [Date Picker](https://clementbobin.github.io/Kindling/#/components/date-picker): Shadcn/ui-style DatePicker.
+- [Dialog](https://clementbobin.github.io/Kindling/#/components/dialog): Shadcn/ui-style Dialog root — mirrors Dialog with a controlled open state.
+- [Direction](https://clementbobin.github.io/Kindling/#/components/direction): Overrides LocalLayoutDirection for the entire subtree.
+- [Empty](https://clementbobin.github.io/Kindling/#/components/empty): Shadcn/ui-style Empty state root.
+- [Engine](https://clementbobin.github.io/Kindling/#/components/engine): State container for an individual physics particle in particle-based UI effects.
+- [Gesture](https://clementbobin.github.io/Kindling/#/components/gesture): Pull-to-refresh behavior that works from **any edge** and draws **nothing by itself**: the loading UI is whatever you put in indicator.
+- [Input](https://clementbobin.github.io/Kindling/#/components/input): Shadcn/ui-style Input — mirrors input.tsx.
+- [Input Group](https://clementbobin.github.io/Kindling/#/components/input-group): Shadcn/ui-style InputGroup — mirrors input-group.tsx.
+- [Input OTP](https://clementbobin.github.io/Kindling/#/components/input-otp): Shadcn/ui-style OTP / PIN input root — mirrors InputOTP from input-otp.tsx.
+- [Label](https://clementbobin.github.io/Kindling/#/components/label): Shadcn/ui-style Label — mirrors label.tsx.
+- [Layout](https://clementbobin.github.io/Kindling/#/components/layout): Fills its parent and centres content.
+- [Logos Carousel](https://clementbobin.github.io/Kindling/#/components/logos-carousel): Logos Carousel API reference.
+- [Mask Input](https://clementbobin.github.io/Kindling/#/components/mask-input): Shadcn/ui-style masked input field — mirrors KMaskInput from mask-input.tsx.
+- [Masonry](https://clementbobin.github.io/Kindling/#/components/masonry): A responsive masonry grid layout component for Jetpack Compose that distributes cards into columns based on measured item heights, stacking them into the shortest column…
+- [Pagination](https://clementbobin.github.io/Kindling/#/components/pagination): Root pagination navigation wrapper — mirrors Pagination from pagination.tsx.
+- [Picker](https://clementbobin.github.io/Kindling/#/components/picker): Picker API reference.
+- [Popover](https://clementbobin.github.io/Kindling/#/components/popover): Shadcn/ui-style Popover with two display modes:
+- [Prefab](https://clementbobin.github.io/Kindling/#/components/prefab): A pre-configured KMaskInput for phone numbers.
+- [Questionnaire](https://clementbobin.github.io/Kindling/#/components/questionnaire): A multi-step interactive questionnaire component in Jetpack Compose, supporting single/multi-choice selection, text inputs, error validation, progress tracking, and navigation…
+- [Skeleton](https://clementbobin.github.io/Kindling/#/components/skeleton): Shadcn/ui-style Skeleton — mirrors skeleton.tsx.
+- [Spinner](https://clementbobin.github.io/Kindling/#/components/spinner): Shadcn/ui-style KSpinner — mirrors spinner.tsx.
+- [Stepper](https://clementbobin.github.io/Kindling/#/components/stepper): Shadcn/ui-style Stepper root — mirrors Stepper from stepper.tsx.
+- [Textarea](https://clementbobin.github.io/Kindling/#/components/textarea): Shadcn/ui-style Textarea — mirrors textarea.tsx.
+- [Theme](https://clementbobin.github.io/Kindling/#/components/theme): Root theme wrapper for any app using Kindling.
+- [Toast](https://clementbobin.github.io/Kindling/#/components/toast): Renders a single toast notification.
+- [Upload](https://clementbobin.github.io/Kindling/#/components/upload): Complete, ready-to-use upload area preset with file list and drag-drop cues.
+
+## Utils
+
+- [Utils](https://clementbobin.github.io/Kindling/#/utils): Coroutine utilities and formatting helpers from :utils.
+- [Counter](https://clementbobin.github.io/Kindling/#/utils/counter): A reactive mutable counter with optional min/max bounds and a configurable step.
+- [Debouncer](https://clementbobin.github.io/Kindling/#/utils/debouncer): A coroutine-based debouncer that delays forwarding values until no new values have arrived for the specified delay duration.
+- [Encrypt](https://clementbobin.github.io/Kindling/#/utils/encrypt): Registers the Bouncy Castle providers required for classical and post-quantum cryptography.
+- [Format Communication](https://clementbobin.github.io/Kindling/#/utils/format-communication): Strips all non-digit ASCII characters from a phone number string. Example: "+1 (800) 555-0199".digitsOnly() → "18005550199"
+- [Format Financial](https://clementbobin.github.io/Kindling/#/utils/format-financial): Formats a bits-per-second value as a human-readable bandwidth string. Example: 1_500_000.0.bpsToHuman() → "1.5 Mbps"
+- [Format Network](https://clementbobin.github.io/Kindling/#/utils/format-network): Represents a geographic coordinate pair.
+- [Format Number](https://clementbobin.github.io/Kindling/#/utils/format-number): Formats a Double with decimals decimal places. Example: 3.14159.round(2) → "3.14"
+- [Format System](https://clementbobin.github.io/Kindling/#/utils/format-system): Encodes a ByteArray to a Base64 string (no line wrapping).
+- [Format Text](https://clementbobin.github.io/Kindling/#/utils/format-text): Encodes a Unicode label to Punycode (without the xn-- prefix). Example: "münchen".encodePunycode() → "mnchen-3ya"
+- [Format Time](https://clementbobin.github.io/Kindling/#/utils/format-time): Represents the components of a time delta.
+- [Format Unit](https://clementbobin.github.io/Kindling/#/utils/format-unit): Converts m² to ft².
+- [Mutex Guard](https://clementbobin.github.io/Kindling/#/utils/mutex-guard): Ensures that only **one coroutine at a time** can execute a critical section.
+- [Retry Runner](https://clementbobin.github.io/Kindling/#/utils/retry-runner): A utility that retries a suspending operation with configurable exponential back-off and jitter.
+- [Sort](https://clementbobin.github.io/Kindling/#/utils/sort): Facade for the Kindling sort library.
+- [State](https://clementbobin.github.io/Kindling/#/utils/state): Holds a value and a capped history of past values, supporting undo/redo.
+- [Toggle](https://clementbobin.github.io/Kindling/#/utils/toggle): A boolean toggle with optional forced-set support.
+
+## Compose
+
+- [Compose](https://clementbobin.github.io/Kindling/#/compose): Typed navigation and the KViewModel base from :compose.
+- [Destination](https://clementbobin.github.io/Kindling/#/compose/destination): Typed wrapper around Compose NavHost.
+- [Experimental](https://clementbobin.github.io/Kindling/#/compose/experimental): Marker interface for UI actions coming from the view layer.
+- [Legacy](https://clementbobin.github.io/Kindling/#/compose/legacy): Multiplatform base ViewModel with state, one-shot events and async helpers.
+- [Preview](https://clementbobin.github.io/Kindling/#/compose/preview): Preview wrapper that mirrors KindlingTheme exactly.
+- [Screen](https://clementbobin.github.io/Kindling/#/compose/screen): Lifecycle-aware screen wrapper for KStateHolder-driven Composables (KViewModel on Android, KSimpleViewModel on every platform).
+- [State Holder](https://clementbobin.github.io/Kindling/#/compose/state-holder): Minimal read-only contract that KScreen needs from a ViewModel.
+- [View Model](https://clementbobin.github.io/Kindling/#/compose/view-model): Legacy base ViewModel for Kindling applications that require AndroidViewModel or KoinComponent integration.
+
+## Android
+
+- [Android](https://clementbobin.github.io/Kindling/#/android): Native device helpers, HTTP client and storage from :android.
+- [Account](https://clementbobin.github.io/Kindling/#/android/account): Décrit un type de compte à interroger ou créer.
+- [Audio](https://clementbobin.github.io/Kindling/#/android/audio): Helper audio centralisé.
+- [Background](https://clementbobin.github.io/Kindling/#/android/background): Describes which background execution strategy fits your use case.
+- [Battery](https://clementbobin.github.io/Kindling/#/android/battery): Current battery status information.
+- [Biometric](https://clementbobin.github.io/Kindling/#/android/biometric): Configuration pour le dialogue biométrique.
+- [Bluetooth](https://clementbobin.github.io/Kindling/#/android/bluetooth): Bluetooth API reference.
+- [Brightness](https://clementbobin.github.io/Kindling/#/android/brightness): Décrit un niveau de luminosité d'écran.
+- [Camera](https://clementbobin.github.io/Kindling/#/android/camera): Décrit la configuration de la session caméra.
+- [Clipboard](https://clementbobin.github.io/Kindling/#/android/clipboard): Décrit le contenu à copier dans le presse-papiers.
+- [Connectivity](https://clementbobin.github.io/Kindling/#/android/connectivity): Centralized network connectivity helper for Android.
+- [Contacts](https://clementbobin.github.io/Kindling/#/android/contacts): Helper de contacts centralisé.
+- [Display](https://clementbobin.github.io/Kindling/#/android/display): Informations sur l'écran principal.
+- [Download](https://clementbobin.github.io/Kindling/#/android/download): Describes a download task to be performed via DownloadManager.
+- [File](https://clementbobin.github.io/Kindling/#/android/file): Describes the destination of a file in Android's MediaStore.
+- [Haptic](https://clementbobin.github.io/Kindling/#/android/haptic): Décrit un effet haptique sémantique via HapticFeedbackConstants.
+- [Http](https://clementbobin.github.io/Kindling/#/android/http): Configuration for buildKHttpClient.
+- [Keystore](https://clementbobin.github.io/Kindling/#/android/keystore): Décrit la configuration d'une clé dans l'Android Keystore.
+- [Location](https://clementbobin.github.io/Kindling/#/android/location): Describes the accuracy and frequency of location updates.
+- [Nfc](https://clementbobin.github.io/Kindling/#/android/nfc): Nfc API reference.
+- [Notification](https://clementbobin.github.io/Kindling/#/android/notification): Describes a notification channel to be registered with the system.
+- [Permission](https://clementbobin.github.io/Kindling/#/android/permission): Résultat d'une vérification ou d'une demande de permission.
+- [Play Integrity](https://clementbobin.github.io/Kindling/#/android/play-integrity): Helper for requesting Play Integrity tokens on Android.
+- [Power](https://clementbobin.github.io/Kindling/#/android/power): Helper de gestion de l'énergie centralisé.
+- [Sensor](https://clementbobin.github.io/Kindling/#/android/sensor): Décrit un capteur et sa fréquence d'échantillonnage.
+- [Share](https://clementbobin.github.io/Kindling/#/android/share): Décrit le contenu à partager via le système Android.
+- [Sms](https://clementbobin.github.io/Kindling/#/android/sms): Décrit un SMS à envoyer.
+- [Storage](https://clementbobin.github.io/Kindling/#/android/storage): KTokenStore backed by Jetpack DataStore.
+- [Telephony](https://clementbobin.github.io/Kindling/#/android/telephony): Informations réseau téléphonique courantes.
+- [Thermal](https://clementbobin.github.io/Kindling/#/android/thermal): État thermique de l'appareil (API 29+).
+- [Toast](https://clementbobin.github.io/Kindling/#/android/toast): Describes a semantic toast style, determining how long the message is displayed.
+- [Vibration](https://clementbobin.github.io/Kindling/#/android/vibration): Describes a semantic vibration pattern.
+- [Wifi](https://clementbobin.github.io/Kindling/#/android/wifi): Wifi API reference.
+- [Window](https://clementbobin.github.io/Kindling/#/android/window): Décrit la configuration d'affichage de la fenêtre.
