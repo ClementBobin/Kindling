@@ -16,6 +16,11 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import dev.kindling.showcase.docs.playground.copyToClipboard
+import dev.kindling.showcase.docs.playground.openTextTab
+import kotlinx.browser.window
+import kotlinx.coroutines.delay
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -147,3 +152,47 @@ private fun rangeLabel(range: List<String>): String = if (range.size == 1) range
 
 /** Releases grouped by identical content, newest group first, each newest release first. */
 internal fun DocPage.versionRanges(): List<List<String>> = listOf(headVersions) + history.map { it.versions }
+
+/** shadcn-style "Copy page" control: copies the page as Markdown, with a menu for AI assistants. */
+@Composable
+internal fun CopyPageMenu(page: DocPage, blocks: List<Block>, ctx: RenderCtx) {
+    var open by remember { mutableStateOf(false) }
+    var copied by remember { mutableStateOf(false) }
+    LaunchedEffect(copied) {
+        if (copied) {
+            delay(1500)
+            copied = false
+        }
+    }
+    fun copy(text: String) {
+        copyToClipboard(text)
+        copied = true
+    }
+    fun ask(base: String) {
+        val prompt = page.toAiPrompt(blocks, ctx)
+        copy(prompt)
+        // The clipboard keeps the full text; the link only carries what fits in a URL.
+        window.open(base + jsEncode(prompt.take(4000)), "_blank")
+    }
+    Box {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(2.dp)) {
+            KButton(
+                text = if (copied) "Copied" else "Copy page",
+                onClick = { copy(page.toMarkdown(blocks, ctx)) },
+                variant = KButtonVariant.Outline,
+                size = KButtonSize.Sm,
+            )
+            KButton(text = "▾", onClick = { open = true }, variant = KButtonVariant.Outline, size = KButtonSize.Sm)
+        }
+        DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
+            DropdownMenuItem(text = { Text("Copy as Markdown") }, onClick = { open = false; copy(page.toMarkdown(blocks, ctx)) })
+            DropdownMenuItem(text = { Text("Copy for AI") }, onClick = { open = false; copy(page.toAiPrompt(blocks, ctx)) })
+            DropdownMenuItem(text = { Text("View as Markdown") }, onClick = { open = false; openTextTab(page.toMarkdown(blocks, ctx)) })
+            DropdownMenuItem(text = { Text("Open in Claude") }, onClick = { open = false; ask("https://claude.ai/new?q=") })
+            DropdownMenuItem(text = { Text("Open in ChatGPT") }, onClick = { open = false; ask("https://chatgpt.com/?q=") })
+        }
+    }
+}
+
+@JsFun("(s) => encodeURIComponent(s)")
+private external fun jsEncode(s: String): String

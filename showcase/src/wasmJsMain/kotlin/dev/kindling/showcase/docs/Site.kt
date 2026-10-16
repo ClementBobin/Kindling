@@ -278,7 +278,8 @@ private fun PageContent(page: DocPage?, loc: Loc, dark: Boolean, flat: List<DocP
                                 modifier = Modifier.weight(1f),
                             )
                             if (i >= 0) {
-                                Row(Modifier.padding(top = 4.dp), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                Row(Modifier.padding(top = 4.dp), horizontalArrangement = Arrangement.spacedBy(4.dp), verticalAlignment = Alignment.CenterVertically) {
+                                    if (!page.fullWidth) CopyPageMenu(page, rawBlocks, ctx)
                                     flat.getOrNull(i - 1)?.let { prev -> IconBox(Icons.AutoMirrored.Filled.ArrowBack, "Previous: ${prev.title}") { go(prev.path) } }
                                     flat.getOrNull(i + 1)?.let { next -> IconBox(Icons.AutoMirrored.Filled.ArrowForward, "Next: ${next.title}") { go(next.path) } }
                                 }
