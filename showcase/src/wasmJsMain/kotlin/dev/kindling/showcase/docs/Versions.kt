@@ -16,6 +16,24 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material.icons.automirrored.filled.OpenInNew
+import androidx.compose.material3.Icon
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.PointerIcon
+import androidx.compose.ui.input.pointer.pointerHoverIcon
+import kotlinx.coroutines.launch
 import androidx.compose.runtime.LaunchedEffect
 import dev.kindling.showcase.docs.playground.copyToClipboard
 import dev.kindling.showcase.docs.playground.openTextTab
@@ -153,45 +171,72 @@ private fun rangeLabel(range: List<String>): String = if (range.size == 1) range
 /** Releases grouped by identical content, newest group first, each newest release first. */
 internal fun DocPage.versionRanges(): List<List<String>> = listOf(headVersions) + history.map { it.versions }
 
-/** shadcn-style "Copy page" control: copies the page as Markdown, with a menu for AI assistants. */
+/** shadcn-style "Copy page" control: a split button that copies the page as Markdown, with a menu for AI assistants. */
 @Composable
 internal fun CopyPageMenu(page: DocPage, blocks: List<Block>, ctx: RenderCtx) {
+    val colors = MaterialTheme.colorScheme
     var open by remember { mutableStateOf(false) }
     var copied by remember { mutableStateOf(false) }
-    LaunchedEffect(copied) {
-        if (copied) {
+    val scope = rememberCoroutineScope()
+    fun run(action: () -> Unit) {
+        open = false
+        // Build the text after the click has been handled, so a large page never blocks the pointer event.
+        scope.launch {
+            delay(16)
+            try {
+                action()
+            } catch (_: Throwable) {
+            }
+        }
+    }
+    fun copy(text: () -> String) = run {
+        copyToClipboard(text())
+        copied = true
+        scope.launch {
             delay(1500)
             copied = false
         }
     }
-    fun copy(text: String) {
-        copyToClipboard(text)
-        copied = true
-    }
-    fun ask(base: String) {
+    fun ask(base: String) = run {
         val prompt = page.toAiPrompt(blocks, ctx)
-        copy(prompt)
+        copyToClipboard(prompt)
         // The clipboard keeps the full text; the link only carries what fits in a URL.
         window.open(base + jsEncode(prompt.take(4000)), "_blank")
     }
+    val shape = RoundedCornerShape(8.dp)
     Box {
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(2.dp)) {
-            KButton(
-                text = if (copied) "Copied" else "Copy page",
-                onClick = { copy(page.toMarkdown(blocks, ctx)) },
-                variant = KButtonVariant.Outline,
-                size = KButtonSize.Sm,
-            )
-            KButton(text = "▾", onClick = { open = true }, variant = KButtonVariant.Outline, size = KButtonSize.Sm)
+        Row(
+            Modifier.height(32.dp).clip(shape).border(1.dp, colors.outline, shape).background(colors.background),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Row(
+                Modifier.fillMaxHeight().clickable { copy { page.toMarkdown(blocks, ctx) } }.pointerHoverIcon(PointerIcon.Hand).padding(horizontal = 10.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+            ) {
+                Icon(if (copied) Icons.Filled.Check else Icons.Filled.ContentCopy, null, tint = colors.onBackground, modifier = Modifier.size(15.dp))
+                Text(if (copied) "Copied" else "Copy Page", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = colors.onBackground)
+            }
+            Box(Modifier.width(1.dp).fillMaxHeight().background(colors.outline))
+            Box(
+                Modifier.fillMaxHeight().width(30.dp).clickable { open = true }.pointerHoverIcon(PointerIcon.Hand),
+                contentAlignment = Alignment.Center,
+            ) { Icon(Icons.Filled.ExpandMore, "More copy options", tint = colors.onBackground, modifier = Modifier.size(18.dp)) }
         }
         DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
-            DropdownMenuItem(text = { Text("Copy as Markdown") }, onClick = { open = false; copy(page.toMarkdown(blocks, ctx)) })
-            DropdownMenuItem(text = { Text("Copy for AI") }, onClick = { open = false; copy(page.toAiPrompt(blocks, ctx)) })
-            DropdownMenuItem(text = { Text("View as Markdown") }, onClick = { open = false; openTextTab(page.toMarkdown(blocks, ctx)) })
-            DropdownMenuItem(text = { Text("Open in v0") }, onClick = { open = false; ask("https://v0.dev/chat?q=") })
-            DropdownMenuItem(text = { Text("Open in ChatGPT") }, onClick = { open = false; ask("https://chatgpt.com/?q=") })
-            DropdownMenuItem(text = { Text("Open in Claude") }, onClick = { open = false; ask("https://claude.ai/new?q=") })
-            DropdownMenuItem(text = { Text("Open in Scira") }, onClick = { open = false; ask("https://scira.ai/?q=") })
+            @Composable
+            fun item(icon: ImageVector, label: String, onClick: () -> Unit) = DropdownMenuItem(
+                leadingIcon = { Icon(icon, null, modifier = Modifier.size(18.dp)) },
+                text = { Text(label, fontSize = 14.sp) },
+                onClick = onClick,
+            )
+            item(Icons.Filled.ContentCopy, "Copy as Markdown") { copy { page.toMarkdown(blocks, ctx) } }
+            item(Icons.Filled.AutoAwesome, "Copy for AI") { copy { page.toAiPrompt(blocks, ctx) } }
+            item(Icons.Filled.Description, "View as Markdown") { run { openTextTab(page.toMarkdown(blocks, ctx)) } }
+            item(Icons.AutoMirrored.Filled.OpenInNew, "Open in v0") { ask("https://v0.dev/chat?q=") }
+            item(Icons.AutoMirrored.Filled.OpenInNew, "Open in ChatGPT") { ask("https://chatgpt.com/?q=") }
+            item(Icons.AutoMirrored.Filled.OpenInNew, "Open in Claude") { ask("https://claude.ai/new?q=") }
+            item(Icons.AutoMirrored.Filled.OpenInNew, "Open in Scira") { ask("https://scira.ai/?q=") }
         }
     }
 }

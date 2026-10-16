@@ -2,9 +2,11 @@ package dev.kindling.showcase.docs.playground
 
 // Plain browser clipboard access. The textarea fallback covers non-secure contexts (e.g. http://<LAN-ip>:8080).
 @JsFun(
-    "(text) => { if (navigator.clipboard && window.isSecureContext) { navigator.clipboard.writeText(text); } " +
-        "else { const t = document.createElement('textarea'); t.value = text; document.body.appendChild(t); " +
-        "t.select(); document.execCommand('copy'); t.remove(); } }",
+    "(text) => { const prev = document.activeElement; " +
+        "const fallback = () => { const t = document.createElement('textarea'); t.value = text; t.style.position = 'fixed'; t.style.opacity = '0'; " +
+        "document.body.appendChild(t); t.focus({ preventScroll: true }); t.select(); try { document.execCommand('copy'); } catch (e) {} t.remove(); " +
+        "if (prev && prev.focus) prev.focus({ preventScroll: true }); }; " +
+        "if (navigator.clipboard && window.isSecureContext) { navigator.clipboard.writeText(text).catch(fallback); } else { fallback(); } }",
 )
 private external fun jsCopy(text: String)
 
