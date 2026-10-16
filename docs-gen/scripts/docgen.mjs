@@ -236,8 +236,26 @@ files.set(
   `${HEADER}/** Version the docs were generated for (shown in the top bar). */\ninternal const val DOCS_VERSION = ${k(ctx.version)}\n\n/** Git ref the latest version's source links point to; older versions link to their tag. */\ninternal const val DOCS_BRANCH = ${k(ctx.branch)}\n\ninternal fun generatedPages(): List<DocPage> = listOf(\n${pages.map((p) => `    ${fnName(p.path)}(),`).join('\n')}\n)\n`,
 );
 
+// llms.txt: an index of the docs for AI tools (https://llmstxt.org). Served next to index.html.
+const siteUrl = (process.env.DOCS_SITE_URL ?? 'https://clementbobin.github.io/Kindling/').replace(/\/?$/, '/');
+const llmsFile = path.join(repoRoot, 'showcase/src/wasmJsMain/resources/llms.txt');
+{
+  const bySection = new Map();
+  for (const p of pages.filter((x) => x.blocks.length)) bySection.set(p.section, [...(bySection.get(p.section) ?? []), p]);
+  const lines = ['# Kindling', '', '> shadcn/ui-inspired components, typed navigation and utilities for Jetpack Compose and Compose Multiplatform.', '', `Every docs page can be copied as Markdown with the "Copy page" button on ${siteUrl}.`, ''];
+  for (const [section, list] of bySection) {
+    lines.push(`## ${section}`, '');
+    for (const p of list.sort((a, b) => a.order - b.order || a.title.localeCompare(b.title))) lines.push(`- [${p.title}](${siteUrl}#/${p.path})${p.description ? `: ${p.description}` : ''}`);
+    lines.push('');
+  }
+  files.set('\0llms', lines.join('\n'));
+}
+
 // ── write / check ───────────────────────────────────────────────────────────
 const drift = [];
+const llmsText = files.get('\0llms');
+files.delete('\0llms');
+if (!fs.existsSync(llmsFile) || fs.readFileSync(llmsFile, 'utf8') !== llmsText) drift.push('llms.txt');
 for (const [name, content] of files) {
   const f = path.join(outDir, name);
   if (!fs.existsSync(f) || fs.readFileSync(f, 'utf8') !== content) drift.push(name);
@@ -262,6 +280,7 @@ if (check) {
   fs.rmSync(outDir, { recursive: true, force: true });
   fs.mkdirSync(outDir, { recursive: true });
   for (const [name, content] of files) fs.writeFileSync(path.join(outDir, name), content);
+  fs.writeFileSync(llmsFile, llmsText);
   fs.mkdirSync(path.join(genDir, '.docgen'), { recursive: true });
   fs.writeFileSync(path.join(genDir, '.docgen', 'report.json'), `${JSON.stringify({ version: ctx.version, units: report }, null, 2)}\n`);
   console.log(`${summary} — wrote ${files.size} files (${drift.length} changed)`);

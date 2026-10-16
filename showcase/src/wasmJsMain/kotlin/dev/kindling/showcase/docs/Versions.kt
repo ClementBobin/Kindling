@@ -188,8 +188,10 @@ internal fun CopyPageMenu(page: DocPage, blocks: List<Block>, ctx: RenderCtx) {
             DropdownMenuItem(text = { Text("Copy as Markdown") }, onClick = { open = false; copy(page.toMarkdown(blocks, ctx)) })
             DropdownMenuItem(text = { Text("Copy for AI") }, onClick = { open = false; copy(page.toAiPrompt(blocks, ctx)) })
             DropdownMenuItem(text = { Text("View as Markdown") }, onClick = { open = false; openTextTab(page.toMarkdown(blocks, ctx)) })
-            DropdownMenuItem(text = { Text("Open in Claude") }, onClick = { open = false; ask("https://claude.ai/new?q=") })
+            DropdownMenuItem(text = { Text("Open in v0") }, onClick = { open = false; ask("https://v0.dev/chat?q=") })
             DropdownMenuItem(text = { Text("Open in ChatGPT") }, onClick = { open = false; ask("https://chatgpt.com/?q=") })
+            DropdownMenuItem(text = { Text("Open in Claude") }, onClick = { open = false; ask("https://claude.ai/new?q=") })
+            DropdownMenuItem(text = { Text("Open in Scira") }, onClick = { open = false; ask("https://scira.ai/?q=") })
         }
     }
 }
