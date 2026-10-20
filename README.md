@@ -19,7 +19,7 @@ A production-ready Kotlin multi-module component library for Jetpack Compose —
 | `core` | `io.github.clementbobin.kindling:core` | Shadcn/ui-style Compose components (Button, Input, Dialog, Carousel, DataTable, DatePicker, Stepper, Toaster, Skeleton, Spinner, Combobox, Empty state, Pagination…) | Maven Central · JitPack |
 | `utils` | `io.github.clementbobin.kindling:utils` | Coroutine utilities: `Debouncer<T>`, `Throttler<T>`, `debounceLeading`, `throttleFirst` Flow extensions | Maven Central · JitPack |
 | `compose` | `io.github.clementbobin.kindling:compose` | Typed navigation (`Destination`, `KNavHost`), `KViewModel` base with state/events/data-loading helpers | Maven Central · JitPack |
-| `android` | `io.github.clementbobin.kindling:android` | Android platform helpers: 30+ native device helpers (Camera, Biometric, Bluetooth, Location, NFC…), `KHttpClient` (Ktor-based with token refresh & caching), and session/token storage utilities | Maven Central · JitPack |
+| `android` | `io.github.clementbobin.kindling:android` | Android platform helpers: 30+ native device helpers (Camera, Biometric, Bluetooth, Location, NFC…), `KHttpClient` (Ktor-based with token refresh & caching), session/token storage utilities, and multi-tenant Firebase (FCM) initialisation from a config DTO | Maven Central · JitPack |
 
 ---
 

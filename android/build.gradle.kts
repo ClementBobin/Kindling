@@ -7,6 +7,13 @@ plugins {
 
 extra["pomDescription"] = "Android platform utilities for Kindling"
 
+android {
+    testOptions {
+        // The project uses JUnit 5 (see libs.junit.jupiter).
+        unitTests.all { it.useJUnitPlatform() }
+    }
+}
+
 dependencies {
     implementation(project(":utils"))
     implementation(libs.kotlin.stdlib)
@@ -27,6 +34,7 @@ dependencies {
     implementation(libs.ktor.client.logging)
     implementation(libs.ktor.client.auth)
     implementation(libs.play.integrity)
+    api(libs.firebase.messaging) // FirebaseApp is part of KFirebaseManager's public API
     compileOnly(libs.ktor.client.mock)
     testImplementation(kotlin("test"))
     testImplementation(libs.junit.jupiter)
