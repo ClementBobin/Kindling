@@ -65,11 +65,19 @@ class KSharedPrefsFirebaseConfigStore(
 
     override suspend fun get(): KStoredFirebaseTenant? {
         val tenantId = prefs.getString(KEY_TENANT, null) ?: return null
-        val json = prefs.getString(KEY_CONFIG, null) ?: return null
         return try {
-            KStoredFirebaseTenant(tenantId, KFirebaseConfig.fromJson(json))
-        } catch (_: KFirebaseConfigException) {
-            null
+            KStoredFirebaseTenant(
+                tenantId,
+                KFirebaseConfig(
+                    apiKey = prefs.getString(KEY_API_KEY, null).orEmpty(),
+                    applicationId = prefs.getString(KEY_APP_ID, null).orEmpty(),
+                    projectId = prefs.getString(KEY_PROJECT_ID, null).orEmpty(),
+                    gcmSenderId = prefs.getString(KEY_SENDER_ID, null).orEmpty(),
+                    storageBucket = prefs.getString(KEY_BUCKET, null),
+                ),
+            )
+        } catch (_: IllegalArgumentException) {
+            null // incomplete or corrupted entry
         }
     }
 
@@ -78,20 +86,28 @@ class KSharedPrefsFirebaseConfigStore(
         withContext(Dispatchers.IO) {
             prefs.edit()
                 .putString(KEY_TENANT, tenant.tenantId)
-                .putString(KEY_CONFIG, tenant.config.toJson())
+                .putString(KEY_API_KEY, tenant.config.apiKey)
+                .putString(KEY_APP_ID, tenant.config.applicationId)
+                .putString(KEY_PROJECT_ID, tenant.config.projectId)
+                .putString(KEY_SENDER_ID, tenant.config.gcmSenderId)
+                .putString(KEY_BUCKET, tenant.config.storageBucket)
                 .commit()
         }
     }
 
     override suspend fun clear() {
         withContext(Dispatchers.IO) {
-            prefs.edit().remove(KEY_TENANT).remove(KEY_CONFIG).commit()
+            prefs.edit().clear().commit()
         }
     }
 
     private companion object {
         const val KEY_TENANT = "tenant_id"
-        const val KEY_CONFIG = "config"
+        const val KEY_API_KEY = "api_key"
+        const val KEY_APP_ID = "application_id"
+        const val KEY_PROJECT_ID = "project_id"
+        const val KEY_SENDER_ID = "gcm_sender_id"
+        const val KEY_BUCKET = "storage_bucket"
     }
 }
 

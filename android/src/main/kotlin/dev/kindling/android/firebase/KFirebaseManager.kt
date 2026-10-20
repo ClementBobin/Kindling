@@ -27,8 +27,7 @@ fun KFirebaseConfig.toFirebaseOptions(): FirebaseOptions =
  *
  * The static `google-services.json` plugin can only embed a single project. This manager builds
  * the `FirebaseApp` in code from a [KFirebaseConfig] instead, which lets each client bring its
- * own project. The configuration can come from your API ([KFirebaseApiConfigSource]) or from a
- * `google-services.json` on the device ([KFirebaseFileConfigSource]).
+ * own project. You give it a [KFirebaseConfig] DTO, filled from your API, a file or anything else.
  *
  * Only one tenant is active at a time. Initialising another tenant replaces the previous
  * `FirebaseApp`.
@@ -36,7 +35,7 @@ fun KFirebaseConfig.toFirebaseOptions(): FirebaseOptions =
  * ## Lifecycle
  * A `FirebaseApp` created in code does not survive process death, so it has to be recreated at
  * every launch **and before the system delivers a message to a killed app**:
- * 1. After login, call [initialize] with a source. The configuration is persisted in the
+ * 1. After login, call [initialize] with the DTO. The configuration is persisted in the
  *    [KFirebaseConfigStore].
  * 2. In `Application.onCreate()`, call [restoreBlocking] (no network call: it reads the store).
  * 3. Send the token returned by [fetchToken] to your backend, together with the tenant id. In
@@ -58,14 +57,14 @@ fun KFirebaseConfig.toFirebaseOptions(): FirebaseOptions =
  *     }
  * }
  *
- * // After login, config downloaded from your API
- * suspend fun onLogin(clientId: String) {
- *     firebase.initialize(clientId, KFirebaseApiConfigSource.fromClient(http, "clients/$clientId/firebase"))
+ * // After login: map your API DTO to KFirebaseConfig and initialise
+ * suspend fun onLogin(clientId: String, dto: FirebaseConfigDto) {
+ *     firebase.initialize(
+ *         tenantId = clientId,
+ *         config = KFirebaseConfig(dto.apiKey, dto.applicationId, dto.projectId, dto.messagingSenderId),
+ *     )
  *     api.registerDevice(clientId, firebase.fetchToken())
  * }
- *
- * // Or with a google-services.json already on the device
- * firebase.initialize("acme", KFirebaseFileConfigSource.fromFile(file, context.packageName))
  * ```
  *
  * @param context Any context; the application context is retained.
@@ -94,22 +93,7 @@ class KFirebaseManager(
         get() = FirebaseApp.getApps(appContext).firstOrNull { it.name == appName }
 
     /**
-     * Loads the configuration from [source], initialises Firebase with it and persists it.
-     *
-     * @param tenantId Identifier of the client, as known by your backend.
-     * @param source Where the configuration comes from.
-     * @param persist Save the configuration so [restore] can recreate the app at next launch.
-     * @return The initialised `FirebaseApp`.
-     * @throws KFirebaseConfigException If the configuration is missing or invalid.
-     */
-    suspend fun initialize(
-        tenantId: String,
-        source: KFirebaseConfigSource,
-        persist: Boolean = true,
-    ): FirebaseApp = initialize(tenantId, source.load(), persist)
-
-    /**
-     * Initialises Firebase with an already loaded [config].
+     * Initialises Firebase from a [config] DTO and persists it.
      *
      * Calling it again with the same tenant and configuration returns the existing app. A
      * different configuration deletes the previous app (and its FCM token) first.

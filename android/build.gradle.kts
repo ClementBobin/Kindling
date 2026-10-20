@@ -35,7 +35,6 @@ dependencies {
     implementation(libs.ktor.client.auth)
     implementation(libs.play.integrity)
     api(libs.firebase.messaging) // FirebaseApp is part of KFirebaseManager's public API
-    implementation(libs.kotlinx.serialization.json)
     compileOnly(libs.ktor.client.mock)
     testImplementation(kotlin("test"))
     testImplementation(libs.junit.jupiter)
