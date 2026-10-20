@@ -14,6 +14,7 @@ lifecycle-multiplatform = "2.10.0"
 navigation-event = "1.1.0"
 ktor3 = "3.2.3"
 play-integrity = "1.4.0"
+firebase-messaging = "24.1.2"
 castle = "1.80"
 
 # AndroidX / Google
@@ -76,6 +77,7 @@ androidx-compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling
 # Google / Play Services / Koin / Coil / Ktor
 play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "play-services-location" }
 play-integrity = { module = "com.google.android.play:integrity", version.ref = "play-integrity" }
+firebase-messaging = { module = "com.google.firebase:firebase-messaging", version.ref = "firebase-messaging" }
 
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 
