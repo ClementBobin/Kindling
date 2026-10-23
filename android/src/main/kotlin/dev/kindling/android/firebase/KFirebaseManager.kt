@@ -1,6 +1,7 @@
 package dev.kindling.android.firebase
 
 import android.content.Context
+import android.util.Log
 import com.google.android.gms.tasks.Task
 import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseOptions
@@ -30,17 +31,28 @@ fun KFirebaseConfig.toFirebaseOptions(): FirebaseOptions =
  * own project. You give it a [KFirebaseConfig] DTO, filled from your API, a file or anything else.
  *
  * Only one tenant is active at a time. Initialising another tenant replaces the previous
- * `FirebaseApp`.
+ * `FirebaseApp`. Use [switchTenant] to run the whole switch sequence in one call.
+ *
+ * ## Setup
+ * - Do **not** apply the `google-services` Gradle plugin and remove any `google-services.json`,
+ *   otherwise a default `FirebaseApp` exists and can collide with the tenant app.
+ * - Kindling's manifest already sets `firebase_messaging_auto_init_enabled=false`, so FCM does not
+ *   start on its own before a tenant is initialised.
  *
  * ## Lifecycle
  * A `FirebaseApp` created in code does not survive process death, so it has to be recreated at
  * every launch **and before the system delivers a message to a killed app**:
- * 1. After login, call [initialize] with the DTO. The configuration is persisted in the
- *    [KFirebaseConfigStore].
+ * 1. After login, call [initialize] (or [switchTenant]) with the DTO. The configuration is
+ *    persisted in the [KFirebaseConfigStore].
  * 2. In `Application.onCreate()`, call [restoreBlocking] (no network call: it reads the store).
- * 3. Send the token returned by [fetchToken] to your backend, together with the tenant id. In
- *    `FirebaseMessagingService.onNewToken` call [restoreBlocking] first, then upload the new
- *    token.
+ * 3. Send the token returned by [fetchToken] to your backend, together with the tenant id.
+ *
+ * ## Token rotation
+ * `FirebaseMessagingService.onNewToken` is documented as being called for the **default**
+ * `FirebaseApp` only. In the default named-app mode ([DEFAULT_TENANT_APP_NAME]) you should
+ * therefore also re-check the token at launch / on foreground with [fetchTokenIfChanged]. If you
+ * pass `FirebaseApp.DEFAULT_APP_NAME` as `appName`, `onNewToken` fires normally: call
+ * [restoreBlocking] first, then upload the new token.
  *
  * ## Security
  * The device only ever handles the public client configuration. The service account key used to
@@ -57,13 +69,16 @@ fun KFirebaseConfig.toFirebaseOptions(): FirebaseOptions =
  *     }
  * }
  *
- * // After login: map your API DTO to KFirebaseConfig and initialise
- * suspend fun onLogin(clientId: String, dto: FirebaseConfigDto) {
- *     firebase.initialize(
+ * // After login or on tenant switch
+ * suspend fun onTenantSelected(clientId: String) {
+ *     firebase.switchTenant(
  *         tenantId = clientId,
- *         config = KFirebaseConfig(dto.apiKey, dto.applicationId, dto.projectId, dto.messagingSenderId),
+ *         configProvider = { api.getFirebaseConfig(clientId).toKConfig() },
+ *         onTokenReady = { id, token, previousTenantId ->
+ *             api.registerDevice(id, token)
+ *             previousTenantId?.let { api.markDeviceTokenStale(it) }
+ *         },
  *     )
- *     api.registerDevice(clientId, firebase.fetchToken())
  * }
  * ```
  *
@@ -115,6 +130,31 @@ class KFirebaseManager(
     }
 
     /**
+     * Switches the active tenant in one call: fetches its config, (re)initialises Firebase, gets
+     * a fresh token and hands it to [onTokenReady], together with the tenant that was replaced so
+     * your backend can mark the old tenant's token as stale.
+     *
+     * The previous tenant is read from the manager's own state, so after a process restart it is
+     * the tenant restored by [restore] / [restoreBlocking].
+     *
+     * @param tenantId Identifier of the new tenant, as known by your backend.
+     * @param configProvider Fetches the new tenant's public config (usually from your API).
+     * @param onTokenReady Upload the token here. `previousTenantId` is `null` on first login or
+     *   when the tenant did not change.
+     */
+    suspend fun switchTenant(
+        tenantId: String,
+        configProvider: suspend () -> KFirebaseConfig,
+        onTokenReady: suspend (tenantId: String, token: String, previousTenantId: String?) -> Unit,
+    ) {
+        val previous = currentTenantId
+        val config = configProvider()
+        initialize(tenantId, config)
+        val token = fetchToken()
+        onTokenReady(tenantId, token, previous?.takeIf { it != tenantId })
+    }
+
+    /**
      * Recreates the `FirebaseApp` from the persisted configuration, without any network call.
      *
      * @return The `FirebaseApp`, or `null` if no tenant has been stored yet.
@@ -145,6 +185,25 @@ class KFirebaseManager(
     }
 
     /**
+     * Returns the current FCM token only if it differs from [lastUploaded], otherwise `null`.
+     *
+     * Call it at launch / on foreground (and optionally from a periodic job) to catch token
+     * rotations, since `onNewToken` is only guaranteed for the default `FirebaseApp`.
+     *
+     * ```kotlin
+     * firebase.fetchTokenIfChanged(prefs.lastToken)?.let { token ->
+     *     api.registerDevice(firebase.currentTenantId!!, token)
+     *     prefs.lastToken = token
+     * }
+     * ```
+     *
+     * @param lastUploaded The last token your backend received for this tenant, if any.
+     * @throws IllegalStateException If no tenant is initialised.
+     */
+    suspend fun fetchTokenIfChanged(lastUploaded: String?): String? =
+        fetchToken().takeIf { it != lastUploaded }
+
+    /**
      * Forgets the active tenant, for example on logout.
      *
      * @param deleteToken Also invalidate the FCM token, so the old project stops reaching this device.
@@ -163,6 +222,8 @@ class KFirebaseManager(
 
     /** Creates the app, or reuses/replaces the existing one. Must be called with [mutex] held. */
     private suspend fun ensureApp(config: KFirebaseConfig): FirebaseApp {
+        warnIfDefaultAppCollides()
+
         val existing = currentApp
         if (existing != null) {
             if (existing.options.matches(config)) return existing
@@ -177,6 +238,24 @@ class KFirebaseManager(
         }
     }
 
+    /**
+     * Logs a warning when a default `FirebaseApp` already exists next to our named app, which
+     * usually means the `google-services` plugin or a `google-services.json` is still in the app.
+     */
+    private fun warnIfDefaultAppCollides() {
+        if (appName == FirebaseApp.DEFAULT_APP_NAME) return
+        val hasDefault = FirebaseApp.getApps(appContext)
+            .any { it.name == FirebaseApp.DEFAULT_APP_NAME }
+        if (hasDefault) {
+            Log.w(
+                TAG,
+                "A default FirebaseApp already exists (google-services plugin or " +
+                    "google-services.json?). It may collide with the tenant app. " +
+                    "Remove the plugin for multi-tenant mode.",
+            )
+        }
+    }
+
     private fun FirebaseOptions.matches(config: KFirebaseConfig): Boolean =
         apiKey == config.apiKey &&
             applicationId == config.applicationId &&
@@ -184,6 +263,8 @@ class KFirebaseManager(
             gcmSenderId == config.gcmSenderId
 
     companion object {
+        private const val TAG = "KFirebaseManager"
+
         /** Default name of the `FirebaseApp` created for the active tenant. */
         const val DEFAULT_TENANT_APP_NAME: String = "kindling-tenant"
     }
